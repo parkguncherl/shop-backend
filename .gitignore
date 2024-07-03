@@ -158,13 +158,13 @@ buildNumber.properties
 
 # "temporary" build files
 /target
-/kefico-evcharge-core/build/
-/kefico-evcharge-api/logs/
-/kefico-evcharge-api/build/
-/kefico-evcharge-batch/logs/
-/kefico-evcharge-batch/build/
-/kefico-evcharge-server/logs/
-/kefico-evcharge-server/build/
+/binblur-core/build/
+/binblur-api/logs/
+/binblur-api/build/
+/binblur-batch/logs/
+/binblur-batch/build/
+/binblur-server/logs/
+/binblur-server/build/
 
 /.idea/
 

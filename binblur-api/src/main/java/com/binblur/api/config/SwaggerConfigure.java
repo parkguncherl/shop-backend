@@ -14,7 +14,7 @@ import org.springframework.http.HttpHeaders;
 /**
  * <pre>
  * Description : Swagger 설정
- * Swagger EndPoint : http://localhost:8080/smart-ap/swagger-ui/index.html
+ * Swagger EndPoint : http://localhost:8080/binblur-ap/swagger-ui/index.html
  * Date : 2023/02/15 10:15 PM
  * Company : smart
  * Author : luckeey
