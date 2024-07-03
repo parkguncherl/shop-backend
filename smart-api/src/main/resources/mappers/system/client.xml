@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smart.mapper.client">
+    <sql id="clientColumns">
+          COMP_NM AS compNm
+        , SELLER_TEL_NO AS sellerTelNo
+    </sql>
+
+    <select id="selectClientListPaging" parameterType="com.smart.core.biz.system.vo.request.ClientRequest" resultType="com.smart.core.biz.system.vo.response.ClientResponse$Paging">
+        /* com.smart.mapper.client.selectClientListPaging */
+        SELECT
+        <include refid="clientColumns" />
+        FROM TB_SELLER A
+        WHERE 1 = 1
+        <if test='filter.compNm != null and !filter.compNm.equals("")'>
+            AND A.COMP_NM LIKE concat('%', #{filter.compNm}, '%')
+        </if>
+        ORDER BY A.ID DESC;
+    </select>
+</mapper>

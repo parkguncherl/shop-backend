@@ -1,0 +1,6 @@
+rootProject.name = 'smart-backend'
+include 'smart-core'
+include 'smart-api'
+include 'smart-batch'
+include 'smart-server'
+

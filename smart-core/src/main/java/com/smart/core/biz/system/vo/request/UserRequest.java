@@ -1,0 +1,425 @@
+package com.smart.core.biz.system.vo.request;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.smart.core.entity.User;
+import com.smart.core.entity.UserExpire;
+import com.smart.core.enums.BooleanValueCode;
+import com.smart.core.enums.MailType;
+import com.smart.core.interfaces.RequestFilter;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * <pre>
+ * Description : 사용자 Request
+ * Date : 2023/03/15 14:45 PM
+ * Company : smart90
+ * Author : sclee9946
+ * </pre>
+ */
+@Schema(name = "UserRequest")
+public class UserRequest {
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestPagingFilter", description = "계정 페이징 필터")
+    @ParameterObject
+    public static class PagingFilter implements RequestFilter {
+
+        @Schema(description = "아이디")
+        @Parameter(description = "아이디")
+        private String loginId;
+
+        @Schema(description = "회원_명")
+        @Parameter(description = "회원_명")
+        private String userNm;
+
+        @Schema(description = "권한코드")
+        @Parameter(description = "권한코드")
+        private String authCd;
+
+        @Schema(description = "회원_휴대폰번호")
+        @Parameter(description = "회원_휴대폰번호")
+        private String phoneNo;
+
+        @Schema(description = "회사_명")
+        @Parameter(description = "회사_명")
+        private String compNm;
+
+        @Schema(description = "소속_명")
+        @Parameter(description = "소속_명")
+        private String belongNm;
+
+        @Schema(description = "부서_명")
+        @Parameter(description = "부서_명")
+        private String deptNm;
+
+        @Schema(description = "직책_명")
+        @Parameter(description = "직책_명")
+        private String positionNm;
+
+        @Schema(description = "사용여부")
+        @Parameter(description = "사용여부")
+        private BooleanValueCode useYn;
+
+        @Schema(description = "소유자_권한코드")
+        @Parameter(description = "소유자_권한코드")
+        private String myAuthCd;
+
+        /**
+         * 검색 제외 아이디
+         */
+        private List<String> excludeIds;
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestCreate", description = "계정 생성 요청 파라미터")
+    public static class Create implements RequestFilter {
+
+        @Schema(description = "로그인_아이디")
+        private String loginId;
+
+        //@JsonIgnore : 주석풀면 등록 시 컬럼값 NULL 처리됨 (주의)
+        @Schema(description = "로그인_비밀번호")
+        private String loginPass;
+
+        @Schema(description = "회원_명")
+        private String userNm;
+
+        @Schema(description = "권한코드")
+        private String authCd;
+
+        @Schema(description = "회원_휴대폰번호")
+        private String phoneNo;
+
+        @Schema(description = "회사명")
+        private String compNm;
+
+        @Schema(description = "소속_명")
+        private String belongNm;
+
+        @Schema(description = "부서_명")
+        private String deptNm;
+
+        @Schema(description = "직책_명")
+        private String positionNm;
+
+        @Schema(description = "로그인_실패_회수")
+        private Integer loginFailCnt;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @Schema(description = "최근_로그인_일시")
+        private LocalDateTime lastLoginDateTime;
+
+        @Schema(description = "최초로그인여부")
+        private BooleanValueCode firstLoginYn;
+
+        @Schema(description = "otp_발행번호")
+        private String otpNo;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @Schema(description = "otp_발생일시")
+        private LocalDateTime otpIssuDateTime;
+
+        @Schema(description = "로그인한_유저_국가코드")
+        private String languageCode;
+
+        @Schema(description = "등록자")
+        private String createUser;
+
+        @Schema(description = "사용여부")
+        protected BooleanValueCode useYn;
+
+        @Schema(description = "계정잠김여부")
+        protected BooleanValueCode lockYn;
+
+        public User toEntity() {
+            return User.builder()
+                .loginId(getLoginId())
+                .loginPass(getLoginPass())
+                .userNm(getUserNm())
+                .authCd(getAuthCd())
+                .phoneNo(getPhoneNo())
+                .compNm(getCompNm())
+                .belongNm(getBelongNm())
+                .deptNm(getDeptNm())
+                .positionNm(getPositionNm())
+                .loginFailCnt(getLoginFailCnt())
+                .lastLoginDateTime(getLastLoginDateTime())
+                .firstLoginYn(getFirstLoginYn())
+                .otpNo(getOtpNo())
+                .otpIssuDateTime(getOtpIssuDateTime())
+                .languageCode(getLanguageCode())
+                .createUser(getCreateUser())
+                .useYn(getUseYn())
+                .lockYn(getLockYn())
+                .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestUpdate", description = "계정 수정 요청 파라미터")
+    public static class Update implements RequestFilter {
+
+        @Schema(description = "아이디")
+        private Integer id;
+
+        @Schema(description = "로그인_아이디")
+        private String loginId;
+
+        //@JsonIgnore : 주석풀면 등록 시 컬럼값 NULL 처리됨 (주의)
+        @Schema(description = "로그인_비밀번호")
+        private String loginPass;
+
+        @Schema(description = "회원_명")
+        private String userNm;
+
+        @Schema(description = "권한코드")
+        private String authCd;
+
+        @Schema(description = "회원_휴대폰번호")
+        private String phoneNo;
+
+        @Schema(description = "소속_명")
+        private String belongNm;
+
+        @Schema(description = "부서_명")
+        private String deptNm;
+
+        @Schema(description = "직책_명")
+        private String positionNm;
+
+        @Schema(description = "로그인_실패_회수")
+        private Integer loginFailCnt;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @Schema(description = "최근_로그인_일시")
+        private LocalDateTime lastLoginDateTime;
+
+        @Schema(description = "최초로그인여부")
+        private BooleanValueCode firstLoginYn;
+
+        @Schema(description = "otp_발행번호")
+        private String otpNo;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @Schema(description = "otp_발생일시")
+        private LocalDateTime otpIssuDateTime;
+
+        @Schema(description = "로그인한_유저_국가코드")
+        private String languageCode;
+
+        @Schema(description = "로그인한_유저_국가코드")
+        private String loginLanguage;
+
+        @Schema(description = "수정자")
+        private String updateUser;
+
+        @Schema(description = "사용여부")
+        protected BooleanValueCode useYn;
+
+        @Schema(description = "계정잠김여부")
+        protected BooleanValueCode lockYn;
+
+        @Schema(required = false)
+        @Parameter(description = "OTP_실패_횟수")
+        private Integer otpFailCnt;
+
+        public User toEntity() {
+            return User.builder()
+                .id(getId())
+                .loginId(getLoginId())
+                .loginPass(getLoginPass())
+                .userNm(getUserNm())
+                .authCd(getAuthCd())
+                .phoneNo(getPhoneNo())
+                .belongNm(getBelongNm())
+                .deptNm(getDeptNm())
+                .positionNm(getPositionNm())
+                .loginFailCnt(getLoginFailCnt())
+                .lastLoginDateTime(getLastLoginDateTime())
+                .firstLoginYn(getFirstLoginYn())
+                .otpNo(getOtpNo())
+                .otpIssuDateTime(getOtpIssuDateTime())
+                .languageCode(getLanguageCode())
+                .loginLanguage(getLoginLanguage())
+                .updateUser(getUpdateUser())
+                .useYn(getUseYn())
+                .lockYn(getLockYn())
+                .otpFailCnt(getOtpFailCnt())
+                .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestDelete", description = "계정 삭제 요청 파라미터")
+    public static class Delete implements RequestFilter {
+
+        @Schema(description = "아이디")
+        private Integer id;
+
+        @Schema(description = "로그인_아이디")
+        private String loginId;
+
+        @Schema(description = "수정자")
+        private String updateUser;
+
+        public User toEntity() {
+            return User.builder()
+                .id(getId())
+                .updateUser(getUpdateUser())
+                .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestEmail", description = "계정 메일 요청 파라미터")
+    public static class Email implements RequestFilter {
+
+        @Schema(description = "로그인_아이디")
+        private String loginId;
+
+        //@JsonIgnore : 주석풀면 등록 시 컬럼값 NULL 처리됨 (주의)
+        @Schema(description = "로그인_비밀번호")
+        private String loginPass;
+
+        @Schema(description = "로그인_아이디")
+        private MailType mailType;
+
+        public User toEntity() {
+            return User.builder()
+                .loginId(getLoginId())
+                .loginPass(getLoginPass())
+                .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestPasswordInit", description = "계정 비밀번호초기화 요청 파라미터")
+    public static class PasswordInit implements RequestFilter {
+
+        @Schema(description = "아이디")
+        private Integer id;
+
+        @Schema(description = "로그인_아이디")
+        private String loginId;
+
+        //@JsonIgnore : 주석풀면 등록 시 컬럼값 NULL 처리됨 (주의)
+        @Schema(description = "로그인_비밀번호")
+        private String loginPass;
+
+        @Schema(description = "회원_휴대폰번호")
+        private String phoneNo;
+
+        @Schema(description = "수정자")
+        private String updateUser;
+
+        public User toEntity() {
+            return User.builder()
+                .id(getId())
+                .loginId(getLoginId())
+                .loginPass(getLoginPass())
+                .phoneNo(getPhoneNo())
+                .updateUser(getUpdateUser())
+                .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestUnLock", description = "계정 잠금해제 요청 파라미터")
+    public static class UnLock implements RequestFilter {
+
+        @Schema(description = "아이디")
+        private Integer id;
+
+        @Schema(description = "로그인_아이디")
+        private String loginId;
+
+        //@JsonIgnore : 주석풀면 등록 시 컬럼값 NULL 처리됨 (주의)
+        @Schema(description = "로그인_비밀번호")
+        private String loginPass;
+
+        @Schema(description = "회원_명")
+        private String userNm;
+
+        @Schema(description = "회원_휴대폰번호")
+        private String phoneNo;
+
+        @Schema(description = "수정자")
+        private String updateUser;
+
+        public User toEntity() {
+            return User.builder()
+                .id(getId())
+                .loginId(getLoginId())
+                .loginPass(getLoginPass())
+                .userNm(getUserNm())
+                .phoneNo(getPhoneNo())
+                .updateUser(getUpdateUser())
+                .build();
+        }
+
+        public UserExpire toUserExpire() {
+            return UserExpire.builder()
+                .userId(getId())
+                .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestValidatePassword", description = "현재 비밀번호 확인 요청 파라미터")
+    public static class ValidatePassword {
+
+        @Schema(description = "아이디")
+        private Integer id;
+
+        @Schema(description = "로그인 아이디")
+        private String loginId;
+
+        @Schema(description = "현재 비밀번호")
+        private String currentPass;
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "UserRequestUpdatePassword", description = "비밀번호 변경 요청 파라미터")
+    public static class UpdatePassword {
+
+        @Schema(description = "아이디")
+        private Integer id;
+
+        @Schema(description = "로그인 아이디")
+        private String loginId;
+
+        @Schema(description = "변경할 비밀번호")
+        private String nextPass;
+    }
+}

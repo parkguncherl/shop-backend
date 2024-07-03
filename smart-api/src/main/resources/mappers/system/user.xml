@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smart.mapper.user">
+
+    <sql id="userColumns">
+          ID                    AS id
+        , LOGIN_ID              AS loginId
+        , LOGIN_PASS            AS loginPass
+        , USER_NM               AS userNm
+        , AUTH_CD               AS authCd
+        , PHONE_NO              AS phoneNo
+        , BELONG_NM             AS belongNm
+        , DEPT_NM               AS deptNm
+        , POSITION_NM           AS positionNm
+        , LOGIN_FAIL_CNT        AS loginFailCnt
+        , LAST_LOGIN_TM         AS lastLoginDateTime
+        , FIRST_LOGIN_YN        AS firstLoginYn
+        , OTP_NO                AS otpNo
+        , OTP_ISSU_TM           AS otpIssuTm
+        , CRE_TM                AS createDateTime
+        , CRE_USER              AS createUser
+        , UPD_TM                AS updateDateTime
+        , UPD_USER              AS updateUser
+        , DEL_YN                AS deleteYn
+        , USE_YN                AS useYn
+        , LOCK_YN               AS lockYn
+        , LANGUAGE_CODE         AS languageCode
+        , AUTH_CD               AS authCd
+    </sql>
+
+
+    <select id="selectUserListPaging" parameterType="com.smart.core.vo.request.PageRequest" resultType="com.smart.core.biz.system.vo.response.UserResponse">
+        /* com.smart.mapper.user.selectUserListPaging */
+        SELECT ( COUNT(1) OVER() )                                                                          AS totalRowCount
+            , ROW_NUMBER() OVER(ORDER BY ID ASC)                                                            AS no
+            , TU.ID                                                                                         AS id
+            , TU.LOGIN_ID                                                                                   AS loginId
+            , TU.LOGIN_PASS                                                                                 AS loginPass
+            , TU.USER_NM                                                                                    AS userNm
+            , TU.AUTH_CD                                                                                    AS authCd
+            , (SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_UPPER = 'S0002' AND X.CODE_CD = TU.AUTH_CD )    AS authNm
+            , TU.PHONE_NO                                                                                   AS phoneNo
+            , TU.BELONG_NM                                                                                  AS belongNm
+            , TU.DEPT_NM                                                                                    AS deptNm
+            , TU.POSITION_NM                                                                                AS positionNm
+            , TU.LOGIN_FAIL_CNT                                                                             AS loginFailCnt
+            , TU.LAST_LOGIN_TM                                                                              AS lastLoginTm
+            , TU.FIRST_LOGIN_YN                                                                             AS firstLoginYn
+            , TU.OTP_NO                                                                                     AS otpNo
+            , TU.OTP_ISSU_TM                                                                                AS otpIssuTm
+            , TU.CRE_TM                                                                                     AS createDateTime
+            , TU.CRE_USER                                                                                   AS createUser
+            , TU.UPD_TM                                                                                     AS updateDateTime
+            , TU.UPD_USER                                                                                   AS updateUser
+            , TU.DEL_YN                                                                                     AS deleteYn
+        FROM TB_USER TU
+        WHERE 1 = 1
+--           AND DEL_YN = 'N' // 삭제여부를 사용여부로 관리
+        <if test='filter.authCd != null and !filter.authCd.equals("")'>
+          AND TU.AUTH_CD = #{filter.authCd}
+        </if>
+        <if test='filter.userNm != null and !filter.userNm.equals("")'>
+          AND TU.USER_NM LIKE '%' + #{filter.userNm} + '%'
+        </if>
+        <if test='filter.phoneNo != null and !filter.phoneNo.equals("")'>
+          AND TU.PHONE_NO LIKE '%' + #{filter.phoneNo} + '%'
+        </if>
+        <if test='filter.belongNm != null and !filter.belongNm.equals("")'>
+          AND TU.BELONG_NM LIKE '%' + #{filter.belongNm} + '%'
+        </if>
+        <if test='filter.deleteYn != null and !filter.deleteYn.equals("")'>
+          AND TU.DEL_YN = #{filter.deleteYn}
+        </if>
+        <if test='filter.deptNm != null and !filter.deptNm.equals("")'>
+          AND TU.DEPT_NM LIKE '%' + #{filter.deptNm} + '%'
+        </if>
+        <if test='filter.positionNm != null and !filter.positionNm.equals("")'>
+          AND TU.POSITION_NM LIKE '%' + #{filter.positionNm} + '%'
+        </if>
+        ORDER BY TU.ID DESC
+        OFFSET ((#{curPage}-1) * #{pageRowCount}) ROWS FETCH NEXT #{pageRowCount} ROWS ONLY
+    </select>
+
+    <select id="selectUserById" parameterType="Integer" resultType="com.smart.core.entity.User">
+        /* com.smart.mapper.user.selectUserById */
+        SELECT
+        <include refid="userColumns" />
+        FROM TB_USER
+        WHERE ID = #{userId}
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectUserByLoginId" parameterType="String" resultType="com.smart.core.biz.system.vo.response.UserResponse$SelectByLoginId">
+        /* com.smart.mapper.user.selectUserByLoginId */
+        SELECT
+        <include refid="userColumns" />
+        , (SELECT TP.COMP_NAME FROM TB_COMP TP WHERE TP.ID = TU.COMP_ID)  AS compNm
+        , 0 AS otpSecond
+        , (SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_UPPER = 'S0001' AND TU.LANGUAGE_CODE = X.CODE_CD)  AS languageCode
+        FROM TB_USER TU
+        WHERE LOGIN_ID = #{loginId}
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectUserByUk" parameterType="String" resultType="com.smart.core.biz.system.vo.response.UserResponse$SelectByLoginId">
+        /* com.smart.mapper.user.selectUserByLoginId */
+        SELECT
+        <include refid="userColumns" />
+        , 0 AS otpSecond
+        , (SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_UPPER = 'S0001' AND TU.LANGUAGE_CODE = X.CODE_CD)  AS languageCode
+        FROM TB_USER TU
+        WHERE (LOGIN_ID = #{loginId} OR USER_NM = #{userNm})
+        AND DEL_YN = 'N'
+    </select>
+
+    <insert id="insertUser" parameterType="com.smart.core.entity.User" useGeneratedKeys="true" keyProperty="id">
+        /* com.smart.mapper.user.insertUser */
+        INSERT INTO TB_USER
+        (
+              LOGIN_ID
+            , LOGIN_PASS
+            , USER_NM
+            , AUTH_CD
+            , PHONE_NO
+            , COMP_ID
+            , BELONG_NM
+            , DEPT_NM
+            , POSITION_NM
+            , LOGIN_FAIL_CNT
+            , LAST_LOGIN_TM
+            , FIRST_LOGIN_YN
+            , LAST_PASS_CHG_TM
+            , LANGUAGE_CODE
+            , CRE_USER
+            , UPD_USER
+        )
+        VALUES
+        (
+              #{loginId}
+            , #{loginPass}
+            , #{userNm}
+            , #{authCd}
+            , #{phoneNo}
+            , (SELECT C.ID FROM TB_COMP C WHERE C.COMP_NAME = #{compNm})
+            , #{belongNm}
+            , #{deptNm}
+            , #{positionNm}
+            , 0
+            , now()
+            , 'N'
+            , now()
+            , #{languageCode}
+            , #{createUser}
+            , #{createUser}
+         )
+    </insert>
+
+    <update id="updateUser" parameterType="com.smart.core.entity.User">
+        /* com.smart.mapper.user.updateUser */
+        UPDATE TB_USER
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updateUser}
+        <if test="loginPass != null">
+          , LOGIN_PASS = #{loginPass}
+        </if>
+        <if test="userNm != null">
+          , USER_NM = #{userNm}
+        </if>
+        <if test="authCd != null">
+          , AUTH_CD = #{authCd}
+        </if>
+        <if test="phoneNo != null">
+          , PHONE_NO = #{phoneNo}
+        </if>
+        <if test="belongNm != null">
+          , BELONG_NM = #{belongNm}
+        </if>
+        <if test="deptNm != null">
+          , DEPT_NM = #{deptNm}
+        </if>
+        <if test="positionNm != null">
+          , POSITION_NM = #{positionNm}
+        </if>
+        <if test="loginFailCnt != null">
+          , LOGIN_FAIL_CNT = #{loginFailCnt}
+        </if>
+        <if test="lastLoginTm != null">
+          , LAST_LOGIN_TM = #{lastLoginTm}
+        </if>
+        <if test="firstLoginYn != null">
+          , FIRST_LOGIN_YN = #{firstLoginYn}
+        </if>
+        <if test="deleteYn != null">
+          , DEL_YN = #{deleteYn}
+        </if>
+        <if test="useYn != null">
+            , USE_YN = #{useYn}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deleteUser" parameterType="com.smart.core.entity.User">
+        /* com.smart.mapper.user.deleteUser */
+        UPDATE TB_USER
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updateUser}
+          , DEL_YN   = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+    <update id="updateOtpNo" parameterType="com.smart.core.entity.User">
+        /* com.smart.mapper.user.updateOtpNo */
+        UPDATE TB_USER
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updateUser}
+          , OTP_ISSU_TM   = NOW()
+          , OTP_NO   = #{otpNo}
+        WHERE ID = #{id}
+    </update>
+
+
+    <select id="selectUserPaging" parameterType="com.smart.core.biz.common.vo.request.PageRequest" resultType="com.smart.core.biz.system.vo.response.UserResponse$Paging">
+        /* com.smart.mapper.user.selectUserPaging */
+        SELECT
+        <include refid="userColumns" />
+        , ( COUNT(1) OVER() )                               AS totalRowCount
+        , ROW_NUMBER() OVER(ORDER BY TU.ID ASC)             AS no
+        , (SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_UPPER = 'S0002' AND TU.AUTH_CD = X.CODE_CD)          AS authNm
+        , (SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_UPPER = 'S0001' AND TU.LANGUAGE_CODE = X.CODE_CD)           AS country
+        , (SELECT TP.COMP_NAME FROM TB_COMP TP WHERE TP.ID = TU.COMP_ID)           AS compNm
+        , TU.PHONE_NO  AS phoneNo
+        FROM TB_USER TU
+        WHERE 1 = 1
+        AND TU.DEL_YN = 'N'
+        <if test='filter.loginId != null and !filter.loginId.equals("")'>
+            AND TU.LOGIN_ID LIKE '%' || #{filter.loginId} || '%'
+        </if>
+        <if test='filter.userNm != null and !filter.userNm.equals("")'>
+            AND TU.USER_NM LIKE '%' || #{filter.userNm} || '%'
+        </if>
+        <if test='filter.authCd == null or filter.authCd.equals("")'>
+            AND TU.AUTH_CD <![CDATA[<=]]> #{filter.myAuthCd}
+        </if>
+        <if test='filter.authCd != null and !filter.authCd.equals("")'>
+            AND TU.AUTH_CD = #{filter.authCd}
+        </if>
+        <if test='filter.phoneNo != null and !filter.phoneNo.equals("")'>
+            AND TU.PHONE_NO LIKE '%' || #{filter.phoneNo} || '%'
+        </if>
+        <if test='filter.compNm != null and !filter.compNm.equals("")'>
+            AND TU.COMP_ID = (SELECT TP.ID FROM TB_COMP TP WHERE TP.COMP_NAME LIKE '%' || #{filter.compNm} || '%')
+        </if>
+        <if test='filter.belongNm != null and !filter.belongNm.equals("")'>
+            AND TU.BELONG_NM LIKE '%' || #{filter.belongNm} || '%'
+        </if>
+        <if test='filter.deptNm != null and !filter.deptNm.equals("")'>
+            AND TU.DEPT_NM LIKE '%' || #{filter.deptNm} || '%'
+        </if>
+        <if test='filter.positionNm != null and !filter.positionNm.equals("")'>
+            AND TU.POSITION_NM LIKE '%' || #{filter.positionNm} || '%'
+        </if>
+        <if test='filter.useYn != null and !filter.useYn.equals("")'>
+            AND TU.USE_YN = #{filter.useYn}
+        </if>
+        <if test='filter.excludeIds != null and filter.excludeIds.size > 0'>
+            AND TU.ID NOT IN
+            <foreach collection="filter.excludeIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        ORDER BY TU.ID DESC
+        OFFSET ((#{curPage}-1) * #{pageRowCount}) ROWS FETCH NEXT #{pageRowCount} ROWS ONLY
+        </select>
+
+    <select id="selectUserByLoginIdCountryCode" parameterType="java.util.HashMap" resultType="com.smart.core.biz.system.vo.response.UserResponse$SelectByLoginId">
+        /* com.smart.mapper.user.selectUserByLoginIdCountryCode */
+        SELECT
+            <include refid="userColumns" />
+        FROM TB_USER TU
+        WHERE 1 = 1
+        AND TU.DEL_YN = 'N'
+        AND TU.LOGIN_ID = #{loginId}
+    </select>
+
+    <update id="updatePassword" parameterType="com.smart.core.entity.User">
+        /* com.smart.mapper.user.updatePassword */
+        UPDATE TB_USER
+        SET UPD_TM = NOW()
+        , UPD_USER = #{updateUser}
+        , FIRST_LOGIN_YN = #{firstLoginYn}
+        , LOGIN_FAIL_CNT = 0
+        , LOGIN_PASS = #{loginPass}
+        <if test='lockYn != null and !lockYn.equals("")'>
+            , LOCK_YN = #{lockYn}
+        </if>
+        , LAST_PASS_CHG_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+
+</mapper>
