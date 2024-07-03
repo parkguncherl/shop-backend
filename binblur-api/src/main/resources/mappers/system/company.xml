@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.binblur.mapper.company">
+    <select id="selectCompanyListPaging" parameterType="com.binblur.core.biz.system.vo.request.CompanyRequest" resultType="com.binblur.core.biz.system.vo.response.CompanyResponse$Paging">
+        SELECT
+        ID AS id
+        ,COMP_NAME AS compNm
+        ,COMP_ADDR_DESC AS compAddr
+        ,COMP_CNTN AS compCntn
+        ,COMP_LEVEL_CODE AS compLevelCode
+        ,CRE_TM AS createDateTime
+        ,CRE_USER AS createUser
+        ,(SELECT COUNT(*) FROM TB_USER X WHERE  C.ID=X.COMP_ID) AS registeredUserCount
+        ,UPD_TM AS updateDateTime
+        ,UPD_USER AS updateUser
+        ,DEL_YN AS deleteYn
+        FROM TB_COMP C
+        WHERE 1 = 1
+        <if test='filter.compNm != null and !filter.compNm.equals("")'>
+            AND C.COMP_NAME LIKE CONCAT('%' ,#{filter.compNm} ,'%')
+        </if>
+        <if test='filter.compAddr != null and !filter.compAddr.equals("")'>
+            AND C.COMP_ADDR_DESC LIKE CONCAT('%' ,#{filter.compAddr} ,'%')
+        </if>
+        <if test='filter.compCntn != null and !filter.compCntn.equals("")'>
+            AND C.COMP_CNTN LIKE CONCAT('%' ,#{filter.compCntn} ,'%')
+        </if>
+        <if test='filter.compLevelCode != null and !filter.compLevelCode.equals("")'>
+            AND C.COMP_LEVEL_CODE LIKE CONCAT('%' ,#{filter.compLevelCode} ,'%')
+        </if>
+        AND DEL_YN = 'N'
+    </select>
+
+    <update id="updateCompany" parameterType="com.binblur.core.biz.system.vo.request.CompanyRequest$Update">
+        /* com.binblur.mapper.company.updateCompany */
+        UPDATE TB_COMP
+        SET
+        UPD_TM   = CURRENT_TIMESTAMP,
+        UPD_USER = #{updateUser}
+        <if test="compNm != null">
+            , COMP_NAME = #{compNm}
+        </if>
+        <if test="compAddr != null">
+            , COMP_ADDR_DESC = #{compAddr}
+        </if>
+        <if test="compCntn != null">
+            , COMP_CNTN = #{compCntn}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
+    <insert id="insertCompany" parameterType="com.binblur.core.biz.system.vo.request.CompanyRequest$Insert">
+        /* com.binblur.mapper.company.insertCompany */
+        INSERT INTO TB_COMP
+        (
+              COMP_NAME
+            , COMP_ADDR_DESC
+        <if test="compCntn != null">
+            , COMP_CNTN
+        </if>
+            , COMP_LEVEL_CODE
+            , CRE_USER
+            , CRE_TM
+        <if test="deleteYn != null">
+            , DEL_YN
+        </if>
+        ) VALUES
+        (
+              #{compNm}
+            , #{compAddr}
+        <if test="compCntn != null">
+            , #{compCntn}
+        </if>
+            , #{compLevelCode}
+            , #{createUser}
+            , CURRENT_TIMESTAMP
+        <if test="deleteYn != null">
+            , #{deleteYn}
+        </if>
+        )
+    </insert>
+
+    <update id="deleteCompany" parameterType="com.binblur.core.biz.system.vo.request.CompanyRequest$Delete">
+        /* com.binblur.mapper.company.deleteCompany */
+        UPDATE TB_COMP
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updateUser}
+          , DEL_YN   = 'Y'
+        WHERE ID = #{id}
+    </update>
+</mapper>

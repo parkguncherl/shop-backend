@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.binblur.mapper.code">
+
+    <sql id="codeColumns">
+          ID                    AS id
+        , CODE_UPPER            AS codeUpper
+        , CODE_CD               AS codeCd
+        , CODE_NM               AS codeNm
+        , CODE_DESC             AS codeDesc
+        , CODE_ETC_1            AS codeEtc1
+        , CODE_ETC_2            AS codeEtc2
+        , CODE_ORDER            AS codeOrder
+        , CRE_TM                AS createDateTime
+        , CRE_USER              AS createUser
+        , UPD_TM                AS updateDateTime
+        , UPD_USER              AS updateUser
+        , DEL_YN                AS deleteYn
+    </sql>
+
+    <select id="selectCodeListPaging" parameterType="com.binblur.core.vo.request.PageRequest" resultType="com.binblur.core.biz.system.vo.response.CodeResponse$LowerSelect">
+        /* com.binblur.mapper.code.selectCodeListPaging */
+        SELECT ( COUNT(1) OVER() )                                                                              AS totalRowCount
+            , ROW_NUMBER() OVER(ORDER BY TC.ID ASC)                                                             AS no
+            , TC.ID                                                                                             AS id
+            , TC.CODE_UPPER                                                                                     AS codeUpper
+            , COALESCE((SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER)   AS codeUpperNm
+            , TC.CODE_CD                                                                                        AS codeCd
+            , TC.CODE_NM                                                                                        AS codeNm
+            , (SELECT COUNT(*) FROM TB_CODE X WHERE X.CODE_UPPER = TC.CODE_CD)                                  AS lowerCodeCnt
+            , CASE WHEN COALESCE(TC.CODE_DESC, '') = '' THEN '-' ELSE TC.CODE_DESC END                            AS codeDesc
+            , CASE WHEN COALESCE(TC.CODE_ETC_1, '') = '' THEN '-' ELSE TC.CODE_ETC_1 END                          AS codeEtc1
+            , CASE WHEN COALESCE(TC.CODE_ETC_2, '') = '' THEN '-' ELSE TC.CODE_ETC_2 END                          AS codeEtc2
+            , TC.CODE_ORDER                                                                                     AS codeOrder
+            , TC.CRE_TM                                                                                         AS createDateTime
+            , TC.CRE_USER                                                                                       AS createUser
+            , TC.UPD_TM                                                                                         AS updateDateTime
+            , TC.UPD_USER                                                                                       AS updateUser
+            , TC.DEL_YN                                                                                         AS deleteYn
+        FROM TB_CODE TC
+        WHERE 1 = 1
+--           AND TC.DEL_YN = 'N' // 삭제여부를 사용여부로 관리
+        <if test='filter.codeUpper != null and !filter.codeUpper.equals("")'>
+          AND TC.CODE_UPPER = #{filter.codeUpper}
+        </if>
+        <if test='filter.codeCd != null and !filter.codeCd.equals("")'>
+          AND TC.CODE_CD LIKE '%' + #{filter.codeCd} + '%'
+        </if>
+        <if test='filter.codeNm != null and !filter.codeNm.equals("")'>
+          AND TC.CODE_NM LIKE '%' + #{filter.codeNm} + '%'
+        </if>
+        ORDER BY TC.ID DESC
+        OFFSET (#{curPage}-1) * #{pageRowCount} ROWS
+        FETCH NEXT #{pageRowCount} ROWS ONLY
+    </select>
+
+    <select id="selectCodeList" resultType="com.binblur.core.entity.Code">
+        /* com.binblur.mapper.code.selectCodeList */
+        SELECT <include refid="codeColumns" />
+        FROM TB_CODE
+        WHERE 1 = 1
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectDropdownByCodeRequest" parameterType="com.binblur.core.vo.request.CodeRequest" resultType="com.binblur.core.entity.Code">
+        /* com.binblur.mapper.code.selectDropdownByCodeRequest */
+        SELECT <include refid="codeColumns" />
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+        <if test='codeNm != null and !codeNm.equals("")'>
+          AND CODE_NM LIKE '%' + #{codeNm} + '%'
+        </if>
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectCodeById" parameterType="Integer" resultType="com.binblur.core.biz.system.vo.response.CodeResponse$Select">
+        /* com.binblur.mapper.code.selectCodeById */
+        SELECT ID                                                                           AS id
+             , CODE_UPPER                                                                   AS codeUpper
+             , CODE_CD                                                                      AS codeCd
+             , CODE_NM                                                                      AS codeNm
+             , CASE WHEN COALESCE(CODE_DESC, '') = '' THEN '-' ELSE CODE_DESC END             AS codeDesc
+             , CASE WHEN COALESCE(CODE_ETC_1, '') = '' THEN '-' ELSE CODE_ETC_1 END     AS codeEtc1
+             , CODE_ORDER                                                                   AS codeOrder
+             , CRE_TM                                                                       AS createDateTime
+             , CRE_USER                                                                     AS createUser
+             , UPD_TM                                                                       AS updateDateTime
+             , UPD_USER                                                                     AS updateUser
+             , DEL_YN                                                                       AS deleteYn
+        FROM TB_CODE
+        WHERE ID = #{codeId}
+--           AND DEL_YN = 'N' // 삭제여부를 사용여부로 관리
+    </select>
+
+    <select id="selectCodeByUk" parameterType="com.binblur.core.entity.Code" resultType="com.binblur.core.entity.Code">
+        /* com.binblur.mapper.code.selectCodeByUk */
+        SELECT <include refid="codeColumns" />
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+          AND CODE_CD = #{codeCd}
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectLowerCodeByCodeUpper" parameterType="String" resultType="com.binblur.core.biz.system.vo.response.CodeResponse$LowerSelect">
+        /* com.binblur.mapper.code.selectLowerCodeByCodeUpper !!*/
+        SELECT ROW_NUMBER() OVER(ORDER BY ID ASC)                                           AS no
+            , ID                                                                            AS id
+            , CODE_UPPER                                                                    AS codeUpper
+            , CODE_CD                                                                       AS codeCd
+            , CODE_NM                                                                       AS codeNm
+            , COALESCE(CODE_DESC, '-')                                                      AS codeDesc
+            , COALESCE(CODE_ETC_1, '-')                                                     AS codeEtc1
+            , COALESCE(CODE_ETC_2, '-')                                                     AS codeEtc2
+            , CODE_ORDER                                                                    AS codeOrder
+            , CRE_TM                                                                        AS createDateTime
+            , CRE_USER                                                                      AS createUser
+            , UPD_TM                                                                        AS updateDateTime
+            , UPD_USER                                                                      AS updateUser
+            , DEL_YN                                                                        AS deleteYn
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+--           AND DEL_YN = 'N' // 삭제여부를 사용여부로 관리
+        ORDER BY ID ASC
+    </select>
+
+    <insert id="insertCode" parameterType="com.binblur.core.entity.Code" useGeneratedKeys="true" keyProperty="id">
+        /* com.binblur.mapper.code.insertCode */
+        INSERT INTO TB_CODE
+        (
+              CODE_UPPER
+            , CODE_CD
+            , CODE_NM
+        <if test="codeDesc != null">
+            , CODE_DESC
+        </if>
+        <if test="codeEtc1 != null">
+            , CODE_ETC_1
+        </if>
+            , CODE_ORDER
+            , CRE_USER
+            , UPD_USER
+        <if test="deleteYn != null">
+            , DEL_YN
+        </if>
+        )
+        VALUES
+        (
+              #{codeUpper}
+            , #{codeCd}
+            , #{codeNm}
+        <if test="codeDesc != null">
+            , #{codeDesc}
+        </if>
+        <if test="codeEtc1 != null">
+            , #{codeEtc1}
+        </if>
+            , #{codeOrder}
+            , #{createUser}
+            , #{createUser}
+        <if test="deleteYn != null">
+            , #{deleteYn}
+        </if>
+         )
+    </insert>
+
+    <update id="updateCode" parameterType="com.binblur.core.entity.Code">
+        /* com.binblur.mapper.code.updateCode */
+        UPDATE TB_CODE
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updateUser}
+        <if test="codeUpper != null">
+          , CODE_UPPER = #{codeUpper}
+        </if>
+        <if test="codeCd != null">
+          , CODE_CD = #{codeCd}
+        </if>
+        <if test="codeNm != null">
+          , CODE_NM = #{codeNm}
+        </if>
+        <if test="codeDesc != null">
+          , CODE_DESC = #{codeDesc}
+        </if>
+        <if test="codeEtc1 != null">
+          , CODE_ETC_1 = #{codeEtc1}
+        </if>
+        <if test="codeOrder != null">
+          , CODE_ORDER = #{codeOrder}
+        </if>
+        <if test="deleteYn != null">
+          , DEL_YN = #{deleteYn}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="deleteCode" parameterType="com.binblur.core.entity.Code">
+        /* com.binblur.mapper.code.deleteCode */
+        DELETE FROM TB_CODE
+        WHERE ID = #{id}
+    </delete>
+
+    <select id="selectDropdownByCodeUpper" parameterType="com.binblur.core.biz.system.vo.request.CodeRequest$CodeDropDown" resultType="com.binblur.core.biz.system.vo.response.CodeResponse$CodeDropDown">
+        /* com.binblur.mapper.code.selectDropdownByCodeUpper */
+        SELECT
+        <include refid="codeColumns" />
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        AND TC.DEL_YN = 'N'
+        AND TC.CODE_UPPER = #{codeUpper}
+        <if test='codeNm != null'>
+            AND TC.CODE_NM LIKE '%' + #{codeNm} + '%'
+        </if>
+        ORDER BY ${sortColumn} ${sortType}
+    </select>
+
+    <select id="selectCodePaging" parameterType="com.binblur.core.biz.common.vo.request.PageRequest" resultType="com.binblur.core.biz.system.vo.response.CodeResponse$Paging">
+        /* com.binblur.mapper.code.selectCodePaging */
+        SELECT
+        <include refid="codeColumns" />
+        , TC.CODE_NM                        AS codeNm
+        , ( COUNT(1) OVER() )                                                                                                       AS totalRowCount
+        , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC)                                                                             AS no
+        , COALESCE((SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER)                        AS codeUpperNm
+        , CASE WHEN #{filter.codeUpper} = 'TOP' THEN (SELECT COUNT(*) FROM TB_CODE X WHERE X.DEL_YN = 'N' AND X.CODE_UPPER = TC.CODE_CD) ELSE  0 END AS lowerCodeCnt
+        , CASE WHEN TC.CODE_UPPER = 'S0001' THEN LPAD('*', CHAR_LENGTH(TC.CODE_ETC_1)) ELSE TC.CODE_ETC_1 END                 AS codeEtc
+        , CASE WHEN TC.DEL_YN = 'Y' THEN 'N' ELSE 'Y' END                                                                           AS delYn
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        AND TC.CODE_UPPER = #{filter.codeUpper}
+        <if test='filter.codeCd != null and !filter.codeCd.equals("")' >
+            AND TC.CODE_CD LIKE CONCAT('%' ,#{filter.codeCd} ,'%')
+        </if>
+        <if test='filter.codeNm != null and !filter.codeNm.equals("")'>
+            AND TC.CODE_NM LIKE CONCAT('%' ,#{filter.codeNm} ,'%')
+        </if>
+        ORDER BY TC.CODE_ORDER ASC
+        OFFSET ((#{curPage}-1) * #{pageRowCount}) ROWS FETCH NEXT #{pageRowCount} ROWS ONLY
+    </select>
+
+
+    <select id="selectLowerCodeByCodeUpperForCodeMng" parameterType="String" resultType="com.binblur.core.biz.system.vo.response.CodeResponse$LowerSelect">
+        /* com.kefico.mapper.code.selectLowerCodeByCodeUpperForCodeMng */
+        SELECT
+        <include refid="codeColumns" />
+        , TC.CODE_NM                        AS codeNm
+        , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC)        AS no
+        , COALESCE((SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER) AS codeUpperNm
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        AND TC.DEL_YN = 'N'
+        AND TC.CODE_UPPER = #{codeUpper}
+        ORDER BY TC.CODE_ORDER ASC
+    </select>
+
+
+    <select id="selectCodeByUkIncludeDelete" parameterType="com.binblur.core.entity.Code" resultType="com.binblur.core.entity.Code">
+        /* com.binblur.mapper.code.selectCodeByUkIncludeDelete */
+        SELECT
+        <include refid="codeColumns" />
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        AND TC.CODE_UPPER = #{codeUpper}
+        AND TC.CODE_CD = #{codeCd}
+    </select>
+
+    <select id="selectRelatedCodeList" parameterType="com.binblur.core.vo.request.PageRequest" resultType="com.binblur.core.vo.response.CodeResponse">
+        /* 사용하고자 하는 테이블의 구조가 기존 구문과 맞지 않은 관계로 새로 작성 */
+        SELECT
+          ID
+        , CODE_CD               AS codeCd
+        , CODE_NM               AS codeNm
+        , CODE_DESC             AS codeDesc
+        , CODE_ETC_1            AS codeEtc1
+        , CODE_ETC_2            AS codeEtc2
+        , CRE_TM                AS createDateTime
+        , CRE_USER              AS createUser
+        , UPD_TM                AS updateDateTime
+        , UPD_USER              AS updateUser
+        , DEL_YN                AS deleteYn
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        <if test='filter.codeNm != null and !filter.codeNm.equals("")'>
+            AND TC.CODE_UPPER = (SELECT CODE_CD FROM TB_CODE TC WHERE TC.CODE_NM = #{filter.codeNm})
+        </if>
+    </select>
+
+</mapper>
