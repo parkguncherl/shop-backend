@@ -1,4 +1,4 @@
-# smart-backend
+# binblur-backend
 프레젝트 템플릿
 
 

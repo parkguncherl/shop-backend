@@ -24,7 +24,7 @@ subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
-    group 'com.smart'
+    group 'com.binblur'
 
     version '1.0.0-SNAPSHOT'
 
@@ -126,8 +126,8 @@ subprojects {
     }
 }
 
-// Module ( smart-core ) 설정
-project(':smart-core') {
+// Module ( binblur-core ) 설정
+project(':binblur-core') {
 
     // core 에서는 bootjar로 패키징 할 필요가 없으므로 추가
     bootJar.enabled = false
@@ -168,8 +168,8 @@ project(':smart-core') {
 //    }
 }
 
-// Module ( smart-api ) 설정
-project(':smart-api') {
+// Module ( binblur-api ) 설정
+project(':binblur-api') {
 
     //apply plugin: 'war'
 
@@ -181,7 +181,7 @@ project(':smart-api') {
 
 
     dependencies {
-        implementation project(':smart-core')
+        implementation project(':binblur-core')
 
         // Spring
         //implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -233,8 +233,8 @@ project(':smart-api') {
 //    }
 }
 
-// Module ( smart-batch ) 설정
-project(':smart-batch') {
+// Module ( binblur-batch ) 설정
+project(':binblur-batch') {
 
     // plain jar 생성하지 않도록 처리
     jar.enabled = false
@@ -244,7 +244,7 @@ project(':smart-batch') {
     dependencies {
 
         // 컴파일시 core 모듈을 가져온다.
-        implementation project(':smart-core')
+        implementation project(':binblur-core')
 
         // Spring
         implementation ("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
@@ -277,8 +277,8 @@ project(':smart-batch') {
     }
 }
 
-// Module ( smart-server ) 설정
-project(':smart-server') {
+// Module ( binblur-server ) 설정
+project(':binblur-server') {
 
     // plain jar 생성하지 않도록 처리
     jar.enabled = false
@@ -288,7 +288,7 @@ project(':smart-server') {
     dependencies {
 
         // 컴파일시 core 모듈을 가져온다.
-        implementation project(':smart-core')
+        implementation project(':binblur-core')
 
         // Spring
         implementation ("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {

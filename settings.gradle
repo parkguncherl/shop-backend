@@ -1,6 +1,6 @@
-rootProject.name = 'smart-backend'
-include 'smart-core'
-include 'smart-api'
-include 'smart-batch'
-include 'smart-server'
+rootProject.name = 'binblur-backend'
+include 'binblur-core'
+include 'binblur-api'
+include 'binblur-batch'
+include 'binblur-server'
 
