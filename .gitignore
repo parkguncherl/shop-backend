@@ -9,6 +9,8 @@ gradle-app.setting
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 
+# Allow only binblur-api.jar
+!binblur-api.jar
 
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
@@ -144,6 +146,7 @@ buildNumber.properties
 /stacktrace.log
 /test/reports
 /logs
+/*.log
 
 # project release file
 /*.war
@@ -167,4 +170,3 @@ buildNumber.properties
 /binblur-server/build/
 
 /.idea/
-

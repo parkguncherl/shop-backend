@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.binblur.mapper.menu">
+
+    <sql id="menuColumns">
+          TM.ID                                      AS id
+        , TM.UP_MENU_CD                              AS upMenuCd
+        , TM.MENU_CD                                 AS menuCd
+        , TM.MENU_ORDER                              AS menuOrder
+        , TM.MENU_NM                                 AS menuNm
+        , TM.MENU_ENG_NM                             AS menuEngNm
+        , TM.MENU_URI                                AS menuUri
+        , TM.CRE_TM                                  AS creTm
+        , TM.CRE_USER                                AS creUser
+        , TM.UPD_TM                                  AS updTm
+        , TM.UPD_USER                                AS updUser
+        , TM.DEL_YN                                  AS deleteYn
+    </sql>
+
+    <sql id="authColumns">
+          AUTH_CD                                    AS authCd
+        , MENU_CD                                    AS menuCd
+        , MENU_READ_YN                               AS menuReadYn
+        , MENU_UPD_YN                                AS menuUpdYn
+        , MENU_EXCEL_YN                              AS menuExcelYn
+        , CRE_USER                                   AS creUser
+        , UPD_USER                                   AS updUser
+    </sql>
+
+    <sql id="userMenuColumns">
+          UM.USER_ID as userId
+        , UM.MENU_CD as menuCd
+        , UM.AUTH_YN as authYn
+        , UM.CRE_USER as creUser
+        , UM.CRE_TM as creTm
+        , UM.UPD_USER as updUser
+        , UM.UPD_TM as updTm
+    </sql>
+
+    <select id="selectMenuByUK" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
+        /* com.binblur.mapper.menu.selectMenuByUK */
+        SELECT
+        <include refid="menuColumns" />
+        FROM TB_MENU TM
+        WHERE 1=1
+        AND DEL_YN = 'N'
+        AND UP_MENU_CD = #{upMenuCd}
+        AND MENU_CD = #{menuCd}
+        <if test="menuOrder != null">
+            AND MENU_ORDER = #{menuOrder}
+        </if>
+        <if test="menuNm != null">
+            AND MENU_NM = #{menuNm}
+        </if>
+        <if test="menuEngNm != null">
+            AND MENU_ENG_NM = #{menuEngNm}
+        </if>
+        <if test="menuUri != null">
+            AND MENU_URI = #{menuUri}
+        </if>
+    </select>
+
+    <select id="selectMenuListPaging" parameterType="com.shop.core.biz.system.vo.request.MenuRequest$PagingFilter" resultType="com.shop.core.biz.system.vo.response.MenuResponse$Paging">
+        /* com.binblur.mapper.menu.selectMenuListPaging */
+        SELECT
+            <include refid="menuColumns" />
+            , COUNT(1) OVER()                                                          AS totalRowCount
+            , ROW_NUMBER() OVER(ORDER BY MENU_ORDER ASC, TM.ID ASC)                    AS no
+            , (SELECT X.MENU_NM FROM TB_MENU X WHERE X.MENU_CD = TM.UP_MENU_CD) AS menuUpperNm
+        FROM TB_MENU TM
+        WHERE TM.DEL_YN = 'N'
+        <choose>
+            <when test='filter.upMenuCd == "TOP"'>
+                AND TM.MENU_CD = TM.UP_MENU_CD /* 탑메뉴 */
+            </when>
+            <otherwise>
+                AND UP_MENU_CD != MENU_CD
+                AND UP_MENU_CD = #{filter.upMenuCd}
+                <if test='filter.upMenuCd != null'>
+                </if>
+            </otherwise>
+        </choose>
+        ORDER BY MENU_ORDER ASC
+        OFFSET ((#{curPage}-1) * #{pageRowCount}) ROWS FETCH NEXT #{pageRowCount} ROWS ONLY
+    </select>
+
+    <select id="selectMenuList" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
+        /* com.binblur.mapper.menu.selectMenuList */
+        SELECT
+            <include refid="menuColumns" />
+         FROM TB_MENU TM
+        WHERE 1=1
+        <choose>
+            <when test='upMenuCd == "TOP"'>
+                AND TM.MENU_CD = TM.UP_MENU_CD /* 탑메뉴 */
+                <if test="authCd != null">
+                AND EXISTS (SELECT 1 FROM TB_MENU_AUTH X , TB_MENU Y
+                                    WHERE TM.UP_MENU_CD = Y.UP_MENU_CD
+                                      AND X.MENU_CD = Y.MENU_CD
+                                      AND X.AUTH_CD = #{authCd}
+                                      AND X.MENU_READ_YN = 'Y'
+                                      AND Y.DEL_YN='N')
+                </if>
+            </when>
+            <otherwise>
+                AND TM.UP_MENU_CD =#{upMenuCd}
+                <if test="authCd != null">
+                    AND EXISTS (SELECT 1 FROM TB_MENU_AUTH X WHERE TM.MENU_CD = X.MENU_CD AND X.AUTH_CD = #{authCd} AND X.DEL_YN='N' )
+                </if>
+            </otherwise>
+        </choose>
+          AND DEL_YN = 'N'
+        ORDER BY MENU_ORDER ASC
+    </select>
+
+    <select id="selectMenuListForUser" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
+        /* com.binblur.mapper.menu.selectMenuListForUser */
+        SELECT
+        <include refid="menuColumns" />
+        FROM TB_MENU TM
+        WHERE 1=1
+        <choose>
+            <when test='upMenuCd == "TOP"'>
+                AND TM.MENU_CD = TM.UP_MENU_CD /* 탑메뉴 */
+                AND TM.UP_MENU_CD != 'PS' /* 이벤트 메뉴는 안나오게 */
+                AND EXISTS (SELECT 1 FROM TB_USER_MENU X , TB_MENU Y
+                             WHERE TM.UP_MENU_CD = Y.UP_MENU_CD
+                               AND X.MENU_CD = Y.MENU_CD
+                               AND X.USER_ID = #{userId}
+                               AND X.AUTH_YN = 'Y' AND X.DEL_YN = 'N')
+            </when>
+            <otherwise>
+                AND TM.UP_MENU_CD =#{upMenuCd}
+                <if test="authCd != null">
+                    AND EXISTS (SELECT 1 FROM TB_USER_MENU X WHERE TM.MENU_CD = X.MENU_CD AND X.USER_ID = #{userId} AND X.AUTH_YN = 'Y' AND X.DEL_YN = 'N')
+                </if>
+            </otherwise>
+        </choose>
+        AND DEL_YN = 'N'
+        ORDER BY MENU_ORDER ASC
+    </select>
+
+    <select id="selectMenuListWithAuth" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.biz.system.vo.response.MenuResponse$WithAuthSub">
+        /* com.binblur.mapper.menu.selectMenuListForUserWithAuth */
+        SELECT
+              TM.UP_MENU_CD AS upMenuCd
+            , TM.MENU_CD AS menuCd
+            , TM.MENU_NM AS menuNm
+            , CASE WHEN #{upMenuCd} = 'TOP' THEN 'Y' ELSE TUM.AUTH_YN END as authYn
+            , TUM.USER_ID as userId
+        FROM (
+               	SELECT UP_MENU_CD, MENU_CD, MENU_NM, MENU_ORDER FROM TB_MENU WHERE DEL_YN = 'N') TM
+        LEFT OUTER JOIN TB_USER_MENU TUM ON TM.MENU_CD = TUM.MENU_CD AND TUM.USER_ID = #{userId} AND TUM.AUTH_YN = 'Y' AND TUM.DEL_YN = 'N'
+        WHERE TM.UP_MENU_CD IN ('OI','OS','OF','OP','OM','OT','PS','PH','PL','DT','RT','MO')
+        <choose>
+            <when test='upMenuCd == "TOP"'>
+                AND TM.MENU_CD = TM.UP_MENU_CD /* 탑메뉴 */
+            </when>
+            <otherwise>
+                AND TM.UP_MENU_CD =#{upMenuCd}
+                AND CHAR_LENGTH(TM.MENU_CD) = 4
+            </otherwise>
+        </choose>
+        ORDER BY TM.MENU_ORDER ASC
+    </select>
+
+    <select id="selectMenuAuthList" parameterType="String" resultType="com.shop.core.entity.Auth">
+        /* com.binblur.mapper.menu.selectMenuAuthList */
+        SELECT
+              A.CODE_CD                   AS authCd
+            , A.CODE_NM                   AS authNm
+            , COALESCE(B.MENU_READ_YN,'N')  AS menuReadYn
+            , COALESCE(B.MENU_UPD_YN,'N')   AS menuUpdYn
+            , COALESCE(B.MENU_EXCEL_YN,'N') AS menuExcelYn
+            , CASE WHEN CONCAT(B.MENU_READ_YN,B.MENU_UPD_YN,B.MENU_EXCEL_YN)='YYY' THEN 'Y' ELSE 'N' END AS menuAllAuthYn
+        FROM TB_CODE A LEFT OUTER JOIN TB_MENU_AUTH B ON (MENU_CD = #{menuCd} AND B.AUTH_CD = A.CODE_CD AND B.DEL_YN = 'N')
+        WHERE A.CODE_UPPER = '10020'
+        ORDER BY AUTH_CD ASC
+    </select>
+
+    <select id="selectUserMenu" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
+        SELECT
+           <include refid="userMenuColumns"/>
+        FROM TB_USER_MENU UM
+        WHERE UM.USER_ID = #{userId}
+        AND UM.MENU_CD = #{menuCd}
+        AND UM.DEL_YN = 'N'
+    </select>
+
+    <insert id="insertMenu" parameterType="com.shop.core.vo.request.MenuRequest" useGeneratedKeys="true" keyProperty="id">
+        /* com.binblur.mapper.menu.insertMenu */
+        INSERT INTO TB_MENU
+        (
+              UP_MENU_CD
+            , MENU_CD
+            , MENU_ORDER
+            , MENU_NM
+            , MENU_ENG_NM
+            , MENU_URI
+            , CRE_USER
+            , UPD_USER
+        )
+        VALUES
+        (
+              #{upMenuCd}
+            , #{menuCd}
+            , #{menuOrder}
+            , #{menuNm}
+            , #{menuEngNm}
+            , #{menuUri}
+            , #{creUser}
+            , #{updUser}
+         )
+    </insert>
+
+    <insert id="insertUserMenu" parameterType="com.shop.core.entity.Menu">
+        INSERT INTO TB_USER_MENU
+        (
+              USER_ID
+            , MENU_CD
+            , AUTH_YN
+            , CRE_USER
+            , UPD_USER
+        )
+        VALUES
+        (
+              #{userId}
+            , #{menuCd}
+            , #{authYn}
+            , #{creUser}
+            , #{updUser}
+        )
+    </insert>
+
+    <update id="updateMenu" parameterType="com.shop.core.vo.request.MenuRequest">
+        /* com.binblur.mapper.menu.updateMenu */
+        UPDATE TB_MENU
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updUser}
+        <if test="upMenuCd != null">
+          , UP_MENU_CD = #{upMenuCd}
+        </if>
+        <if test="menuCd != null">
+          , MENU_CD = #{menuCd}
+        </if>
+        <if test="menuOrder != null">
+          , MENU_ORDER = #{menuOrder}
+        </if>
+        <if test="menuNm != null">
+            , MENU_NM = #{menuNm}
+        </if>
+        <if test="menuEngNm != null">
+            , MENU_ENG_NM = #{menuEngNm}
+        </if>
+        <if test="menuUri != null">
+            , MENU_URI = #{menuUri}
+        </if>
+        WHERE ID = #{id}
+    </update>
+    
+    <update id="updateUserMenuAuth" parameterType="com.shop.core.biz.system.vo.request.MenuRequest$WithAuthSubElement">
+        /* com.binblur.mapper.menu.updateUserMenuAuth */
+        UPDATE TB_USER_MENU
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updUser}
+          , AUTH_YN = #{authYn}
+        WHERE MENU_CD = #{menuCd}
+          AND USER_ID = #{userId}
+    </update>
+
+    <update id="deleteMenu" parameterType="com.shop.core.vo.request.MenuRequest">
+        /* com.binblur.mapper.menu.deleteMenu */
+        UPDATE TB_MENU
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updUser}
+          , DEL_YN   = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+    <select id="selectMenuAuth" parameterType="String" resultType="com.shop.core.entity.Auth">
+        /* com.binblur.mapper.menu.selectMenuAuth */
+        SELECT
+        <include refid="authColumns" />
+          FROM TB_MENU_AUTH
+         WHERE AUTH_CD = #{authCd}
+           AND MENU_CD = #{menuCd}
+        <if test="menuReadYn != null">
+            AND MENU_READ_YN =#{menuReadYn}
+        </if>
+        <if test="menuUpdYn != null">
+            AND MENU_UPD_YN =#{menuUpdYn}
+        </if>
+        <if test="menuExcelYn != null">
+            AND MENU_EXCEL_YN =#{menuExcelYn}
+        </if>
+    </select>
+
+    <select id="selectMenuAuthByUk" parameterType="String" resultType="com.shop.core.entity.Auth">
+        /* com.binblur.mapper.menu.selectMenuAuthByUk */
+        SELECT
+        <include refid="authColumns" />
+        FROM TB_MENU_AUTH
+        WHERE AUTH_CD = #{authCd}
+        AND MENU_CD = #{menuCd}
+    </select>
+
+    <insert id="insertMenuAuth" parameterType="com.shop.core.entity.Auth" useGeneratedKeys="true" keyProperty="id">
+        /* com.binblur.mapper.menu.insertMenuAuth */
+        INSERT INTO TB_MENU_AUTH
+        (
+              AUTH_CD
+            , MENU_CD
+            , MENU_READ_YN
+            , MENU_UPD_YN
+            , MENU_EXCEL_YN
+            , CRE_USER
+            , UPD_USER
+        )
+        VALUES
+        (
+          #{authCd}
+        , #{menuCd}
+        , #{menuReadYn}
+        , #{menuUpdYn}
+        , #{menuExcelYn}
+        , #{creUser}
+        , #{creUser}
+        )
+    </insert>
+
+    <update id="updateMenuAuth" parameterType="com.shop.core.entity.Auth">
+        /* com.binblur.mapper.menu.updateMenuAuth */
+        UPDATE TB_MENU_AUTH
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updUser}
+          , MENU_READ_YN = #{menuReadYn}
+          , MENU_UPD_YN = #{menuUpdYn}
+          , MENU_EXCEL_YN = #{menuExcelYn}
+        WHERE AUTH_CD = #{authCd}
+          AND MENU_CD = #{menuCd}
+    </update>
+
+
+    <delete id="deleteMenuAuth" parameterType="String">
+        /* com.binblur.mapper.menu.deleteMenuAuth */
+        DELETE FROM TB_MENU_AUTH
+        WHERE MENU_CD = #{menuCd}
+    </delete>
+
+    <select id="selectCheckMenuCount" parameterType="String" resultType="Integer">
+        /* com.binblur.mapper.menu.selectCheckMenuCount */
+        SELECT COUNT(*)
+        FROM TB_MENU
+        WHERE MENU_URI = CASE WHEN POSITION('_' IN #{menuUri}) > 0 THEN SUBSTRING( #{menuUri}, 0, POSITION('_' IN #{menuUri})) ELSE #{menuUri} END
+    </select>
+
+    <select id="selectMenuAuthYn" parameterType="com.shop.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.shop.core.biz.system.vo.response.AuthResponse$MenuAuth">
+        /* com.binblur.mapper.menu.selectMenuAuthYn */
+        SELECT  (SELECT X.MENU_NM FROM TB_MENU X WHERE X.DEL_YN = 'N' AND X.MENU_CD = B.UP_MENU_CD) AS upMenuNm
+             , B.MENU_NM AS menuNm
+             , COALESCE(A.MENU_READ_YN, 'N')                                                         AS menuReadYn
+             , COALESCE(A.MENU_UPD_YN, 'N')                                                          AS menuUpdYn
+             , COALESCE(A.MENU_EXCEL_YN, 'N')                                                        AS menuExcelYn
+        FROM TB_MENU_AUTH A
+                 INNER JOIN TB_MENU B ON B.MENU_CD = A.MENU_CD AND B.DEL_YN = 'N'
+                 INNER JOIN TB_USER C ON C.AUTH_CD = A.AUTH_CD AND C.DEL_YN = 'N'
+        WHERE 1 = 1
+          AND C.ID = #{userId}
+          AND C.AUTH_CD = #{authCd}
+          AND B.MENU_URI = #{menuUri}
+    </select>
+
+    <select id="selectMenuAuthYnForOms" parameterType="com.shop.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.shop.core.biz.system.vo.response.AuthResponse$MenuAuth">
+        /* com.binblur.mapper.menu.selectMenuAuthYnForOms */
+        SELECT (SELECT X.MENU_NM FROM TB_MENU X WHERE X.DEL_YN = 'N' AND X.MENU_CD = B.UP_MENU_CD) AS upMenuNm
+             , B.MENU_NM AS menuNm
+             , 'Y' AS menuReadYn
+         FROM TB_USER_MENU A
+         JOIN TB_MENU B ON A.MENU_CD = B.MENU_CD AND B.DEL_YN = 'N'
+        WHERE A.USER_ID = #{userId}
+          AND B.MENU_URI = #{menuUri}
+          AND A.DEL_YN = 'N'
+    </select>
+
+    <select id="selectTopMenuList" resultType="com.shop.core.entity.Menu">
+        /* com.binblur.mapper.menu.selectTopMenuList */
+        SELECT
+        <include refid="menuColumns" />
+        FROM TB_MENU TM
+        WHERE 1=1
+        AND TM.MENU_CD = TM.UP_MENU_CD
+        AND DEL_YN = 'N'
+        ORDER BY MENU_ORDER ASC
+    </select>
+
+    <select id="countMenuByNm" parameterType="com.shop.core.entity.Menu" resultType="Integer">
+        /* com.binblur.mapper.menu.selectMenuByNm */
+        SELECT COUNT(*)
+        FROM TB_MENU TM
+        WHERE 1 = 1
+          AND DEL_YN = 'N'
+          AND MENU_NM = #{menuNm}
+          AND ID != #{id}
+    </select>
+
+    <select id="selectCustomRoles" parameterType="java.lang.Integer" resultType="java.lang.String">
+        /* com.binblur.mapper.menu.selectCustomRoles */
+        SELECT  STRING_AGG(UM.MENU_CD, ',')
+          FROM TB_USER_MENU UM
+          JOIN TB_MENU M ON M.MENU_CD = UM.MENU_CD AND M.DEL_YN ='N' AND M.UP_MENU_CD = 'PS' /* 가능이벤트만 */
+         WHERE UM.USER_ID = #{userId}
+           AND UM.AUTH_YN ='Y'
+           AND UM.DEL_YN = 'N'
+    </select>
+
+</mapper>

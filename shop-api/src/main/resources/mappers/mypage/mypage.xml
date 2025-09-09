@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.binblur.mapper.mypage">
+
+    <select id="selectFavorites" parameterType="com.shop.core.biz.mypage.vo.request.FavoritesRequest$FavoritesListRequest" resultType="com.shop.core.biz.mypage.vo.response.FavoritesResponse$SelectFavorites">
+        /* com.binblur.mapper.mypage.selectFavorites */
+        SELECT
+              A.MENU_URI AS menuUri
+            , B.MENU_NM AS menuNm
+         FROM TB_FAVORITES A
+         JOIN TB_MENU B ON A.MENU_URI = B.MENU_URI AND B.DEL_YN ='N'
+        WHERE A.USER_ID = #{id}
+          AND A.AUTH_CD = #{authCd}
+        <if test='menuUri != null  and !menuUri.equals("")'>
+            AND A.MENU_URI = #{menuUri}
+        </if>
+          AND A.DEL_YN ='N'
+        ORDER BY A.DIST_SEQ ASC
+    </select>
+
+    <insert id="insertFavorites" parameterType="com.shop.core.entity.Favorites" >
+    /* com.binblur.mapper.mypage.insertFavorites */
+        INSERT INTO TB_FAVORITES (
+             USER_ID
+           , MENU_URI
+           , AUTH_CD
+           , DIST_SEQ
+           , CRE_USER
+           , CRE_TM
+           , UPD_USER
+           , UPD_TM
+        )
+        VALUES
+        (
+             #{userId}
+           , #{menuUri}
+           , #{authCd}
+           , (SELECT COALESCE(MAX(DIST_SEQ), 0) + 1 FROM TB_FAVORITES WHERE USER_ID = #{userId} and AUTH_CD = #{authCd})
+           , #{creUser}
+           , now()
+           , #{updUser}
+           , now()
+        )
+    </insert>
+
+    <delete id="deleteFavorites" parameterType="com.shop.core.entity.Favorites" >
+        /* com.binblur.mapper.mypage.deleteFavorites */
+        DELETE FROM TB_FAVORITES
+         WHERE USER_ID = #{userId}
+           AND MENU_URI = #{menuUri}
+    </delete>
+
+    <delete id="deleteFavoritesAll" parameterType="com.shop.core.entity.Favorites" >
+        /* com.binblur.mapper.mypage.deleteFavoritesAll */
+        DELETE FROM TB_FAVORITES
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <select id="selectPartnerPrint" parameterType="Integer" resultType="com.shop.core.biz.mypage.vo.response.MypageResponse$SelectPartnerPrint">
+        /* com.binblur.mapper.mypage.selectPartnerPrint */
+        SELECT
+             ID
+             , PARTNER_ID
+             , FILE_ID
+             , LOGO_PRINT_YN
+             , LOGO_LOC_CD
+             , TITLE_YN
+             , TITLE_MNG
+             , TITLE_NOR
+             , TOP_YN
+             , TOP_MNG
+             , TOP_NOR
+             , BOTTOM_YN
+             , BOTTOM_MNG
+             , BOTTOM_NOR
+        FROM TB_PARTNER_PRINT
+        WHERE PARTNER_ID = #{partnerId}
+    </select>
+
+    <insert id="insertPartnerPrint" parameterType="com.shop.core.biz.mypage.vo.request.MypageRequest$PartnerPrintRequest">
+        /* com.binblur.mapper.mypage.insertPartnerPrint */
+        INSERT INTO TB_PARTNER_PRINT (
+            PARTNER_ID
+            , LOGO_PRINT_YN
+            , LOGO_LOC_CD
+            , TITLE_YN
+            , TITLE_MNG
+            , TITLE_NOR
+            , TOP_YN
+            , TOP_MNG
+            , TOP_NOR
+            , BOTTOM_YN
+            , BOTTOM_MNG
+            , BOTTOM_NOR
+            , CRE_USER
+            , CRE_TM
+            , UPD_TM
+        ) VALUES (
+            #{partnerId}
+            , #{logoprintyn}
+            , #{logoLocCd}
+            , #{titleYn}
+            , #{titleMng}
+            , #{titleNor}
+            , #{topYn}
+            , #{topMng}
+            , #{topNor}
+            , #{bottomYn}
+            , #{bottomMng}
+            , #{bottomNor}
+            , #{creUser}
+            , now()
+            , now()
+        )
+    </insert>
+
+    <update id="deletePartnerPrint" parameterType="Integer">
+        /* com.binblur.mapper.mypage.deletePartnerPrint */
+        UPDATE TB_PARTNER_PRINT
+        SET DEL_YN = 'Y'
+        WHERE PARTNER_ID = #{partnerId}
+    </update>
+
+    <update id="updatePartnerPrint" parameterType="com.shop.core.biz.mypage.vo.request.MypageRequest$MypagePrintSetUpdateRequest">
+        /* com.binblur.mapper.mypage.updatePartnerPrint */
+        UPDATE TB_PARTNER_PRINT
+        SET
+            LOGO_PRINT_YN = #{logoprintyn},
+            TITLE_MNG = #{titleMng},
+            TITLE_NOR = #{titleNor},
+            TOP_MNG = #{topMng},
+            BOTTOM_NOR = #{bottomNor},
+            FILE_ID = #{fileId},
+            LOGO_LOC_CD = #{logoLocCd},
+            TITLE_YN = #{titleYn},
+            TOP_YN = #{topYn},
+            TOP_NOR = #{topNor},
+            BOTTOM_YN = #{bottomYn},
+            BOTTOM_MNG = #{bottomMng},
+            UPD_USER = #{updUser},
+            UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>

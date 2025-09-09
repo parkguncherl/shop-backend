@@ -1,6 +1,6 @@
-rootProject.name = 'binblur-backend'
-include 'binblur-core'
-include 'binblur-api'
-include 'binblur-batch'
-include 'binblur-server'
+rootProject.name = 'shop-backend'
+include 'shop-core'
+include 'shop-api'
+//include 'binblur-batch'
+include 'shop-server'
 

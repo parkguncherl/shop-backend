@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.binblur.mapper.notice">
+
+    <!-- 공지사항 컬럼 정의 -->
+    <sql id="noticeColumns">
+        ID                  AS id,
+        NOTICE_CD           AS noticeCd,
+        TITLE               AS title,
+        NOTICE_CNTN         AS noticeCntn,
+        MOVE_URI            AS moveUri,
+        AUTH_CDS            AS authCds,
+        CRE_USER            AS creUser,
+        READ_CNT            AS readCnt,
+        CRE_TM::timestamp   AS creTm,
+        UPD_USER            AS updUser,
+        UPD_TM::timestamp   AS updTm,
+        DEL_YN              AS deleteYn
+    </sql>
+
+    <!-- 공지사항 목록 조회 페이징 -->
+    <select id="selectNoticeListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.notice.vo.response.NoticeResponse$Paging">
+        /* com.binblur.mapper.biz.notice.selectNoticeListPaging */
+        SELECT
+            ROW_NUMBER() OVER(ORDER BY ID ASC) AS no,
+            A.ID                  AS id,
+            A.NOTICE_CD           AS noticeCd,
+            A.TITLE               AS title,
+            A.NOTICE_CNTN         AS noticeCntn,
+            A.MOVE_URI            AS moveUri,
+            A.AUTH_CDS            AS authCds,
+            A.READ_CNT            AS readCnt,
+            A.CRE_TM::timestamp   AS creTm,
+            A.UPD_USER            AS updUser,
+            A.UPD_TM::timestamp   AS updTm,
+            A.DEL_YN              AS deleteYn,
+            COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.CRE_USER = X.LOGIN_ID), A.CRE_USER) AS creUser,
+            COUNT(*) OVER() AS totalRowCount
+        FROM TB_NOTICE A
+        WHERE
+            DEL_YN = 'N'
+            AND NOTICE_CD != '20130'
+        <if test="filter != null and filter.title != null and filter.title != ''">
+            AND TITLE LIKE CONCAT('%', #{filter.title}, '%')
+        </if>
+        <if test="filter.startDate != null and filter.endDate != null">
+            AND CRE_TM BETWEEN #{filter.startDate} AND #{filter.endDate}
+        </if>
+        <if test="filter.noticeCd != null and filter.noticeCd != ''">
+            AND NOTICE_CD = #{filter.noticeCd}
+        </if>
+        ORDER BY ID DESC
+        LIMIT #{pageRowCount} OFFSET (#{curPage} - 1) * #{pageRowCount}
+    </select>
+
+
+    <!-- 조회수 증가 -->
+    <update id="increaseReadCount" parameterType="Integer">
+        UPDATE TB_NOTICE
+        SET READ_CNT = COALESCE(READ_CNT, 0) + 1
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 공지사항 상세 조회 -->
+    <select id="selectNoticeById" parameterType="Integer" resultType="com.shop.core.entity.Notice">
+        /* com.binblur.mapper.notice.selectNoticeById */
+        SELECT
+        <include refid="noticeColumns" />
+        FROM
+        TB_NOTICE
+        WHERE
+        ID = #{id}
+        AND DEL_YN = 'N'
+    </select>
+
+    <!-- 공지사항 내용 null로 변경 -->
+    <update id="updateNoticeContentToNull" parameterType="Integer">
+        /* com.binblur.mapper.notice.updateNoticeContentToNull */
+        /* 공지사항의 내용(NOTICE_CNTN)을 null로 설정합니다 */
+        UPDATE TB_NOTICE
+        SET NOTICE_CNTN = NULL
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 공지사항 등록 -->
+    <insert id="insertNotice" parameterType="com.shop.core.entity.Notice">
+        /* com.binblur.mapper.notice.insertNotice */
+        INSERT INTO TB_NOTICE (
+        NOTICE_CD,
+        PARTNER_ID,
+        TITLE,
+        NOTICE_CNTN,
+        MOVE_URI,
+        AUTH_CDS,
+        CRE_USER,
+        CRE_TM,
+        UPD_USER,
+        UPD_TM,
+        READ_CNT
+        ) VALUES (
+        #{noticeCd},
+        #{partnerId},
+        #{title},
+        #{noticeCntn},
+        #{moveUri},
+        #{authCds},
+        #{creUser},
+        NOW(),
+        #{updUser},
+        NOW(),
+        0
+        )
+    </insert>
+
+    <!-- 공지사항 수정 -->
+    <update id="updateNotice" parameterType="com.shop.core.entity.Notice">
+        /* com.binblur.mapper.notice.updateNotice */
+        UPDATE TB_NOTICE
+        SET
+            NOTICE_CD   = #{noticeCd},
+            TITLE       = #{title},
+            NOTICE_CNTN = #{noticeCntn},
+            MOVE_URI    = #{moveUri},
+            AUTH_CDS    = #{authCds},
+            UPD_USER    = #{updUser},
+            UPD_TM      = NOW()
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 공지사항 삭제 (논리적 삭제) -->
+    <update id="deleteNotice" parameterType="com.shop.core.entity.Notice">
+        /* com.binblur.mapper.notice.deleteNotice */
+        UPDATE TB_NOTICE
+        SET
+            DEL_YN   = 'Y',
+            UPD_USER = #{updUser},
+            UPD_TM   = NOW()
+        WHERE
+            ID = #{id}
+    </update>
+    <!-- 스티커 정보 조회 -->
+    <select id="selectStickerInfo" resultType="com.shop.core.biz.notice.vo.response.NoticeResponse$Sticker">
+        SELECT
+            ID AS id,
+            NOTICE_CD  AS noticeCd,
+            NOTICE_CNTN AS noticeCntn,
+            TITLE AS title,
+            UPD_USER AS updUser
+        FROM
+            TB_NOTICE
+        WHERE NOTICE_CD = #{noticeCd}
+          AND PARTNER_ID = #{partnerId}
+          AND DEL_YN = 'N'
+        ORDER BY ID ASC LIMIT 1
+    </select>
+
+    <!-- 스티커 정보 수정 -->
+    <update id="updateStickerInfo" parameterType="com.shop.core.biz.notice.vo.request.NoticeRequest$StickerUpdate">
+        UPDATE TB_NOTICE
+        SET NOTICE_CNTN = #{noticeCntn},
+            UPD_USER = #{updUser},
+            UPD_TM = NOW()
+        WHERE ID = (
+            SELECT ID
+            FROM (
+                     SELECT ID
+                     FROM TB_NOTICE
+                     WHERE NOTICE_CD = #{noticeCd}
+                       AND DEL_YN = 'N'
+                     ORDER BY ID ASC
+                         LIMIT 1
+                 ) AS subquery
+        )
+    </update>
+</mapper>
