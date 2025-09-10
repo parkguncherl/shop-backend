@@ -63,7 +63,7 @@ public class ErrorController extends AbstractErrorController {
      */
     @ExceptionHandler({Exception.class})
     @ResponseBody
-    protected ApiResponse<Map<String, Object>> handleBinblurException(Exception e, HttpServletRequest request) {
+    protected ApiResponse<Map<String, Object>> handleBhopException(Exception e, HttpServletRequest request) {
         ApiResponse<Map<String, Object>> response = new ApiResponse<>();
 
         // 에러 타입별 응답 코드 및 메시지 설정

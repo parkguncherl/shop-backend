@@ -23,7 +23,7 @@ import java.util.Map;
 public class ToStorageDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.ipgo.ToStorageMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.ipgo.ToStorageMapper";
 
     /**
      * 적치 목록 페이징 조회

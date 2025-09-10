@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.binblur.mapper.common.grid">
+<mapper namespace="com.shop.mapper.common.grid">
 
     <insert id="upsertGridColumn">
-        /* [그리드 컬럼 등록 및 수정] com.binblur.mapper.common.gridColumn.upsertGridColumn */
+        /* [그리드 컬럼 등록 및 수정] com.shop.mapper.common.gridColumn.upsertGridColumn */
         INSERT INTO TB_GRID
         (
           USER_ID
@@ -22,7 +22,7 @@
     </insert>
 
     <select id="selectGridColum" resultType="com.shop.core.biz.common.vo.response.GridResponse">
-        /* [그리드 컬럼 등록 및 수정] com.binblur.mapper.common.gridColumn.selectGridColum */
+        /* [그리드 컬럼 등록 및 수정] com.shop.mapper.common.gridColumn.selectGridColum */
         SELECT URI
              , SET_VALUE AS columnState
           FROM TB_GRID

@@ -3,14 +3,14 @@
 # 변수 설정
 $RemoteHost = "13.209.18.102"
 $RemotePort = "22"
-$RemoteUser = "binblurdev"
+$RemoteUser = "shopdev"
 $RemoteDir = "/home/$RemoteUser"
-$ServiceName = "binblur-backend.service"
+$ServiceName = "shop-backend.service"
 
 # 현재 경로 사용
 $CurrentPath = Get-Location
-$JarPath = Join-Path $CurrentPath "binblur-api\build\libs\binblur-api.jar"
-$JarName = "binblur-api.jar"
+$JarPath = Join-Path $CurrentPath "shop-api\build\libs\shop-api.jar"
+$JarName = "shop-api.jar"
 
 # 로그 함수
 function Log-Message {

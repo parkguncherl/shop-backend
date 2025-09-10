@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HistoryDao {
 
-    private final String PRE_NS = "com.binblur.mapper.history.";
+    private final String PRE_NS = "com.shop.mapper.history.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.binblur.mapper.attribute">
+<mapper namespace="com.shop.mapper.attribute">
 
     <sql id="attributeColumns">
           ID                     AS id
@@ -70,7 +70,7 @@
     <!--forEach 사용하는 관계로 test 구문을 통해 필드 값이 null 인 경우에 대응하는 로직 사용이 곤란-->
     <update id="updateAttribute" parameterType="List">
         <foreach collection="list" item="update" separator=";">
-            /* com.binblur.mapper.attribute.updateAttribute */
+            /* com.shop.mapper.attribute.updateAttribute */
             UPDATE TB_ATTR
             SET
                   UPD_TM   = CURRENT_TIMESTAMP,

@@ -20,7 +20,7 @@ import java.util.Map;
 public class NoticeDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.notice.";
+    private static final String NAMESPACE = "com.shop.mapper.notice.";
 
     /**
      * 공지사항 목록(페이징)을 조회합니다.

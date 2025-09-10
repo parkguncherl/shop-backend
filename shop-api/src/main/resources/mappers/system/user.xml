@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.binblur.mapper.user">
+<mapper namespace="com.shop.mapper.user">
 
     <sql id="userColumns">
          ID                    AS id,                  /* 아이디(pk)    */
@@ -37,7 +37,7 @@
 
 
     <select id="selectUserListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.UserResponse">
-        /* com.binblur.mapper.user.selectUserListPaging */
+        /* com.shop.mapper.user.selectUserListPaging */
         SELECT ( COUNT(1) OVER() )                                                                          AS totalRowCount
             , ROW_NUMBER() OVER(ORDER BY ID ASC)                                                            AS no
             , TU.ID                                                                                         AS id
@@ -94,7 +94,7 @@
 
 
     <select id="selectUserById" parameterType="Integer" resultType="com.shop.core.biz.system.vo.response.UserResponse$SelectByLoginId">
-        /* com.binblur.mapper.user.selectUserById */
+        /* com.shop.mapper.user.selectUserById */
         SELECT
         <include refid="userColumns" />
         , FN_GET_CODE('10020', TU.AUTH_CD) AS authNm
@@ -108,14 +108,14 @@
     </select>
 
     <select id="selectPartnerIdByUserId" parameterType="java.lang.Integer"  resultType="java.lang.Integer">
-        /* com.binblur.mapper.user.selectPartnerIdByUserId */
+        /* com.shop.mapper.user.selectPartnerIdByUserId */
        SELECT PARTNER_ID
          FROM TB_USER
         WHERE ID = #{userId}
     </select>
 
     <select id="selectPartnerIdByLoginId" parameterType="java.lang.String"  resultType="java.lang.Integer">
-        /* com.binblur.mapper.user.selectPartnerIdByLoginId */
+        /* com.shop.mapper.user.selectPartnerIdByLoginId */
       SELECT PARTNER_ID
         FROM TB_USER
        WHERE LOGIN_ID = #{loginId}
@@ -123,7 +123,7 @@
     </select>
 
     <select id="selectUserByLoginId" parameterType="String" resultType="com.shop.core.biz.system.vo.response.UserResponse$SelectByLoginId">
-        /* com.binblur.mapper.user.selectUserByLoginId */
+        /* com.shop.mapper.user.selectUserByLoginId */
         SELECT
               ID                    AS id
             , LOGIN_ID              AS loginId
@@ -168,7 +168,7 @@
 
 
     <select id="selectUserByLoginIdForLogin" parameterType="String" resultType="com.shop.core.biz.system.vo.response.UserResponse$SelectByLoginId">
-        /* com.binblur.mapper.user.selectUserByLoginIdForLogin */
+        /* com.shop.mapper.user.selectUserByLoginIdForLogin */
         SELECT
             ID                    AS id
              , LOGIN_ID              AS loginId
@@ -213,7 +213,7 @@
     </select>
 
     <select id="selectUserByUk" parameterType="String" resultType="com.shop.core.biz.system.vo.response.UserResponse$SelectByLoginId">
-        /* com.binblur.mapper.user.selectUserByUk */
+        /* com.shop.mapper.user.selectUserByUk */
         SELECT
         <include refid="userColumns" />
         , 0 AS otpSecond
@@ -223,7 +223,7 @@
     </select>
 
     <insert id="insertUser" parameterType="com.shop.core.entity.User" useGeneratedKeys="true" keyProperty="id">
-        /* com.binblur.mapper.user.insertUser */
+        /* com.shop.mapper.user.insertUser */
         INSERT INTO TB_USER
         (
               LOGIN_ID
@@ -285,7 +285,7 @@
     </insert>
 
     <insert id="insertOutUser" parameterType="com.shop.core.entity.User" useGeneratedKeys="true" keyProperty="id">
-        /* com.binblur.mapper.user.insertUser */
+        /* com.shop.mapper.user.insertUser */
         INSERT INTO TB_USER_OUT
         (
               LOGIN_ID
@@ -337,7 +337,7 @@
     </insert>
 
     <update id="updateUser" parameterType="com.shop.core.entity.User">
-        /* com.binblur.mapper.user.updateUser */
+        /* com.shop.mapper.user.updateUser */
         UPDATE TB_USER
             SET UPD_TM   = NOW()
               , UPD_USER = #{updUser}
@@ -405,7 +405,7 @@
     </update>
 
     <update id="updateUserPartnerId" parameterType="com.shop.core.entity.User">
-        /* com.binblur.mapper.user.updateUserPartnerId */
+        /* com.shop.mapper.user.updateUserPartnerId */
         UPDATE TB_USER
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -414,7 +414,7 @@
     </update>
 
     <update id="updateUserWorkYmd" parameterType="com.shop.core.entity.User">
-        /* com.binblur.mapper.user.updateUserWorkYmd */
+        /* com.shop.mapper.user.updateUserWorkYmd */
         UPDATE TB_USER
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -424,7 +424,7 @@
 
     <!--  파트너의 생성시간 조회 -->
     <select id="getPartnerCreatedTime" parameterType="java.lang.Integer" resultType="java.time.LocalDateTime">
-        /* com.binblur.mapper.user.getPartnerCreatedTime */
+        /* com.shop.mapper.user.getPartnerCreatedTime */
         SELECT P.CRE_TM
         FROM TB_PARTNER P
                  INNER JOIN TB_USER U ON U.PARTNER_ID = P.ID
@@ -432,7 +432,7 @@
     </select>
 
     <update id="updateUserLogisId" parameterType="com.shop.core.entity.User">
-        /* com.binblur.mapper.user.updateUserLogisId */
+        /* com.shop.mapper.user.updateUserLogisId */
         UPDATE TB_USER
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -441,14 +441,14 @@
     </update>
 
     <delete id="deleteUser" parameterType="com.shop.core.entity.User">
-        /* com.binblur.mapper.user.deleteUser */
+        /* com.shop.mapper.user.deleteUser */
         DELETE
         FROM TB_USER
         WHERE ID = #{id}
     </delete>
 
     <update id="updateOtpNo" parameterType="com.shop.core.entity.User">
-        /* com.binblur.mapper.user.updateOtpNo */
+        /* com.shop.mapper.user.updateOtpNo */
         UPDATE TB_USER
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -459,7 +459,7 @@
 
 
     <select id="selectUserPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.UserResponse$Paging">
-        /* com.binblur.mapper.user.selectUserPaging */
+        /* com.shop.mapper.user.selectUserPaging */
         SELECT
             TU.ID AS id
             , TU.LOGIN_ID AS loginId
@@ -554,7 +554,7 @@
     </select>
 
     <select id="selectUserByLoginIdCountryCode" parameterType="java.util.HashMap" resultType="com.shop.core.biz.system.vo.response.UserResponse$SelectByLoginId">
-        /* com.binblur.mapper.user.selectUserByLoginIdCountryCode */
+        /* com.shop.mapper.user.selectUserByLoginIdCountryCode */
         SELECT
             <include refid="userColumns" />
         FROM TB_USER TU
@@ -564,7 +564,7 @@
     </select>
 
     <update id="updatePassword" parameterType="com.shop.core.entity.User">
-        /* com.binblur.mapper.user.updatePassword */
+        /* com.shop.mapper.user.updatePassword */
         UPDATE TB_USER
         SET UPD_TM = NOW()
             , UPD_USER = #{updUser}

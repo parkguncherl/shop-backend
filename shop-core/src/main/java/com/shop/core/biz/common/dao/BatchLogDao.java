@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BatchLogDao {
 
-    private final String PRE_NS = "com.binblur.mapper.batchLog.";
+    private final String PRE_NS = "com.shop.mapper.batchLog.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

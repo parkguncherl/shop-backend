@@ -46,8 +46,8 @@ public class AccessLogAspect {
      * @param joinPoint
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    @AfterReturning(pointcut="execution(* com.binblur.api.*.*.controller.*.*(..)) && @annotation(com.binblur.api.annotation.AccessLog)", returning = "result")
-//    @Before( "execution(* com.binblur.api.biz.*.controller.*.*(..)) && @annotation(com.binblur.api.annotation.AccessLog)")
+    @AfterReturning(pointcut="execution(* com.shop.api.*.*.controller.*.*(..)) && @annotation(com.shop.api.annotation.AccessLog)", returning = "result")
+//    @Before( "execution(* com.shop.api.biz.*.controller.*.*(..)) && @annotation(com.shop.api.annotation.AccessLog)")
     public void addContactLog(JoinPoint joinPoint, Object result)  {
         try {
             MethodSignature signature = (MethodSignature) joinPoint.getSignature();

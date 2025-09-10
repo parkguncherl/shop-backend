@@ -20,7 +20,7 @@ public class ReceiptDao {
     private final SqlSession sqlSession;
 
     // MyBatis 매퍼 XML 파일의 네임스페이스를 정의합니다.
-    private static final String NAMESPACE = "com.binblur.mapper.receipt.";
+    private static final String NAMESPACE = "com.shop.mapper.receipt.";
 
     /**
      * 파트너 ID로 영수증 설정을 조회합니다.

@@ -1,6 +1,6 @@
 rootProject.name = 'shop-backend'
 include 'shop-core'
 include 'shop-api'
-//include 'binblur-batch'
+//include 'shop-batch'
 include 'shop-server'
 

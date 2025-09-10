@@ -2,10 +2,10 @@
 # .\Entity-to-txt.ps1
 
 # 엔티티 디렉토리 설정
-$ENTITY_DIR = "C:\work\binblur-backend\binblur-core\src\main\java\com\binblur\core\entity"
+$ENTITY_DIR = "C:\work\shop-backend\shop-core\src\main\java\com\shop\core\entity"
 
 # 결과 파일 설정
-$OUTPUT_FILE = "Binblur-Entity.txt"
+$OUTPUT_FILE = "shop-Entity.txt"
 
 # 파일 초기화
 Clear-Content -Path $OUTPUT_FILE -ErrorAction SilentlyContinue

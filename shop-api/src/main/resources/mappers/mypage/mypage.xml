@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.binblur.mapper.mypage">
+<mapper namespace="com.shop.mapper.mypage">
 
     <select id="selectFavorites" parameterType="com.shop.core.biz.mypage.vo.request.FavoritesRequest$FavoritesListRequest" resultType="com.shop.core.biz.mypage.vo.response.FavoritesResponse$SelectFavorites">
-        /* com.binblur.mapper.mypage.selectFavorites */
+        /* com.shop.mapper.mypage.selectFavorites */
         SELECT
               A.MENU_URI AS menuUri
             , B.MENU_NM AS menuNm
@@ -19,7 +19,7 @@
     </select>
 
     <insert id="insertFavorites" parameterType="com.shop.core.entity.Favorites" >
-    /* com.binblur.mapper.mypage.insertFavorites */
+    /* com.shop.mapper.mypage.insertFavorites */
         INSERT INTO TB_FAVORITES (
              USER_ID
            , MENU_URI
@@ -44,20 +44,20 @@
     </insert>
 
     <delete id="deleteFavorites" parameterType="com.shop.core.entity.Favorites" >
-        /* com.binblur.mapper.mypage.deleteFavorites */
+        /* com.shop.mapper.mypage.deleteFavorites */
         DELETE FROM TB_FAVORITES
          WHERE USER_ID = #{userId}
            AND MENU_URI = #{menuUri}
     </delete>
 
     <delete id="deleteFavoritesAll" parameterType="com.shop.core.entity.Favorites" >
-        /* com.binblur.mapper.mypage.deleteFavoritesAll */
+        /* com.shop.mapper.mypage.deleteFavoritesAll */
         DELETE FROM TB_FAVORITES
         WHERE USER_ID = #{userId}
     </delete>
 
     <select id="selectPartnerPrint" parameterType="Integer" resultType="com.shop.core.biz.mypage.vo.response.MypageResponse$SelectPartnerPrint">
-        /* com.binblur.mapper.mypage.selectPartnerPrint */
+        /* com.shop.mapper.mypage.selectPartnerPrint */
         SELECT
              ID
              , PARTNER_ID
@@ -78,7 +78,7 @@
     </select>
 
     <insert id="insertPartnerPrint" parameterType="com.shop.core.biz.mypage.vo.request.MypageRequest$PartnerPrintRequest">
-        /* com.binblur.mapper.mypage.insertPartnerPrint */
+        /* com.shop.mapper.mypage.insertPartnerPrint */
         INSERT INTO TB_PARTNER_PRINT (
             PARTNER_ID
             , LOGO_PRINT_YN
@@ -115,14 +115,14 @@
     </insert>
 
     <update id="deletePartnerPrint" parameterType="Integer">
-        /* com.binblur.mapper.mypage.deletePartnerPrint */
+        /* com.shop.mapper.mypage.deletePartnerPrint */
         UPDATE TB_PARTNER_PRINT
         SET DEL_YN = 'Y'
         WHERE PARTNER_ID = #{partnerId}
     </update>
 
     <update id="updatePartnerPrint" parameterType="com.shop.core.biz.mypage.vo.request.MypageRequest$MypagePrintSetUpdateRequest">
-        /* com.binblur.mapper.mypage.updatePartnerPrint */
+        /* com.shop.mapper.mypage.updatePartnerPrint */
         UPDATE TB_PARTNER_PRINT
         SET
             LOGO_PRINT_YN = #{logoprintyn},

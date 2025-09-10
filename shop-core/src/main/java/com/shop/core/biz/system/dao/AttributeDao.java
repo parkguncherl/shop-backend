@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AttributeDao {
 
-    private final String PRE_NS = "com.binblur.mapper.attribute.";
+    private final String PRE_NS = "com.shop.mapper.attribute.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession; // MybatisAutoConfiguration.sqlSessionTemplate

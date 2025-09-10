@@ -20,7 +20,7 @@ import java.util.List;
 public class InstockHistoryDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.ipgo.InstockHistoryMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.ipgo.InstockHistoryMapper";
 
     /**
      * '발주' 입하이력목록 페이징 조회

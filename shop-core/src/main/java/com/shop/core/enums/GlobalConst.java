@@ -35,7 +35,7 @@ public enum GlobalConst implements CodeEnum {
     SMS_TITLE			("물류 관리시스템", "OMS MANAGEMENT SYSTEM"),
 
     REP_EMAIL			("admin@binblur.com", "대표 이메일"),
-    HOMEPAGE			("http://binblur.com/", "회사홈페이지"),
+    HOMEPAGE			("http://shop.com/", "회사홈페이지"),
     AWS_BUCKET_NAME     ("binblur-file", "s3 버킷네임"),
 
     // 전표양식 기본 설정

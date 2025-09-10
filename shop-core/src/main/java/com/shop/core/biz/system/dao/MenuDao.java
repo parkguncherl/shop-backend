@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MenuDao {
 
-    private final String PRE_NS = "com.binblur.mapper.menu.";
+    private final String PRE_NS = "com.shop.mapper.menu.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

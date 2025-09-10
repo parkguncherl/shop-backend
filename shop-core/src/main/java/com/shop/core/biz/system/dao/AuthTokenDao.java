@@ -24,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthTokenDao {
 
-    private final String PRE_NS = "com.binblur.mapper.authToken.";
+    private final String PRE_NS = "com.shop.mapper.authToken.";
 
 
     @Qualifier("sqlSessionTemplate")

@@ -27,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MypageDao {
 
-    private final String PRE_NS = "com.binblur.mapper.mypage.";
+    private final String PRE_NS = "com.shop.mapper.mypage.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

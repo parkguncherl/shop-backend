@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.binblur.mapper.contact">
+<mapper namespace="com.shop.mapper.contact">
 
     <sql id="contactColumns">
         , ID                AS id
@@ -19,7 +19,7 @@
 
 
     <select id="selectContactListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.ContactResponse$Paging">
-        /* com.binblur.mapper.contact.selectContactListPaging */
+        /* com.shop.mapper.contact.selectContactListPaging */
         SELECT
              ( COUNT(1) OVER() )                          AS totalRowCount
            , ROW_NUMBER() OVER(ORDER BY A.ID ASC)            AS no
@@ -62,7 +62,7 @@
     </select>
 
     <insert id="insertContact" parameterType="com.shop.core.vo.request.ContactRequest" useGeneratedKeys="true" keyProperty="id">
-        /* com.binblur.mapper.contact.insertContact */
+        /* com.shop.mapper.contact.insertContact */
         INSERT INTO TB_CONTACT
         (
           USER_ID

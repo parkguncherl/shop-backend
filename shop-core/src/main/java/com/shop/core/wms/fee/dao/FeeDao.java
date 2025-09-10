@@ -18,7 +18,7 @@ import java.util.List;
 public class FeeDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.fee.feeMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.fee.feeMapper";
 
     /**
      * 적치 목록을 페이징하여 조회

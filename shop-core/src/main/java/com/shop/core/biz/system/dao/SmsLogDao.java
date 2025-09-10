@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SmsLogDao {
 
-    private final String PRE_NS = "com.binblur.mapper.smsLog.";
+    private final String PRE_NS = "com.shop.mapper.smsLog.";
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;
 

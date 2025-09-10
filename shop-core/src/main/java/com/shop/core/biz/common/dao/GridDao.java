@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public class GridDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.common.grid.";
+    private static final String NAMESPACE = "com.shop.mapper.common.grid.";
 
     public Integer upsertGridColumn(GridRequest request) {
         return sqlSession.insert(NAMESPACE.concat("upsertGridColumn"), request);

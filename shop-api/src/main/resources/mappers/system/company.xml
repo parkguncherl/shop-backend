@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.binblur.mapper.company">
+<mapper namespace="com.shop.mapper.company">
     <select id="selectCompanyListPaging" parameterType="com.shop.core.biz.system.vo.request.CompanyRequest" resultType="com.shop.core.biz.system.vo.response.CompanyResponse$Paging">
         SELECT
         ID AS id
@@ -32,7 +32,7 @@
     </select>
 
     <update id="updateCompany" parameterType="com.shop.core.biz.system.vo.request.CompanyRequest$Update">
-        /* com.binblur.mapper.company.updateCompany */
+        /* com.shop.mapper.company.updateCompany */
         UPDATE TB_COMP
         SET
         UPD_TM   = CURRENT_TIMESTAMP,
@@ -50,7 +50,7 @@
     </update>
 
     <insert id="insertCompany" parameterType="com.shop.core.biz.system.vo.request.CompanyRequest$Insert">
-        /* com.binblur.mapper.company.insertCompany */
+        /* com.shop.mapper.company.insertCompany */
         INSERT INTO TB_COMP
         (
               COMP_NAME
@@ -81,7 +81,7 @@
     </insert>
 
     <update id="deleteCompany" parameterType="com.shop.core.biz.system.vo.request.CompanyRequest$Delete">
-        /* com.binblur.mapper.company.deleteCompany */
+        /* com.shop.mapper.company.deleteCompany */
         UPDATE TB_COMP
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}

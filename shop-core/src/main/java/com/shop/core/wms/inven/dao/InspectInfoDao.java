@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InspectInfoDao {
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.inven.InspectInfoMapper.";
+    private static final String NAMESPACE = "com.shop.mapper.wms.inven.InspectInfoMapper.";
 
     /**
      * 상품 목록을 SKU 정보와 함께 조회합니다.

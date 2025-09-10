@@ -21,7 +21,7 @@ import java.util.Map;
 public class ToStorageHistoryDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.ipgo.ToStorageHistoryMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.ipgo.ToStorageHistoryMapper";
 
     /**
      * 적치이력 목록 페이징 조회

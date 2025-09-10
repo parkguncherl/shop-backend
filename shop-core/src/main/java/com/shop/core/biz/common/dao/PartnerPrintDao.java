@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class PartnerPrintDao {
 
-    private final String PRE_NS = "com.binblur.mapper.common.";
+    private final String PRE_NS = "com.shop.mapper.common.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

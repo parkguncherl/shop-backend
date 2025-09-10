@@ -26,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CompanyDao {
 
-    private final String PRE_NS = "com.binblur.mapper.company.";
+    private final String PRE_NS = "com.shop.mapper.company.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession; // MybatisAutoConfiguration.sqlSessionTemplate

@@ -17,7 +17,7 @@ import java.util.List;
 public class InoutListDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.info.inoutMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.info.inoutMapper";
 
     /**
      * 적치 목록을 페이징하여 조회

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.binblur.mapper.menu">
+<mapper namespace="com.shop.mapper.menu">
 
     <sql id="menuColumns">
           TM.ID                                      AS id
@@ -38,7 +38,7 @@
     </sql>
 
     <select id="selectMenuByUK" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
-        /* com.binblur.mapper.menu.selectMenuByUK */
+        /* com.shop.mapper.menu.selectMenuByUK */
         SELECT
         <include refid="menuColumns" />
         FROM TB_MENU TM
@@ -61,7 +61,7 @@
     </select>
 
     <select id="selectMenuListPaging" parameterType="com.shop.core.biz.system.vo.request.MenuRequest$PagingFilter" resultType="com.shop.core.biz.system.vo.response.MenuResponse$Paging">
-        /* com.binblur.mapper.menu.selectMenuListPaging */
+        /* com.shop.mapper.menu.selectMenuListPaging */
         SELECT
             <include refid="menuColumns" />
             , COUNT(1) OVER()                                                          AS totalRowCount
@@ -85,7 +85,7 @@
     </select>
 
     <select id="selectMenuList" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
-        /* com.binblur.mapper.menu.selectMenuList */
+        /* com.shop.mapper.menu.selectMenuList */
         SELECT
             <include refid="menuColumns" />
          FROM TB_MENU TM
@@ -114,7 +114,7 @@
     </select>
 
     <select id="selectMenuListForUser" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
-        /* com.binblur.mapper.menu.selectMenuListForUser */
+        /* com.shop.mapper.menu.selectMenuListForUser */
         SELECT
         <include refid="menuColumns" />
         FROM TB_MENU TM
@@ -141,7 +141,7 @@
     </select>
 
     <select id="selectMenuListWithAuth" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.biz.system.vo.response.MenuResponse$WithAuthSub">
-        /* com.binblur.mapper.menu.selectMenuListForUserWithAuth */
+        /* com.shop.mapper.menu.selectMenuListForUserWithAuth */
         SELECT
               TM.UP_MENU_CD AS upMenuCd
             , TM.MENU_CD AS menuCd
@@ -165,7 +165,7 @@
     </select>
 
     <select id="selectMenuAuthList" parameterType="String" resultType="com.shop.core.entity.Auth">
-        /* com.binblur.mapper.menu.selectMenuAuthList */
+        /* com.shop.mapper.menu.selectMenuAuthList */
         SELECT
               A.CODE_CD                   AS authCd
             , A.CODE_NM                   AS authNm
@@ -188,7 +188,7 @@
     </select>
 
     <insert id="insertMenu" parameterType="com.shop.core.vo.request.MenuRequest" useGeneratedKeys="true" keyProperty="id">
-        /* com.binblur.mapper.menu.insertMenu */
+        /* com.shop.mapper.menu.insertMenu */
         INSERT INTO TB_MENU
         (
               UP_MENU_CD
@@ -233,7 +233,7 @@
     </insert>
 
     <update id="updateMenu" parameterType="com.shop.core.vo.request.MenuRequest">
-        /* com.binblur.mapper.menu.updateMenu */
+        /* com.shop.mapper.menu.updateMenu */
         UPDATE TB_MENU
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -259,7 +259,7 @@
     </update>
     
     <update id="updateUserMenuAuth" parameterType="com.shop.core.biz.system.vo.request.MenuRequest$WithAuthSubElement">
-        /* com.binblur.mapper.menu.updateUserMenuAuth */
+        /* com.shop.mapper.menu.updateUserMenuAuth */
         UPDATE TB_USER_MENU
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -269,7 +269,7 @@
     </update>
 
     <update id="deleteMenu" parameterType="com.shop.core.vo.request.MenuRequest">
-        /* com.binblur.mapper.menu.deleteMenu */
+        /* com.shop.mapper.menu.deleteMenu */
         UPDATE TB_MENU
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -278,7 +278,7 @@
     </update>
 
     <select id="selectMenuAuth" parameterType="String" resultType="com.shop.core.entity.Auth">
-        /* com.binblur.mapper.menu.selectMenuAuth */
+        /* com.shop.mapper.menu.selectMenuAuth */
         SELECT
         <include refid="authColumns" />
           FROM TB_MENU_AUTH
@@ -296,7 +296,7 @@
     </select>
 
     <select id="selectMenuAuthByUk" parameterType="String" resultType="com.shop.core.entity.Auth">
-        /* com.binblur.mapper.menu.selectMenuAuthByUk */
+        /* com.shop.mapper.menu.selectMenuAuthByUk */
         SELECT
         <include refid="authColumns" />
         FROM TB_MENU_AUTH
@@ -305,7 +305,7 @@
     </select>
 
     <insert id="insertMenuAuth" parameterType="com.shop.core.entity.Auth" useGeneratedKeys="true" keyProperty="id">
-        /* com.binblur.mapper.menu.insertMenuAuth */
+        /* com.shop.mapper.menu.insertMenuAuth */
         INSERT INTO TB_MENU_AUTH
         (
               AUTH_CD
@@ -329,7 +329,7 @@
     </insert>
 
     <update id="updateMenuAuth" parameterType="com.shop.core.entity.Auth">
-        /* com.binblur.mapper.menu.updateMenuAuth */
+        /* com.shop.mapper.menu.updateMenuAuth */
         UPDATE TB_MENU_AUTH
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -342,20 +342,20 @@
 
 
     <delete id="deleteMenuAuth" parameterType="String">
-        /* com.binblur.mapper.menu.deleteMenuAuth */
+        /* com.shop.mapper.menu.deleteMenuAuth */
         DELETE FROM TB_MENU_AUTH
         WHERE MENU_CD = #{menuCd}
     </delete>
 
     <select id="selectCheckMenuCount" parameterType="String" resultType="Integer">
-        /* com.binblur.mapper.menu.selectCheckMenuCount */
+        /* com.shop.mapper.menu.selectCheckMenuCount */
         SELECT COUNT(*)
         FROM TB_MENU
         WHERE MENU_URI = CASE WHEN POSITION('_' IN #{menuUri}) > 0 THEN SUBSTRING( #{menuUri}, 0, POSITION('_' IN #{menuUri})) ELSE #{menuUri} END
     </select>
 
     <select id="selectMenuAuthYn" parameterType="com.shop.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.shop.core.biz.system.vo.response.AuthResponse$MenuAuth">
-        /* com.binblur.mapper.menu.selectMenuAuthYn */
+        /* com.shop.mapper.menu.selectMenuAuthYn */
         SELECT  (SELECT X.MENU_NM FROM TB_MENU X WHERE X.DEL_YN = 'N' AND X.MENU_CD = B.UP_MENU_CD) AS upMenuNm
              , B.MENU_NM AS menuNm
              , COALESCE(A.MENU_READ_YN, 'N')                                                         AS menuReadYn
@@ -371,7 +371,7 @@
     </select>
 
     <select id="selectMenuAuthYnForOms" parameterType="com.shop.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.shop.core.biz.system.vo.response.AuthResponse$MenuAuth">
-        /* com.binblur.mapper.menu.selectMenuAuthYnForOms */
+        /* com.shop.mapper.menu.selectMenuAuthYnForOms */
         SELECT (SELECT X.MENU_NM FROM TB_MENU X WHERE X.DEL_YN = 'N' AND X.MENU_CD = B.UP_MENU_CD) AS upMenuNm
              , B.MENU_NM AS menuNm
              , 'Y' AS menuReadYn
@@ -383,7 +383,7 @@
     </select>
 
     <select id="selectTopMenuList" resultType="com.shop.core.entity.Menu">
-        /* com.binblur.mapper.menu.selectTopMenuList */
+        /* com.shop.mapper.menu.selectTopMenuList */
         SELECT
         <include refid="menuColumns" />
         FROM TB_MENU TM
@@ -394,7 +394,7 @@
     </select>
 
     <select id="countMenuByNm" parameterType="com.shop.core.entity.Menu" resultType="Integer">
-        /* com.binblur.mapper.menu.selectMenuByNm */
+        /* com.shop.mapper.menu.selectMenuByNm */
         SELECT COUNT(*)
         FROM TB_MENU TM
         WHERE 1 = 1
@@ -404,7 +404,7 @@
     </select>
 
     <select id="selectCustomRoles" parameterType="java.lang.Integer" resultType="java.lang.String">
-        /* com.binblur.mapper.menu.selectCustomRoles */
+        /* com.shop.mapper.menu.selectCustomRoles */
         SELECT  STRING_AGG(UM.MENU_CD, ',')
           FROM TB_USER_MENU UM
           JOIN TB_MENU M ON M.MENU_CD = UM.MENU_CD AND M.DEL_YN ='N' AND M.UP_MENU_CD = 'PS' /* 가능이벤트만 */

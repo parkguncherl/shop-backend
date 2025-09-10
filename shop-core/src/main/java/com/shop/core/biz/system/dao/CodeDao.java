@@ -27,7 +27,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CodeDao {
 
-    private final String PRE_NS = "com.binblur.mapper.code.";
+    private final String PRE_NS = "com.shop.mapper.code.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

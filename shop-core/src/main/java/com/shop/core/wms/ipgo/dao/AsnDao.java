@@ -16,7 +16,7 @@ import java.util.List;
 public class AsnDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.ipgo.AsnMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.ipgo.AsnMapper";
 
     /**
      * WMS 발주목록 페이징

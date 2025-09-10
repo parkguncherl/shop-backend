@@ -22,7 +22,7 @@ import java.util.Map;
 public class ipgologDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.info.ipgologMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.info.ipgologMapper";
 
     /**
      * 적치 목록을 페이징하여 조회

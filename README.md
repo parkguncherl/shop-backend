@@ -1,4 +1,4 @@
-# binblur-backend
+# shop-backend
 프레젝트 템플릿
 
 

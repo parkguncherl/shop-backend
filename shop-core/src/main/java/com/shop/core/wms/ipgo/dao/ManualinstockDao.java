@@ -17,7 +17,7 @@ import java.util.Map;
 public class ManualinstockDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.ipgo.ManualinstockMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.ipgo.ManualinstockMapper";
 
     /**
      * 기타 입하 목록을 페이징하여 조회

@@ -23,7 +23,7 @@ import java.util.Map;
 public class InvenMoveDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.ipgo.InvenMoveMapper";
+    private static final String NAMESPACE = "com.shop.mapper.wms.ipgo.InvenMoveMapper";
 
     /**
      * 재고이동 목록을 페이징하여 조회

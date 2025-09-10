@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.binblur.mapper.history">
+<mapper namespace="com.shop.mapper.history">
 
     <select id="selectColumns" parameterType="String" resultType="String">
-        /* com.binblur.mapper.user.selectColumns */
+        /* com.shop.mapper.user.selectColumns */
         SELECT column_name
         FROM information_schema.columns
         WHERE UPPER(table_name) = UPPER(#{tableName})
@@ -11,7 +11,7 @@
     </select>
 
     <select id="selectColumnsForSame" parameterType="String" resultType="String">
-        /* com.binblur.mapper.user.selectColumns */
+        /* com.shop.mapper.user.selectColumns */
         SELECT column_name
         FROM information_schema.columns
         WHERE UPPER(table_name) = UPPER(#{tableName})
@@ -19,7 +19,7 @@
     </select>
 
     <insert id="insertHistory" useGeneratedKeys="true" keyProperty="id">
-        /* com.binblur.mapper.user.insertHistory */
+        /* com.shop.mapper.user.insertHistory */
         INSERT INTO ${tableName} (
         <foreach collection="columns" item="column" separator=",">
             ${column}
@@ -39,7 +39,7 @@
     </insert>
 
     <select id="checkChangeData" resultType="java.lang.Integer">
-        /* com.binblur.mapper.user.checkChangeData */
+        /* com.shop.mapper.user.checkChangeData */
         SELECT COUNT(*)
         FROM (
             SELECT
@@ -57,7 +57,7 @@
     </select>
 
     <select id="getImportantColumn" resultType="java.lang.String">
-        /* com.binblur.mapper.user.getImportantColumn */
+        /* com.shop.mapper.user.getImportantColumn */
         SELECT CODE_ETC_1
           FROM TB_CODE
          WHERE CODE_UPPER = '50040'
@@ -67,7 +67,7 @@
     </select>
 
     <delete id="deleteHistory">
-        /* com.binblur.mapper.user.deleteHistory 주요 변경사항이 없는 이력은 지운다.*/
+        /* com.shop.mapper.user.deleteHistory 주요 변경사항이 없는 이력은 지운다.*/
         DELETE FROM ${tableName} WHERE ID = #{insId}
     </delete>
 </mapper>

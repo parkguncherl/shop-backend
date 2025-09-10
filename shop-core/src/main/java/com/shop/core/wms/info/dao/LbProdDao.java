@@ -27,7 +27,7 @@ import java.util.Map;
 public class LbProdDao {
 
     private final SqlSession sqlSession;
-    private static final String NAMESPACE = "com.binblur.mapper.wms.info.LbProdMapper.";
+    private static final String NAMESPACE = "com.shop.mapper.wms.info.LbProdMapper.";
 
     /**
      * 적치 목록을 페이징하여 조회
