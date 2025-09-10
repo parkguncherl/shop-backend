@@ -56,64 +56,6 @@
         WHERE USER_ID = #{userId}
     </delete>
 
-    <select id="selectPartnerPrint" parameterType="Integer" resultType="com.shop.core.biz.mypage.vo.response.MypageResponse$SelectPartnerPrint">
-        /* com.shop.mapper.mypage.selectPartnerPrint */
-        SELECT
-             ID
-             , PARTNER_ID
-             , FILE_ID
-             , LOGO_PRINT_YN
-             , LOGO_LOC_CD
-             , TITLE_YN
-             , TITLE_MNG
-             , TITLE_NOR
-             , TOP_YN
-             , TOP_MNG
-             , TOP_NOR
-             , BOTTOM_YN
-             , BOTTOM_MNG
-             , BOTTOM_NOR
-        FROM TB_PARTNER_PRINT
-        WHERE PARTNER_ID = #{partnerId}
-    </select>
-
-    <insert id="insertPartnerPrint" parameterType="com.shop.core.biz.mypage.vo.request.MypageRequest$PartnerPrintRequest">
-        /* com.shop.mapper.mypage.insertPartnerPrint */
-        INSERT INTO TB_PARTNER_PRINT (
-            PARTNER_ID
-            , LOGO_PRINT_YN
-            , LOGO_LOC_CD
-            , TITLE_YN
-            , TITLE_MNG
-            , TITLE_NOR
-            , TOP_YN
-            , TOP_MNG
-            , TOP_NOR
-            , BOTTOM_YN
-            , BOTTOM_MNG
-            , BOTTOM_NOR
-            , CRE_USER
-            , CRE_TM
-            , UPD_TM
-        ) VALUES (
-            #{partnerId}
-            , #{logoprintyn}
-            , #{logoLocCd}
-            , #{titleYn}
-            , #{titleMng}
-            , #{titleNor}
-            , #{topYn}
-            , #{topMng}
-            , #{topNor}
-            , #{bottomYn}
-            , #{bottomMng}
-            , #{bottomNor}
-            , #{creUser}
-            , now()
-            , now()
-        )
-    </insert>
-
     <update id="deletePartnerPrint" parameterType="Integer">
         /* com.shop.mapper.mypage.deletePartnerPrint */
         UPDATE TB_PARTNER_PRINT
@@ -121,25 +63,5 @@
         WHERE PARTNER_ID = #{partnerId}
     </update>
 
-    <update id="updatePartnerPrint" parameterType="com.shop.core.biz.mypage.vo.request.MypageRequest$MypagePrintSetUpdateRequest">
-        /* com.shop.mapper.mypage.updatePartnerPrint */
-        UPDATE TB_PARTNER_PRINT
-        SET
-            LOGO_PRINT_YN = #{logoprintyn},
-            TITLE_MNG = #{titleMng},
-            TITLE_NOR = #{titleNor},
-            TOP_MNG = #{topMng},
-            BOTTOM_NOR = #{bottomNor},
-            FILE_ID = #{fileId},
-            LOGO_LOC_CD = #{logoLocCd},
-            TITLE_YN = #{titleYn},
-            TOP_YN = #{topYn},
-            TOP_NOR = #{topNor},
-            BOTTOM_YN = #{bottomYn},
-            BOTTOM_MNG = #{bottomMng},
-            UPD_USER = #{updUser},
-            UPD_TM = NOW()
-        WHERE ID = #{id}
-    </update>
 
 </mapper>

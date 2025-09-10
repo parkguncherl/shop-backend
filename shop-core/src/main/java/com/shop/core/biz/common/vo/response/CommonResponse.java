@@ -1,7 +1,6 @@
 package com.shop.core.biz.common.vo.response;
 
 import com.shop.core.entity.FileDet;
-import com.shop.core.entity.Partner;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;

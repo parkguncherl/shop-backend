@@ -6,7 +6,6 @@ import com.shop.core.biz.system.dao.UserDao;
 import com.shop.core.biz.system.vo.request.UserRequest;
 import com.shop.core.biz.system.vo.response.UserResponse;
 import com.shop.core.entity.User;
-import com.shop.core.entity.Partner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -9,7 +9,6 @@ import com.shop.core.biz.system.vo.request.UserRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.UserResponse;
 import com.shop.core.biz.system.vo.response.UserResponse.SelectByLoginId;
-import com.shop.core.entity.Factory;
 import com.shop.core.entity.User;
 import com.shop.core.enums.*;
 import com.shop.core.exception.CustomRuntimeException;
@@ -23,7 +22,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

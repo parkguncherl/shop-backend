@@ -10,7 +10,6 @@ import com.shop.core.biz.system.vo.request.CodeRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.CodeResponse;
 import com.shop.core.entity.Code;
-import com.shop.core.entity.Logis;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.enums.EsseType;
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <pre>

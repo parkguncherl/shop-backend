@@ -1,6 +1,5 @@
 package com.shop.api.common.controller;
 
-import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.system.service.UserService;
 import com.shop.api.common.service.CommonService;
@@ -12,11 +11,8 @@ import com.shop.core.biz.common.vo.response.CommonResponse;
 import com.shop.core.biz.common.vo.response.GridResponse;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.FileDet;
-import com.shop.core.entity.Partner;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
-import com.shop.core.enums.FilePathType;
-import com.shop.core.enums.GlobalConst;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.core.utils.CommUtil;
 import com.microsoft.azure.storage.file.CloudFile;
@@ -24,19 +20,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <pre>

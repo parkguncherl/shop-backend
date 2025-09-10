@@ -10,21 +10,6 @@
            AND UPPER(column_name) NOT IN ('ID','GEN_CNT','ASN_CNT','OUT_YMD','PARENT_ID', 'ASN_STAT_CD', 'ASN_ORIGIN', 'CRE_USER', 'CRE_TM', 'UPD_USER', 'UPD_TM')
     </select>
 
-    <!-- 전일이후 입하건을 조회해서 입하수량이 부족한 발주건을 조회한다 -->
-    <select id="selectAsnForRemainStock" resultType="com.shop.core.entity.Asn">
-        /* [입하잔량 발주건 조회] com.shop.mapper.batch.selectAsnForRemainStock */
-        SELECT A.ID
-             , A.PARENT_ID
-          FROM TB_STOCK S
-          JOIN TB_ASN A
-            ON S.ASN_ID = A.ID AND A.DEL_YN = 'N'
-         WHERE S.DEL_YN = 'N'
-           AND S.STOCK_YMD >=  (NOW() + INTERVAL '-1 DAY')::DATE  /* 전일이후 입하일자 */
-           AND A.GEN_CNT > S.STOCK_CNT  /* 입하수량이 발주수량보다 적은 경우 */
-           AND A.ASN_STAT_CD = '9'      /* 입하완료 */
-           AND A.ASN_TYPE IN ('1', '9') /* 정상발주, 수선분발주건만 */
-    </select>
-
     <select id="selectAsnCountByParentId" resultType="java.lang.Integer">
         /* [하위 발주건수 조회] com.shop.mapper.batch.selectAsnCountByParentId */
         SELECT COUNT(1)

@@ -1,6 +1,5 @@
 package com.shop.core.biz.notice.vo.request;
 
-import com.shop.core.entity.Factory;
 import com.shop.core.entity.Notice;
 import com.shop.core.interfaces.RequestFilter;
 import io.swagger.v3.oas.annotations.media.Schema;
