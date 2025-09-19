@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  * Description: Amazon SNS 유틸리티
  * Date: 2023/04/27 9:32 AM
  * Company: smart90
- * Author : hyong
+ * Author: hyong
  * </pre>
  */
 

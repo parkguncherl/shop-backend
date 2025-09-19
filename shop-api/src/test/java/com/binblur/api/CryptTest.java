@@ -13,7 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Description: Common 테스트
  * Date: 2023/01/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

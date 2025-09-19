@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
  * Description: Gson LocalDate Adapter
  * Date: 2023/01/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public class LocalDateSerializer implements JsonSerializer<LocalDate> {

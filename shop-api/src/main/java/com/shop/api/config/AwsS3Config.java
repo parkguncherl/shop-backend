@@ -22,7 +22,7 @@ public class AwsS3Config {
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(ACCESS_KEY, SECRET_KEY);
 
         //리전 : 아시아 태평양(서울) ap-northeast-2
-        //arn:aws:s3:::binblur-file
+        //arn:aws:s3:::shop-file
         return S3Client.builder()
                 .region(Region.AP_NORTHEAST_2) // 원하는 리전으로 변경
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))

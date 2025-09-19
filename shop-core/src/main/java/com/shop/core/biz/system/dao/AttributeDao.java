@@ -17,7 +17,7 @@ import java.util.List;
  * <pre>
  * Description: 속성_관리 Dao
  * Company: home
- * Author : park
+ * Author: park
  * </pre>
  */
 @Repository

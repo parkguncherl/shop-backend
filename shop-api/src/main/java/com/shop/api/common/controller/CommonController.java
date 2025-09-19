@@ -34,7 +34,7 @@ import java.util.List;
  * Description: 공통 Controller
  * Date :
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

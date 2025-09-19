@@ -15,7 +15,7 @@ import java.util.List;
  * Description: Paging 기본 Object
  * Date: 2023/02/04 01:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Setter

@@ -12,7 +12,7 @@ import lombok.Setter;
  * Description: 접속로그 Response
  * Date: 2023/03/14 11:58 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

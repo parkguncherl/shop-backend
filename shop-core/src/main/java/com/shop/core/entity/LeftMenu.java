@@ -18,7 +18,7 @@ import java.util.List;
  * Description: 코드_관리 Entity
  * Date: 2023/02/06 12:07 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

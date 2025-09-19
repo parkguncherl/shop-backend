@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Description: 접속로그_관리 Dao
  * Date: 2023/02/14 11:58 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Repository

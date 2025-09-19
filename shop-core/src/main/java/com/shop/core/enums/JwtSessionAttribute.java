@@ -9,7 +9,7 @@ import java.util.Map;
  * Description: JWT Session 속성값
  * Date: 2023/01/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public enum JwtSessionAttribute {

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * Description: 속성접근 Controller
  * Date :
  * Company: "Home
- * Author : park
+ * Author: park
  * </pre>
  */
 @Slf4j

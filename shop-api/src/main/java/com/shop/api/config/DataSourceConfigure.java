@@ -15,7 +15,7 @@ import javax.sql.DataSource;
  * Description: DataSource 설정
  * Date: 2023/12/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

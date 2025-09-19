@@ -22,7 +22,7 @@ import java.time.LocalTime;
  * Description: 배치로그 Entity
  * Date: 2023/04/03 11:04 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

@@ -20,7 +20,7 @@ import java.time.LocalTime;
  * Description: 메뉴_권한 Entity
  * Date: 2023/03/08 10:57 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

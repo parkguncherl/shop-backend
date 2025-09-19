@@ -24,7 +24,7 @@ import java.util.List;
  * Description: 로그인 Response
  * Date: 2023/01/26 12:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

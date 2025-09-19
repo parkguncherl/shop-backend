@@ -23,7 +23,7 @@ import java.util.List;
  * Description: Paging 데이터 Response
  * Date: 2023/02/04 01:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

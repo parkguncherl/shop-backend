@@ -15,7 +15,7 @@ import java.util.Map;
  * Description: 접속 타입 속성값
  * Date: 2023/03/13 17:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public enum NoticeCd implements CodeEnum {

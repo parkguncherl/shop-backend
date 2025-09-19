@@ -15,7 +15,7 @@ import java.sql.SQLException;
  * Description: MyBatis 코드값 처리 핸들러
  * Date: 2023/01/26 12:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public class CodeEnumTypeHandler<E extends Enum <E>> implements TypeHandler <CodeEnum> {

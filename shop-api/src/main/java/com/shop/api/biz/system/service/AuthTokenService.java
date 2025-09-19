@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Description: JWT 인증토큰 Service
  * Date: 2023/01/26 12:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

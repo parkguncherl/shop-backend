@@ -10,7 +10,7 @@ import lombok.Setter;
  * Description: 코드 Response
  * Date: 2023/02/16 14:58 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

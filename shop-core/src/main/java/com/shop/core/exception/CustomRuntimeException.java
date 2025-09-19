@@ -12,7 +12,7 @@ import org.springframework.core.NestedRuntimeException;
  * Description: 커스텀 익셉션
  * Date :
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

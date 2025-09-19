@@ -14,7 +14,7 @@ import java.util.List;
  * Description: smslog Dao
  * Date: 2023/02/14 11:58 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Repository

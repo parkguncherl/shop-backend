@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true">
 
-	<property name="LOG_FILE" value="binblur-api.log" />
+	<property name="LOG_FILE" value="shop-api.log" />
 	<springProfile name="local">
 		<property name="LOG_HOME" value="./logs" />
 		<property name="MAX_HISTORY_DAY" value="0" />

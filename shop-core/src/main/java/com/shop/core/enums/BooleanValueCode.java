@@ -13,7 +13,7 @@ import java.util.Map;
  * Description: Boolean 코드 컬럼
  * Date: 2023/01/26 12:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public enum BooleanValueCode implements CodeEnum {

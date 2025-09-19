@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  * Description: 접속로그 Controller
  * Date: 2023/02/06 11:57 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

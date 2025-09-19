@@ -25,7 +25,7 @@ import java.util.Optional;
  * Description: 계정_만료 Entity
  * Date: 2023/01/26 12:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

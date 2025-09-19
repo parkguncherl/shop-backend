@@ -15,7 +15,7 @@ import java.util.List;
  * <pre>
  * Description: 속성 Request
  * Company: home
- * Author : park
+ * Author: park
  * </pre>
  */
 

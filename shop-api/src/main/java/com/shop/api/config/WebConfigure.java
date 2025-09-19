@@ -28,7 +28,7 @@ import java.util.Locale;
  * Description: 웹MVC 설정
  * Date: 2023/01/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Configuration

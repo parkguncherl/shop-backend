@@ -13,7 +13,7 @@ import java.util.Map;
  * Description: 엑셀컬럼 헤더값모음
  * Date: 2023/03/28 17:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public enum ExcelTitleCode implements CodeEnum {

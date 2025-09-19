@@ -17,7 +17,7 @@ import java.util.Map;
  * Description: JWT 인증토큰 Dao
  * Date: 2022-06-04 오후 1:33
  * Company: TWORUN SOFT
- * Author : hyong
+ * Author: hyong
  * </pre>
  */
 @Repository

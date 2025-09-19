@@ -12,7 +12,7 @@ import lombok.Setter;
  * Description: 공통 Response
  * Date: 2023/04/24 11:35 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

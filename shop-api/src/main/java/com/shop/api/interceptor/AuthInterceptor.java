@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
  * Description: 인증 Interceptor
  * Date: 2023/01/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

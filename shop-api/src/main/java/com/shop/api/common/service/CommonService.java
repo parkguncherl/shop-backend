@@ -52,7 +52,7 @@ import java.util.List;
  * Description: 공통 Service
  * Date: 2024/06/17 11:52 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

@@ -22,7 +22,7 @@ import java.util.List;
  * Description: ENUM Controller
  * Date: 2024/06/18 11:10 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

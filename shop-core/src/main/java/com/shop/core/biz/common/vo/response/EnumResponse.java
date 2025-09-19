@@ -11,7 +11,7 @@ import lombok.Setter;
  * Description: ENUM 정보 Response
  * Date: 2023/02/04 01:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

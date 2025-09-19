@@ -24,7 +24,7 @@ import java.util.List;
  * Description: 사용자 Request
  * Date: 2023/03/15 14:45 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Schema(name = "UserRequest")

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * Description: 접근 로그 어노테이션
  * Date: 2023/03/16 12:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Target({ElementType.METHOD})

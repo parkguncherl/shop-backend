@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
  * Description: 로그인 Response
  * Date: 2023/01/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

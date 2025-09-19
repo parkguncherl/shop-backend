@@ -18,8 +18,8 @@ import java.time.LocalTime;
 /**
  * <pre>
  * Description: 공지사항 Entity
- * Company: binblur
- * Author : park
+ * Company: shop
+ * Author: park
  * </pre>
  */
 @Getter

@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <pre>
  * Description: 속성_관리 Service
  * Company: home
- * Author : park
+ * Author: park
  * </pre>
  */
 @Slf4j

@@ -27,7 +27,7 @@ import java.util.Objects;
  * Description: 접속 로그 Aspect
  * Date: 2023/03/15 23:57 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

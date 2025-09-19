@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * Description: JWT 유저 리졸버
  * Date: 2023/02/14 10:41
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Configuration

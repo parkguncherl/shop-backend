@@ -23,7 +23,7 @@ import java.time.LocalTime;
  * Description: 접속로그 Request
  * Date: 2023/03/13 11:58 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Schema(name = "ContactRequest")

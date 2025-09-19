@@ -16,7 +16,7 @@ import java.io.IOException;
  * Description: Cors 설정
  * Date: 2023/01/28 10:39 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

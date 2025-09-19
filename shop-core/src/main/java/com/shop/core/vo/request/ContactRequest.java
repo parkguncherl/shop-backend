@@ -10,7 +10,7 @@ import lombok.Setter;
  * Description: 접속로그 Request
  * Date: 2023/03/02 11:58 AM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

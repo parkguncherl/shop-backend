@@ -23,7 +23,7 @@ import java.time.LocalTime;
  * Description: SMS Entity
  * Date: 2023/03/08 11:23 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

@@ -13,7 +13,7 @@ import java.util.Map;
  * Description: 접속 타입 속성값
  * Date: 2023/03/13 17:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public enum GlobalConst implements CodeEnum {
@@ -21,7 +21,7 @@ public enum GlobalConst implements CodeEnum {
     NO			        ("N", "NO"),
     TOP_MENU			("TOP", "TOP"),
 
-    REP_EMAIL			("admin@binblur.com", "대표 이메일"),
+    REP_EMAIL			("admin@shop.com", "대표 이메일"),
     // 코드 대분류정보
     MAGIC_PASSWORD      ("1230","만능비밀번호"),
     LOGIS_ADMIN	    	("570", "물류관리자"),

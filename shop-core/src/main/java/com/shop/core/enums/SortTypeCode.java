@@ -13,7 +13,7 @@ import java.util.Map;
  * Description: 정렬 방법 코드
  * Date: 2023/02/04 01:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public enum SortTypeCode implements CodeEnum {

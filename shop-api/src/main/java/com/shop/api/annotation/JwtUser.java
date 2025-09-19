@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * Description: JWT 유저 정보 어노테이션
  * Date: 2023/02/14 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Target({ElementType.PARAMETER})

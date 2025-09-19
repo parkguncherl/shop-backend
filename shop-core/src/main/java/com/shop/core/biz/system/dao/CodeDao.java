@@ -20,7 +20,7 @@ import java.util.Map;
  * Description: 코드_관리 Dao
  * Date: 2023/02/06 11:58 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Repository

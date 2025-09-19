@@ -17,7 +17,7 @@ import org.springframework.http.HttpHeaders;
  * Swagger EndPoint : g
  * Date: 2023/02/15 10:15 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Configuration

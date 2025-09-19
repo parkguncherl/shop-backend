@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  * Description: JWT 인증 Token 엔티티.
  * Date: 2023/01/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

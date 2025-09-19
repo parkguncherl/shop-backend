@@ -18,7 +18,7 @@ import java.time.LocalTime;
  * Description: 로그인 Request
  * Date: 2023/01/26 12:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

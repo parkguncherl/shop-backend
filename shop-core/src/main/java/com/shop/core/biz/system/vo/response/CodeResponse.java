@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  * Description: 코드 Response
  * Date: 2023/02/16 14:58 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

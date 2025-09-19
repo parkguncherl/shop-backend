@@ -13,7 +13,7 @@ import java.util.Map;
  * Description: 체크컬럼 타입
  * Date: 2023/03/13 17:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public enum MailType implements CodeEnum {

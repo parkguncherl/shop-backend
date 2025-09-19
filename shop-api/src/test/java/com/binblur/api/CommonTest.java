@@ -8,7 +8,7 @@ import java.util.OptionalInt;
  * Description:
  * Date: 2023/02/04 4:36 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public class CommonTest {

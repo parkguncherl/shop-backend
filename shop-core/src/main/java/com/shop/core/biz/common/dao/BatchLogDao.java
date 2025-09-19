@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  * Description: 배치로그 Dao
  * Date: 2023/04/03 11:58 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @RequiredArgsConstructor

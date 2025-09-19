@@ -36,7 +36,7 @@ import java.util.Map;
  * Description: 접속로그 Service
  * Date: 2023/02/06 11:57 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

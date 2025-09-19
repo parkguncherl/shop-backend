@@ -37,7 +37,7 @@ import java.util.List;
  * Description: 메뉴접근 권한관리 Controller
  * Date :
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

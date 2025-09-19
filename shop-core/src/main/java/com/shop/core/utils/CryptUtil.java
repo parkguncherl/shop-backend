@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
  * Description: 암복호화 유틸리티
  * Date: 2023/01/26 12:35 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 public class CryptUtil {

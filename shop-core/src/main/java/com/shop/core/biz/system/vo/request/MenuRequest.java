@@ -18,7 +18,7 @@ import java.util.List;
  * Description: 메뉴 Request
  * Date: 2023/02/20 11:58 AM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Schema(name = "MenuRequest")

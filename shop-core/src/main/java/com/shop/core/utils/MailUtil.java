@@ -18,7 +18,7 @@ import java.util.List;
  * Description: 메일 유틸리티
  * Date: 2023/02/10 15:10 PM
  * Company: smart90
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Slf4j

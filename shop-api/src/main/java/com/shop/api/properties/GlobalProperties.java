@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * Description: Global Properties
  * Date: 2023/01/26 12:35 PM
  * Company: smart
- * Author : luckeey
+ * Author: luckeey
  * </pre>
  */
 @Getter

@@ -19,7 +19,7 @@ import java.time.LocalTime;
  * <pre>
  * Description: 속성_관리 Entity
  * Company: home
- * Author : park
+ * Author: park
  * </pre>
  */
 @Getter
