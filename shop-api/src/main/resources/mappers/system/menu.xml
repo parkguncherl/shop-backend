@@ -403,14 +403,4 @@
           AND ID != #{id}
     </select>
 
-    <select id="selectCustomRoles" parameterType="java.lang.Integer" resultType="java.lang.String">
-        /* com.shop.mapper.menu.selectCustomRoles */
-        SELECT  STRING_AGG(UM.MENU_CD, ',')
-          FROM TB_USER_MENU UM
-          JOIN TB_MENU M ON M.MENU_CD = UM.MENU_CD AND M.DEL_YN ='N' AND M.UP_MENU_CD = 'PS' /* 가능이벤트만 */
-         WHERE UM.USER_ID = #{userId}
-           AND UM.AUTH_YN ='Y'
-           AND UM.DEL_YN = 'N'
-    </select>
-
 </mapper>

@@ -163,7 +163,6 @@ public class AuthController {
         //--------------------------------------------------------------------------------
         userResponse.setWorkYmd(updateUser.getWorkYmd());
         userResponse.setFirstWorkYmd(updateUser.getWorkYmd());
-        userResponse.setMyCustomRoles(menuService.selectCustomRoles(userResponse.getId())); // 버튼기능들 추가
         loginResponse.setUser(userResponse);
         loginResponse.setToken(token);
 

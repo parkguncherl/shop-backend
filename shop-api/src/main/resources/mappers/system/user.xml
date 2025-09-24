@@ -196,14 +196,7 @@
              , AUTH_CD               AS authCd
              , WORK_YMD              AS workYmd
              , WORK_LOGIS_ID         AS workLogisId
-             , (SELECT TP.PARTNER_NM FROM TB_PARTNER TP WHERE TP.ID = TU.PARTNER_ID)                         AS partnerNm
-             , (SELECT TP.PARTNER_NM FROM TB_PARTNER TP WHERE TP.ID = TU.ORG_PARTNER_ID)                     AS orgPartnerNm
-             , (SELECT TP.ADD_TIME FROM TB_PARTNER TP WHERE TP.ID = TU.PARTNER_ID)                           AS addTime
-             , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.CRE_USER = XU.LOGIN_ID)                           AS creUser
-             , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.UPD_USER = XU.LOGIN_ID)                           AS updUser
-             , (SELECT TP.UPPER_PARTNER_ID FROM TB_PARTNER TP WHERE TP.ID = TU.PARTNER_ID)                   AS upperPartnerId
              , 0 AS otpSecond
-             , (SELECT X.LOGIS_NM FROM TB_LOGIS X WHERE X.ID = TU.WORK_LOGIS_ID) AS workLogisNm
              , FN_GET_CODE('10020', TU.AUTH_CD) AS authNm
              , FN_GET_CODE('10020', TU.USER_TYPE) AS userTypeNm
              , IS_MOBILE_LOGIN
