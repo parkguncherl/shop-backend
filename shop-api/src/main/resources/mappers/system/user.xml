@@ -449,7 +449,6 @@
             , ( COUNT(1) OVER() )                                                                               AS totalRowCount
             , ROW_NUMBER() OVER(ORDER BY TU.ID ASC)                                                             AS no
             , TU.PHONE_NO                                                                                       AS phoneNo
-            , (SELECT COUNT(M.ID) FROM TB_USER_MENU M WHERE M.USER_ID = TU.ID AND M.DEL_YN = 'N')               AS userAuthCnt
         FROM TB_USER TU
         <if test="filter.partnerId != null and !filter.partnerId.equals('')">
             LEFT JOIN TB_PARTNER TP ON TU.PARTNER_ID = TP.ID

@@ -36,10 +36,6 @@ public class UserResponse {
         @Parameter(description = "NO")
         private Integer no;
 
-        @Schema(description = "소유권한개수")
-        @Parameter(description = "소유권한개수")
-        private Integer userAuthCnt;
-
         @Schema(description = "상태_명")
         @Parameter(description = "상태_명")
         private String useNm;
