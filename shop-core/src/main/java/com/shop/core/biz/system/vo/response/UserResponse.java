@@ -94,31 +94,8 @@ public class UserResponse {
          * 2: 화주가 도매로 로그인
          * 3: 도매
          * */
-        @Schema(description = "로그인 화주권한 구분")
-        @Parameter(description = "로그인 화주권한 구분")
-        private String loginPartnerType;
-
         @Schema(description = "나의 가능한 기능들")
         private String myCustomRoles;
-
-        @Schema(description = "SELLER1 구분값")
-        private String seller1;
-
-        @Schema(description = "SELLER2 구분값")
-        private String seller2;
-
-        @Schema(description = "sku1 구분값")
-        private String sku1;
-
-        @Schema(description = "sku2 구분값")
-        private String sku2;
-
-        @Schema(description = "factory1 구분값")
-        private String factory1;
-
-        @Schema(description = "factory2 구분값")
-        private String factory2;
-
 
         /** 등록일시 */
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")

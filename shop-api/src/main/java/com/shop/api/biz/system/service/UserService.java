@@ -90,7 +90,8 @@ public class UserService {
      * @return
      */
     public UserResponse.SelectByLoginId selectUserByLoginIdForLogin(String loginId) {
-        return userDao.selectUserByLoginIdForLogin(loginId);
+        UserResponse.SelectByLoginId result = userDao.selectUserByLoginIdForLogin(loginId);
+        return result;
     }
 
     /**
