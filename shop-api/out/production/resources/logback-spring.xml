@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+	<property name="LOG_FILE" value="shop-api.log" />
+	<springProfile name="local">
+		<property name="LOG_HOME" value="./logs" />
+		<property name="MAX_HISTORY_DAY" value="0" />
+	</springProfile>
+	<springProfile name="dev">
+		<property name="LOG_HOME" value="./logs" />
+		<property name="MAX_HISTORY_DAY" value="10" />
+	</springProfile>
+	<springProfile name="prod">
+		<property name="LOG_HOME" value="./logs" />
+		<property name="MAX_HISTORY_DAY" value="30" />
+	</springProfile>
+
+	<!-- Send debug messages to System.out -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%line] [%thread] %-5level %logger{5} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 특정 쿼리 나오지 않게-->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+			<evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
+				<expression>
+					return message.contains("selectUserById") || message.contains("insertContact") || message.contains("selectAuthTokenByUserId") || message.contains("selectUserByLoginId") || message.contains("selectMenuListForUser") || message.contains("selectMenuList") || message.contains("selectGridColum") || message.contains("selectPartnerById");
+				</expression>
+			</evaluator>
+			<OnMatch>DENY</OnMatch>
+			<OnMismatch>NEUTRAL</OnMismatch>
+		</filter>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%line] [%thread] %-5level %logger{5} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/${LOG_FILE}</file>
+
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<charset>UTF-8</charset>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%line] [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/${LOG_FILE}.%d{yyyy-MM-dd}_%i</fileNamePattern>
+
+			<!-- each file should be at most 1024MB, keep 30 days worth of history -->
+			<maxHistory>${MAX_HISTORY_DAY}</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>1024MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<springProfile name="local">
+		<logger name="com.readyfour" level="DEBUG" />
+		<logger name="jdbc" level="WARN" />
+		<logger name="jdbc.connection" level="WARN" />
+		<logger name="jdbc.sqlonly" level="WARN" />
+		<logger name="jdbc.sqltiming" level="DEBUG" />
+		<logger name="jdbc.audit" level="WARN" />
+		<logger name="jdbc.resultset" level="WARN" />
+		<logger name="jdbc.resultsettable" level="WARN" />
+		<logger name="com.redis.cluster" level="INFO" />
+		<logger name="com.amazonaws.auth" level="debug" />
+		<logger name="org.mybatis.spring.SqlSessionUtils" level="WARN" />
+		<logger name="org.springframework.security" level="INFO" />
+		<logger name="org.springframework.web.servlet.mvc.method.annotation" level="WARN" />
+		<logger name="org.apache.http" level="WARN" />
+		<logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO"/>
+		<root level="DEBUG">
+			<appender-ref ref="STDOUT"/>
+			<!--<appender-ref ref="FILE" />-->
+		</root>
+	</springProfile>
+
+	<springProfile name="local-dev">
+		<logger name="com.readyfour" level="DEBUG" />
+		<logger name="jdbc" level="WARN" />
+		<logger name="jdbc.connection" level="WARN" />
+		<logger name="jdbc.sqlonly" level="WARN" />
+		<logger name="jdbc.sqltiming" level="DEBUG" />
+		<logger name="jdbc.audit" level="WARN" />
+		<logger name="jdbc.resultset" level="WARN" />
+		<logger name="jdbc.resultsettable" level="WARN" />
+		<logger name="com.redis.cluster" level="INFO" />
+		<logger name="com.amazonaws.auth" level="debug" />
+		<logger name="org.mybatis.spring.SqlSessionUtils" level="WARN" />
+		<logger name="org.springframework.security" level="INFO" />
+		<logger name="org.springframework.web.servlet.mvc.method.annotation" level="WARN" />
+		<logger name="org.apache.http" level="WARN" />
+		<logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO"/>
+		<root level="DEBUG">
+			<appender-ref ref="STDOUT"/>
+			<!--<appender-ref ref="FILE" />-->
+		</root>
+	</springProfile>
+
+	<springProfile name="dev">
+		<logger name="com.readyfour" level="DEBUG" />
+		<logger name="jdbc" level="WARN" />
+		<logger name="jdbc.connection" level="WARN" />
+		<logger name="jdbc.sqlonly" level="WARN" />
+		<logger name="jdbc.sqltiming" level="DEBUG" />
+		<logger name="jdbc.audit" level="WARN" />
+		<logger name="jdbc.resultset" level="WARN" />
+		<logger name="jdbc.resultsettable" level="WARN" />
+		<logger name="com.redis.cluster" level="INFO" />
+		<logger name="com.amazonaws.auth" level="debug" />
+		<logger name="org.mybatis.spring.SqlSessionUtils" level="WARN" />
+		<logger name="org.springframework.security" level="INFO" />
+		<logger name="org.springframework.web.servlet.mvc.method.annotation" level="WARN" />
+		<logger name="org.apache.http" level="WARN" />
+		<logger name="com.zaxxer.hikari.pool.HikariPool" level="DEBUG"/>
+		<root level="DEBUG">
+			<appender-ref ref="STDOUT"/>
+			<appender-ref ref="FILE" />
+		</root>
+	</springProfile>
+
+	<springProfile name="prod">
+		<logger name="com.readyfour" level="INFO" />
+		<logger name="jdbc" level="OFF" />
+		<logger name="jdbc.connection" level="OFF" />
+		<logger name="jdbc.sqlonly" level="OFF" />
+		<logger name="jdbc.sqltiming" level="WARN" />
+		<logger name="jdbc.audit" level="OFF" />
+		<logger name="jdbc.resultset" level="OFF" />
+		<logger name="jdbc.resultsettable" level="OFF" />
+		<logger name="org.springframework" level="INFO"/>
+		<logger name="com.zaxxer.hikari.pool.HikariPool" level="DEBUG"/>
+		<logger name="org.mybatis.spring.SqlSessionUtils" level="WARN" />
+		<logger name="org.springframework.security.web" level="WARN" />
+		<logger name="org.springframework.web.servlet.mvc.method.annotation" level="WARN" />
+		<logger name="org.springframework.web.servlet.view.tiles3.TilesView" level="WARN" />
+		<logger name="org.apache.http" level="WARN" />
+		<root level="INFO">
+			<!--appender-ref ref="STDOUT"/-->
+			<appender-ref ref="FILE" />
+		</root>
+	</springProfile>
+
+</configuration>
+

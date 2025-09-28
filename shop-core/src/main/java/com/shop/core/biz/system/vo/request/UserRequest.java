@@ -57,10 +57,6 @@ public class UserRequest {
         @Parameter(description = "회사_명")
         private String compNm;
 
-        @Schema(description = "파트너명")
-        @Parameter(description = "파트너명")
-        private String partnerNm;
-
         @Schema(description = "사용자구분")
         @Parameter(description = "사용자구분")
         private String omsWmsTp;
@@ -89,9 +85,6 @@ public class UserRequest {
         @Parameter(description = "파트너_ID")
         private Integer partnerId;
 
-        @Schema(description = "WORK_LOGIS_ID(FK)")
-        @Parameter(description = "WORK_LOGIS_ID(FK)")
-        private Integer workLogisId;
         /**
          * 검색 제외 아이디
          */
@@ -182,10 +175,6 @@ public class UserRequest {
         @Parameter(description = "영업일")
         private LocalDate workYmd;
 
-        @Schema(description = "WORK_LOGIS_ID(FK)")
-        @Parameter(description = "WORK_LOGIS_ID(FK)")
-        private Integer workLogisId;
-
         public User toEntity() {
             return User.builder()
                 .loginId(getLoginId())
@@ -195,7 +184,6 @@ public class UserRequest {
                 .orgPartnerId(getOrgPartnerId())
                 .authCd(getAuthCd())
                 .phoneNo(getPhoneNo())
-                .partnerNm(getCompNm())
                 .belongNm(getBelongNm())
                 .deptNm(getDeptNm())
                 .positionNm(getPositionNm())
@@ -210,7 +198,6 @@ public class UserRequest {
                 .useYn(getUseYn())
                 .lockYn(getLockYn())
                 .workYmd(getWorkYmd())
-                .workLogisId(getWorkLogisId())
                 .userType(getUserType())
                 .build();
         }
@@ -228,8 +215,6 @@ public class UserRequest {
         @Schema(description = "로그인_아이디")
         private String loginId;
 
-        @Schema(description = "LOGIS_ID(FK)")
-        private Integer logisId;
 
         //@JsonIgnore : 주석풀면 등록 시 컬럼값 NULL 처리됨 (주의)
         @Schema(description = "로그인_비밀번호")
@@ -307,10 +292,6 @@ public class UserRequest {
         @Parameter(description = "영업일")
         private LocalDate workYmd;
 
-        @Schema(description = "WORK_LOGIS_ID(FK)")
-        @Parameter(description = "WORK_LOGIS_ID(FK)")
-        private Integer workLogisId;
-
         public User toEntity() {
             return User.builder()
                 .id(getId())
@@ -337,7 +318,6 @@ public class UserRequest {
                 .partnerId(getPartnerId())
                 .orgPartnerId(getOrgPartnerId())
                 .workYmd(getWorkYmd())
-                .workLogisId(getWorkLogisId())
                 .build();
         }
     }

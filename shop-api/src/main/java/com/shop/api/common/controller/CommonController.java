@@ -1,9 +1,7 @@
 package com.shop.api.common.controller;
 
 import com.shop.api.annotation.JwtUser;
-import com.shop.api.biz.system.service.UserService;
 import com.shop.api.common.service.CommonService;
-import com.shop.api.common.service.FileService;
 import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.request.GridRequest;
@@ -45,9 +43,7 @@ import java.util.List;
 public class CommonController {
 
     private final CommonService commonService;
-    private final UserService userService;
     private final FileDao fileDao;
-    private final FileService fileService;
 
     /**
      * 개별_파일_조회
@@ -55,7 +51,6 @@ public class CommonController {
     @GetMapping(value = "/file")
     @Operation(summary = "개별 파일 조회")
     public ApiResponse<CommonResponse.SelectFile> selectFileByUk(
-        @Parameter(hidden = true) @JwtUser User jwtUser,
         @Parameter(name = "CommonRequestSelectFile", description = "개별 파일 조회 Request", in = ParameterIn.PATH) CommonRequest.SelectFile commonRequest
     ) {
         // 필수값 체크

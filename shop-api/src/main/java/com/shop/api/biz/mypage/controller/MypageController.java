@@ -1,27 +1,22 @@
-package com.binblur.api.biz.mypage.controller;
+package com.shop.api.biz.mypage.controller;
 
-import com.binblur.api.annotation.JwtUser;
-import com.binblur.api.biz.mypage.service.MypageService;
-import com.binblur.api.biz.partner.service.PartnerService;
-import com.binblur.api.biz.system.service.UserService;
-import com.binblur.core.biz.mypage.vo.request.FavoritesRequest;
-import com.binblur.core.biz.mypage.vo.request.MypageRequest;
-import com.binblur.core.biz.mypage.vo.response.FavoritesResponse;
-import com.binblur.core.biz.mypage.vo.response.MypageResponse;
-import com.binblur.core.biz.partner.dao.PartnerDao;
-import com.binblur.core.biz.system.vo.request.LoginRequest;
-import com.binblur.core.biz.system.vo.request.UserRequest;
-import com.binblur.core.biz.system.vo.response.ApiResponse;
-import com.binblur.core.biz.system.vo.response.UserResponse;
-import com.binblur.core.entity.Favorites;
-import com.binblur.core.entity.Partner;
-import com.binblur.core.entity.User;
-import com.binblur.core.enums.ApiResultCode;
-import com.binblur.core.enums.EsseType;
-import com.binblur.core.enums.GlobalConst;
-import com.binblur.core.exception.CustomRuntimeException;
-import com.binblur.core.utils.CommUtil;
-import com.binblur.core.utils.CryptUtil;
+import com.shop.api.annotation.JwtUser;
+import com.shop.api.biz.mypage.service.MypageService;
+import com.shop.api.biz.system.service.UserService;
+import com.shop.core.biz.mypage.vo.request.FavoritesRequest;
+import com.shop.core.biz.mypage.vo.response.FavoritesResponse;
+import com.shop.core.biz.system.vo.request.LoginRequest;
+import com.shop.core.biz.system.vo.request.UserRequest;
+import com.shop.core.biz.system.vo.response.ApiResponse;
+import com.shop.core.biz.system.vo.response.UserResponse;
+import com.shop.core.entity.Favorites;
+import com.shop.core.entity.User;
+import com.shop.core.enums.ApiResultCode;
+import com.shop.core.enums.EsseType;
+import com.shop.core.enums.GlobalConst;
+import com.shop.core.exception.CustomRuntimeException;
+import com.shop.core.utils.CommUtil;
+import com.shop.core.utils.CryptUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,8 +45,6 @@ public class MypageController {
 
     private final MypageService mypageService;
     private final UserService userService;
-    private final PartnerDao partnerDao;
-    private final PartnerService partnerService;
 
 
     /**
@@ -183,14 +176,6 @@ public class MypageController {
 
         User user = userService.selectUserByLoginId(jwtUser.getLoginId());
 
-        // 물류계정권한인 사람이
-        if(Objects.equals(user.getUserType(), "5")){
-            // 원래 파트너id 가 0이었는데 수정들어온게 0보다 크면
-            if(Objects.nonNull(request.getOrgPartnerId()) && request.getOrgPartnerId() > 0){
-                request.setAuthCd(GlobalConst.PARTNER.getCode()); // 화주로 변경한다.
-            }
-        }
-
         // 계정_수정
         Integer updateCount = userService.updateUser(request);
         if (updateCount == 0) {
@@ -199,113 +184,6 @@ public class MypageController {
 
         return new ApiResponse<>(ApiResultCode.SUCCESS_CHANGE_USER_INFO);
     }
-
-    /**
-     * 사용자 전표양식 조회
-     * @param partnerId
-     * @return ApiResponse
-     */
-    @GetMapping(value = "/partner/print")
-    @Operation(summary = "사용자 전표양식 조회")
-    public ApiResponse<MypageResponse.SelectPartnerPrint> selectPartnerPrint (
-            @RequestParam(required = false) Integer partnerId) {  // partnerId를 필수 파라미터로 받음
-
-        if (partnerId == null || partnerId == 0) {
-            throw new CustomRuntimeException(ApiResultCode.FAIL, "파트너id 는 필수 값입니다.");
-        }
-
-        // OMS의 경우 세션에 파트너아이디가 있지만 WMS의 경우 파트너아이디가 없어 직접 파라미터를 전달받아야 한다.
-        // MypageResponse.SelectPartnerPrint response = mypageService.selectPartnerPrint(user.getPartnerId());
-        MypageResponse.SelectPartnerPrint response = mypageService.selectPartnerPrint(partnerId);
-
-        if (response == null) {
-            throw new CustomRuntimeException(ApiResultCode.FAIL);
-        }
-
-        Partner partner = partnerService.selectPartnerById(partnerId);
-        response.setSamplePrnYn(partner.getSamplePrnYn());
-        response.setCompPrnCd(partner.getCompPrnCd());
-        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
-    }
-
-    /**
-     * 사용자 전표설정 조회
-     * @param partnerId
-     * @return ApiResponse
-     */
-    @GetMapping(value = "/partner/printInfo")
-    @Operation(summary = "사용자 전표설정 조회")
-    public ApiResponse<MypageResponse.SelectPartnerPrintInfo> selectPartnerPrintInfo (
-            @RequestParam(required = false) Integer partnerId
-    ){
-        // 파트너아이디로 조회
-        if(partnerId != null && partnerId > 0) {
-            MypageResponse.SelectPartnerPrintInfo response = mypageService.selectPartnerPrintInfo(partnerId);
-
-            if (response == null) {
-                throw new CustomRuntimeException(ApiResultCode.FAIL);
-            }
-            return new ApiResponse<>(ApiResultCode.SUCCESS, response);
-        } else {
-            return new ApiResponse<>(ApiResultCode.FAIL, "파트너 id 가 존재하지 않습니다.");
-        }
-
-    }
-
-    /**
-     * 사용자 전표양식 수정
-     * @param jwtUser
-     * @param request
-     * @return ApiResponse
-     */
-    @PutMapping(value = "/partner/print")
-    @Operation(summary = "사용자 전표양식 수정")
-    public ApiResponse updatePartnerPrint(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "사용자 전표양식 수정") @RequestBody MypageRequest.MypagePrintSetUpdateRequest request
-    ) {
-        // 필수값 체크
-        if (StringUtils.isEmpty(request.getLogoprintyn()) || StringUtils.isEmpty(request.getTitleMng()) || StringUtils.isEmpty(request.getTopMng()) || StringUtils.isEmpty(request.getBottomNor())) {
-            throw new CustomRuntimeException(ApiResultCode.FAIL);
-        }
-
-        // 세션정보를 이용해서 수정자 세팅
-        request.setUpdUser(jwtUser.getLoginId());
-
-        // 수정
-        Integer updateCount = mypageService.updatePartnerPrint(request);
-        if (updateCount == 0) {
-            throw new CustomRuntimeException(ApiResultCode.FAIL_UPDATE);
-        }
-
-        return new ApiResponse<>(ApiResultCode.SUCCESS);
-    }
-
-    /**
-     * 사용자 전표설정 수정
-     * @param jwtUser
-     * @param request
-     * @return ApiResponse
-     */
-    @PutMapping(value = "/partner/printInfo")
-    @Operation(summary = "사용자 전표설정 수정")
-    public ApiResponse updatePartnerPrintInfo(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "사용자 전표양식 수정") @RequestBody Partner request
-            ) {
-
-        // 세션정보를 이용해서 수정자 세팅
-        request.setUpdUser(jwtUser.getLoginId());
-
-        // 수정
-        Integer updateCount = mypageService.updatePartnerPrintInfo(request);
-        if (updateCount == 0) {
-            throw new CustomRuntimeException(ApiResultCode.FAIL_UPDATE);
-        }
-
-        return new ApiResponse<>(ApiResultCode.SUCCESS);
-    }
-
 
     /**
      * 즐겨찾기 일괄 등록

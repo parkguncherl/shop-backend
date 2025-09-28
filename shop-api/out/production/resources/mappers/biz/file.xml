@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.file">
+    <select id="selectFileList" resultType="com.shop.core.entity.FileDet">
+        /* com.shop.mapper.file.selectFileList */
+        SELECT
+            FILE_ID     AS fileid,
+            FILE_SEQ    AS fileseq,
+            SYS_FILE_NM AS sysFileNm,
+            FILE_EXT    AS fileext,
+            FILE_NM     AS filenm,
+            FILE_SIZE   AS filesize
+        FROM
+            TB_FILE_DET
+        WHERE
+            FILE_ID = #{fileId}
+         AND
+            DEL_YN = 'N'
+        ORDER BY
+            FILE_SEQ ASC  -- 최신 등록 순으로 정렬
+    </select>
+
+    <!-- 파일 상세 조회 -->
+    <select id="selectFileDet" resultType="com.shop.core.entity.FileDet">
+        /* com.shop.mapper.file.selectFileDet */
+        SELECT
+            FILE_ID     AS fileId,
+            FILE_SEQ    AS fileSeq,
+            BUCKET_NAME AS bucketName,
+            SYS_FILE_NM AS sysFileNm,
+            FILE_EXT    AS fileExt,
+            FILE_NM     AS fileNm,
+            FILE_SIZE   AS fileSize
+        FROM
+            TB_FILE_DET
+        WHERE
+            FILE_ID = #{fileId}
+        <if test="fileSeq != null and fileSeq != ''">
+            AND FILE_SEQ = #{fileSeq}
+        </if>
+        <if test="key != null and key != ''">
+            AND SYS_FILE_NM = #{key}
+        </if>
+        AND DEL_YN = 'N'
+    </select>
+
+    <!-- 파일 등록 -->
+    <insert id="insertFile" parameterType="com.shop.core.entity.FileMng" useGeneratedKeys="true" keyProperty="id">
+        /* com.shop.mapper.file.insertFile */
+        INSERT INTO TB_FILE (
+                 FILE_TYPE
+               , CRE_USER
+               , CRE_TM
+               , UPD_USER
+               , UPD_TM
+        ) VALUES (
+                 #{fileType}
+               , #{creUser}
+               , NOW()          -- 현재 시간으로 생성일시 설정
+               , #{updUser}
+               , NOW()          -- 현재 시간으로 수정일시 설정
+        )
+    </insert>
+
+    <select id="selectMaxFileSeq" parameterType="Integer" resultType="Integer">
+        /* com.shop.mapper.file.selectMaxFileSeq */
+        SELECT COALESCE(MAX(FILE_SEQ), 0) + 1 FROM TB_FILE_DET WHERE FILE_ID =  #{fileId}
+    </select>
+
+    <!-- 파일 상세등록 -->
+    <insert id="insertFileDet" parameterType="com.shop.core.entity.FileDet">
+        /* com.shop.mapper.file.insertFileDet */
+        INSERT INTO TB_FILE_DET (
+              FILE_ID
+            , FILE_SEQ
+            , BUCKET_NAME
+            , SYS_FILE_NM
+            , FILE_EXT
+            , FILE_NM
+            , FILE_SIZE
+            , CRE_USER
+            , CRE_TM
+            , UPD_USER
+            , UPD_TM
+        ) VALUES (
+              #{fileId}
+            , #{fileSeq}
+            , #{bucketName}
+            , #{sysFileNm}
+            , #{fileExt}
+            , #{fileNm}
+            , #{fileSize}
+            , #{creUser}
+            , NOW()
+            , #{updUser}
+            , NOW()
+         )
+    </insert>
+
+    <!-- 공지사항 삭제 -->
+    <update id="deleteFile">
+        /* com.shop.mapper.file.deleteFile */
+        UPDATE TB_FILE
+           SET DEL_YN = 'Y'
+             , UPD_USER = #{updUser}
+        WHERE id = #{id}  -- 삭제할  ID
+    </update>
+
+    <update id="deleteFileDet">
+        /* com.shop.mapper.file.deleteFileDet */
+         UPDATE TB_FILE_DET
+            SET DEL_YN='Y'
+                , UPD_USER = #{updUser}
+                , UPD_TM = NOW()
+        WHERE id = #{id}  -- 삭제할 ID
+    </update>
+
+    <update id="deleteFileDetByUk">
+        /* com.shop.mapper.file.deleteFileDetByUk */
+        UPDATE TB_FILE_DET
+           SET DEL_YN = 'Y'
+             , UPD_USER = #{updUser}
+         WHERE FILE_ID = #{fileId}  -- 삭제할 ID
+           AND FILE_SEQ = #{fileSeq}
+    </update>
+
+    <update id="deleteFileDetByKey">
+        /* com.shop.mapper.file.deleteFileDetByKey */
+        UPDATE TB_FILE_DET
+        SET DEL_YN = 'Y'
+          , UPD_USER = #{updUser}
+        WHERE FILE_ID = #{fileId}
+          AND SYS_FILE_NM = #{sysFileNm}
+    </update>
+
+    <update id="deleteFileDetAll" parameterType="integer">
+        /* com.shop.mapper.file.deleteFileDet */
+        UPDATE TB_FILE_DET
+           SET DEL_YN='Y'
+             , UPD_USER = #{updUser}
+         WHERE FILE_ID = #{fileId}  -- 삭제할 ID ( 여러건 삭제)
+    </update>
+
+    <update id="updateFileDet" parameterType="com.shop.core.entity.FileDet">
+        /* com.shop.mapper.file.updateFileDet */
+        UPDATE TB_FILE_DET
+            SET UPD_USER = #{updUser}
+                , UPD_TM = NOW()
+        <if test="fileSeq != null">
+                , FILE_SEQ = #{fileSeq}
+        </if>
+        <if test="sysFileNm != null">
+                , SYS_FILE_NM = #{sysFileNm}
+        </if>
+        <if test="fileExt != null">
+                , FILE_EXT = #{fileExt}
+        </if>
+        <if test="fileNm != null">
+                , FILE_NM = #{fileNm}
+        </if>
+        WHERE FILE_ID = #{fileId}
+            AND SYS_FILE_NM = #{sysFileNm}
+    </update>
+
+</mapper>

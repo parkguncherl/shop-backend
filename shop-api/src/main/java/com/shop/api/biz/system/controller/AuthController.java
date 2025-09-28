@@ -163,7 +163,6 @@ public class AuthController {
         //--------------------------------------------------------------------------------
         userResponse.setWorkYmd(updateUser.getWorkYmd());
         userResponse.setFirstWorkYmd(updateUser.getWorkYmd());
-        userResponse.setMyCustomRoles(menuService.selectCustomRoles(userResponse.getId())); // 버튼기능들 추가
         loginResponse.setUser(userResponse);
         loginResponse.setToken(token);
 
@@ -504,30 +503,6 @@ public class AuthController {
         }
     }
 
-
-    /**
-     * 물류센터 변경
-     *
-     * @return void
-     */
-    @GetMapping(value = "/changeLogisId/{id}")
-    @Operation(summary = "변경 물류센터")
-    public ApiResponse changeLogisId(@Parameter(hidden = true) @JwtUser User jwtUser,
-                                     @Parameter(description = "계정 아이디") @PathVariable String id) {
-
-        UserRequest.Update updateUser = new UserRequest.Update();
-        updateUser.setId(jwtUser.getId());
-        updateUser.setWorkLogisId(Integer.parseInt(id));
-        updateUser.setUpdUser(jwtUser.getLoginId());
-        if(userService.updateUserLogisId(updateUser).compareTo(0) > 0){
-            return new ApiResponse<>(ApiResultCode.SUCCESS);
-        } else {
-            return new ApiResponse<>(ApiResultCode.FAIL);
-        }
-    }
-
-
-
     /**
      * 계정별 메뉴 권한 체크
      *
@@ -537,12 +512,14 @@ public class AuthController {
      */
     @GetMapping(value = "/check/menu")
     @Operation(summary = "계정별 메뉴 권한 체크")
-    public ApiResponse<AuthResponse.MenuAuth> checkAuthMenu(@Parameter(hidden = true) @JwtUser User jwtUser, String menuUri) {
+    public ApiResponse<AuthResponse.MenuAuth> checkAuthMenu(@Parameter(hidden = true) @JwtUser User jwtUser,
+                                                            @RequestParam("menuUri") String menuUri
+    ) {
         AuthResponse.MenuAuth defaultAuth = new AuthResponse.MenuAuth();
         defaultAuth.setMenuReadYn("Y");
         defaultAuth.setMenuUpdYn("N");
         defaultAuth.setMenuExcelYn("N");
-        if(StringUtils.equalsAny(menuUri,"/", "/wmsIndex", "/oms/orderInfo/today" )) {
+        if(StringUtils.equalsAny(menuUri,"/" )) {
             defaultAuth.setMenuNm("mainPage");
         }
 

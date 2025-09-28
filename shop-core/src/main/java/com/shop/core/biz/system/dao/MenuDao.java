@@ -136,17 +136,6 @@ public class MenuDao {
     }
 
     /**
-     * 권한(기능)
-     *
-     * @param userId
-     * @return
-     */
-    public String selectCustomRoles(Integer userId) {
-        return sqlSession.selectOne(PRE_NS.concat("selectCustomRoles"), userId);
-    }
-
-
-    /**
      * 특정 사용자의 특정 권한(메뉴) 조회
      *
      * @param menu
@@ -307,18 +296,6 @@ public class MenuDao {
     public AuthResponse.MenuAuth selectMenuAuthYn(AuthRequest.MenuAuth authRequest) {
         return sqlSession.selectOne(PRE_NS.concat("selectMenuAuthYn"), authRequest);
     }
-
-
-    /**
-     * 계정별 메뉴 권한 플래그 조회 for oms
-     *
-     * @param authRequest
-     * @return
-     */
-    public AuthResponse.MenuAuth selectMenuAuthYnForOms(AuthRequest.MenuAuth authRequest) {
-        return sqlSession.selectOne(PRE_NS.concat("selectMenuAuthYnForOms"), authRequest);
-    }
-
 
     public Integer selectCheckMenuCount(String menuUri) {
         return sqlSession.selectOne(PRE_NS.concat("selectCheckMenuCount"), menuUri);

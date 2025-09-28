@@ -209,16 +209,6 @@ public class UserDao {
     }
 
     /**
-     * 영업일 변경
-     *
-     * @param user
-     * @return
-     */
-    public Integer updateUserLogisId(User user) {
-        return sqlSession.update(PRE_NS.concat("updateUserLogisId"), user);
-    }
-
-    /**
      * 계정_삭제
      *
      * @param user
@@ -364,44 +354,6 @@ public class UserDao {
         params.put("authCd", authCd);
 
         return sqlSession.selectList(PRE_NS.concat("selectDesinerUserList"), params);
-    }
-
-    /**
-     * 계정 목록조회 (물류계정 500번대 조회)
-     * @return
-     */
-    public List<User> selectInstockUserList(Integer workLogisId) {
-        return sqlSession.selectList(PRE_NS.concat("selectInstockUserList"), workLogisId);
-    }
-
-
-
-    /**
-     * 탈퇴(삭제)계정 생성
-     *
-     * @param userId
-     * @param LoginId
-     * @return
-     */
-    public Integer createAuthForPartner(Integer userId, String LoginId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("userId", userId);
-        params.put("creUsr", LoginId);
-        return sqlSession.insert(PRE_NS.concat("createAuthForPartner"), params);
-    }
-
-    /**
-     * 탈퇴(삭제)계정 생성
-     *
-     * @param userId
-     * @param LoginId
-     * @return
-     */
-    public Integer updateAuthForDelete(Integer userId, String LoginId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("userId", userId);
-        params.put("updUsr", LoginId);
-        return sqlSession.insert(PRE_NS.concat("updateAuthForDelete"), params);
     }
 
 }

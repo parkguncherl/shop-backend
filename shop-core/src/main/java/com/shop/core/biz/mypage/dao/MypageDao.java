@@ -1,10 +1,7 @@
-package com.binblur.core.biz.mypage.dao;
+package com.shop.core.biz.mypage.dao;
 
-import com.binblur.core.biz.mypage.vo.request.FavoritesRequest;
-import com.binblur.core.biz.mypage.vo.response.FavoritesResponse;
-import com.binblur.core.biz.mypage.vo.response.MypageResponse;
-import com.binblur.core.entity.PartnerPrint;
-import com.binblur.core.entity.Notice;
+import com.shop.core.biz.mypage.vo.request.FavoritesRequest;
+import com.shop.core.biz.mypage.vo.response.FavoritesResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
@@ -27,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MypageDao {
 
-    private final String PRE_NS = "com.binblur.mapper.mypage.";
+    private final String PRE_NS = "com.shop.mapper.mypage.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;
@@ -42,50 +39,4 @@ public class MypageDao {
         return sqlSession.selectList(PRE_NS.concat("selectFavorites"), favoritesListRequest);
     }
 
-    /**
-     * 사용자 전표양식 조회
-     * @param partnerId
-     * @return
-     */
-    public MypageResponse.SelectPartnerPrint selectPartnerPrint(Integer partnerId) {
-        return sqlSession.selectOne(PRE_NS.concat("selectPartnerPrint"), partnerId);
-    }
-
-    /**
-     * 사용자 전표양식 생성
-     * @param mypageRequest
-     * @return
-     */
-    public Integer insertPartnerPrint(PartnerPrint mypageRequest) {
-        return sqlSession.insert(PRE_NS.concat("insertPartnerPrint"), mypageRequest);
-    }
-
-    /**
-     * 사용자 전표양식 삭제 (by partnerId)
-     *
-     * @param partnerId
-     * @return
-     */
-    public Integer deletePartnerPrint(Integer partnerId) {
-        return sqlSession.update(PRE_NS.concat("deletePartnerPrint"), partnerId);
-    }
-
-    /**
-     * 사용자 전표양식 수정
-     *
-     * @param request
-     * @return
-     */
-    public Integer updatePartnerPrint(PartnerPrint request) {
-        return sqlSession.update(PRE_NS.concat("updatePartnerPrint"), request);
-    }
-
-    /**
-     * 스티커 데이터 생성
-     * @param request
-     * @return
-     */
-    public Integer insertStickerData(Notice request) {
-        return sqlSession.insert(PRE_NS.concat("insertStickerData"), request);
-    }
 }

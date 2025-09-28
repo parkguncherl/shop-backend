@@ -126,40 +126,6 @@ public class UserController {
         return new ApiResponse<>(ApiResultCode.SUCCESS, userResponse350);
     }
 
-    @GetMapping(value = "/mulyu")
-    @Operation(summary = "계정 목록조회 (입하작업자 조회)")
-    public ApiResponse<List<User>> selectInstockUserList(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
-            @RequestParam(required = false) Integer workLogisId
-    ) {
-        // 500번대 조건으로 조회
-        List<User> userResponse500 = userService.selectInstockUserList(workLogisId);
-        if (userResponse500 == null || userResponse500.isEmpty()) {
-            return new ApiResponse<>(ApiResultCode.NOT_FOUND_USER);
-        }
-        return new ApiResponse<>(ApiResultCode.SUCCESS, userResponse500);
-    }
-
-    /**
-     * 계정 목록조회 (designer 조회 - 399)
-     * @param partnerId
-     * @return
-     */
-    @GetMapping(value = "/partner/{partnerId}")
-    @Operation(summary = "계정 목록조회 (399 화주이하 조회)")
-    public ApiResponse<List<User>> selectDesinerUserList399(
-            @PathVariable Integer partnerId  // partnerId를 경로 파라미터로 받음
-    ) {
-        // 399 조건으로 조회
-        List<User> userResponse399 = userService.selectDesinerUserListByAuth399(partnerId);
-        if (userResponse399 == null || userResponse399.isEmpty()) {
-            return new ApiResponse<>(ApiResultCode.NOT_FOUND_USER);  // 계정 목록이 없을 경우
-        }
-        return new ApiResponse<>(ApiResultCode.SUCCESS, userResponse399);  // 결과 반환
-    }
-
-
-
     /**
      * 계정관리_조회 (by LoginId)
      *
@@ -519,25 +485,6 @@ public class UserController {
         } else {
             throw new CustomRuntimeException(ApiResultCode.FAIL_SEND_SMS);
         }
-    }
-
-
-    /**
-     * 계정_권한 추가
-     *
-     * @param jwtUser
-     * @param userId
-     * @return
-     */
-    @AccessLog("화주권한 모두 만들기")
-    @GetMapping("/createAuthForPartner/{userId}")
-    @Operation(summary = "계정 수정")
-    public ApiResponse createAuthForPartner(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "화주권한 모두 만들기") @PathVariable Integer userId  // partnerId를 경로 파라미터로 받음
-    ) {
-        userService.createAuthForPartner(userId, jwtUser.getLoginId());
-        return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 
 }

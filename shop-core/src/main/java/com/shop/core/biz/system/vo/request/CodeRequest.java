@@ -75,10 +75,6 @@ public class CodeRequest {
         @Parameter(description = "정렬 방법")
         protected SortTypeCode sortType;
 
-        @Schema(description = "물류 아이디")
-        @Parameter(description = "물류 아이디")
-        private Integer logisId;
-
         @Schema(description = "코드 ETC1값")
         @Parameter(description = "코드 ETC1값")
         private String etc1Val;

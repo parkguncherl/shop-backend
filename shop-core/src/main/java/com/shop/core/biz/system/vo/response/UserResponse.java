@@ -71,10 +71,6 @@ public class UserResponse {
         @Parameter(description = "아이디 비밀번호 확인")
         private BooleanValueCode isExistIdPass;
 
-        @Schema(description = "상위파트너_아이디")
-        @Parameter(description = "상위파트너_아이디")
-        private Integer upperPartnerId;
-
         /**
          * 권한명
          * */

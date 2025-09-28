@@ -143,9 +143,6 @@ public class UserService {
         Integer resultCnt = 0;
         User insertUser = userRequest.toEntity();
         resultCnt=  userDao.insertUser(insertUser);
-        if(StringUtils.equals("399", insertUser.getAuthCd())){
-            userDao.createAuthForPartner(insertUser.getId(), userRequest.getLoginId()); //
-        }
         return resultCnt;
     }
 
@@ -192,17 +189,6 @@ public class UserService {
         }
         return userDao.updateUserWorkYmd(userRequest.toEntity());
     }
-
-    /**
-     * 계정_수정_센터id
-     *
-     * @param userRequest
-     * @return
-     */
-    public Integer updateUserLogisId(UserRequest.Update userRequest) {
-        return userDao.updateUserLogisId(userRequest.toEntity());
-    }
-
 
     /**
      * 계정_삭제
@@ -313,20 +299,4 @@ public class UserService {
         return userDao.selectDesinerUserList(partnerId, "399");
     }
 
-    /**
-     * 계정 목록조회 (물류계정 500번대 조회)
-     * @return
-     */
-    public List<User> selectInstockUserList(Integer workLogisId) {
-        return userDao.selectInstockUserList(workLogisId);
-    }
-
-
-    /**
-     * 화주권한 모두 주기
-     */
-    public void createAuthForPartner(Integer userId, String LoginId) {
-        userDao.updateAuthForDelete(userId, LoginId); // 먼저 기존 권한 다 지우고
-        userDao.createAuthForPartner(userId, LoginId);
-    }
 }

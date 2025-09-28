@@ -236,17 +236,6 @@ public class MenuService {
     }
 
     /**
-     * 메뉴건수 조회 밸리데이션 체크위한
-     *
-     * @param userId
-     * @return
-     */
-    public String selectCustomRoles(Integer userId) {
-        return menuDao.selectCustomRoles(userId);
-    }
-
-
-    /**
      * 메뉴_삭제
      *
      * @param deleteMenuRequest
@@ -371,12 +360,7 @@ public class MenuService {
 
         AuthResponse.MenuAuth menuAuth;
         // 계정별 메뉴 권한 플래그 조회
-        if(Integer.parseInt(authCd) < 400){
-            menuAuth = menuDao.selectMenuAuthYnForOms(authRequest);
-        } else {
-            menuAuth = menuDao.selectMenuAuthYn(authRequest);
-        }
-
+        menuAuth = menuDao.selectMenuAuthYn(authRequest);
         if (menuAuth == null) {
             menuAuth.setMenuReadYn("N");
             menuAuth.setMenuUpdYn("N");

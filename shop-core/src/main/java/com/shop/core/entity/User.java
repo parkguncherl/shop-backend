@@ -52,12 +52,6 @@ public class User extends BaseEntity implements Serializable {
     @Schema(description = "사용자 타입(oms ,wms ,admin)")
     private String userType;
 
-    @Schema(description = "WORK_LOGIS_ID(FK)")
-    private Integer workLogisId;
-
-    @Schema(description = "작업물류센터멍")
-    private String workLogisNm;
-
     //@JsonIgnore : 주석풀면 등록 시 컬럼값 NULL 처리됨 (주의)
     @Schema(description = "로그인_비밀번호")
     private String loginPass;
@@ -76,12 +70,6 @@ public class User extends BaseEntity implements Serializable {
 
     @Schema(description = "회원_휴대폰번호")
     private String phoneNo;
-
-    @Schema(description = "파트너회사명")
-    private String partnerNm;
-
-    @Schema(description = "origin 파트너회사명")
-    private String orgPartnerNm;
 
     @Schema(description = "소속_명")
     private String belongNm;

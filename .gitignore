@@ -170,3 +170,5 @@ buildNumber.properties
 /shop-server/build/
 
 /.idea/
+caches/
+
