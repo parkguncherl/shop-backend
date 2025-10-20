@@ -448,8 +448,7 @@
             , TU.USER_TYPE AS userType
             , ( COUNT(1) OVER() )                                                                               AS totalRowCount
             , ROW_NUMBER() OVER(ORDER BY TU.ID ASC)                                                             AS no
-            , TU.PHONE_NO                                                                                       AS phoneNo
-        FROM TB_USER TU
+            , TU.PHONE_NO                                                                                       AS phoneN        FROM TB_USER TU
         <if test="filter.partnerId != null and !filter.partnerId.equals('')">
             LEFT JOIN TB_PARTNER TP ON TU.PARTNER_ID = TP.ID
         </if>
