@@ -1,5 +1,5 @@
 # shop-backend
-프레젝트 템플릿
+프로젝트 템플릿
 
 
 # run Edit configration 
