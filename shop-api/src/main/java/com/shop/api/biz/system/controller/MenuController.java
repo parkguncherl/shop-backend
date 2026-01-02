@@ -261,8 +261,9 @@ public class MenuController {
         sMenu.setUpMenuCd(GlobalConst.TOP_MENU.getCode());
         sMenu.setUserId(jwtUser.getId());
         List<LeftMenu> leftMenus = new ArrayList<>();
-        boolean isOmsUser = Integer.parseInt(selUser.getAuthCd()) < 400; // oms 사용자인경우
-        for (Menu menu : isOmsUser ? menuService.selectMenuListForUser(sMenu) : menuService.selectMenuList(sMenu)) {
+        //boolean isOmsUser = Integer.parseInt(selUser.getAuthCd()) < 400; // oms 사용자인경우
+        //for (Menu menu : isOmsUser ? menuService.selectMenuListForUser(sMenu) : menuService.selectMenuList(sMenu)) {
+        for (Menu menu : menuService.selectMenuList(sMenu)) {
             LeftMenu leftMenu = new LeftMenu();
             leftMenu.setMenuNm(menu.getMenuNm());
             leftMenu.setMenuCd(menu.getMenuCd());
@@ -270,7 +271,8 @@ public class MenuController {
             sMenu.setUpMenuCd(menu.getMenuCd());
             List<LeftMenuSub> leftMenuSubs = new ArrayList<>();
             boolean isFirst = true;
-            for (Menu sub : isOmsUser ? menuService.selectMenuListForUser(sMenu) : menuService.selectMenuList(sMenu)) {
+            //for (Menu sub : isOmsUser ? menuService.selectMenuListForUser(sMenu) : menuService.selectMenuList(sMenu)) {
+            for (Menu sub : menuService.selectMenuList(sMenu)) {
                 LeftMenuSub leftMenuSub = new LeftMenuSub();
                 leftMenuSub.setMenuNm(sub.getMenuNm());
                 if (isFirst && StringUtils.isNotEmpty(sub.getMenuUri()) && (sub.getMenuUri().length() > 1)) {
