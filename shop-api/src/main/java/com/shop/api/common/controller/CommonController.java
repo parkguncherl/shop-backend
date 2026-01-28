@@ -12,8 +12,7 @@ import com.shop.core.entity.FileDet;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.exception.CustomRuntimeException;
-import com.shop.core.utils.CommUtil;
-import com.microsoft.azure.storage.file.CloudFile;
+import com.shop.api.utils.CommUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -86,40 +85,6 @@ public class CommonController {
 
         return new ApiResponse<>(ApiResultCode.SUCCESS, fileList);
     }
-
-    /**
-     * 파일_다운로드
-     *
-     * @param jwtUser
-     * @param response
-     * @param commonRequest
-     */
-    @GetMapping(value = "/file/download")
-    @Operation(summary = "파일 다운로드")
-    public void fileDownload(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(hidden = true) HttpServletResponse response,
-            @Parameter(description = "파일 다운로드 Request") CommonRequest.FileDownload commonRequest
-    ) {
-        try {
-            // 파일_다운로드
-            OutputStream out = response.getOutputStream();
-            CloudFile cloudFile = commonService.fileDownload(commonRequest);
-            cloudFile.download(out);
-            String fileName = commonRequest.getFileNm();
-
-            if(fileName == null ){
-                fileName = cloudFile.getName();
-            } else {
-                fileName = CommUtil.getFileName(commonRequest.getFileNm());
-            }
-            response.setHeader("Content-Disposition", "attachement; filename=\"" + fileName + "\";charset=\"UTF-8\"");
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-    }
-
 
     /**
      * 파일_삭제 (개별)

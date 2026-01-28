@@ -12,9 +12,8 @@ import com.shop.core.biz.system.vo.response.UserResponse.SelectByLoginId;
 import com.shop.core.entity.User;
 import com.shop.core.enums.*;
 import com.shop.core.exception.CustomRuntimeException;
-import com.shop.core.utils.CommUtil;
-import com.shop.core.utils.CryptUtil;
-import com.shop.core.utils.MailUtil;
+import com.shop.api.utils.CommUtil;
+import com.shop.api.utils.CryptUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -42,8 +41,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
-    private final MailUtil mailUtil;
 
     /**
      * 계정관리 목록 조회 (페이징)

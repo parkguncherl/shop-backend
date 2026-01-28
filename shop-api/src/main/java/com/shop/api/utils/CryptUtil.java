@@ -1,4 +1,4 @@
-package com.shop.core.utils;
+package com.shop.api.utils;
 
 import org.apache.commons.codec.binary.Base64;
 

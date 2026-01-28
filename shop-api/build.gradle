@@ -1,20 +1,60 @@
-/*
 plugins {
-    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
 }
 
-group 'com.shop'
-version '1.0-SNAPSHOT'
+tasks.named('bootJar') {
+    archiveFileName = 'shop-api.jar'
+}
 
-repositories {
-    mavenCentral()
+tasks.named('jar') {
+    enabled = false
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation project(':shop-core')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    // Database Drivers
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    // Logback Janino
+    implementation 'org.codehaus.janino:janino:3.1.12'
+    implementation 'org.codehaus.janino:commons-compiler:3.1.12'
+
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
+
+    // AWS SDK v2
+    implementation platform('software.amazon.awssdk:bom:2.20.0')
+    implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:sns'
+
+    // Apache POI (Excel)
+    implementation 'org.apache.poi:poi:5.4.0'
+    implementation 'org.apache.poi:poi-ooxml:5.4.0'
+
+    // Apache Commons
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'commons-codec:commons-codec:1.15'
+
+    // Guava
+    implementation 'com.google.guava:guava:32.1.2-jre'
+
+    // Slack API
+    implementation "com.slack.api:slack-api-client:1.46.0"
+
+    // JSON
+    implementation 'org.json:json:20240303'
 }
 
-test {
-    useJUnitPlatform()
-}*/

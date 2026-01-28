@@ -6,11 +6,8 @@ import com.shop.core.entity.adapter.LocalDateTimeSerializer;
 import com.shop.core.entity.adapter.LocalTimeSerializer;
 import com.shop.core.interfaces.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import net.bytebuddy.implementation.bind.annotation.Empty;
-import org.springframework.data.relational.core.mapping.Embedded;
 
 import java.io.Serial;
 import java.io.Serializable;

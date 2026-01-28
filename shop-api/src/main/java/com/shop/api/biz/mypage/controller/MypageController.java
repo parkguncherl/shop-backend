@@ -13,10 +13,9 @@ import com.shop.core.entity.Favorites;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.enums.EsseType;
-import com.shop.core.enums.GlobalConst;
 import com.shop.core.exception.CustomRuntimeException;
-import com.shop.core.utils.CommUtil;
-import com.shop.core.utils.CryptUtil;
+import com.shop.api.utils.CommUtil;
+import com.shop.api.utils.CryptUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <pre>

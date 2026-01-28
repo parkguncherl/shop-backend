@@ -1,6 +1,11 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
 rootProject.name = 'shop-backend'
 include 'shop-core'
 include 'shop-api'
-//include 'shop-batch'
 include 'shop-server'
-
+//include 'shop-batch'

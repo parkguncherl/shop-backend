@@ -1,6 +1,5 @@
 package com.shop.api.common.service;
 
-import com.shop.api.biz.system.service.CodeService;
 import com.shop.api.biz.system.service.UserService;
 import com.shop.api.properties.GlobalProperties;
 import com.shop.core.biz.common.dao.FileDao;
@@ -18,8 +17,7 @@ import com.shop.core.biz.system.dao.UserDao;
 import com.shop.core.entity.*;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.exception.CustomRuntimeException;
-import com.shop.core.utils.CommUtil;
-import com.microsoft.azure.storage.file.CloudFile;
+import com.shop.api.utils.CommUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -42,9 +40,6 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -125,20 +120,6 @@ public class CommonService {
      */
     public Integer insertFile(FileMng file) {
         return fileDao.insertFile(file);
-    }
-
-
-    public CloudFile fileDownload(CommonRequest.FileDownload commonRequest) throws Exception {
-
-        FileMng file = new FileMng();
-        file.setId(commonRequest.getId());
-        //file.setFileSeq(commonRequest.getFileSeq());
-
-        // 파일_조회 (by Uk)
-        //FileMng existFile = fileDao.selectFileByUk(file);
-
-        // 파일_다운로드
-        return null;
     }
 
 

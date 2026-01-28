@@ -15,8 +15,8 @@ import com.shop.core.entity.AuthToken;
 import com.shop.core.entity.JwtAuthToken;
 import com.shop.core.entity.User;
 import com.shop.core.enums.*;
-import com.shop.core.utils.CommUtil;
-import com.shop.core.utils.CryptUtil;
+import com.shop.api.utils.CommUtil;
+import com.shop.api.utils.CryptUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,7 +31,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 /**

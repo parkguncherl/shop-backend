@@ -1,283 +1,42 @@
-buildscript {
+plugins {
+    id 'org.springframework.boot' version '3.5.10' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
+}
 
-    ext {
-        springBootVersion = '3.3.1'
-    }
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'com.shop'
+    version = '1.0.0-SNAPSHOT'
 
     repositories {
         mavenCentral()
     }
 
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "io.spring.gradle:dependency-management-plugin:1.1.0.RELEASE"
-    }
-
-}
-
-
-// 서브 프로젝트 모듈 공통 세팅
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'idea'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
-
-    group 'com.shop'
-
-    version '1.0.0-SNAPSHOT'
-
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+    // Spring Boot BOM 추가
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.10"
         }
     }
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)  // 21로 변경
+        }
+    }
 
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
     }
 
-    ext {
-        springBootVersion = '3.3.1'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    def gradleProfile = project.hasProperty("profile") ? project.property("profile").toString() : "local"
-
-    // 공통 라이브러리
+    // 모든 서브프로젝트에 공통 의존성
     dependencies {
-        if (gradleProfile == "local") {
-            implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
-        }
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         testCompileOnly 'org.projectlombok:lombok'
         testAnnotationProcessor 'org.projectlombok:lombok'
-
-        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
-
-        // Spring
-        annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-
-        // JDBC Driver
-        implementation "org.springframework.boot:spring-boot-starter-data-jdbc:${springBootVersion}"
-        implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.1'
-
-
-        // MyBatis
-        implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '3.0.2'
-
-        // Apache Commons-Lang3
-        implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-
-
-        // Common-Codec (암복호화)
-        implementation group: 'commons-codec', name: 'commons-codec', version: '1.11'
-
-        // JSON
-        implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
-        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.0'
-        implementation group: 'org.json', name: 'json', version: '20220924'
-
-        // Lombok
-        implementation 'org.projectlombok:lombok:1.18.22'
-
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-
-        // multipartResolver (파일 업로드)
-        implementation group: 'commons-io', name: 'commons-io', version: '2.7'
-        implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.3'
-
-        // POI
-        implementation group: 'org.apache.poi', name: 'poi', version: '5.2.3'
-        implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
-
-        // Caused by: java.lang.IllegalArgumentException: Failed to load any of the given libraries: [netty_tcnative_osx_x86_64, netty_tcnative_x86_64, netty_tcnative]
-        // 위 에러로 인한 버전 다운
-        // 버전 2.0.48 및 이전 버전에는 정적 라이브러리 포함
-        implementation group: 'io.netty', name: 'netty-tcnative-boringssl-static', version: '2.0.48.Final'
-
-        // Azure IoT Provisioning Service Client
-        //implementation group: 'com.microsoft.azure.sdk.iot.provisioning', name: 'provisioning-service-client-preview', version: '1.1.0'
-        implementation group: 'com.microsoft.azure.sdk.iot.provisioning', name: 'provisioning-service-client', version: '2.0.2'
-
-        // Azure IoT Provisioning Device Client
-        implementation group: 'com.microsoft.azure.sdk.iot.provisioning', name: 'provisioning-device-client', version: '2.0.3'
-
-        // Azure IoT Hub Service Client
-        implementation ('com.microsoft.azure.sdk.iot:iot-service-client:2.1.6') {
-            exclude group: 'com.azure'
-        }
-
-        // Azure Storage
-        implementation group: 'com.microsoft.azure', name: 'azure-storage', version: '8.6.6'
-
-        // aws S3
-        implementation 'software.amazon.awssdk:s3'
-
-        implementation group: 'com.slack.api', name: 'slack-api-client', version: '1.29.2'
-        implementation group: 'com.slack.api', name: 'slack-api-model', version: '1.29.2'
-        implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
-
-        // javax.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
-        // 위 에러로 인해 추가
-        // HB Validator 6.x is the last big release that works well with JavaEE (javax).
-        // HB Validator 7.x targets Jakarta EE 9.
-        // HB Validator 8.x targets Jakarta EE 10.
-        implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.2.5.Final'
-
-        // Google Core Libraries For Java
-        implementation group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
-
-        // aws s3
-        implementation group: 'software.amazon.awssdk', name: 's3', version: '2.20.102'
-
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-        implementation 'org.codehaus.janino:janino:3.1.11' // 특정로그 제외하기위해
-
-        /*implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
-        implementation "org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}"*/
     }
-
-    test {
-        useJUnitPlatform()
-    }
-}
-
-// Module ( shop-core ) 설정
-project(':shop-core') {
-
-    // core 에서는 bootjar로 패키징 할 필요가 없으므로 추가
-    bootJar.enabled = false
-    jar.enabled = true
-
-    dependencies {
-        compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-        implementation ("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
-            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-        }
-
-        // Apache Common-Langs
-        implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-
-        // Common-Codec (암복호화)
-        implementation group: 'commons-codec', name: 'commons-codec', version: '1.11'
-
-        // Azure Communication Email
-        implementation 'com.azure:azure-communication-email:1.0.0-beta.1'
-
-        // Spring Doc
-        //implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.9'
-        implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
-
-        // AOP
-        implementation 'org.springframework.boot:spring-boot-starter-aop'
-
-        // Amazon SNS
-        implementation group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.12.455'
-
-        implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
-
-        // Spring Data JPA 의존성
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    }
-
-//    test {
-//        useJUnitPlatform()
-//
-//        exclude '**/*'
-//    }
-}
-
-// Module ( shop-api ) 설정
-project(':shop-api') {
-
-    //apply plugin: 'war'
-
-    // plain war 만 생성되도록 처리
-    //war.enabled = true
-
-    // plain jar 생성하지 않도록 처리
-    bootJar {
-        enabled = true
-        // bootjar 프로젝트 최상단위치로
-        //destinationDirectory = file("$projectDir/..")
-        // 파일명 api로 생성
-        archiveFileName = 'shop-api.jar'
-    }
-
-    jar.enabled = false
-
-
-    dependencies {
-        implementation project(':shop-core')
-
-        // Spring
-        //implementation 'org.springframework.boot:spring-boot-starter-web'
-        implementation ("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
-            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-        }
-        implementation 'org.springframework.boot:spring-boot-starter-undertow'
-        implementation 'org.springframework.boot:spring-boot-starter-actuator'
-        //implementation group: 'org.springframework.security', name: 'spring-security-taglibs', version: '5.7.0'
-
-        // K8s System Metric Monitor
-        implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.9.4'
-
-        // Apache Commons-Lang
-        implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-
-        // JWT
-        implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
-
-        // Spring Security
-        //implementation "org.springframework.boot:spring-boot-starter-security"
-
-        //implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper'
-
-        developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-        runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
-        runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
-
-        // AOP
-        implementation 'org.springframework.boot:spring-boot-starter-aop'
-
-        // SOAP
-        implementation group: 'axis', name: 'axis', version: '1.4'
-
-        // Spring Doc
-        //implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.9'
-        implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
-
-
-        // TestCase
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    }
-
-//    test {
-//        useJUnitPlatform()
-//
-//        exclude '**/*'
-//    }
-}
-
-// Module ( shop-server ) 설정
-project(':shop-server') {
-
-    // plain jar 생성하지 않도록 처리
-    bootJar.enabled = false
-    jar.enabled = false
-
-//    test {
-////        useJUnitPlatform()
-//
-////        exclude '**/*'
-//    }
 }

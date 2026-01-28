@@ -12,14 +12,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -158,21 +154,24 @@ public class JwtService {
      * @return
      */
     public User getUser(String accessToken) {
-        byte[] keyBytes = (ACCESS_SECRET_KEY).getBytes(StandardCharsets.UTF_8);
+        // byte[]를 SecretKey로 변환
+        byte[] keyBytes = ACCESS_SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
 
-        Jws<Claims> claims = Jwts.parserBuilder()
-                .setSigningKey(keyBytes)
+        // SecretKey 사용
+        Jws<Claims> claims = Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(accessToken);
+                .parseSignedClaims(accessToken);
 
         User user = new User();
-        user.setLoginId((String) claims.getBody().get(JWT_KEY_LOINGID));
-        user.setId((Integer) claims.getBody().get(JWT_KEY_MEMBER_ID));
-        user.setUserNm((String) claims.getBody().get(JWT_KEY_MEMBER_NAME));
-        user.setAuthCd((String) claims.getBody().get(JWT_KEY_AUTH_CD));
-        user.setPartnerId((Integer) claims.getBody().get(JWT_KEY_PARTNER_ID));
-        user.setOrgPartnerId((Integer) claims.getBody().get(JWT_KEY_ORG_PARTNER_ID));
-
+        Claims body = claims.getPayload();   // 또는 claims.getClaims()
+        user.setLoginId(body.get(JWT_KEY_LOINGID, String.class));
+        user.setId(body.get(JWT_KEY_MEMBER_ID, Integer.class));
+        user.setUserNm(body.get(JWT_KEY_MEMBER_NAME, String.class));
+        user.setAuthCd(body.get(JWT_KEY_AUTH_CD, String.class));
+        user.setPartnerId(body.get(JWT_KEY_PARTNER_ID, Integer.class));
+        user.setOrgPartnerId(body.get(JWT_KEY_ORG_PARTNER_ID, Integer.class));
         return user;
     }
 
@@ -182,13 +181,14 @@ public class JwtService {
      * @return
      */
     public boolean isValidToken(String accessToken) {
-        byte[] keyBytes = (ACCESS_SECRET_KEY).getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = ACCESS_SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
 
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(keyBytes)
+            Jwts.parser()
+                    .verifyWith(key)
                     .build()
-                    .parseClaimsJws(accessToken);
+                    .parseSignedClaims(accessToken);
         } catch (Exception e) {
             return false;
         }
