@@ -325,7 +325,7 @@
         WHERE MENU_URI = CASE WHEN POSITION('_' IN #{menuUri}) > 0 THEN SUBSTRING( #{menuUri}, 0, POSITION('_' IN #{menuUri})) ELSE #{menuUri} END
     </select>
 
-    <select id="selectMenuAuthYn" parameterType="com.binblur.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.binblur.core.biz.system.vo.response.AuthResponse$MenuAuth">
+    <select id="selectMenuAuthYn" parameterType="com.shop.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.shop.core.biz.system.vo.response.AuthResponse$MenuAuth">
         /* com.binblur.mapper.menu.selectMenuAuthYn */
         SELECT  (SELECT X.MENU_NM FROM TB_MENU X WHERE X.DEL_YN = 'N' AND X.MENU_CD = B.UP_MENU_CD) AS upMenuNm
              , B.MENU_NM AS menuNm
