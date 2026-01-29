@@ -325,19 +325,21 @@
         WHERE MENU_URI = CASE WHEN POSITION('_' IN #{menuUri}) > 0 THEN SUBSTRING( #{menuUri}, 0, POSITION('_' IN #{menuUri})) ELSE #{menuUri} END
     </select>
 
-    <select id="selectMenuAuthYn" parameterType="com.shop.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.shop.core.biz.system.vo.response.AuthResponse$MenuAuth">
-        /* com.shop.mapper.menu.selectMenuAuthYn */
+    <select id="selectMenuAuthYn" parameterType="com.binblur.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.binblur.core.biz.system.vo.response.AuthResponse$MenuAuth">
+        /* com.binblur.mapper.menu.selectMenuAuthYn */
         SELECT  (SELECT X.MENU_NM FROM TB_MENU X WHERE X.DEL_YN = 'N' AND X.MENU_CD = B.UP_MENU_CD) AS upMenuNm
              , B.MENU_NM AS menuNm
              , COALESCE(A.MENU_READ_YN, 'N')                                                         AS menuReadYn
              , COALESCE(A.MENU_UPD_YN, 'N')                                                          AS menuUpdYn
              , COALESCE(A.MENU_EXCEL_YN, 'N')                                                        AS menuExcelYn
         FROM TB_MENU_AUTH A
-                 INNER JOIN TB_MENU B ON B.MENU_CD = A.MENU_CD AND B.DEL_YN = 'N'
-                 INNER JOIN TB_USER C ON C.AUTH_CD = A.AUTH_CD AND C.DEL_YN = 'N'
+                 JOIN TB_MENU B ON B.MENU_CD = A.MENU_CD AND B.DEL_YN = 'N'
+                 JOIN TB_USER C ON C.AUTH_CD = A.AUTH_CD AND C.DEL_YN = 'N'
         WHERE C.ID = #{userId}
           AND C.AUTH_CD = #{authCd}
           AND B.MENU_URI = #{menuUri}
+          AND A.DEL_YN = 'N'
+          AND A.MENU_READ_YN ='Y'
     </select>
 
     <select id="selectTopMenuList" resultType="com.shop.core.entity.Menu">
