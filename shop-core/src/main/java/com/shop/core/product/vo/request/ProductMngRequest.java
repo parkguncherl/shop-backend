@@ -1,25 +1,23 @@
 package com.shop.core.product.vo.request;
 
+import com.shop.core.interfaces.RequestFilter;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 
-@Schema(name = "SummaryRequest", description = "요약 관련 요청")
+@Schema(name = "ProductMngRequest", description = "상품관리 영역 요청")
 public class ProductMngRequest {
 
     @Getter
     @Setter
-    @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "SummaryRequestForToday", description = "금일내역을 위한 요청", type = "object")
-    public static class ForToday {
+    @Schema(name = "ProductMngRequestProductInfoFilter", description = "상품 정보 필터")
+    public static class ProductInfoFilter implements RequestFilter {
+    }
 
-        @Schema(description = "파트너ID(FK)")
-        private Integer partnerId;
-
-        @Schema(description = "일자")
-        private LocalDate workYmd;
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestProductDetInfoFilter", description = "상품 상세 정보 필터")
+    public static class ProductDetInfoFilter implements RequestFilter {
     }
 }

@@ -31,8 +31,8 @@ public class Product extends BaseEntity implements Serializable {
     @Schema(description = "아이디(PK)")
     private Integer id;
 
-    @Schema(description = "파트너ID(FK)")
-    private Integer partnerId;
+    @Schema(description = "상점(shop)Id(FK)")
+    private Integer shopId;
 
     @Schema(description = "상품코드")
     private String prodCd;

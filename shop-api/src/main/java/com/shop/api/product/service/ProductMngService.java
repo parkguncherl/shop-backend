@@ -1,9 +1,14 @@
 package com.shop.api.product.service;
 
+import com.shop.core.entity.User;
 import com.shop.core.product.dao.ProductMngDao;
+import com.shop.core.product.vo.request.ProductMngRequest;
+import com.shop.core.product.vo.response.ProductMngResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <pre>
@@ -20,11 +25,12 @@ public class ProductMngService {
     private final ProductMngDao productMngDao;
 
     /**
-     * 페이징된 공장(생산처) 기본정보 목록을 조회합니다.
-     * @param pageRequest 페이징 및 필터 정보를 포함한 요청 객체
+     * 상품관리-상품정보 조회
+     * @param productInfoFilter 필터 정보를 포함한 요청 객체
      * @return 페이징된 기본정보 목록 응답
      */
-//    public PageResponse<FactoryResponse.DefInfoPaging> selectFactoryDefInfoPaging(PageRequest<FactoryRequest.DefInfoPagingFilter> pageRequest) {
-//        return factoryDao.selectFactoryDefInfoPaging(pageRequest);
-//    }
+    public List<ProductMngResponse.ProductInfo> selectProdInfo(ProductMngRequest.ProductInfoFilter productInfoFilter, User jwtUser) {
+        // todo shopId 할당 영역 추후 작성
+        return productMngDao.selectProdInfo(productInfoFilter);
+    }
 }
