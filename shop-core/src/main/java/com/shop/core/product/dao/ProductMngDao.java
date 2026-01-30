@@ -14,7 +14,7 @@ public class ProductMngDao {
     private final SqlSession sqlSession;
 
     // MyBatis 매퍼 XML 파일의 네임스페이스를 정의합니다.
-    private static final String NAMESPACE = "com.binblur.mapper.common.summary.";
+    private static final String NAMESPACE = "com.binblur.mapper.product.productMng.";
 
     /**
      * 요약 관련 데이터 조회

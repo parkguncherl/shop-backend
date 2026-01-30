@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.binblur.mapper.product.productMng">
+
+    <select id="selectInventoryLedgerByAsnId" resultType="com.binblur.core.oms.asnMng.vo.response.AsnMngResponse$InventoryLedgerDetail">
+        SELECT
+              A.PROD_NM AS prodNm
+            , A.MAKE_YMD AS makeYmd
+            , FN_GET_CODE('90060',A.PROD_TP) prodTpNm
+            , FN_GET_CODE('90070',A.PROD_DET_TP) prodDetTpNm
+            , STRING_AGG(B.PRODUCT_DET_COLOR ,',')  AS colors
+            , STRING_AGG(DISTINCT B.PRODUCT_DET_SIZE,',') AS sizes
+            , COUNT(B.ID) AS totCnt
+            , A.COMPOSITION AS composition
+            , AVG(B.ORG_AMT) AS avgOrgAmt
+            , AVG(B.SELL_AMT) AS avgSellAmt
+            , AVG(ROUND((100 - B.DISCOUNT_RATE) * B.SELL_AMT * 0.01 ,0)) AS avgRealSellAmt
+        FROM TB_PRODUCT A
+            LEFT JOIN TB_PRODUCT_DET B ON A.ID = B.PRODUCT_ID
+        GROUP BY A.ID;
+    </select>
+
+    <select id="selectInventoryLedgerByAsnId" resultType="com.binblur.core.oms.asnMng.vo.response.AsnMngResponse$InventoryLedgerDetail">
+        SELECT A.PRODUCT_DET_COLOR
+             , A.PRODUCT_DET_SIZE
+             , A.ORG_AMT
+             , A.SELL_AMT
+             , A.DISCOUNT_RATE
+             , ROUND((100 - A.DISCOUNT_RATE ) * A.SELL_AMT * 0.01 , 0) AS 실제판매가
+        FROM TB_PRODUCT_DET A
+    </select>
+</mapper>
