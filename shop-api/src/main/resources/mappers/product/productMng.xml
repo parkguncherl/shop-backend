@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.binblur.mapper.product.productMng">
 
-    <select id="selectInventoryLedgerByAsnId" resultType="com.binblur.core.oms.asnMng.vo.response.AsnMngResponse$InventoryLedgerDetail">
+    <select id="selectProdInfo" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfo">
         SELECT
               A.PROD_NM AS prodNm
             , A.MAKE_YMD AS makeYmd
@@ -20,7 +20,7 @@
         GROUP BY A.ID;
     </select>
 
-    <select id="selectInventoryLedgerByAsnId" resultType="com.binblur.core.oms.asnMng.vo.response.AsnMngResponse$InventoryLedgerDetail">
+    <select id="selectProductDetInfo" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductDetInfo">
         SELECT A.PRODUCT_DET_COLOR
              , A.PRODUCT_DET_SIZE
              , A.ORG_AMT
