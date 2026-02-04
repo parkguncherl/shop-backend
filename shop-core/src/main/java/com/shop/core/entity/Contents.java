@@ -20,28 +20,21 @@ public class Contents extends BaseEntity implements Serializable {
 //    @Serial
 //    private static final long serialVersionUID = -7404284196980959337L;
 
-    /**
-     * 아이디(PK)
-     */
+    @Schema(description = "아이디(PK)")
     private Integer id;
 
-    /**
-     * 컨텐츠_유형
-     */
+    @Schema(description = "컨텐츠_유형")
     private String newsType;
 
-    /**
-     * 컨텐츠_제목
-     */
+    @Schema(description = "컨텐츠_제목")
     private String newsTitle;
 
-    /**
-     * 컨텐츠_하위_제목
-     */
+    @Schema(description = "컨텐츠_하위_제목")
     private String newsSubTitle;
 
-    /**
-     * 컨텐츠_본문
-     */
+    @Schema(description = "컨텐츠_본문")
     private String newsContents;
+
+    @Schema(description = "fileId")
+    private Integer fileId;
 }

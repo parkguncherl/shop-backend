@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 
+import java.io.IOException;
+
 /**
  * <pre>
  * Description: ProductContents Controller
@@ -44,10 +46,14 @@ public class ProductContentsController {
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @RequestBody ProductContentsRequest.InsertProductContents insertProductContents
     ) {
-        Integer insertedRowCnt = productContentsService.insertProductContents(insertProductContents, jwtUser);
-        if (insertedRowCnt == null) {
+        try {
+            Integer insertedRowCnt = productContentsService.insertProductContents(insertProductContents, jwtUser);
+            if (insertedRowCnt == null) {
+                return new ApiResponse<>(ApiResultCode.FAIL_CREATE);
+            }
+            return new ApiResponse<>(ApiResultCode.SUCCESS);
+        } catch (IOException exception) {
             return new ApiResponse<>(ApiResultCode.FAIL_CREATE);
         }
-        return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 }
