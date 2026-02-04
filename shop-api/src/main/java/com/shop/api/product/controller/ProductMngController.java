@@ -2,20 +2,9 @@ package com.shop.api.product.controller;
 
 import com.shop.api.common.service.CommonService;
 import com.shop.api.product.service.ProductMngService;
-import com.shop.core.biz.common.dao.FileDao;
-import com.shop.core.biz.common.vo.request.CommonRequest;
-import com.shop.core.biz.common.vo.response.CommonResponse;
-import com.shop.core.biz.system.vo.response.ApiResponse;
-import com.shop.core.entity.FileDet;
-import com.shop.core.enums.ApiResultCode;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

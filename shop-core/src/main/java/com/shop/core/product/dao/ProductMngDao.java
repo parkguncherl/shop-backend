@@ -9,6 +9,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * <pre>
+ * Description: ProductMng Dao
+ * Date: 2026/01/30
+ * Author: park junsung
+ * </pre>
+ */
 @Mapper
 @Repository
 @RequiredArgsConstructor
