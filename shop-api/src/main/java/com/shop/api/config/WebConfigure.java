@@ -57,12 +57,13 @@ public class WebConfigure implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        String[] patterns = corsUrls.split("\\s*,\\s*"); // cors.endpoint.url=https://*.lotte.com
         registry.addMapping("/**")
-                .allowedOrigins(corsUrls)
-                .exposedHeaders("*")
+                .allowedOriginPatterns(patterns)
                 .allowCredentials(true)
-                .allowedMethods("*")
-                .allowedHeaders("*");
+                .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
+                .allowedHeaders("*")
+                .exposedHeaders("*");
     }
 
     /**

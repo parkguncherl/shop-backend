@@ -30,7 +30,6 @@ public class DataSourceConfigure {
 
     @Bean(name = "dataSource")
     public DataSource dataSource() {
-        DataSource dataSource = new HikariDataSource(hikariConfig());
-        return dataSource;
+        return new HikariDataSource(hikariConfig());
     }
 }
