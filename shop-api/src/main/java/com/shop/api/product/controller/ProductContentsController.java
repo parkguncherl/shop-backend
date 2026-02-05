@@ -35,12 +35,12 @@ public class ProductContentsController {
     private final ProductContentsService productContentsService;
 
     /**
-     * 하나 혹은 다수의 신규 원단 데이터 추가
+     * 신규 상품컨텐츠 추가
      *
      * @param insertProductContents
      * @return
      */
-    @Operation(summary = "하나 혹은 다수의 신규 원단 데이터 추가", description = "하나 혹은 다수의 신규 원단 데이터를 추가합니다.")
+    @Operation(summary = "신규 상품컨텐츠 추가", description = "신규 상품컨텐츠를 추가합니다.")
     @PutMapping("/insertProductContents")
     public ApiResponse<Void> insertProductContents(
             @Parameter(hidden = true) @JwtUser User jwtUser,
