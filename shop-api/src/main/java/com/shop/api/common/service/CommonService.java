@@ -18,10 +18,10 @@ import com.shop.core.entity.*;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.api.utils.CommUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +29,6 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,7 +37,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.List;
 
 /**
@@ -52,20 +49,37 @@ import java.util.List;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class CommonService {
 
-
     private final UserService userService;
-
     private final SmsDao smsDao;
     private final FileDao fileDao;
     private final UserDao userDao;
     private final GridDao gridDao;
 
     private final GlobalProperties globalProperties;
-    private final S3Client s3Client;
-    private final S3Presigner presigner;
+//    private final S3Client s3Client;
+//    private final S3Presigner presigner;
+
+    private final S3Client CloudflareR2Client;
+
+    public CommonService(
+            UserService userService,
+            SmsDao smsDao,
+            FileDao fileDao,
+            UserDao userDao,
+            GridDao gridDao,
+            GlobalProperties globalProperties,
+            @Qualifier("cloudflareR2Client") S3Client CloudflareR2Client
+    ) {
+        this.userService = userService;
+        this.smsDao = smsDao;
+        this.fileDao = fileDao;
+        this.userDao = userDao;
+        this.gridDao = gridDao;
+        this.globalProperties = globalProperties;
+        this.CloudflareR2Client = CloudflareR2Client;
+    }
 
     @Value("${aws.s3.bucketName.name}")
     private String BUKET_NAME;
@@ -131,7 +145,7 @@ public class CommonService {
                     .key(key)
                     .build();
 
-            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
+            CloudflareR2Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
 
             // 파일정보가 있는경우는 생략한다.
             if(fileId == null || fileId.compareTo(0) == 0) {
@@ -197,7 +211,7 @@ public class CommonService {
         File tempFile = tempFilePath.toFile();
 
         try (FileOutputStream fos = new FileOutputStream(tempFile);
-             InputStream s3ObjectStream = s3Client.getObject(getObjectRequest)) {
+             InputStream s3ObjectStream = CloudflareR2Client.getObject(getObjectRequest)) {
 
             byte[] buffer = new byte[1024];
             int bytesRead;
@@ -250,19 +264,19 @@ public class CommonService {
     }
     
 
-    public String getFileUrl(String bucketName, String fileName) {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .build();
-
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .getObjectRequest(getObjectRequest)
-                .signatureDuration(Duration.ofMinutes(60*24*7)) // URL 유효 시간 설정 7주일간
-                .build();
-
-        return presigner.presignGetObject(presignRequest).url().toString();
-    }
+//    public String getFileUrl(String bucketName, String fileName) {
+//        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+//                .bucket(bucketName)
+//                .key(fileName)
+//                .build();
+//
+//        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+//                .getObjectRequest(getObjectRequest)
+//                .signatureDuration(Duration.ofMinutes(60*24*7)) // URL 유효 시간 설정 7주일간
+//                .build();
+//
+//        return presigner.presignGetObject(presignRequest).url().toString();
+//    }
 
     public Integer setUpGridColumn(GridRequest request, User jwtUser) {
         User user = userService.selectUserById(jwtUser.getId());

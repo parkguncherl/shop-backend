@@ -1,6 +1,7 @@
 package com.shop.api.config;
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ public class CloudflareR2Config {
      * Creates a new CloudflareR2Client with the provided configuration
      */
     @Bean
+    @Qualifier("cloudflareR2Client")
     public S3Client CloudflareR2Client() {
         S3Config config = new S3Config(
                 ACCOUNT_ID,
