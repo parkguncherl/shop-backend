@@ -81,7 +81,10 @@ public class CommonService {
         this.CloudflareR2Client = CloudflareR2Client;
     }
 
-    @Value("${aws.s3.bucketName.name}")
+//    @Value("${aws.s3.bucketName.name}")
+//    private String BUKET_NAME;
+
+    @Value("${cloudflare.r2.bucketName.name}")
     private String BUKET_NAME;
 
 
