@@ -70,7 +70,7 @@ public class CommonService {
             UserDao userDao,
             GridDao gridDao,
             GlobalProperties globalProperties,
-            @Qualifier("cloudflareR2Client") S3Client CloudflareR2Client
+            @Qualifier("cloudflareR2Client") S3Client CloudflareR2Client // 주입 과정에서의 불완전성을 제거하기 위해 어노테이션 기반 주입 대신 다음과 같은 명시적 생성자 선언
     ) {
         this.userService = userService;
         this.smsDao = smsDao;
