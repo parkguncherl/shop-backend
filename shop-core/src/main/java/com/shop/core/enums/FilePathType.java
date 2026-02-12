@@ -22,7 +22,7 @@ public enum FilePathType implements CodeEnum {
 
 	PARTNER     	("PARTNER"		, "화주"),
 	PRODUCT     	("PRODUCT"		, "상품"),
-	CONTENTS     	("CONTENTS"		, "상품 컨텐츠"),
+	PRODUCT_CONTENTS     	("news"		, "상품 컨텐츠"),
 
 	;
 

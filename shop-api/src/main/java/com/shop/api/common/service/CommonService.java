@@ -141,7 +141,7 @@ public class CommonService {
 
 
     /* file upload */
-    public FileDet uploadFile(MultipartFile file, String key, String originalFileName, String filePath, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
+    public FileDet uploadFile(MultipartFile file, String key, String originalFileName, String fileType, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(BUKET_NAME)
@@ -153,7 +153,9 @@ public class CommonService {
             // 파일정보가 있는경우는 생략한다.
             if(fileId == null || fileId.compareTo(0) == 0) {
                 FileMng fileMng = new FileMng();
-                fileMng.setFileType(filePath);
+                fileMng.setFileType(fileType);
+                fileMng.setCreUser(jwtUser.getLoginId());
+                fileMng.setUpdUser(jwtUser.getLoginId());
                 fileDao.insertFile(fileMng);
                 fileId = fileMng.getId();
             }

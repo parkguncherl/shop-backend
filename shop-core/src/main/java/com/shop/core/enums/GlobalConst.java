@@ -26,7 +26,7 @@ public enum GlobalConst implements CodeEnum {
     MAGIC_PASSWORD      ("1230","만능비밀번호"),
     LOGIS_ADMIN	    	("570", "물류관리자"),
 
-    PRODUCT_CONTENT_SHORT_NM    ("gguanggu","축약이름"),
+    PRODUCT_CONTENTS_SHORT_NM    ("gguanggu","축약이름"),
 
     ;
 

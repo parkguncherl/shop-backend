@@ -13,6 +13,9 @@
         <if test='newsContents != null'>
             NEWS_CONTENTS,
         </if>
+        <if test='fileId != null'>
+            FILE_ID,
+        </if>
             CRE_USER ,
             UPD_USER
         ) VALUES (
@@ -23,6 +26,9 @@
         </if>
         <if test='newsContents != null'>
             #{newsContents} ,
+        </if>
+        <if test='fileId != null'>
+            #{fileId} ,
         </if>
             #{creUser} ,
             #{updUser}
