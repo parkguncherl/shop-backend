@@ -1,6 +1,5 @@
 package com.shop.api.product.service;
 
-import com.shop.api.biz.system.service.UserService;
 import com.shop.api.common.service.CommonService;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.entity.FileDet;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import com.shop.core.enums.GlobalConst;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,7 +49,7 @@ public class ProductContentsService {
         for (MultipartFile file : fileList) {
             fileSeq++;
             String originalFileName = file.getOriginalFilename();
-            String sysFileNm = "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+            String sysFileNm = GlobalConst.PRODUCT_CONTENT_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
 
             FileDet fileDet = commonService.uploadFile(file, sysFileNm, originalFileName, FilePathType.CONTENTS.getCode(), fileId, fileSeq, jwtUser);
 
@@ -59,6 +59,8 @@ public class ProductContentsService {
             }
         }
 
+        insertProductContents.setCreUser(jwtUser.getLoginId());
+        insertProductContents.setUpdUser(jwtUser.getLoginId());
         return productContentsDao.insertProductContents(insertProductContents);
     }
 }

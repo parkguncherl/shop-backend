@@ -10,13 +10,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.shop.core.biz.system.vo.response.ApiResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * <pre>
@@ -44,9 +43,14 @@ public class ProductContentsController {
     @PutMapping("/insertProductContents")
     public ApiResponse<Void> insertProductContents(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @RequestBody ProductContentsRequest.InsertProductContents insertProductContents
+            @RequestPart("main") ProductContentsRequest.InsertProductContents insertProductContents,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) {
         try {
+            if (insertProductContents.getCommonRequestFileUploads() != null) {
+                // 업로드 파일 할당
+                insertProductContents.getCommonRequestFileUploads().setUploadFiles(files);
+            }
             Integer insertedRowCnt = productContentsService.insertProductContents(insertProductContents, jwtUser);
             if (insertedRowCnt == null) {
                 return new ApiResponse<>(ApiResultCode.FAIL_CREATE);
