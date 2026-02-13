@@ -129,4 +129,14 @@ public class CommonRequest {
         @Schema(description = "다중 파일 업로드")
         List<MultipartFile> uploadFiles;
     }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "CommonRequestFileKey", description = "파일 경로 가져오기 요청")
+    public static class FileKey {
+
+        @Schema(description = "파일 유형")
+        private String fileKey;
+    }
 }

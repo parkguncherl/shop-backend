@@ -1,5 +1,6 @@
 package com.shop.api.common.controller;
 
+import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.common.service.CommonService;
 import com.shop.core.biz.common.dao.FileDao;
@@ -166,5 +167,19 @@ public class CommonController {
             @RequestParam("uri") String uri
     ) {
         return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.getGridColumn(uri, jwtUser));
+    }
+
+    /**
+     * s3(cloudFlare) 파일정보
+     *
+     * @param fileKey
+     * @return String
+     */
+    @AccessLog("파일url 적용")
+    @GetMapping("/getFileUrl")
+    @Operation(summary = "혼용율, 샘플전표 스큐정보 조회")
+    public ApiResponse<String> getFileUrl(CommonRequest.FileKey fileKey) {
+        String resultUrl = commonService.getFileUrl(fileKey.getFileKey());
+        return new ApiResponse<>(resultUrl);
     }
 }

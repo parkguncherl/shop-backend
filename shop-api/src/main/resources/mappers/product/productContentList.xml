@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.product.productContentList">
+
+    <select id="selectProdContentList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ProductContent">
+        SELECT
+              A.ID AS id
+            , A.NEWS_TITLE AS newsTitle
+            , A.NEWS_SUB_TITLE AS newsSubTitle
+            , A.NEWS_CONTENTS AS newsContents
+            , A.FILE_ID AS fileId
+        FROM TB_CONTENTS A
+        <where>
+            AND A.DEL_YN = 'N'
+            AND A.NEWS_TYPE = #{filter.newsType}
+            AND A.PARTNER_ID = #{filter.partnerId}
+            <if test='filter.newsTitle != null and !filter.newsTitle.equals("")'>
+                AND A.NEWS_TITLE = #{filter.newsTitle}
+            </if>
+            <if test="filter.lastId != null">
+                AND (
+                A.ID > #{filter.lastId}
+                )
+            </if>
+        </where>
+        ORDER BY A.ID
+        LIMIT #{pageRowCount} + 1;
+    </select>
+
+</mapper>

@@ -29,6 +29,8 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,6 +39,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -59,7 +62,7 @@ public class CommonService {
 
     private final GlobalProperties globalProperties;
 //    private final S3Client s3Client;
-//    private final S3Presigner presigner;
+    private final S3Presigner presigner;
 
     private final S3Client CloudflareR2Client;
 
@@ -70,6 +73,7 @@ public class CommonService {
             UserDao userDao,
             GridDao gridDao,
             GlobalProperties globalProperties,
+            S3Presigner presigner,
             @Qualifier("cloudflareR2Client") S3Client CloudflareR2Client // 주입 과정에서의 불완전성을 제거하기 위해 어노테이션 기반 주입 대신 다음과 같은 명시적 생성자 선언
     ) {
         this.userService = userService;
@@ -78,6 +82,7 @@ public class CommonService {
         this.userDao = userDao;
         this.gridDao = gridDao;
         this.globalProperties = globalProperties;
+        this.presigner = presigner;
         this.CloudflareR2Client = CloudflareR2Client;
     }
 
@@ -267,21 +272,21 @@ public class CommonService {
     public Integer deleteFileDetAll(Integer fileId, User jwtUser) {
         return fileDao.deleteFileDetAll(fileId, jwtUser);
     }
-    
 
-//    public String getFileUrl(String bucketName, String fileName) {
-//        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-//                .bucket(bucketName)
-//                .key(fileName)
-//                .build();
-//
-//        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-//                .getObjectRequest(getObjectRequest)
-//                .signatureDuration(Duration.ofMinutes(60*24*7)) // URL 유효 시간 설정 7주일간
-//                .build();
-//
-//        return presigner.presignGetObject(presignRequest).url().toString();
-//    }
+
+    public String getFileUrl(String fileName) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(BUKET_NAME)
+                .key(fileName)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .getObjectRequest(getObjectRequest)
+                .signatureDuration(Duration.ofMinutes(60*24*7)) // URL 유효 시간 설정 7주일간
+                .build();
+
+        return presigner.presignGetObject(presignRequest).url().toString();
+    }
 
     public Integer setUpGridColumn(GridRequest request, User jwtUser) {
         User user = userService.selectUserById(jwtUser.getId());

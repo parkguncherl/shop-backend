@@ -3,6 +3,7 @@
 <mapper namespace="com.shop.mapper.product.productMng">
 
     <select id="selectProdInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfo">
+        /* com.shop.mapper.product.productMng.selectProdInfo */
         SELECT
               A.PROD_NM AS prodNm
             , A.MAKE_YMD AS makeYmd
@@ -21,6 +22,7 @@
     </select>
 
     <select id="selectProductDetInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductDetInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductDetInfo">
+        /* com.shop.mapper.product.productMng.selectProductDetInfo */
         SELECT A.PRODUCT_DET_COLOR
              , A.PRODUCT_DET_SIZE
              , A.ORG_AMT
