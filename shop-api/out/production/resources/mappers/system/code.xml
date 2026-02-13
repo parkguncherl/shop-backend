@@ -89,7 +89,6 @@
              , DEL_YN                                                                       AS deleteYn
         FROM TB_CODE
         WHERE ID = #{codeId}
---           AND DEL_YN = 'N' // 삭제여부를 사용여부로 관리
     </select>
 
     <select id="selectCodeByUk" parameterType="com.shop.core.entity.Code" resultType="com.shop.core.entity.Code">
@@ -226,7 +225,7 @@
     </select>
 
     <select id="selectCodePaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.CodeResponse$Paging">
-        /* com.shop.mapper.code.selectCodePaging */
+        /* com.shop.mapper.code.selectCodePaging11 */
         SELECT
         <include refid="codeColumns" />
         , TC.CODE_NM                        AS codeNm
