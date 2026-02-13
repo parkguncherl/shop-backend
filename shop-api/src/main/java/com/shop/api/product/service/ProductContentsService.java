@@ -1,5 +1,6 @@
 package com.shop.api.product.service;
 
+import com.shop.api.biz.system.service.UserService;
 import com.shop.api.common.service.CommonService;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.entity.FileDet;
@@ -34,6 +35,7 @@ public class ProductContentsService {
 
     private final ProductContentsDao productContentsDao;
     private final CommonService commonService;
+    private final UserService userService;
 
     /**
      * 신규 상품컨텐츠 데이터 추가
@@ -58,6 +60,8 @@ public class ProductContentsService {
                 insertProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의
             }
         }
+
+        insertProductContents.setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
 
         insertProductContents.setCreUser(jwtUser.getLoginId());
         insertProductContents.setUpdUser(jwtUser.getLoginId());

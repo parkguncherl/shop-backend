@@ -16,7 +16,8 @@
         <if test='fileId != null'>
             FILE_ID,
         </if>
-            CRE_USER ,
+            PARTNER_ID,
+            CRE_USER,
             UPD_USER
         ) VALUES (
             #{newsType} ,
@@ -30,6 +31,7 @@
         <if test='fileId != null'>
             #{fileId} ,
         </if>
+            #{partnerId} ,
             #{creUser} ,
             #{updUser}
         )

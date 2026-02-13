@@ -23,6 +23,9 @@ public class Contents extends BaseEntity implements Serializable {
     @Schema(description = "아이디(PK)")
     private Integer id;
 
+    @Schema(description = "파트너 id")
+    private Integer partnerId;
+
     @Schema(description = "컨텐츠_유형")
     private String newsType;
 
