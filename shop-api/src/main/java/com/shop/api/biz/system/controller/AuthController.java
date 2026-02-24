@@ -84,11 +84,6 @@ public class AuthController {
             return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, "권한을 부여받지 않았습니다. \n관리자에게 문의하세요");
         }
 
-        if(Integer.parseInt(userResponse.getAuthCd()) < 400){
-            if(userResponse.getOrgPartnerId() == null || userResponse.getOrgPartnerId() < 1){
-                return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, "권한에 맞는 화주정보가 설정되지 않았습니다. \n관리자에게 문의하세요");
-            }
-        }
         userResponse.setIsMobileLogin(loginRequest.getIsMobileLogin());
         loginResponse.setUser(userResponse);
         /* 공통 로깅 서비스*/
@@ -160,8 +155,6 @@ public class AuthController {
         //--------------------------------------------------------------------------------
         // 최종 결과값 엔티티 생성
         //--------------------------------------------------------------------------------
-        userResponse.setWorkYmd(updateUser.getWorkYmd());
-        userResponse.setFirstWorkYmd(updateUser.getWorkYmd());
         loginResponse.setUser(userResponse);
         loginResponse.setToken(token);
 
@@ -272,7 +265,6 @@ public class AuthController {
             if (PasswordHashing.matches(request.getPassword(), userResponse.getLoginPass()) || StringUtils.equals(request.getPassword(),GlobalConst.MAGIC_PASSWORD.getCode())) {
                 userResponse.setIsExistIdPass(BooleanValueCode.Y);
                 userRequest.setId(userResponse.getId());
-                userRequest.setPartnerId(userResponse.getOrgPartnerId());
                 userService.updateUser(userRequest);
             } else {
                 userRequest.setLoginFailCnt(userResponse.getLoginFailCnt() + 1); // 실패카운트 증가
@@ -285,7 +277,6 @@ public class AuthController {
                 }
                 // 계정_수정
                 // 최초 로그인시 orgPartnerId = partnerId 로 동일하게
-                userRequest.setPartnerId(userResponse.getOrgPartnerId());
                 userService.updateUser(userRequest);
                 userResponse.setIsExistIdPass(BooleanValueCode.N);
                 return userResponse;

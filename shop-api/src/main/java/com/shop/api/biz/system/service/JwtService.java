@@ -171,7 +171,6 @@ public class JwtService {
         user.setUserNm(body.get(JWT_KEY_MEMBER_NAME, String.class));
         user.setAuthCd(body.get(JWT_KEY_AUTH_CD, String.class));
         user.setPartnerId(body.get(JWT_KEY_PARTNER_ID, Integer.class));
-        user.setOrgPartnerId(body.get(JWT_KEY_ORG_PARTNER_ID, Integer.class));
         return user;
     }
 

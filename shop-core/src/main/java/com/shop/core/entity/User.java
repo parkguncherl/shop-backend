@@ -62,9 +62,6 @@ public class User extends BaseEntity implements Serializable {
     @Schema(description = "파트너아이디")
     private Integer partnerId;
 
-    @Schema(description = "original 파트너아이디")
-    private Integer orgPartnerId;
-
     @Schema(description = "권한코드")
     private String authCd;
 
@@ -105,22 +102,9 @@ public class User extends BaseEntity implements Serializable {
 
     @Schema(description = "페이지권한설정")
     private Boolean isPageAuth;
-/*
 
     @Schema(description = "otp_발행번호")
     private String otpNo;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Schema(description = "otp_발생일시")
-    private LocalDateTime otpIssuDateTime;
-
-    @Schema(description = "유저_국가코드")
-    private String languageCode;
-
-    @Schema(description = "로그인한_유저_국가코드")
-    private String loginLanguage;
-*/
 
     @Schema(description = "사용여부")
     private BooleanValueCode useYn;
@@ -156,12 +140,6 @@ public class User extends BaseEntity implements Serializable {
     @Schema(required = false)
     @Parameter(description = "OTP_실패_횟수")
     private Integer otpFailCnt;
-
-    @Schema(description = "영업일자")
-    private LocalDate workYmd;
-
-    @Schema(description = "최초영업일자")
-    private LocalDate firstWorkYmd;
 
     @Schema(description = "모바일기기로 로그인")
     private String isMobileLogin;

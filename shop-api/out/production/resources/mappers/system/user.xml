@@ -9,7 +9,6 @@
          USER_NM               AS userNm,              /* 사용자명  */
          AUTH_CD               AS authCd,              /* 권한 코드  */
          PARTNER_ID            AS partnerId,           /* 파트너 ID  */
-         ORG_PARTNER_ID        AS orgPartnerId,        /* 화주 ID  */
          PHONE_NO              AS phoneNo,             /* 전화번호  */
          BELONG_NM             AS belongNm,            /* 소속명  */
          DEPT_NM               AS deptNm,              /* 부서명  */
@@ -28,7 +27,6 @@
          USE_YN                AS useYn,               /* 사용 여부  */
          LOCK_YN               AS lockYn,              /* 계정 잠김 여부  */
          AUTH_CD               AS authCd,              /* 권한 코드  */
-         WORK_YMD              AS workYmd,             /* 작업 영업일  */
          USER_TYPE             AS userType             /* 사용자 유형  */
     </sql>
 
@@ -58,7 +56,6 @@
             , TU.UPD_TM                                                                                     AS updTm
             , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.UPD_USER = XU.LOGIN_ID)                           AS updUser
             , TU.DEL_YN                                                                                     AS deleteYn
-            , TU.WORK_YMD                                                                                   AS workYmd
             , TU.USER_TYPE                                                                                  AS userType
         FROM TB_USER TU
         WHERE 1 = 1
@@ -143,7 +140,6 @@
             , USE_YN                AS useYn
             , LOCK_YN               AS lockYn
             , AUTH_CD               AS authCd
-            , WORK_YMD              AS workYmd
             , FN_GET_USERNAME(TU.LOGIN_ID)                           AS creUserNm
             , FN_GET_USERNAME(TU.UPD_USER)                           AS updUserNm
             , 0 AS otpSecond
@@ -183,7 +179,6 @@
              , USE_YN                AS useYn
              , LOCK_YN               AS lockYn
              , AUTH_CD               AS authCd
-             , WORK_YMD              AS workYmd
              , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.CRE_USER = XU.LOGIN_ID)                           AS creUser
              , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.UPD_USER = XU.LOGIN_ID)                           AS updUser
              , 0 AS otpSecond

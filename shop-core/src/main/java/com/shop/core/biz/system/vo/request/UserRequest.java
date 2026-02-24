@@ -181,7 +181,6 @@ public class UserRequest {
                 .loginPass(getLoginPass())
                 .userNm(getUserNm())
                 .partnerId(getPartnerId())
-                .orgPartnerId(getOrgPartnerId())
                 .authCd(getAuthCd())
                 .phoneNo(getPhoneNo())
                 .belongNm(getBelongNm())
@@ -191,13 +190,12 @@ public class UserRequest {
                 .loginFailCnt(getLoginFailCnt())
                 .lastLoginDateTime(getLastLoginDateTime())
                 .firstLoginYn(getFirstLoginYn())
-                //.otpNo(getOtpNo())
+                .otpNo(getOtpNo())
                 //.otpIssuDateTime(getOtpIssuDateTime())
                 //.languageCode(getLanguageCode())
                 .creUser(getCreUser())
                 .useYn(getUseYn())
                 .lockYn(getLockYn())
-                .workYmd(getWorkYmd())
                 .userType(getUserType())
                 .build();
         }
@@ -307,7 +305,7 @@ public class UserRequest {
                 .loginFailCnt(getLoginFailCnt())
                 .lastLoginDateTime(getLastLoginDateTime())
                 .firstLoginYn(getFirstLoginYn())
-                //.otpNo(getOtpNo())
+                .otpNo(getOtpNo())
                 //.otpIssuDateTime(getOtpIssuDateTime())
                 //.languageCode(getLanguageCode())
                 //.loginLanguage(getLoginLanguage())
@@ -316,8 +314,6 @@ public class UserRequest {
                 .lockYn(getLockYn())
                 .otpFailCnt(getOtpFailCnt())
                 .partnerId(getPartnerId())
-                .orgPartnerId(getOrgPartnerId())
-                .workYmd(getWorkYmd())
                 .build();
         }
     }

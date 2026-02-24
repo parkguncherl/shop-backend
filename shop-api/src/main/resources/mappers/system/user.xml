@@ -9,7 +9,6 @@
          USER_NM               AS userNm,              /* 사용자명  */
          AUTH_CD               AS authCd,              /* 권한 코드  */
          PARTNER_ID            AS partnerId,           /* 파트너 ID  */
-         ORG_PARTNER_ID        AS orgPartnerId,        /* 화주 ID  */
          PHONE_NO              AS phoneNo,             /* 전화번호  */
          BELONG_NM             AS belongNm,            /* 소속명  */
          DEPT_NM               AS deptNm,              /* 부서명  */
@@ -28,7 +27,6 @@
          USE_YN                AS useYn,               /* 사용 여부  */
          LOCK_YN               AS lockYn,              /* 계정 잠김 여부  */
          AUTH_CD               AS authCd,              /* 권한 코드  */
-         WORK_YMD              AS workYmd,             /* 작업 영업일  */
          USER_TYPE             AS userType             /* 사용자 유형  */
     </sql>
 
@@ -54,11 +52,10 @@
             , TU.OTP_NO                                                                                     AS otpNo
             , TU.OTP_ISSU_TM                                                                                AS otpIssuTm
             , TU.CRE_TM                                                                                     AS creTm
-            , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.CRE_USER = XU.LOGIN_ID)                           AS creUser
+            , FN_GET_USERNAME(TU.CRE_USER)                                                                  AS creUser
             , TU.UPD_TM                                                                                     AS updTm
             , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.UPD_USER = XU.LOGIN_ID)                           AS updUser
             , TU.DEL_YN                                                                                     AS deleteYn
-            , TU.WORK_YMD                                                                                   AS workYmd
             , TU.USER_TYPE                                                                                  AS userType
         FROM TB_USER TU
         WHERE 1 = 1
@@ -126,7 +123,6 @@
             , AUTH_CD               AS authCd
             , USER_TYPE             AS userType
             , PARTNER_ID            AS partnerId
-            , ORG_PARTNER_ID        AS orgPartnerId
             , PHONE_NO              AS phoneNo
             , BELONG_NM             AS belongNm
             , DEPT_NM               AS deptNm
@@ -143,7 +139,6 @@
             , USE_YN                AS useYn
             , LOCK_YN               AS lockYn
             , AUTH_CD               AS authCd
-            , WORK_YMD              AS workYmd
             , FN_GET_USERNAME(TU.LOGIN_ID)                           AS creUserNm
             , FN_GET_USERNAME(TU.UPD_USER)                           AS updUserNm
             , 0 AS otpSecond
@@ -166,7 +161,6 @@
              , AUTH_CD               AS authCd
              , USER_TYPE             AS userType
              , PARTNER_ID            AS partnerId
-             , ORG_PARTNER_ID        AS orgPartnerId
              , PHONE_NO              AS phoneNo
              , BELONG_NM             AS belongNm
              , DEPT_NM               AS deptNm
@@ -183,13 +177,11 @@
              , USE_YN                AS useYn
              , LOCK_YN               AS lockYn
              , AUTH_CD               AS authCd
-             , WORK_YMD              AS workYmd
-             , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.CRE_USER = XU.LOGIN_ID)                           AS creUser
-             , (SELECT XU.USER_NM FROM TB_USER XU WHERE TU.UPD_USER = XU.LOGIN_ID)                           AS updUser
+             , FN_GET_USERNAME( TU.CRE_USER) AS creUser
+             , FN_GET_USERNAME(TU.UPD_USER) AS updUser
              , 0 AS otpSecond
              , FN_GET_CODE('10020', TU.AUTH_CD) AS authNm
              , FN_GET_CODE('10020', TU.USER_TYPE) AS userTypeNm
-             , IS_MOBILE_LOGIN
         FROM TB_USER TU
         WHERE LOGIN_ID = #{loginId}
           AND DEL_YN = 'N'
@@ -212,7 +204,6 @@
               LOGIN_ID
             , LOGIN_PASS
         <if test="partnerId != null">
-            , ORG_PARTNER_ID
             , PARTNER_ID
         </if>
             , USER_NM
@@ -240,7 +231,6 @@
             , #{loginPass}
         <if test="partnerId != null">
             , #{partnerId}
-            , #{partnerId}
         </if>
             , #{userNm}
             , #{authCd}
@@ -265,58 +255,6 @@
         )
     </insert>
 
-    <insert id="insertOutUser" parameterType="com.shop.core.entity.User" useGeneratedKeys="true" keyProperty="id">
-        /* com.shop.mapper.user.insertUser */
-        INSERT INTO TB_USER_OUT
-        (
-              LOGIN_ID
-            , LOGIN_PASS
-        <if test="orgPartnerId != null">
-            , ORG_PARTNER_ID
-            , PARTNER_ID
-        </if>
-            , USER_NM
-            , AUTH_CD
-            , PHONE_NO
-            , BELONG_NM
-        <if test="deptNm != null">
-            , DEPT_NM
-        </if>
-        <if test="positionNm != null">
-            , POSITION_NM
-        </if>
-            , LOGIN_FAIL_CNT
-            , LAST_LOGIN_TM
-            , FIRST_LOGIN_YN
-            , LAST_PASS_CHG_TM
-            , CRE_USER
-            , UPD_USER
-        ) VALUES (
-              #{loginId}
-            , #{loginPass}
-        <if test="orgPartnerId != null">
-            , #{orgPartnerId}
-            , #{orgPartnerId}
-        </if>
-            , #{userNm}
-            , #{authCd}
-            , #{phoneNo}
-            , #{belongNm}
-        <if test="deptNm != null">
-            , #{deptNm}
-        </if>
-        <if test="positionNm != null">
-            , #{positionNm}
-        </if>
-            , 0
-            , now()
-            , 'N'
-            , now()
-            , #{creUser}
-            , #{creUser}
-        )
-    </insert>
-
     <update id="updateUser" parameterType="com.shop.core.entity.User">
         /* com.shop.mapper.user.updateUser */
         UPDATE TB_USER
@@ -327,12 +265,6 @@
             </if>
             <if test="loginPass != null">
                 , LOGIN_PASS = #{loginPass}
-            </if>
-            <if test="orgPartnerId != null">
-              , ORG_PARTNER_ID = #{orgPartnerId}
-            </if>
-            <if test="orgPartnerId != null">
-              , PARTNER_ID = #{orgPartnerId}
             </if>
             <if test="userNm != null">
               , USER_NM = #{userNm}
@@ -370,9 +302,6 @@
             <if test="useYn != null">
                 , USE_YN = #{useYn}
             </if>
-            <if test="workYmd != null">
-                , WORK_YMD = #{workYmd}
-            </if>
             <if test="fileId != null">
                 , FILE_ID = #{fileId}
             </if>
@@ -391,14 +320,6 @@
         WHERE ID = #{id}
     </update>
 
-    <update id="updateUserWorkYmd" parameterType="com.shop.core.entity.User">
-        /* com.shop.mapper.user.updateUserWorkYmd */
-        UPDATE TB_USER
-        SET UPD_TM   = NOW()
-          , UPD_USER = #{updUser}
-          , WORK_YMD = #{workYmd}
-        WHERE ID = #{id}
-    </update>
 
     <delete id="deleteUser" parameterType="com.shop.core.entity.User">
         /* com.shop.mapper.user.deleteUser */
@@ -421,13 +342,12 @@
     <select id="selectUserPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.UserResponse$Paging">
         /* com.shop.mapper.user.selectUserPaging */
         SELECT
-            TU.ID AS id
+              TU.ID AS id
             , TU.LOGIN_ID AS loginId
             , TU.LOGIN_PASS AS loginPass
             , TU.USER_NM AS userNm
             , TU.AUTH_CD AS authCd
             , TU.PARTNER_ID AS partnerId
-            , TU.ORG_PARTNER_ID AS orgPartnerId
             , TU.PHONE_NO AS phoneNo
             , TU.BELONG_NM AS belongNm
             , TU.DEPT_NM AS deptNm
@@ -460,7 +380,7 @@
                 AND TU.AUTH_CD::integer <![CDATA[>]]> 399
             </if>
             <if test='filter.partnerId != null and !filter.partnerId.equals("")'>
-                AND TU.ORG_PARTNER_ID =  #{filter.partnerId}
+                AND TU.PARTNER_ID =  #{filter.partnerId}
             </if>
             <if test='filter.loginId != null and !filter.loginId.equals("")'>
                 AND TU.LOGIN_ID LIKE '%' || #{filter.loginId} || '%'
