@@ -3,6 +3,7 @@ package com.shop.api.biz.system.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.system.service.UserService;
+import com.shop.api.utils.PasswordHashing;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.request.UserRequest;
@@ -13,7 +14,6 @@ import com.shop.core.entity.User;
 import com.shop.core.enums.*;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.api.utils.CommUtil;
-import com.shop.api.utils.CryptUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -201,7 +201,7 @@ public class UserController {
 
         // 비밀번호 암호화
         try {
-            String encPass = CryptUtil.getHash(chgPass, userRequest.getLoginId().getBytes());
+            String encPass = PasswordHashing.hash(chgPass);
             userRequest.setLoginPass(encPass);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -263,7 +263,7 @@ public class UserController {
         // 비밀번호 암호화
         try {
             if (!StringUtils.isEmpty(userRequest.getLoginPass())) {
-                String encPass = CryptUtil.getHash(userRequest.getLoginPass(), userRequest.getLoginId().getBytes());
+                String encPass = PasswordHashing.hash(userRequest.getLoginPass());
                 userRequest.setLoginPass(encPass);
             }
         } catch (Exception e) {
@@ -394,9 +394,7 @@ public class UserController {
         UserResponse.SelectByLoginId userResponse = userService.selectUserByLoginId(jwtUser.getLoginId());
 
         try {
-            String adminEncPassword = CryptUtil.getHash(userRequest.getLoginPass(), jwtUser.getLoginId().getBytes());
-
-            if (!userResponse.getLoginPass().equals(adminEncPassword)) {
+            if (!PasswordHashing.matches(userRequest.getLoginPass(), userResponse.getLoginPass())) {
                 return new ApiResponse<>(ApiResultCode.NOT_MATCHED_NOW_PASS);
             }
         } catch (Exception e) {
@@ -411,7 +409,7 @@ public class UserController {
         if (rsltCnt > 0) {
             try {
                 // 메시지 전송되면 user 업데이트
-                String encPassword = CryptUtil.getHash(chgPass, userRequest.getLoginId().getBytes());
+                String encPassword = PasswordHashing.hash(chgPass);
 
                 // 세션정보를 이용해서 수정자 세팅
                 userRequest.setUpdUser(jwtUser.getLoginId());
@@ -461,7 +459,7 @@ public class UserController {
             try {
                 // 메시지 전송되면 user 업데이트
                 // 비밀번호 암호화
-                String encPassword = CryptUtil.getHash(chgPass, userRequest.getLoginId().getBytes());
+                String encPassword = PasswordHashing.hash(chgPass);
 
                 // 세션정보를 이용해서 수정자 세팅
                 userRequest.setUpdUser(jwtUser.getLoginId());

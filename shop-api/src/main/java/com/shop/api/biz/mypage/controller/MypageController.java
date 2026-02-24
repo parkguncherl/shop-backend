@@ -3,6 +3,7 @@ package com.shop.api.biz.mypage.controller;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.mypage.service.MypageService;
 import com.shop.api.biz.system.service.UserService;
+import com.shop.api.utils.PasswordHashing;
 import com.shop.core.biz.mypage.vo.request.FavoritesRequest;
 import com.shop.core.biz.mypage.vo.response.FavoritesResponse;
 import com.shop.core.biz.system.vo.request.LoginRequest;
@@ -15,7 +16,6 @@ import com.shop.core.enums.ApiResultCode;
 import com.shop.core.enums.EsseType;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.api.utils.CommUtil;
-import com.shop.api.utils.CryptUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -118,7 +118,6 @@ public class MypageController {
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter @RequestBody LoginRequest request
             ){
-
         // 계정관리_조회 (by LoginId)
         UserResponse.SelectByLoginId userResponse = userService.selectUserByLoginId(request.getLoginId());
 
@@ -129,13 +128,9 @@ public class MypageController {
         //--------------------------------------------------------------------------------
         // 비밀번호 확인
         //--------------------------------------------------------------------------------
-        String encPassword = null;
         try {
-            // 비밀번호를 해시화
-            encPassword = CryptUtil.getHash(request.getPassword(), request.getLoginId().getBytes());
-
             // 해시화된 비밀번호와 저장된 비밀번호 비교
-            if (userResponse.getLoginPass().equals(encPassword) || StringUtils.equals(request.getPassword(), "1")) {
+            if (PasswordHashing.matches(request.getPassword(), userResponse.getLoginPass())) {
                 return new ApiResponse<>(ApiResultCode.SUCCESS);  // 비밀번호 일치
             } else {
                 return new ApiResponse<>(ApiResultCode.FAIL, "비밀번호가 올바르지 않습니다.");  // 비밀번호 불일치

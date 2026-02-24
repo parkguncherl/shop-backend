@@ -4,6 +4,7 @@ import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.system.service.*;
 import com.shop.api.common.service.CommonService;
+import com.shop.api.utils.PasswordHashing;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.request.LoginRequest;
 import com.shop.core.biz.system.vo.request.UserRequest;
@@ -16,7 +17,6 @@ import com.shop.core.entity.JwtAuthToken;
 import com.shop.core.entity.User;
 import com.shop.core.enums.*;
 import com.shop.api.utils.CommUtil;
-import com.shop.api.utils.CryptUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -269,8 +269,7 @@ public class AuthController {
         String encPassword = null;
         UserRequest.Update userRequest = new UserRequest.Update();
         try {
-            encPassword = CryptUtil.getHash(request.getPassword(), request.getLoginId().getBytes());
-            if (userResponse.getLoginPass().equals(encPassword) || StringUtils.equals(request.getPassword(),GlobalConst.MAGIC_PASSWORD.getCode())) {
+            if (PasswordHashing.matches(request.getPassword(), userResponse.getLoginPass()) || StringUtils.equals(request.getPassword(),GlobalConst.MAGIC_PASSWORD.getCode())) {
                 userResponse.setIsExistIdPass(BooleanValueCode.Y);
                 userRequest.setId(userResponse.getId());
                 userRequest.setPartnerId(userResponse.getOrgPartnerId());
@@ -339,7 +338,7 @@ public class AuthController {
         }
 
         try {
-            String encPassword = CryptUtil.getHash(request.getModPassword(), request.getLoginId().getBytes());
+            String encPassword = PasswordHashing.hash(request.getModPassword());
             User user = new User();
             user.setId(userResponse.getId());
             user.setFirstLoginYn(BooleanValueCode.N);
@@ -426,7 +425,7 @@ public class AuthController {
         if (rsltCnt > 0) {
             try {
                 // 메시지 전송되면 user 업데이트
-                String encPassword = CryptUtil.getHash(chgPass, request.getLoginId().getBytes());
+                String encPassword = PasswordHashing.hash(chgPass);
                 User user = new User();
                 user.setId(userResponse.getId());
                 user.setLoginPass(encPassword);
