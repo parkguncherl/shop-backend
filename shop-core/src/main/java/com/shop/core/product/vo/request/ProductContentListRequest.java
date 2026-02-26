@@ -4,6 +4,7 @@ import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.entity.Contents;
 import com.shop.core.interfaces.RequestFilter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,5 +37,12 @@ public class ProductContentListRequest {
 
         @Schema(description = "업로드 파일 목록")
         private CommonRequest.FileUploads CommonRequestFileUploads;
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode(callSuper = false)
+    @Schema(name = "ProductContentListRequestDeleteProductContents", description = "Contents 삭제 dto")
+    public static class DeleteProductContents extends Contents {
     }
 }

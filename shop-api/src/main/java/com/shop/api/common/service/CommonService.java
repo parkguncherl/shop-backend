@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -183,14 +184,12 @@ public class CommonService {
         CommonResponse.SelectFile selectFile = fileDao.selectFileDet(fileId, fileSeq, null);
         if(selectFile!= null && selectFile.getSysFileNm() != null) {
             try {
-            /* 일단 원본파일은 삭제 하지 않는다.
-            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(BUKET_NAME)
                     .key(selectFile.getSysFileNm())
                     .build();
 
                 s3Client.deleteObject(deleteObjectRequest);
-             */
                 fileDao.deleteFileDetByUk(fileId, fileSeq, jwtUser);
             } catch (Exception e){
                 throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "s3 파일("+selectFile.getFileNm()+") 삭제 실패["+e.getMessage()+"]");
@@ -199,13 +198,14 @@ public class CommonService {
     }
 
     /* file 전체 삭제 */
-    public void deleteFiles(Integer fileId, User jwtUser) {
+    public Integer deleteAllFiles(Integer fileId, User jwtUser) {
         List<FileDet> files = fileDao.selectFileList(fileId);
         if(!files.isEmpty()) {
             for (FileDet fileDet : files) {
                 this.deleteFile(fileDet.getFileId(), fileDet.getFileSeq(), jwtUser);
             }
         }
+        return files.size(); // exception 없이 해당 코드까지 도달하였을 시 files.size() 에 해당하는 개수의 fileDet이 삭제되었으리라 여김이 마땅하므로 해당 값 반환하도록 함
     }
 
     public File downloadFile(String bucketName, String key) throws IOException {

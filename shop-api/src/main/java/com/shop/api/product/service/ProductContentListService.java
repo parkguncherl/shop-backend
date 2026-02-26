@@ -8,8 +8,10 @@ import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.entity.FileDet;
 import com.shop.core.entity.User;
+import com.shop.core.enums.ApiResultCode;
 import com.shop.core.enums.FilePathType;
 import com.shop.core.enums.GlobalConst;
+import com.shop.core.exception.CustomRuntimeException;
 import com.shop.core.product.dao.ProductContentListDao;
 import com.shop.core.product.dao.ProductContentsDao;
 import com.shop.core.product.dao.ProductMngDao;
@@ -86,5 +88,34 @@ public class ProductContentListService {
         insertProductContents.setCreUser(jwtUser.getLoginId());
         insertProductContents.setUpdUser(jwtUser.getLoginId());
         return productContentListDao.insertProductContents(insertProductContents);
+    }
+
+    /**
+     * 단일 Contents 데이터 및 연관된 상품정보를 삭제
+     *
+     * @param deleteProductContents
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void deleteProductContents(ProductContentListRequest.DeleteProductContents deleteProductContents, User jwtUser) throws IOException {
+        if (deleteProductContents.getFileId() != null) {
+            // 연관된 (이미지)파일 삭제 영역
+            List<FileDet> fileList = commonService.selectFileList(deleteProductContents.getFileId());
+            Integer deletedFileCnt = commonService.deleteAllFiles(deleteProductContents.getFileId(), jwtUser);
+            Integer deletedFileInfoCnt = commonService.deleteFile(deleteProductContents.getFileId(), jwtUser); // file (데이터) 삭제
+            if (deletedFileCnt.compareTo(fileList.size()) != 0) {
+                // 불일치 시 예외
+                throw new IOException("삭제되어야 할 fileDet 과 실제로 그리 된 fileDet의 개수가 다름");
+            } else if (deletedFileInfoCnt != 1) {
+                throw new IOException("file 데이터가 삭제되지 않음");
+            }
+        }
+
+        // 이하 contents 테이블 데이터 삭제를 위한 영역
+        deleteProductContents.setUpdUser(jwtUser.getLoginId());
+        Integer deletedRowCnt = productContentListDao.deleteProductContents(deleteProductContents);
+        if (!deletedRowCnt.equals(1)) {
+            throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "정보 삭제 중 문제 발생, 점검!");
+        }
     }
 }

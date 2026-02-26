@@ -84,4 +84,24 @@ public class ProductContentListController {
             return new ApiResponse<>(ApiResultCode.FAIL_CREATE);
         }
     }
+
+    /**
+     * 단일 Contents 데이터 및 연관된 상품정보를 삭제
+     *
+     * @param deleteProductContents
+     * @return
+     */
+    @Operation(summary = "StudioSku 삭제", description = "단일 Contents 데이터 및 연관된 상품정보를 삭제합니다.")
+    @PatchMapping("/deleteProductContents")
+    public ApiResponse<Void> deleteProductContents(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductContentListRequest.DeleteProductContents deleteProductContents
+    ) {
+        try {
+            productContentListService.deleteProductContents(deleteProductContents, jwtUser);
+            return new ApiResponse<>(ApiResultCode.SUCCESS);
+        } catch (IOException exception) {
+            return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
+        }
+    }
 }

@@ -63,4 +63,13 @@
         )
     </insert>
 
+    <update id="deleteProductContents" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$DeleteProductContents">
+        /* com.shop.mapper.product.productContentList.deleteProductContents */
+        UPDATE TB_CONTENTS
+        SET DEL_YN = 'Y'
+          , UPD_USER = #{updUser}
+          , UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
 </mapper>

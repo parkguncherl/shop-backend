@@ -52,4 +52,13 @@ public class ProductContentListDao {
     public int insertProductContents(Contents contents) {
         return sqlSession.insert(NAMESPACE.concat("insertProductContents"), contents);
     }
+
+    /**
+     * (단일) Contents 데이터를 논리적으로 삭제
+     * @param deleteProductContents
+     * @return 영향받은(삭제된) 행의 수
+     */
+    public int deleteProductContents(ProductContentListRequest.DeleteProductContents deleteProductContents) {
+        return sqlSession.update(NAMESPACE.concat("deleteProductContents"), deleteProductContents);
+    }
 }
