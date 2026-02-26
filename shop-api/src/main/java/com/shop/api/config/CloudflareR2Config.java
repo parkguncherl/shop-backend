@@ -3,13 +3,16 @@ package com.shop.api.config;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
 
@@ -27,11 +30,12 @@ public class CloudflareR2Config {
 
 
     /**
-     * Creates a new CloudflareR2Client with the provided configuration
+     * Builds and configures the S3 client with R2-specific settings
      */
     @Bean
-    @Qualifier("cloudflareR2Client")
-    public S3Client CloudflareR2Client() {
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @Qualifier("buildS3ClientWithR2Specific")
+    public S3Client buildS3ClientWithR2Specific() {
         S3Config config = new S3Config(
                 ACCOUNT_ID,
                 ACCESS_KEY,
@@ -51,6 +55,34 @@ public class CloudflareR2Config {
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .region(Region.of("auto")) // Required by SDK but not used by R2
                 .serviceConfiguration(serviceConfiguration)
+                .build();
+    }
+
+    /**
+     * Builds and configures the S3 presigner with R2-specific settings
+     */
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @Qualifier("buildS3PresignerWithR2Specific")
+    public S3Presigner buildS3PresignerWithR2Specific() {
+        S3Config config = new S3Config(
+                ACCOUNT_ID,
+                ACCESS_KEY,
+                SECRET_KEY
+        );
+
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(
+                config.getAccessKey(),
+                config.getSecretKey()
+        );
+
+        return S3Presigner.builder()
+                .endpointOverride(URI.create(config.getEndpoint()))
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .region(Region.of("auto")) // Required by SDK but not used by R2
+                .serviceConfiguration(S3Configuration.builder()
+                        .pathStyleAccessEnabled(true)
+                        .build())
                 .build();
     }
 

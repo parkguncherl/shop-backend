@@ -5,7 +5,6 @@ import com.shop.api.properties.GlobalProperties;
 import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.biz.common.dao.GridDao;
 import com.shop.core.biz.common.dao.SmsDao;
-import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.request.GridRequest;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.request.SmsRequest;
@@ -61,10 +60,9 @@ public class CommonService {
     private final GridDao gridDao;
 
     private final GlobalProperties globalProperties;
-//    private final S3Client s3Client;
     private final S3Presigner presigner;
 
-    private final S3Client CloudflareR2Client;
+    private final S3Client s3Client;
 
     public CommonService(
             UserService userService,
@@ -73,8 +71,8 @@ public class CommonService {
             UserDao userDao,
             GridDao gridDao,
             GlobalProperties globalProperties,
-            S3Presigner presigner,
-            @Qualifier("cloudflareR2Client") S3Client CloudflareR2Client // 주입 과정에서의 불완전성을 제거하기 위해 어노테이션 기반 주입 대신 다음과 같은 명시적 생성자 선언
+            @Qualifier("buildS3PresignerWithR2Specific") S3Presigner presigner,
+            @Qualifier("buildS3ClientWithR2Specific") S3Client s3Client // 주입 과정에서의 불완전성을 제거하기 위해 어노테이션 기반 주입 대신 다음과 같은 명시적 생성자 선언
     ) {
         this.userService = userService;
         this.smsDao = smsDao;
@@ -83,7 +81,7 @@ public class CommonService {
         this.gridDao = gridDao;
         this.globalProperties = globalProperties;
         this.presigner = presigner;
-        this.CloudflareR2Client = CloudflareR2Client;
+        this.s3Client = s3Client;
     }
 
 //    @Value("${aws.s3.bucketName.name}")
@@ -153,7 +151,7 @@ public class CommonService {
                     .key(key)
                     .build();
 
-            CloudflareR2Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
 
             // 파일정보가 있는경우는 생략한다.
             if(fileId == null || fileId.compareTo(0) == 0) {
@@ -221,7 +219,7 @@ public class CommonService {
         File tempFile = tempFilePath.toFile();
 
         try (FileOutputStream fos = new FileOutputStream(tempFile);
-             InputStream s3ObjectStream = CloudflareR2Client.getObject(getObjectRequest)) {
+             InputStream s3ObjectStream = s3Client.getObject(getObjectRequest)) {
 
             byte[] buffer = new byte[1024];
             int bytesRead;
