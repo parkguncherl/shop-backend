@@ -1,6 +1,7 @@
 package com.shop.core.product.vo.request;
 
 import com.shop.core.biz.common.vo.request.CommonRequest;
+import com.shop.core.entity.Contents;
 import com.shop.core.interfaces.RequestFilter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -26,5 +27,14 @@ public class ProductContentListRequest {
 
         @Schema(description = "lastId")
         private Integer lastId;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductContentListRequestInsertProductContents", description = "상품컨텐츠 추가 요청")
+    public static class InsertProductContents extends Contents {
+
+        @Schema(description = "업로드 파일 목록")
+        private CommonRequest.FileUploads CommonRequestFileUploads;
     }
 }

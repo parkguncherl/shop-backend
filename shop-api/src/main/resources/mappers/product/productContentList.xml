@@ -3,6 +3,7 @@
 <mapper namespace="com.shop.mapper.product.productContentList">
 
     <select id="selectProdContentList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ProductContent">
+        /* com.shop.mapper.product.productContentList.selectProdContentList */
         SELECT
               A.ID AS id
             , A.NEWS_TITLE AS newsTitle
@@ -26,5 +27,40 @@
         ORDER BY A.ID
         LIMIT #{pageRowCount} + 1;
     </select>
+
+    <insert id="insertProductContents" parameterType="com.shop.core.entity.Contents">
+        /* com.shop.mapper.product.productContentList.insertProductContents */
+        INSERT INTO TB_CONTENTS (
+        NEWS_TYPE ,
+        NEWS_TITLE ,
+        <if test='newsSubTitle != null'>
+            NEWS_SUB_TITLE,
+        </if>
+        <if test='newsContents != null'>
+            NEWS_CONTENTS,
+        </if>
+        <if test='fileId != null'>
+            FILE_ID,
+        </if>
+        PARTNER_ID,
+        CRE_USER,
+        UPD_USER
+        ) VALUES (
+        #{newsType} ,
+        #{newsTitle} ,
+        <if test='newsSubTitle != null'>
+            #{newsSubTitle} ,
+        </if>
+        <if test='newsContents != null'>
+            #{newsContents} ,
+        </if>
+        <if test='fileId != null'>
+            #{fileId} ,
+        </if>
+        #{partnerId} ,
+        #{creUser} ,
+        #{updUser}
+        )
+    </insert>
 
 </mapper>

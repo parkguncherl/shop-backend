@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shop.mapper.product.productContents">
 
+    <!-- todo 마이그레이션 후 삭제 검토-->
     <insert id="insertProductContents" parameterType="com.shop.core.entity.Contents">
         /* com.shop.mapper.product.productContents.insertProductContents */
         INSERT INTO TB_CONTENTS (

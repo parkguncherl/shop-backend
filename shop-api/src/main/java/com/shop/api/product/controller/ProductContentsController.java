@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+// todo 상품컨텐츠목록으로의 이전이 완료되고 또한 해당 페이지를 더 이상 사용하지 않는다 여기어질 시 해당 컨트롤러 및 서비스, dao, 관련 dto 및 mybatis xml 파일 삭제하기
+
 /**
  * <pre>
  * Description: ProductContents Controller
