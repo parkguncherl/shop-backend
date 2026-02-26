@@ -65,23 +65,27 @@ public class ProductContentListService {
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Integer insertProductContents(ProductContentListRequest.InsertProductContents insertProductContents, User jwtUser) throws IOException {
-        CommonRequest.FileUploads fileUploads = insertProductContents.getCommonRequestFileUploads();
-        List<MultipartFile> fileList = fileUploads.getUploadFiles();
-        Integer fileId = 0;
-        Integer fileSeq = 0;
-        for (MultipartFile file : fileList) {
-            fileSeq++;
-            String originalFileName = file.getOriginalFilename();
-            String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+        if (insertProductContents.getCommonRequestFileUploads() != null) {
+            // 파일 업로드 요청이 포함된 경우 이에 대응하는 로직
+            CommonRequest.FileUploads fileUploads = insertProductContents.getCommonRequestFileUploads();
+            List<MultipartFile> fileList = fileUploads.getUploadFiles();
+            Integer fileId = 0;
+            Integer fileSeq = 0;
+            for (MultipartFile file : fileList) {
+                fileSeq++;
+                String originalFileName = file.getOriginalFilename();
+                String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
 
-            FileDet fileDet = commonService.uploadFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
+                FileDet fileDet = commonService.uploadFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
 
-            if (fileId == 0) {
-                fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
-                insertProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의
+                if (fileId == 0) {
+                    fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
+                    insertProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의
+                }
             }
         }
 
+        // 이하 contents 테이블 데이터 추가를 위한 영역
         insertProductContents.setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
         insertProductContents.setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
 

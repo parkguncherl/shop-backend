@@ -91,7 +91,7 @@ public class ProductContentListController {
      * @param deleteProductContents
      * @return
      */
-    @Operation(summary = "StudioSku 삭제", description = "단일 Contents 데이터 및 연관된 상품정보를 삭제합니다.")
+    @Operation(summary = "단일 Contents 데이터 및 연관된 상품정보 삭제", description = "단일 Contents 데이터 및 연관된 상품정보를 삭제합니다.")
     @PatchMapping("/deleteProductContents")
     public ApiResponse<Void> deleteProductContents(
             @Parameter(hidden = true) @JwtUser User jwtUser,
