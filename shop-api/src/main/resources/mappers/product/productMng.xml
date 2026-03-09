@@ -33,7 +33,7 @@
         <where>
             AND TP.DEL_YN = 'N'
             <if test='prodNm != null and !prodNm.equals("")'>
-                AND TP.PROD_NM = #{prodNm}
+                AND TP.PROD_NM LIKE CONCAT('%' ,#{prodNm} ,'%')
             </if>
         </where>
         GROUP BY TP.ID
