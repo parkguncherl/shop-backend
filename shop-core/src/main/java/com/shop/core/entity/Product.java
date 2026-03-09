@@ -8,6 +8,7 @@ import org.springframework.cglib.core.Local;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -50,11 +51,26 @@ public class Product extends BaseEntity implements Serializable {
     private String composition;
 
     @Schema(description = "이미지 파일 id")
-    private Integer imgFileId;
+    private Integer repFileId;
 
-    @Schema(description = "파일 id")
-    private Integer fileId;
+    @Schema(description = "이미지 파일 id")
+    private Integer detailFileId;
+
+    @Schema(description = "이미지 파일 id")
+    private Integer sizeFileId;
+
+    @Schema(description = "이미지 파일 id")
+    private Integer etcFileId;
 
     @Schema(description = "제조 연월일")
     private LocalDate makeYmd;
+
+    @Schema(description = "원가")
+    private BigDecimal orgAmt;
+
+    @Schema(description = "판매가")
+    private BigDecimal sellAmt;
+
+    @Schema(description = "할인율")
+    private BigDecimal discountRate;
 }

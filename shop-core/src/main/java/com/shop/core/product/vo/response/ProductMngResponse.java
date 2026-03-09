@@ -25,22 +25,22 @@ public class ProductMngResponse {
         private String prodDetTpNm;
 
         @Schema(description = "색상(종류 나열)")
-        private String colors;
+        private String prodColors;
 
         @Schema(description = "사이즈(종류 나열)")
-        private String sizes;
+        private String prodSizes;
 
-        @Schema(description = "총건수")
-        private Integer totCnt;
+        @Schema(description = "대표이미지 개수")
+        private Integer repFileIdCnt;
 
-        @Schema(description = "평균생산가")
-        private BigDecimal avgOrgAmt;
+        @Schema(description = "상세이미지 개수")
+        private Integer detailFileIdCnt;
 
-        @Schema(description = "평균판매가")
-        private BigDecimal avgSellAmt;
+        @Schema(description = "사이즈이미지 개수")
+        private Integer sizeFileIdCnt;
 
-        @Schema(description = "평균실판매가")
-        private BigDecimal avgRealSellAmt;
+        @Schema(description = "기타이미지 개수")
+        private Integer etcFileIdCnt;
     }
 
     @Getter
@@ -48,8 +48,5 @@ public class ProductMngResponse {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductDetInfo", description = "상품관리 영역 상품상세정보", type = "object")
     public static class ProductDetInfo extends ProductDet {
-
-        @Schema(description = "실제판매가")
-        private BigDecimal realSellAmt;
     }
 }

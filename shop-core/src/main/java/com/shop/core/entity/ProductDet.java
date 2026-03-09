@@ -29,30 +29,24 @@ public class ProductDet extends BaseEntity implements Serializable {
     @Schema(description = "아이디(PK)")
     private Integer id;
 
-    @Schema(description = "파트너ID(FK)")
-    private Integer partnerId;
+    @Schema(description = "prod id")
+    private Integer productId;
 
-    @Schema(description = "파트너ID(FK)")
-    private Integer partnerDetSeq;
+    @Schema(description = "상품상세 순서(seq, 이를 통해 prod 이하에서 고유 요소 식별)")
+    private Integer productDetSeq;
 
-    @Schema(description = "파트너ID(FK)")
+    @Schema(description = "상품상세 사이즈")
     private String productDetSize;
 
-    @Schema(description = "파트너ID(FK)")
+    @Schema(description = "상품상세 컬러")
     private String productDetColor;
 
-    @Schema(description = "원가")
-    private BigDecimal orgAmt;
+    @Schema(description = "스큐 할인율")
+    private Integer skuDiscountRate;
 
-    @Schema(description = "판매가")
-    private BigDecimal sellAmt;
-
-    @Schema(description = "파트너ID(FK)")
-    private Integer discountRate;
-
-    @Schema(description = "파트너ID(FK)")
+    @Schema(description = "file id")
     private Integer fileId;
 
-    @Schema(description = "파트너ID(FK)")
+    @Schema(description = "휴면여부(Y/N)")
     private String sleepYn;
 }

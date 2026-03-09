@@ -2,23 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shop.mapper.product.productMng">
 
-    <select id="selectProdInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfo">
-        /* com.shop.mapper.product.productMng.selectProdInfo */
+    <select id="selectProdInfoList" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfo">
+        /* com.shop.mapper.product.productMng.selectProdInfoList */
         SELECT
-              A.PROD_NM AS prodNm
-            , A.MAKE_YMD AS makeYmd
-            , FN_GET_CODE('90060',A.PROD_TP) prodTpNm
-            , FN_GET_CODE('90070',A.PROD_DET_TP) prodDetTpNm
-            , STRING_AGG(B.PRODUCT_DET_COLOR ,',')  AS colors
-            , STRING_AGG(DISTINCT B.PRODUCT_DET_SIZE,',') AS sizes
-            , COUNT(B.ID) AS totCnt
-            , A.COMPOSITION AS composition
-            , AVG(B.ORG_AMT) AS avgOrgAmt
-            , AVG(B.SELL_AMT) AS avgSellAmt
-            , AVG(ROUND((100 - B.DISCOUNT_RATE) * B.SELL_AMT * 0.01 ,0)) AS avgRealSellAmt
-        FROM TB_PRODUCT A
-            LEFT JOIN TB_PRODUCT_DET B ON A.ID = B.PRODUCT_ID
-        GROUP BY A.ID;
+              TP.ID AS id
+            , TP.PARTNER_ID AS partnerId
+            , TP.PROD_CD AS prodCd
+            , TP.PROD_NM AS prodNm
+            , TP.PROD_TP AS prodTp
+            , TP.PROD_DET_TP AS prodDetTp
+            , TP.COMPOSITION AS composition
+            , TP.REP_FILE_ID AS repFileId
+            , TP.DETAIL_FILE_ID AS detailFileId
+            , TP.SIZE_FILE_ID AS sizeFileId
+            , TP.ETC_FILE_ID AS etcFileId
+            , TP.MAKE_YMD AS makeYmd
+            , TP.ORG_AMT AS orgAmt
+            , TP.SELL_AMT AS sellAmt
+            , TP.DISCOUNT_RATE AS discountRate
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
+            , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
+            , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.REP_FILE_ID) AS repFileIdCnt
+            , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.DETAIL_FILE_ID) AS detailFileIdCnt
+            , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.SIZE_FILE_ID) AS sizeFileIdCnt
+            , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.ETC_FILE_ID) AS etcFileIdCnt
+        FROM TB_PRODUCT TP
+              LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID
+        GROUP BY TP.ID;
     </select>
 
     <select id="selectProductDetInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductDetInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductDetInfo">

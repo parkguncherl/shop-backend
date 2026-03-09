@@ -1,5 +1,7 @@
 package com.shop.core.product.dao;
 
+import com.shop.core.biz.common.vo.request.PageRequest;
+import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.product.vo.request.ProductMngRequest;
 import com.shop.core.product.vo.response.ProductMngResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +31,16 @@ public class ProductMngDao {
 
     /**
      * 상품관리-상품정보 조회
-     * @param productInfoFilter
-     * @return ProductInfo List
+     * @param pageRequest
+     * @return PageResponse with ProductInfo List
      */
-    public List<ProductMngResponse.ProductInfo> selectProdInfo(ProductMngRequest.ProductInfoFilter productInfoFilter) {
-        return sqlSession.selectList(NAMESPACE + "selectProdInfo", productInfoFilter);
+    public PageResponse<ProductMngResponse.ProductInfo> selectProdInfoList(PageRequest<ProductMngRequest.ProductInfoFilter> pageRequest) {
+        List<ProductMngResponse.ProductInfo> prodInfoList = sqlSession.selectList(NAMESPACE + "selectProdInfoList", pageRequest);
+        if (prodInfoList != null && !prodInfoList.isEmpty()) {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount(), prodInfoList, prodInfoList.size());
+        } else {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
+        }
     }
 
     /**
