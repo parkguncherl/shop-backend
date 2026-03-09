@@ -15,7 +15,7 @@ public class ProductMngResponse {
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "ProductInfo", description = "상품관리 영역 상품정보", type = "object")
+    @Schema(name = "ProductMngResponseProductInfo", description = "상품관리 영역 상품정보", type = "object")
     public static class ProductInfo extends Product {
 
         @Schema(description = "상품구분명")
@@ -46,7 +46,7 @@ public class ProductMngResponse {
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "ProductDetInfo", description = "상품관리 영역 상품상세정보", type = "object")
+    @Schema(name = "ProductMngResponseProductDetInfo", description = "상품관리 영역 상품상세정보", type = "object")
     public static class ProductDetInfo extends ProductDet {
     }
 }

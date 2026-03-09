@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * <pre>
  * Description: ProductMng Controller
@@ -37,21 +39,36 @@ public class ProductMngController {
     private final ProductMngService productMngService;
 
     /**
-     * 상품목록 조회(페이징)
+     * 상품목록 조회
      *
      * @param productInfoFilter
-     * @return 페이징 동작에 대응하여 조회된 ProductInfoList
+     * @return 조회된 ProductInfoList
      */
-    @AccessLog("상품컨텐츠목록 조회(페이징)")
-    @GetMapping(value = "/productContentListPaging")
-    @Operation(summary = "상품컨텐츠목록 조회(페이징)")
-    public ApiResponse<PageResponse<ProductMngResponse.ProductInfo>> selectProdInfoList(
+    @AccessLog("상품목록 조회")
+    @GetMapping(value = "/productInfoList")
+    @Operation(summary = "상품목록 조회")
+    public ApiResponse<List<ProductMngResponse.ProductInfo>> selectProdInfoList(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(name = "ProductMngRequestProductInfoFilter", description = "상품컨텐츠목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductInfoFilter productInfoFilter,
-            @Parameter(name = "PageRequest", description = "상품컨텐츠목록 조회 페이징") PageRequest<ProductMngRequest.ProductInfoFilter> pageRequest
+            @Parameter(name = "ProductMngRequestProductInfoFilter", description = "상품목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductInfoFilter productInfoFilter
     ) {
-        pageRequest.setFilter(productInfoFilter);
-        PageResponse<ProductMngResponse.ProductInfo> response = productMngService.selectProdInfoList(pageRequest, jwtUser);
+        List<ProductMngResponse.ProductInfo> response = productMngService.selectProdInfoList(productInfoFilter, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
+     * 상품상세목록 조회
+     *
+     * @param productDetInfoFilter
+     * @return 조회된 상품상세목록
+     */
+    @AccessLog("상품상세목록 조회")
+    @GetMapping(value = "/productDetInfoList")
+    @Operation(summary = "상품상세목록 조회")
+    public ApiResponse<List<ProductMngResponse.ProductDetInfo>> selectProdDetInfo(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductMngRequestProductInfoFilter", description = "상품상세목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductDetInfoFilter productDetInfoFilter
+    ) {
+        List<ProductMngResponse.ProductDetInfo> response = productMngService.selectProdDetInfo(productDetInfoFilter, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 }

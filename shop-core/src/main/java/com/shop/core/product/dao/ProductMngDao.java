@@ -31,16 +31,11 @@ public class ProductMngDao {
 
     /**
      * 상품관리-상품정보 조회
-     * @param pageRequest
-     * @return PageResponse with ProductInfo List
+     * @param productInfoFilter
+     * @return ProductInfo List
      */
-    public PageResponse<ProductMngResponse.ProductInfo> selectProdInfoList(PageRequest<ProductMngRequest.ProductInfoFilter> pageRequest) {
-        List<ProductMngResponse.ProductInfo> prodInfoList = sqlSession.selectList(NAMESPACE + "selectProdInfoList", pageRequest);
-        if (prodInfoList != null && !prodInfoList.isEmpty()) {
-            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount(), prodInfoList, prodInfoList.size());
-        } else {
-            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
-        }
+    public List<ProductMngResponse.ProductInfo> selectProdInfoList(ProductMngRequest.ProductInfoFilter productInfoFilter) {
+        return sqlSession.selectList(NAMESPACE + "selectProdInfoList", productInfoFilter);
     }
 
     /**

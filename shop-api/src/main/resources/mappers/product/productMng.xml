@@ -30,17 +30,34 @@
             , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.ETC_FILE_ID) AS etcFileIdCnt
         FROM TB_PRODUCT TP
               LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID
-        GROUP BY TP.ID;
+        <where>
+            AND TP.DEL_YN = 'N'
+            <if test='prodNm != null and !prodNm.equals("")'>
+                AND TP.PROD_NM = #{prodNm}
+            </if>
+        </where>
+        GROUP BY TP.ID
+        ORDER BY TP.ID;
     </select>
 
-    <select id="selectProductDetInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductDetInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductDetInfo">
-        /* com.shop.mapper.product.productMng.selectProductDetInfo */
-        SELECT A.PRODUCT_DET_COLOR
-             , A.PRODUCT_DET_SIZE
-             , A.ORG_AMT
-             , A.SELL_AMT
-             , A.DISCOUNT_RATE
-             , ROUND((100 - A.DISCOUNT_RATE ) * A.SELL_AMT * 0.01 , 0) AS 실제판매가
-        FROM TB_PRODUCT_DET A
+    <select id="selectProdDetInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductDetInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductDetInfo">
+        /* com.shop.mapper.product.productMng.selectProdDetInfo */
+        SELECT
+              TPD.ID AS id
+            , TPD.PRODUCT_ID AS productId
+            , TPD.PRODUCT_DET_SEQ AS productDetSeq
+            , TPD.PRODUCT_DET_SIZE AS productDetSize
+            , TPD.PRODUCT_DET_COLOR AS productDetColor
+            , TPD.SKU_DISCOUNT_RATE AS skuDiscountRate
+            , TPD.FILE_ID AS fileId
+            , TPD.SLEEP_YN AS sleepYn
+        FROM TB_PRODUCT_DET TPD
+        <where>
+            AND TPD.DEL_YN = 'N'
+            <if test="prodId != null">
+                AND TPD.PRODUCT_ID = #{prodId}
+            </if>
+        </where>
+        ORDER BY TPD.ID
     </select>
 </mapper>

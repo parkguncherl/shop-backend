@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 /**
  * <pre>
@@ -26,18 +28,20 @@ public class ProductMngService {
     private final ProductMngDao productMngDao;
 
     /**
-     * 상품관리-상품정보 조회
-     * @param productInfoFilter 필터 정보를 포함한 요청 객체
-     * @return 페이징된 기본정보 목록 응답
-     */
-    /**
      * 상품관리-상품컨텐츠목록 조회
-     * @param pageRequest
-     * @return 페이징된 ProductInfo List
+     * @param productInfoFilter
+     * @return ProductInfo List
      */
-    public PageResponse<ProductMngResponse.ProductInfo> selectProdInfoList(PageRequest<ProductMngRequest.ProductInfoFilter> pageRequest, User jwtUser) {
-//        pageRequest.getFilter().setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
-//        pageRequest.getFilter().setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
-        return productMngDao.selectProdInfoList(pageRequest);
+    public List<ProductMngResponse.ProductInfo> selectProdInfoList(ProductMngRequest.ProductInfoFilter productInfoFilter, User jwtUser) {
+        return productMngDao.selectProdInfoList(productInfoFilter);
+    }
+
+    /**
+     * 상품관리-상품정보 상세 조회
+     * @param productDetInfoFilter
+     * @return ProductDetInfo List
+     */
+    public List<ProductMngResponse.ProductDetInfo> selectProdDetInfo(ProductMngRequest.ProductDetInfoFilter productDetInfoFilter, User jwtUser) {
+        return productMngDao.selectProdDetInfo(productDetInfoFilter);
     }
 }

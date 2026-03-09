@@ -13,6 +13,9 @@ public class ProductMngRequest {
     @Setter
     @Schema(name = "ProductMngRequestProductInfoFilter", description = "상품 정보 필터")
     public static class ProductInfoFilter implements RequestFilter {
+
+        @Schema(description = "상품명")
+        private String prodNm;
     }
 
     @Getter
