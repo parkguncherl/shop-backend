@@ -139,4 +139,20 @@ public class CommonRequest {
         @Schema(description = "파일 유형")
         private String fileKey;
     }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "CommonRequestFileRearrangementRequest", description = "파일 재정렬(by seq to seq) 요청 dto")
+    public static class FileRearrangementRequest {
+
+        @Schema(description = "대상의 fileId")
+        private Integer fileId;
+
+        @Schema(description = "대상의 seq")
+        private Integer fromSeq;
+
+        @Schema(description = "순서를 교환하고자 하는 대상의 seq")
+        private Integer toSeq;
+    }
 }

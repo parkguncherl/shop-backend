@@ -5,6 +5,7 @@ import com.shop.api.properties.GlobalProperties;
 import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.biz.common.dao.GridDao;
 import com.shop.core.biz.common.dao.SmsDao;
+import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.request.GridRequest;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.request.SmsRequest;
@@ -316,6 +317,41 @@ public class CommonService {
         request.setUserId(user.getId());
         request.setUri(uri);
         return gridDao.selectGridColum(request);
+    }
+
+
+    /**
+     * 두 파일 간의 seq 교환(재정렬)
+     *
+     * @param fileRearrangementRequest
+     * @param jwtUser
+     * @return updatedRowsCnt(정상인 경우 2)
+     */
+    public Integer rearrangeFilesBySeqToSeq(CommonRequest.FileRearrangementRequest fileRearrangementRequest, User jwtUser) {
+        Integer updatedRowsCnt = 0; // 정상일 경우 2가 할당된 상태로 반환
+
+        FileDet fileDetByFromSeq = new FileDet(); // from seq 에서 to seq 로
+        FileDet fileDetByToSeq = new FileDet(); // to seq 에서 from seq 로
+
+        fileDetByFromSeq.setFileId(fileRearrangementRequest.getFileId());
+        fileDetByToSeq.setFileId(fileRearrangementRequest.getFileId());
+
+        fileDetByFromSeq.setUpdUser(jwtUser.getLoginId());
+        fileDetByToSeq.setUpdUser(jwtUser.getLoginId());
+
+        CommonResponse.SelectFile selectFileByFromSeq = fileDao.selectFileDet(fileRearrangementRequest.getFileId(), fileRearrangementRequest.getFromSeq(), null);
+        CommonResponse.SelectFile selectFileByToSeq = fileDao.selectFileDet(fileRearrangementRequest.getFileId(), fileRearrangementRequest.getToSeq(), null);
+
+        fileDetByFromSeq.setSysFileNm(selectFileByFromSeq.getSysFileNm());
+        fileDetByToSeq.setSysFileNm(selectFileByToSeq.getSysFileNm());
+
+        fileDetByFromSeq.setFileSeq(fileRearrangementRequest.getToSeq()); // from seq 에서 to seq 로
+        fileDetByToSeq.setFileSeq(fileRearrangementRequest.getFromSeq()); // to seq 에서 from seq 로
+
+        updatedRowsCnt += fileDao.updateFileDet(fileDetByFromSeq);
+        updatedRowsCnt += fileDao.updateFileDet(fileDetByToSeq);
+
+        return updatedRowsCnt;
     }
 
 }
