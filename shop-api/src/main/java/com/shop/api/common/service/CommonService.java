@@ -334,10 +334,9 @@ public class CommonService {
         List<FileDet> selectFileDetList = fileDao.selectFileList(fileRearrangementRequest.getFileId());
         int selectFileDetListLen = selectFileDetList.size();
 
-        //int diffOnToFromSeq = fileRearrangementRequest.getToSeq() - fileRearrangementRequest.getFromSeq();
         int stepsCntToMove = fileRearrangementRequest.getStepsToMove();
         if (stepsCntToMove == 0) {
-            // diffOnToFromSeq == 0 인 경우 동작이 무의미하므로 이 경우 즉시 반환처리
+            // stepsCntToMove == 0 인 경우 동작이 무의미하므로 이 경우 즉시 반환처리
             return 0;
         }
 

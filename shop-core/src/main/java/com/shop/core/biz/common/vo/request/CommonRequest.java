@@ -143,16 +143,13 @@ public class CommonRequest {
     @Getter
     @Setter
     @EqualsAndHashCode
-    @Schema(name = "CommonRequestFileRearrangementRequest", description = "파일 재정렬(by seq to seq) 요청 dto")
+    @Schema(name = "CommonRequestFileRearrangementRequest", description = "파일 재정렬(by steps) 요청 dto")
     public static class FileRearrangementRequest {
 
         @Schema(description = "대상의 fileId")
         private Integer fileId;
 
-        @Schema(description = "대상의 seq")
-        private Integer fromSeq;
-
-        @Schema(description = "이동하고자 하는 step")
+        @Schema(description = "이동하고자 하는 step(양수인 경우 seq 증가, 음수인 경우 seq 감소")
         private Integer stepsToMove;
     }
 }
