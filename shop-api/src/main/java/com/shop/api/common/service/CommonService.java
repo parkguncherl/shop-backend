@@ -2,24 +2,20 @@ package com.shop.api.common.service;
 
 import com.shop.api.biz.system.service.UserService;
 import com.shop.api.properties.GlobalProperties;
+import com.shop.api.utils.ByteArrayMultipartFile;
 import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.biz.common.dao.GridDao;
 import com.shop.core.biz.common.dao.SmsDao;
 import com.shop.core.biz.common.vo.request.CommonRequest;
-import com.shop.core.biz.common.vo.request.GridRequest;
-import com.shop.core.biz.common.vo.request.PageRequest;
-import com.shop.core.biz.common.vo.request.SmsRequest;
 import com.shop.core.biz.common.vo.response.CommonResponse;
-import com.shop.core.biz.common.vo.response.GridResponse;
-import com.shop.core.biz.common.vo.response.PageResponse;
-import com.shop.core.biz.common.vo.response.SmsResponse;
 import com.shop.core.biz.system.dao.UserDao;
 import com.shop.core.entity.*;
 import com.shop.core.enums.ApiResultCode;
+import com.shop.core.enums.FilePathType;
+import com.shop.core.enums.GlobalConst;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.api.utils.CommUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,15 +31,17 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * <pre>
@@ -58,32 +56,35 @@ import java.util.List;
 public class CommonService {
 
     private final UserService userService;
-    private final SmsDao smsDao;
+    //private final SmsDao smsDao;
     private final FileDao fileDao;
-    private final UserDao userDao;
-    private final GridDao gridDao;
+    //private final UserDao userDao;
+    //private final GridDao gridDao;
+    private final FileService fileService;
 
-    private final GlobalProperties globalProperties;
+    //private final GlobalProperties globalProperties;
     private final S3Presigner presigner;
-
     private final S3Client s3Client;
+
 
     public CommonService(
             UserService userService,
-            SmsDao smsDao,
+            //SmsDao smsDao,
             FileDao fileDao,
-            UserDao userDao,
-            GridDao gridDao,
-            GlobalProperties globalProperties,
+            //UserDao userDao,
+            //GridDao gridDao,
+            //GlobalProperties globalProperties,
+            FileService fileService,
             @Qualifier("buildS3PresignerWithR2Specific") S3Presigner presigner,
             @Qualifier("buildS3ClientWithR2Specific") S3Client s3Client // 주입 과정에서의 불완전성을 제거하기 위해 어노테이션 기반 주입 대신 다음과 같은 명시적 생성자 선언
     ) {
         this.userService = userService;
-        this.smsDao = smsDao;
+        //this.smsDao = smsDao;
         this.fileDao = fileDao;
-        this.userDao = userDao;
-        this.gridDao = gridDao;
-        this.globalProperties = globalProperties;
+        //this.userDao = userDao;
+        //this.gridDao = gridDao;
+        //this.globalProperties = globalProperties;
+        this.fileService = fileService;
         this.presigner = presigner;
         this.s3Client = s3Client;
     }
@@ -93,28 +94,6 @@ public class CommonService {
 
     @Value("${cloudflare.r2.bucketName.name}")
     private String BUKET_NAME;
-
-
-    /**
-     * 서버이벤트 POSTID별 SMS 페이징 (페이징)
-     *
-     * @param pageRequest
-     * @return
-     */
-    public PageResponse<SmsResponse.SvrEventPaging> selectSmsListPagingForSvrEvent(PageRequest<SmsRequest.SvrEventPagingFilter> pageRequest) {
-        PageResponse<SmsResponse.SvrEventPaging> pageResponse = smsDao.selectSmsListPagingForSvrEvent(pageRequest);
-        return pageResponse;
-    }
-
-    /**
-     * 충전기_이벤트_SMS_이력_목록_조회 (페이징)
-     *
-     * @param pageRequest
-     * @return
-     */
-    public PageResponse<SmsResponse.PostEventPaging> selectEventSmsHistoryPaging(PageRequest<SmsRequest.PostEventSmsHistoryPagingFilter> pageRequest) {
-        return smsDao.selectEventSmsHistoryPaging(pageRequest);
-    }
 
     /**
      * 파일_조회 (by Uk)
@@ -289,36 +268,217 @@ public class CommonService {
         return presigner.presignGetObject(presignRequest).url().toString();
     }
 
-    public Integer setUpGridColumn(GridRequest request, User jwtUser) {
-        User user = userService.selectUserById(jwtUser.getId());
-        if (ObjectUtils.isEmpty(user) && StringUtils.isEmpty(request.getUri()) && StringUtils.isEmpty(request.getSetValue())) {
-            throw new CustomRuntimeException(ApiResultCode.FAIL, "그리드 컬럼 저장에 필요한 입력값이 없습니다.");
+//    public Integer setUpGridColumn(GridRequest request, User jwtUser) {
+//        User user = userService.selectUserById(jwtUser.getId());
+//        if (ObjectUtils.isEmpty(user) && StringUtils.isEmpty(request.getUri()) && StringUtils.isEmpty(request.getSetValue())) {
+//            throw new CustomRuntimeException(ApiResultCode.FAIL, "그리드 컬럼 저장에 필요한 입력값이 없습니다.");
+//        }
+//
+//        request.setUserId(user.getId());
+//        if(!StringUtils.equalsAny(request.getUri(),"/wms/info/ProductList")){ // 예외처리하는 컬럼들
+//            return gridDao.upsertGridColumn(request);
+//        } else {
+//            return 1;
+//        }
+//    }
+//
+//    public Integer deleteGridColum(GridRequest request, User jwtUser) {
+//        User user = userService.selectUserById(jwtUser.getId());
+//        request.setUserId(user.getId());
+//        return gridDao.deleteGridColum(request);
+//    }
+//
+//    public GridResponse getGridColumn(String uri, User jwtUser) {
+//        User user = userService.selectUserById(jwtUser.getId());
+//        if (ObjectUtils.isEmpty(user) && StringUtils.isEmpty(uri)) {
+//            throw new CustomRuntimeException(ApiResultCode.FAIL, "그리드 컬럼 조회 요청값이 없습니다.");
+//        }
+//
+//        GridRequest request = new GridRequest();
+//        request.setUserId(user.getId());
+//        request.setUri(uri);
+//        return gridDao.selectGridColum(request);
+//    }
+
+    public CommonResponse.FileDown fileUpload(CommonRequest.FileUpload commonRequest, User jwtUser) throws IOException {
+        Integer fileId = commonRequest.getFileId() == null ? 0 : commonRequest.getFileId();
+
+        if(fileId.compareTo(0) > 0){
+            this.deleteAllFiles(fileId, jwtUser);
         }
 
-        request.setUserId(user.getId());
-        if(!StringUtils.equalsAny(request.getUri(),"/wms/info/ProductList")){ // 예외처리하는 컬럼들
-            return gridDao.upsertGridColumn(request);
+        FileDet fileDet;
+
+        if(commonRequest.getUploadFile() != null
+                && StringUtils.isNotBlank(commonRequest.getImageFileHeight())
+                && StringUtils.isNotBlank(commonRequest.getImageFileWidth())
+                && StringUtils.isNumeric(commonRequest.getImageFileWidth())
+                && StringUtils.isNumeric(commonRequest.getImageFileWidth())
+        ) {
+            // 이미지 파일로서 너비, 높이가 주어진 경우
+            byte[] resizedImageBytes = this.resizeImageKeepAspectRatio(commonRequest.getUploadFile(), Integer.parseInt(commonRequest.getImageFileWidth()), Integer.parseInt(commonRequest.getImageFileHeight()));
+
+            MultipartFile resizedFile = new ByteArrayMultipartFile(
+                    resizedImageBytes,
+                    commonRequest.getUploadFile().getOriginalFilename(),
+                    commonRequest.getUploadFile().getContentType()
+            );
+            fileDet = this.fileUploadComm(jwtUser, resizedFile, fileId, 1); // 단건파일 올리는경우는 반드시 0, 1
         } else {
-            return 1;
-        }
-    }
-
-    public Integer deleteGridColum(GridRequest request, User jwtUser) {
-        User user = userService.selectUserById(jwtUser.getId());
-        request.setUserId(user.getId());
-        return gridDao.deleteGridColum(request);
-    }
-
-    public GridResponse getGridColumn(String uri, User jwtUser) {
-        User user = userService.selectUserById(jwtUser.getId());
-        if (ObjectUtils.isEmpty(user) && StringUtils.isEmpty(uri)) {
-            throw new CustomRuntimeException(ApiResultCode.FAIL, "그리드 컬럼 조회 요청값이 없습니다.");
+            if (commonRequest.getUploadFile() == null) {
+                throw new NullPointerException("업로드 대상 파일을 찾을 수 없음");
+            }
+            fileDet = this.fileUploadComm(jwtUser, commonRequest.getUploadFile(), fileId, 1); // 단건파일 올리는경우는 반드시 0, 1
         }
 
-        GridRequest request = new GridRequest();
-        request.setUserId(user.getId());
-        request.setUri(uri);
-        return gridDao.selectGridColum(request);
+        CommonResponse.FileDown fileDown = new CommonResponse.FileDown();
+        fileDown.setFileNm(fileDet.getFileNm());
+        fileDown.setFileId(fileDet.getFileId());
+        fileDown.setSysFileNm(fileDet.getSysFileNm());
+        fileDown.setFileSeq(fileDet.getFileSeq());
+
+        return fileDown;
+    }
+
+    public List<CommonResponse.FileDown> fileUploads(CommonRequest.FileUploads commonRequest, User jwtUser) throws IOException {
+        List<CommonResponse.FileDown> fileDowns = new ArrayList<>();
+        List<MultipartFile> fileList = commonRequest.getUploadFiles();
+        Integer fileId = commonRequest.getFileId() == null ? 0 : commonRequest.getFileId();
+        Integer fileSeq = 0;
+        for (MultipartFile file : fileList) {
+            if(fileId > 0){
+                fileSeq = fileService.selectMaxFileSeq(fileId);
+            } else {
+                fileSeq++;
+            }
+            FileDet fileDet = this.fileUploadComm(jwtUser, file, fileId, fileSeq);
+            fileId = fileDet.getFileId();
+            CommonResponse.FileDown fileDown = new CommonResponse.FileDown();
+            fileDown.setFileNm(fileDet.getFileNm());
+            fileDown.setFileId(fileDet.getFileId());
+            fileDown.setSysFileNm(fileDet.getSysFileNm());
+            fileDown.setFileSeq(fileDet.getFileSeq());
+            fileDowns.add(fileDown);
+        }
+
+        return fileDowns;
+    }
+
+    public FileDet fileUploadComm(User jwtUser, MultipartFile file, Integer fileId, Integer fileSeq) throws IOException {
+        String originalFileName = file.getOriginalFilename();
+        String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+        return this.uploadFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
+    }
+
+    /**
+     * BufferedImage 리사이징 (고품질)
+     */
+    private BufferedImage resizeBufferedImage(BufferedImage originalImage, int width, int height) {
+        // 고품질 리사이징을 위한 설정
+        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = resizedImage.createGraphics();
+
+        // 고품질 렌더링 옵션 설정
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // 이미지 그리기
+        g2d.drawImage(originalImage, 0, 0, width, height, null);
+        g2d.dispose();
+
+        return resizedImage;
+    }
+    /**
+     * 비율 유지하면서 리사이징 (선택사항)
+     */
+    public byte[] resizeImageKeepAspectRatio(MultipartFile uploadFile, int width, int height) throws IOException {
+        if (!isImageFile(uploadFile)) {
+            throw new IllegalArgumentException("이미지 파일이 아닙니다: " + uploadFile.getContentType());
+        }
+
+        BufferedImage originalImage = ImageIO.read(uploadFile.getInputStream());
+        if (originalImage == null) {
+            throw new IOException("이미지를 읽을 수 없습니다.");
+        }
+
+        // 원본 이미지 크기
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+
+        // 비율 계산
+        double aspectRatio = (double) originalWidth / originalHeight;
+
+        int newWidth, newHeight;
+        if (aspectRatio > 1) {
+            // 가로가 더 긴 경우
+            newWidth = width;
+            newHeight = (int) (width / aspectRatio);
+        } else {
+            // 세로가 더 긴 경우
+            newWidth = (int) (height * aspectRatio);
+            newHeight = height;
+        }
+
+        // 250x150 캔버스에 중앙 정렬
+        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = resizedImage.createGraphics();
+
+        // 배경색 설정 (흰색)
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0, width, height);
+
+        // 고품질 렌더링 설정
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        // 중앙 정렬 좌표 계산
+        int x = (width - newWidth) / 2;
+        int y = (height - newHeight) / 2;
+
+        // 이미지 그리기
+        g2d.drawImage(originalImage, x, y, newWidth, newHeight, null);
+        g2d.dispose();
+
+        return bufferedImageToByteArray(resizedImage, getImageFormat(uploadFile));
+    }
+
+    /**
+     * BufferedImage를 byte[]로 변환
+     */
+    private byte[] bufferedImageToByteArray(BufferedImage image, String format) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, format, baos);
+        return baos.toByteArray();
+    }
+
+    /**
+     * 이미지 파일 여부 확인
+     */
+    private boolean isImageFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        return contentType != null && contentType.startsWith("image/");
+    }
+
+    /**
+     * 이미지 포맷 추출 (jpg, png, etc.)
+     */
+    private String getImageFormat(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null) return "jpg";
+
+        switch (contentType) {
+            case "image/png":
+                return "png";
+            case "image/gif":
+                return "gif";
+            case "image/bmp":
+                return "bmp";
+            case "image/jpeg":
+            case "image/jpg":
+            default:
+                return "jpg";
+        }
     }
 
 
@@ -330,7 +490,7 @@ public class CommonService {
      * @return updatedRowsCnt(정상인 경우 2)
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Integer rearrangeFilesBySeqToSeq(CommonRequest.FileRearrangementRequest fileRearrangementRequest, User jwtUser) {
+    public Integer rearrangeFilesByStepsToMove(CommonRequest.FileRearrangementRequest fileRearrangementRequest, User jwtUser) {
         List<FileDet> selectFileDetList = fileDao.selectFileList(fileRearrangementRequest.getFileId());
         int selectFileDetListLen = selectFileDetList.size();
 

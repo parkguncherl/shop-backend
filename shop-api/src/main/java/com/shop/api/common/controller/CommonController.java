@@ -2,29 +2,28 @@ package com.shop.api.common.controller;
 
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
+import com.shop.api.biz.system.service.UserService;
 import com.shop.api.common.service.CommonService;
+import com.shop.api.common.service.FileService;
 import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.biz.common.vo.request.CommonRequest;
-import com.shop.core.biz.common.vo.request.GridRequest;
 import com.shop.core.biz.common.vo.response.CommonResponse;
-import com.shop.core.biz.common.vo.response.GridResponse;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.FileDet;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.exception.CustomRuntimeException;
-import com.shop.api.utils.CommUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.OutputStream;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -43,7 +42,9 @@ import java.util.List;
 public class CommonController {
 
     private final CommonService commonService;
+    private final UserService userService;
     private final FileDao fileDao;
+    private final FileService fileService;
 
     /**
      * 개별_파일_조회
@@ -85,6 +86,91 @@ public class CommonController {
         List<FileDet> fileList = commonService.selectFileList(fileId);
 
         return new ApiResponse<>(ApiResultCode.SUCCESS, fileList);
+    }
+
+    /**
+     * 파일_업로드 단건업로드는 기존파일이 있으면 삭제후 업로드 한다.
+     *
+     * @param jwtUser
+     * @param commonRequest
+     */
+    @PostMapping(value = "/file/upload")
+    @Operation(summary = "파일 단건 업로드")
+    public ApiResponse<CommonResponse.FileDown> fileUpload(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "CommonRequestFileUpload", description = "파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUpload commonRequest
+    ) throws IOException {
+//        Integer fileId = commonRequest.getFileId() == null ? 0 : commonRequest.getFileId();
+//
+//        if(fileId.compareTo(0) > 0){
+//            commonService.deleteAllFiles(fileId, jwtUser);
+//        }
+//
+//        FileDet fileDet;
+//
+//        if(commonRequest.getUploadFile() != null
+//                && StringUtils.isNotBlank(commonRequest.getImageFileHeight())
+//                && StringUtils.isNotBlank(commonRequest.getImageFileWidth())
+//                && StringUtils.isNumeric(commonRequest.getImageFileWidth())
+//                && StringUtils.isNumeric(commonRequest.getImageFileWidth())
+//        ) {
+//            // 이미지 파일로서 너비, 높이가 주어진 경우
+//            byte[] resizedImageBytes = commonService.resizeImageKeepAspectRatio(commonRequest.getUploadFile(), Integer.parseInt(commonRequest.getImageFileWidth()), Integer.parseInt(commonRequest.getImageFileHeight()));
+//
+//            MultipartFile resizedFile = new ByteArrayMultipartFile(
+//                    resizedImageBytes,
+//                    commonRequest.getUploadFile().getOriginalFilename(),
+//                    commonRequest.getUploadFile().getContentType()
+//            );
+//            fileDet = commonService.fileUploadComm(jwtUser, resizedFile, fileId, 1); // 단건파일 올리는경우는 반드시 0, 1
+//        } else {
+//            fileDet = commonService.fileUploadComm(jwtUser, commonRequest.getUploadFile(), fileId, 1); // 단건파일 올리는경우는 반드시 0, 1
+//        }
+//
+//        CommonResponse.FileDown fileDown = new CommonResponse.FileDown();
+//        fileDown.setFileNm(fileDet.getFileNm());
+//        fileDown.setFileId(fileDet.getFileId());
+//        fileDown.setSysFileNm(fileDet.getSysFileNm());
+//        fileDown.setFileSeq(fileDet.getFileSeq());
+
+        CommonResponse.FileDown fileDown = commonService.fileUpload(commonRequest, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, fileDown);
+    }
+
+    /**
+     * 다중_파일_업로드
+     *
+     * @param jwtUser
+     * @param commonRequest
+     */
+    @PostMapping(value = "/file/uploads")
+    @Operation(summary = "다중 파일 업로드")
+    public ApiResponse<List<CommonResponse.FileDown>> fileUploads(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "CommonRequestFileUploads", description = "다중 파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUploads commonRequest,
+            HttpServletRequest request
+    ) throws IOException {
+//        List<CommonResponse.FileDown> fileDowns = new ArrayList<>();
+//        List<MultipartFile> fileList = commonRequest.getUploadFiles();
+//        Integer fileId = commonRequest.getFileId() == null ? 0 : commonRequest.getFileId();
+//        Integer fileSeq = 0;
+//        for (MultipartFile file : fileList) {
+//            if(fileId > 0){
+//                fileSeq = fileService.selectMaxFileSeq(fileId);
+//            } else {
+//                fileSeq++;
+//            }
+//            FileDet fileDet = commonService.fileUploadComm(jwtUser, file, fileId, fileSeq);
+//            fileId = fileDet.getFileId();
+//            CommonResponse.FileDown fileDown = new CommonResponse.FileDown();
+//            fileDown.setFileNm(fileDet.getFileNm());
+//            fileDown.setFileId(fileDet.getFileId());
+//            fileDown.setSysFileNm(fileDet.getSysFileNm());
+//            fileDown.setFileSeq(fileDet.getFileSeq());
+//            fileDowns.add(fileDown);
+//        }
+        List<CommonResponse.FileDown> fileDownList = commonService.fileUploads(commonRequest, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, fileDownList);
     }
 
     /**
@@ -142,32 +228,32 @@ public class CommonController {
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 
-    @PostMapping("/grid-column/update")
-    @Operation(summary = "그리드 컬럼 설정 변경")
-    public ApiResponse<Integer> setUpGridColumn(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
-            @RequestBody GridRequest request
-    ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.setUpGridColumn(request, jwtUser));
-    }
-
-    @PostMapping("/grid-column/init")
-    @Operation(summary = "그리드 컬럼 설정 초기화(삭제)")
-    public ApiResponse<Integer> deleteUpGridColumn(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
-            @RequestBody GridRequest request
-    ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.deleteGridColum(request, jwtUser));
-    }
-
-    @GetMapping("/grid-column")
-    @Operation(summary = "그리드 컬럼 설정 변경")
-    public ApiResponse<GridResponse> setUpGridColumn(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
-            @RequestParam("uri") String uri
-    ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.getGridColumn(uri, jwtUser));
-    }
+//    @PostMapping("/grid-column/update")
+//    @Operation(summary = "그리드 컬럼 설정 변경")
+//    public ApiResponse<Integer> setUpGridColumn(
+//            @Parameter(hidden = true) @JwtUser User jwtUser,
+//            @RequestBody GridRequest request
+//    ) {
+//        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.setUpGridColumn(request, jwtUser));
+//    }
+//
+//    @PostMapping("/grid-column/init")
+//    @Operation(summary = "그리드 컬럼 설정 초기화(삭제)")
+//    public ApiResponse<Integer> deleteUpGridColumn(
+//            @Parameter(hidden = true) @JwtUser User jwtUser,
+//            @RequestBody GridRequest request
+//    ) {
+//        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.deleteGridColum(request, jwtUser));
+//    }
+//
+//    @GetMapping("/grid-column")
+//    @Operation(summary = "그리드 컬럼 설정 변경")
+//    public ApiResponse<GridResponse> setUpGridColumn(
+//            @Parameter(hidden = true) @JwtUser User jwtUser,
+//            @RequestParam("uri") String uri
+//    ) {
+//        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.getGridColumn(uri, jwtUser));
+//    }
 
     /**
      * s3(cloudFlare) 파일정보
@@ -190,13 +276,13 @@ public class CommonController {
      * @param fileRearrangementRequest
      * @return
      */
-    @PatchMapping(value = "/rearrangeFilesBySeqToSeq")
+    @PatchMapping(value = "/rearrangeFilesByStepsToMove")
     @Operation(summary = "파일 재정렬")
-    public ApiResponse<Void> rearrangeFilesBySeqToSeq(
+    public ApiResponse<Void> rearrangeFilesByStepsToMove(
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @RequestBody CommonRequest.FileRearrangementRequest fileRearrangementRequest
     ) {
-        commonService.rearrangeFilesBySeqToSeq(fileRearrangementRequest, jwtUser);
+        commonService.rearrangeFilesByStepsToMove(fileRearrangementRequest, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 }

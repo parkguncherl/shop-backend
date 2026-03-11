@@ -73,11 +73,13 @@ public class ProductContentListService {
             Integer fileSeq = 0;
             for (MultipartFile file : fileList) {
                 fileSeq++;
-                String originalFileName = file.getOriginalFilename();
-                String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+                
+//                String originalFileName = file.getOriginalFilename();
+//                String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+//
+//                FileDet fileDet = commonService.uploadFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
 
-                FileDet fileDet = commonService.uploadFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
-
+                FileDet fileDet = commonService.fileUploadComm(jwtUser, file, fileId, fileSeq);
                 if (fileId == 0) {
                     fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
                     insertProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의

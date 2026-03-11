@@ -94,6 +94,12 @@ public class CommonRequest {
         @Schema(description = "파일 유형")
         private String fileType;
 
+        @Schema(description = "파일 유형")
+        private String imageFileWidth;
+
+        @Schema(description = "파일 유형")
+        private String imageFileHeight;
+
         @Schema(description = "파일 업로드")
         MultipartFile uploadFile;
     }
