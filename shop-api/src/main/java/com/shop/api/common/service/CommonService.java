@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -327,31 +329,66 @@ public class CommonService {
      * @param jwtUser
      * @return updatedRowsCnt(정상인 경우 2)
      */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Integer rearrangeFilesBySeqToSeq(CommonRequest.FileRearrangementRequest fileRearrangementRequest, User jwtUser) {
         Integer updatedRowsCnt = 0; // 정상일 경우 2가 할당된 상태로 반환
 
-        FileDet fileDetByFromSeq = new FileDet(); // from seq 에서 to seq 로
-        FileDet fileDetByToSeq = new FileDet(); // to seq 에서 from seq 로
+//        FileDet fileDetByFromSeq = new FileDet(); // from seq 에서 to seq 로
+//        FileDet fileDetByToSeq = new FileDet(); // to seq 에서 from seq 로
+//
+//        fileDetByFromSeq.setFileId(fileRearrangementRequest.getFileId());
+//        fileDetByToSeq.setFileId(fileRearrangementRequest.getFileId());
+//
+//        fileDetByFromSeq.setUpdUser(jwtUser.getLoginId());
+//        fileDetByToSeq.setUpdUser(jwtUser.getLoginId());
+//
+//        CommonResponse.SelectFile selectFileByFromSeq = fileDao.selectFileDet(fileRearrangementRequest.getFileId(), fileRearrangementRequest.getFromSeq(), null);
+//        CommonResponse.SelectFile selectFileByToSeq = fileDao.selectFileDet(fileRearrangementRequest.getFileId(), fileRearrangementRequest.getToSeq(), null);
+//
+//        fileDetByFromSeq.setSysFileNm(selectFileByFromSeq.getSysFileNm());
+//        fileDetByToSeq.setSysFileNm(selectFileByToSeq.getSysFileNm());
+//
+//        fileDetByFromSeq.setFileSeq(fileRearrangementRequest.getToSeq()); // from seq 에서 to seq 로
+//        fileDetByToSeq.setFileSeq(fileRearrangementRequest.getFromSeq()); // to seq 에서 from seq 로
+//
+//        updatedRowsCnt += fileDao.updateFileDet(fileDetByFromSeq);
+//        updatedRowsCnt += fileDao.updateFileDet(fileDetByToSeq);
 
-        fileDetByFromSeq.setFileId(fileRearrangementRequest.getFileId());
-        fileDetByToSeq.setFileId(fileRearrangementRequest.getFileId());
+        List<FileDet> selectFileDetList = fileDao.selectFileList(fileRearrangementRequest.getFileId());
+        int selectFileDetListLen = selectFileDetList.size();
 
-        fileDetByFromSeq.setUpdUser(jwtUser.getLoginId());
-        fileDetByToSeq.setUpdUser(jwtUser.getLoginId());
+        int diffOnToFromSeq = fileRearrangementRequest.getToSeq() - fileRearrangementRequest.getFromSeq();
 
-        CommonResponse.SelectFile selectFileByFromSeq = fileDao.selectFileDet(fileRearrangementRequest.getFileId(), fileRearrangementRequest.getFromSeq(), null);
-        CommonResponse.SelectFile selectFileByToSeq = fileDao.selectFileDet(fileRearrangementRequest.getFileId(), fileRearrangementRequest.getToSeq(), null);
+        if (diffOnToFromSeq > 0) {
+            // 아래쪽 방향 이동
+            for (FileDet selectedFileDet: selectFileDetList) {
+                int curSeq = selectedFileDet.getFileSeq();
 
-        fileDetByFromSeq.setSysFileNm(selectFileByFromSeq.getSysFileNm());
-        fileDetByToSeq.setSysFileNm(selectFileByToSeq.getSysFileNm());
+                if (curSeq + diffOnToFromSeq > selectFileDetListLen) {
+                    // seq 범위 초과, 초과 범위부터 seq 1에서부터 순차 할당
+                    int targetSeq = curSeq + diffOnToFromSeq - selectFileDetListLen; // 최초 초과 시점에 1, 그 이후부터는 순차 증가된 값 할당토록 보장
+                } else {
+                    // 그 외에는 기존 seq에서 이동
+                    int targetSeq = curSeq + diffOnToFromSeq;
+                }
+                //updatedRowsCnt += fileDao.updateFileDet(fileDetByFromSeq);
+            }
+        } else if (diffOnToFromSeq < 0) {
+            // 위쪽 방향 이동
+            for (FileDet selectedFileDet: selectFileDetList) {
+                int curSeq = selectedFileDet.getFileSeq();
 
-        fileDetByFromSeq.setFileSeq(fileRearrangementRequest.getToSeq()); // from seq 에서 to seq 로
-        fileDetByToSeq.setFileSeq(fileRearrangementRequest.getFromSeq()); // to seq 에서 from seq 로
-
-        updatedRowsCnt += fileDao.updateFileDet(fileDetByFromSeq);
-        updatedRowsCnt += fileDao.updateFileDet(fileDetByToSeq);
-
-        return updatedRowsCnt;
+                if (curSeq - diffOnToFromSeq < 1) {
+                    // seq 범위 하한 미달, 미달 범위부터 마지막 seq 에서부터 내림차순 순차 할당
+                    int targetSeq = (curSeq - diffOnToFromSeq) + selectFileDetListLen; // 최초 미달 시점에 selectFileDetListLen(selectFileDetListLen - 0), 그 이후부터는 마지막 seq에서부터 내림차순 할당 보장
+                } else {
+                    // 그 외에는 기존 seq에서 이동
+                    int targetSeq = curSeq - diffOnToFromSeq;
+                }
+            }
+        }
+        // diffOnToFromSeq == 0 인 경우 동작이 무의미하므로 이 경우 즉시 반환처리
+        return 0;
     }
 
 }
