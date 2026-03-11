@@ -197,10 +197,6 @@ public class CommonController {
             @RequestBody CommonRequest.FileRearrangementRequest fileRearrangementRequest
     ) {
         Integer result = commonService.rearrangeFilesBySeqToSeq(fileRearrangementRequest, jwtUser);
-        if (result != 2) {
-            // 대상, 이동하려는 seq 를 점유한 fileDet 둘을 업데이트하므로
-            return new ApiResponse<>(ApiResultCode.FAIL, +fileRearrangementRequest.getFromSeq()+ " 번째 파일을 "+ fileRearrangementRequest.getToSeq()+" 로 이동시키는 작업 도중 문제가 발생하였습니다.");
-        }
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 }
