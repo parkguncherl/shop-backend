@@ -141,16 +141,13 @@
          WHERE FILE_ID = #{fileId}  -- 삭제할 ID ( 여러건 삭제)
     </update>
 
-    <update id="updateFileDet" parameterType="com.shop.core.entity.FileDet">
-        /* com.shop.mapper.file.updateFileDet */
+    <update id="updateFileDetBySysFileNm" parameterType="com.shop.core.entity.FileDet">
+        /* com.shop.mapper.file.updateFileDetBySysFileNm */
         UPDATE TB_FILE_DET
             SET UPD_USER = #{updUser}
                 , UPD_TM = NOW()
         <if test="fileSeq != null">
                 , FILE_SEQ = #{fileSeq}
-        </if>
-        <if test="sysFileNm != null">
-                , SYS_FILE_NM = #{sysFileNm}
         </if>
         <if test="fileExt != null">
                 , FILE_EXT = #{fileExt}

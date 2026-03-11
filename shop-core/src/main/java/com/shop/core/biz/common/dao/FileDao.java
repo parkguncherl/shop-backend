@@ -96,12 +96,12 @@ public class FileDao {
     }
 
     /**
-     * 파일 수정
+     * 파일 수정(By SysFileNm)
      * @param request
      * @return
      */
-    public Integer updateFileDet(FileDet request) {
-        return sqlSession.insert(PRE_NS.concat("updateFileDet"), request);
+    public Integer updateFileDetBySysFileNm(FileDet request) {
+        return sqlSession.insert(PRE_NS.concat("updateFileDetBySysFileNm"), request);
     }
 
     /**

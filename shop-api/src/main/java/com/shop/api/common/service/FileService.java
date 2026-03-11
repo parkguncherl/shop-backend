@@ -32,7 +32,7 @@ public class FileService {
      * @return
      */
     public Integer updateFileDet(FileDet request) {
-        return fileDao.updateFileDet(request);
+        return fileDao.updateFileDetBySysFileNm(request);
     }
 
     /**
@@ -44,7 +44,7 @@ public class FileService {
         // 삽입된 행의 수를 집계할 변수
         int updateCount = 0;
         for (FileDet item : requestList) {
-            Integer result = fileDao.updateFileDet(item);
+            Integer result = fileDao.updateFileDetBySysFileNm(item);
             if (result != null) {
                 updateCount++;
             }
