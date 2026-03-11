@@ -334,13 +334,18 @@ public class CommonService {
         List<FileDet> selectFileDetList = fileDao.selectFileList(fileRearrangementRequest.getFileId());
         int selectFileDetListLen = selectFileDetList.size();
 
-        int diffOnToFromSeq = fileRearrangementRequest.getToSeq() - fileRearrangementRequest.getFromSeq();
+        //int diffOnToFromSeq = fileRearrangementRequest.getToSeq() - fileRearrangementRequest.getFromSeq();
+        int stepsCntToMove = fileRearrangementRequest.getStepsToMove();
+        if (stepsCntToMove == 0) {
+            // diffOnToFromSeq == 0 인 경우 동작이 무의미하므로 이 경우 즉시 반환처리
+            return 0;
+        }
 
-        if (diffOnToFromSeq > 0) {
+        if (stepsCntToMove > 0) {
             // 아래쪽 방향 이동
             Integer updatedRowsCnt = 0;
 
-            for (FileDet selectedFileDet: selectFileDetList) {
+            for (FileDet selectedFileDet : selectFileDetList) {
                 FileDet fileDetForUpdate = new FileDet();
                 fileDetForUpdate.setFileId(fileRearrangementRequest.getFileId());
                 fileDetForUpdate.setUpdUser(jwtUser.getLoginId());
@@ -348,12 +353,12 @@ public class CommonService {
                 int curSeq = selectedFileDet.getFileSeq();
                 int targetSeq = -1;
 
-                if (curSeq + diffOnToFromSeq > selectFileDetListLen) {
+                if (curSeq + stepsCntToMove > selectFileDetListLen) {
                     // seq 범위 초과, 초과 범위부터 seq 1에서부터 순차 할당
-                    targetSeq = curSeq + diffOnToFromSeq - selectFileDetListLen; // 최초 초과 시점에 1, 그 이후부터는 순차 증가된 값 할당토록 보장
+                    targetSeq = curSeq + stepsCntToMove - selectFileDetListLen; // 최초 초과 시점에 1, 그 이후부터는 순차 증가된 값 할당토록 보장
                 } else {
                     // 그 외에는 기존 seq에서 이동
-                    targetSeq = curSeq + diffOnToFromSeq;
+                    targetSeq = curSeq + stepsCntToMove;
                 }
 
                 if (targetSeq == -1) {
@@ -369,11 +374,13 @@ public class CommonService {
             if (updatedRowsCnt != selectFileDetListLen) {
                 throw new CustomRuntimeException("일부 행의 fileSeq가 갱신되지 않음");
             }
-        } else if (diffOnToFromSeq < 0) {
+            return updatedRowsCnt;
+        } else {
+            // stepsCntToMove < 0
             // 위쪽 방향 이동
             Integer updatedRowsCnt = 0;
 
-            for (FileDet selectedFileDet: selectFileDetList) {
+            for (FileDet selectedFileDet : selectFileDetList) {
                 FileDet fileDetForUpdate = new FileDet();
                 fileDetForUpdate.setFileId(fileRearrangementRequest.getFileId());
                 fileDetForUpdate.setUpdUser(jwtUser.getLoginId());
@@ -381,12 +388,12 @@ public class CommonService {
                 int curSeq = selectedFileDet.getFileSeq();
                 int targetSeq = -1;
 
-                if (curSeq + diffOnToFromSeq < 1) {
-                    // seq 범위 하한 미달, 미달 범위부터 마지막 seq 에서부터 내림차순 순차 할당(diffOnToFromSeq 는 음수이니 차이가 아닌 합을 기준으로 하한 미달 여부를 검증)
-                    targetSeq = (curSeq + diffOnToFromSeq) + selectFileDetListLen; // 최초 미달 시점에 selectFileDetListLen(selectFileDetListLen - 0), 그 이후부터는 마지막 seq에서부터 내림차순 할당 보장
+                if (curSeq + stepsCntToMove < 1) {
+                    // seq 범위 하한 미달, 미달 범위부터 마지막 seq 에서부터 내림차순 순차 할당(이 시점에서 stepsCntToMove 는 음수이니 차이가 아닌 합을 기준으로 하한 미달 여부를 검증)
+                    targetSeq = (curSeq + stepsCntToMove) + selectFileDetListLen; // 최초 미달 시점에 selectFileDetListLen(selectFileDetListLen - 0), 그 이후부터는 마지막 seq에서부터 내림차순 할당 보장
                 } else {
                     // 그 외에는 기존 seq에서 이동
-                    targetSeq = curSeq + diffOnToFromSeq;
+                    targetSeq = curSeq + stepsCntToMove;
                 }
 
                 if (targetSeq == -1) {
@@ -402,10 +409,8 @@ public class CommonService {
             if (updatedRowsCnt != selectFileDetListLen) {
                 throw new CustomRuntimeException("일부 행의 fileSeq가 갱신되지 않음");
             }
+            return updatedRowsCnt;
         }
-        // diffOnToFromSeq == 0 인 경우 동작이 무의미하므로 이 경우 즉시 반환처리
-        return 0;
     }
-
 }
 

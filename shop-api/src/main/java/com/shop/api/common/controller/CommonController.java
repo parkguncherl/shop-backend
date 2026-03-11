@@ -196,7 +196,7 @@ public class CommonController {
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @RequestBody CommonRequest.FileRearrangementRequest fileRearrangementRequest
     ) {
-        Integer result = commonService.rearrangeFilesBySeqToSeq(fileRearrangementRequest, jwtUser);
+        commonService.rearrangeFilesBySeqToSeq(fileRearrangementRequest, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 }

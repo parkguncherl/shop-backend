@@ -152,7 +152,7 @@ public class CommonRequest {
         @Schema(description = "대상의 seq")
         private Integer fromSeq;
 
-        @Schema(description = "이동하고자 하는 seq")
-        private Integer toSeq;
+        @Schema(description = "이동하고자 하는 step")
+        private Integer stepsToMove;
     }
 }
