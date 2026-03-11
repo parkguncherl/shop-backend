@@ -147,8 +147,7 @@ public class CommonController {
     @Operation(summary = "다중 파일 업로드")
     public ApiResponse<List<CommonResponse.FileDown>> fileUploads(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(name = "CommonRequestFileUploads", description = "다중 파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUploads commonRequest,
-            HttpServletRequest request
+            @Parameter(name = "CommonRequestFileUploads", description = "다중 파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUploads commonRequest
     ) throws IOException {
 //        List<CommonResponse.FileDown> fileDowns = new ArrayList<>();
 //        List<MultipartFile> fileList = commonRequest.getUploadFiles();
