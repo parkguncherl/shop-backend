@@ -300,12 +300,16 @@ public class CommonService {
 //        return gridDao.selectGridColum(request);
 //    }
 
+    /**
+     * 단건파일 업로드
+     * desc: 해당 영역은 전적으로 파일 업로드 요청에 따른 업로드(fileDet 추가 및 버킷에 오브젝트 저장 요청)만을 수행한다
+     *
+     * @param commonRequest
+     * @return fileDown
+     * */
     public CommonResponse.FileDown fileUpload(CommonRequest.FileUpload commonRequest, User jwtUser) throws IOException {
         Integer fileId = commonRequest.getFileId() == null ? 0 : commonRequest.getFileId();
-
-        if(fileId.compareTo(0) > 0){
-            this.deleteAllFiles(fileId, jwtUser);
-        }
+        Integer fileSeq = fileService.selectMaxFileSeq(fileId);
 
         FileDet fileDet;
 
@@ -323,12 +327,12 @@ public class CommonService {
                     commonRequest.getUploadFile().getOriginalFilename(),
                     commonRequest.getUploadFile().getContentType()
             );
-            fileDet = this.fileUploadComm(jwtUser, resizedFile, fileId, 1); // 단건파일 올리는경우는 반드시 0, 1
+            fileDet = this.fileUploadComm(jwtUser, resizedFile, fileId, fileSeq);
         } else {
             if (commonRequest.getUploadFile() == null) {
                 throw new NullPointerException("업로드 대상 파일을 찾을 수 없음");
             }
-            fileDet = this.fileUploadComm(jwtUser, commonRequest.getUploadFile(), fileId, 1); // 단건파일 올리는경우는 반드시 0, 1
+            fileDet = this.fileUploadComm(jwtUser, commonRequest.getUploadFile(), fileId, fileSeq);
         }
 
         CommonResponse.FileDown fileDown = new CommonResponse.FileDown();
@@ -340,6 +344,13 @@ public class CommonService {
         return fileDown;
     }
 
+    /**
+     * 다수의 파일 업로드
+     * desc: 해당 영역은 전적으로 다수 파일 업로드 요청에 따른 업로드(fileDet 추가 및 버킷에 오브젝트 저장 요청)만을 수행한다
+     *
+     * @param commonRequest
+     * @return fileDowns
+     * */
     public List<CommonResponse.FileDown> fileUploads(CommonRequest.FileUploads commonRequest, User jwtUser) throws IOException {
         List<CommonResponse.FileDown> fileDowns = new ArrayList<>();
         List<MultipartFile> fileList = commonRequest.getUploadFiles();
