@@ -22,5 +22,11 @@ public class ProductMngRequest {
     @Setter
     @Schema(name = "ProductMngRequestProductDetInfoFilter", description = "상품 상세 정보 필터")
     public static class ProductDetInfoFilter implements RequestFilter {
+
+        @Schema(description = "productId")
+        private Integer prodId;
+
+        @Schema(description = "상품상세컬러")
+        private String prodDetColor;
     }
 }

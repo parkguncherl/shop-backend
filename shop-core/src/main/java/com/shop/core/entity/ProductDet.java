@@ -30,16 +30,16 @@ public class ProductDet extends BaseEntity implements Serializable {
     private Integer id;
 
     @Schema(description = "prod id")
-    private Integer prodId;
+    private Integer productId;
 
     @Schema(description = "상품상세 순서(seq, 이를 통해 prod 이하에서 고유 요소 식별)")
-    private Integer prodDetSeq;
+    private Integer productDetSeq;
 
     @Schema(description = "상품상세 사이즈")
-    private String prodDetSize;
+    private String productDetSize;
 
     @Schema(description = "상품상세 컬러")
-    private String prodDetColor;
+    private String productDetColor;
 
     @Schema(description = "스큐 할인율")
     private Integer skuDiscountRate;

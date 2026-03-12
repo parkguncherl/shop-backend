@@ -57,6 +57,9 @@
             <if test="prodId != null">
                 AND TPD.PRODUCT_ID = #{prodId}
             </if>
+            <if test="prodDetColor != null">
+                AND TPD.PRODUCT_DET_COLOR = #{prodDetColor}
+            </if>
         </where>
         ORDER BY TPD.ID
     </select>
