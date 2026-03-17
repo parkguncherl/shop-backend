@@ -34,13 +34,22 @@ public class ProductMngRequest {
 
     @Getter
     @Setter
-    @Schema(name = "ProductMngRequestInsertProduct", description = "상품 데이터 추가 dto")
+    @Schema(name = "ProductMngRequestInsertProduct", description = "상품 추가 dto")
     public static class InsertProduct extends Product {
     }
 
     @Getter
     @Setter
-    @Schema(name = "ProductMngRequestInsertProductDet", description = "상품상세 데이터 추가 dto")
+    @Schema(name = "ProductMngRequestInsertProductDet", description = "상품상세 추가 dto")
     public static class InsertProductDet extends ProductDet {
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestInsertProduct", description = "상품정보(with productDet) 추가 dto")
+    public static class InsertProductInfo extends InsertProduct {
+
+        @Schema(description = "추가하고자 하는 productDet dto 에 대응하는 field")
+        private InsertProductDet productDet;
     }
 }

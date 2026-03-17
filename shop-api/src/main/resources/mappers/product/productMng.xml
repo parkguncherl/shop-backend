@@ -89,7 +89,7 @@
             , IS_WINTER
         ) VALUES (
               #{partnerId}
-            , #{prodCd}
+            , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
             , #{prodNm}
             , #{prodTp}
             , #{prodDetTp}

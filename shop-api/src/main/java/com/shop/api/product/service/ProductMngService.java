@@ -1,14 +1,16 @@
 package com.shop.api.product.service;
 
-import com.shop.core.biz.common.vo.request.PageRequest;
-import com.shop.core.biz.common.vo.response.PageResponse;
+import com.shop.api.biz.system.service.UserService;
 import com.shop.core.entity.User;
+import com.shop.core.exception.CustomRuntimeException;
 import com.shop.core.product.dao.ProductMngDao;
 import com.shop.core.product.vo.request.ProductMngRequest;
 import com.shop.core.product.vo.response.ProductMngResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +28,7 @@ import java.util.List;
 public class ProductMngService {
 
     private final ProductMngDao productMngDao;
+    private final UserService userService;
 
     /**
      * 상품관리-상품컨텐츠목록 조회
@@ -43,5 +46,35 @@ public class ProductMngService {
      */
     public List<ProductMngResponse.ProductDetInfo> selectProdDetInfo(ProductMngRequest.ProductDetInfoFilter productDetInfoFilter, User jwtUser) {
         return productMngDao.selectProdDetInfo(productDetInfoFilter);
+    }
+
+    /**
+     * 상품관리-상품정보 및 상품상세정보 추가(혹은 product 식별자(id) 가 주어질 시 상품상세정보 추가)
+     * @param insertProductInfo
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void InsertProductInfo(ProductMngRequest.InsertProductInfo insertProductInfo, User jwtUser) {
+        if (insertProductInfo.getProductDet() == null) {
+            // 상품상세정보는 필수값
+            throw new CustomRuntimeException("상품상세정보를 찾을 수 없음");
+        }
+
+        if (insertProductInfo.getId() == null) {
+            Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
+
+            insertProductInfo.setPartnerId(partnerId);
+            Integer insertedProductCnt = productMngDao.insertProduct(insertProductInfo);
+
+            if (insertedProductCnt != 1) {
+                throw new CustomRuntimeException("상품정보를 정상적으로 추가하지 못함");
+            }
+        }
+
+        Integer insertedProductDetCnt = productMngDao.insertProductDet(insertProductInfo.getProductDet());
+
+        if (insertedProductDetCnt != 1) {
+            throw new CustomRuntimeException("상품상세정보를 정상적으로 추가하지 못함");
+        }
     }
 }
