@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.partnerCode">
+
+    <sql id="codeColumns">
+        ID                    AS id
+        , PARTNER_ID            AS partnerId
+        , CODE_UPPER            AS codeUpper
+        , CODE_CD               AS codeCd
+        , CODE_NM               AS codeNm
+        , DEF_CODE_VAL          AS defCodeVal
+        , CODE_DESC             AS codeDesc
+        , CODE_ETC              AS codeEtc
+        , CODE_ETC1             AS codeEtc1
+        , CODE_ETC2             AS codeEtc2
+        , CODE_ETC3             AS codeEtc3
+        , CODE_ORDER            AS codeOrder
+        , CRE_TM                AS creTm
+        , CRE_USER              AS creUser
+        , UPD_TM                AS updTm
+        , UPD_USER              AS updUser
+        , DEL_YN                AS deleteYn
+    </sql>
+
+    <select id="selectPartnerCodeListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
+        /* com.shop.mapper.code.selectPartnerCodeListPaging */
+        SELECT
+        ( COUNT(1) OVER() )                                                                              AS totalRowCount
+        , ROW_NUMBER() OVER(ORDER BY TC.ID ASC)                                                             AS no
+        , TC.ID                                                                                             AS id
+        , TC.CODE_UPPER                                                                                     AS codeUpper
+        , COALESCE((SELECT X.CODE_NM FROM TB_PARTNER_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER)   AS codeUpperNm
+        , TC.CODE_CD                                                                                        AS codeCd
+        , TC.CODE_NM                                                                                        AS codeNm
+        , TC.DEF_CODE_VAL                                                                                   AS defCodeVal
+        , (SELECT COUNT(*) FROM TB_PARTNER_CODE X WHERE X.CODE_UPPER = TC.CODE_CD)                          AS lowerCodeCnt
+        , CASE WHEN COALESCE(TC.CODE_DESC, '') = '' THEN '-' ELSE TC.CODE_DESC END                          AS codeDesc
+        , CASE WHEN COALESCE(TC.CODE_ETC, '') = '' THEN '-' ELSE TC.CODE_ETC END                            AS codeEtc
+        , TC.CODE_ORDER                                                                                     AS codeOrder
+        , TC.CRE_TM                                                                                         AS creTm
+        , TC.CRE_USER                                                                                       AS creUser
+        , TC.UPD_TM                                                                                         AS updTm
+        , TC.UPD_USER                                                                                       AS updUser
+        , TC.DEL_YN                                                                                         AS deleteYn
+        , TC.CODE_ETC1
+        , TC.CODE_ETC2
+        , TC.CODE_ETC3
+        FROM TB_PARTNER_CODE TC
+        WHERE TC.PARTNER_ID = #{partnerId}
+        <if test='filter.codeUpper != null and !filter.codeUpper.equals("")'>
+            AND TC.CODE_UPPER = #{filter.codeUpper}
+        </if>
+        <if test='filter.codeCd != null and !filter.codeCd.equals("")'>
+            AND TC.CODE_CD LIKE CONCAT('%', #{filter.codeCd}, '%')
+        </if>
+        <if test='filter.codeNm != null and !filter.codeNm.equals("")'>
+            AND TC.CODE_NM LIKE CONCAT('%', #{filter.codeNm}, '%')
+        </if>
+        ORDER BY TC.ID DESC
+        OFFSET (#{curPage}-1) * #{pageRowCount} ROWS
+        FETCH NEXT #{pageRowCount} ROWS ONLY
+    </select>
+
+    <select id="selectLowerCodeByPartnerCodeUpper" parameterType="com.shop.core.biz.system.vo.request.PartnerCodeRequest$PartnerCodeDropDown" resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
+        /* com.shop.mapper.code.selectLowerCodeByPartnerCodeUpper */
+        SELECT ROW_NUMBER() OVER(ORDER BY ID ASC)  AS no
+             , ID
+             , CODE_UPPER
+             , CODE_CD
+             , CODE_NM
+             , COALESCE(DEF_CODE_VAL, '0') AS DEF_CODE_VAL
+        FROM TB_PARTNER_CODE A
+        WHERE CODE_UPPER = #{codeUpper}
+          AND PARTNER_ID = #{partnerId}
+          AND DEL_YN = 'N'
+        ORDER BY CODE_ORDER ASC
+    </select>
+
+    <select id="selectPartnerCodeByUk" resultType="com.shop.core.entity.PartnerCode">
+        /* com.shop.mapper.code.selectPartnerCodeByUk */
+        SELECT <include refid="codeColumns" />
+        FROM TB_PARTNER_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+        AND CODE_CD = #{codeCd}
+        AND PARTNER_ID = #{partnerId}
+        AND DEL_YN = 'N'
+    </select>
+
+    <select id="getDupCodeInfo" resultType="java.lang.String">
+        /* com.shop.mapper.code.getDupCodeInfo */
+        SELECT CONCAT(${column},' ',COUNT(*),' 건')
+        FROM TB_PARTNER_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+          AND PARTNER_ID = #{partnerId}
+          AND DEL_YN = 'N'
+        GROUP BY ${column}
+        HAVING COUNT(*) > 1
+    </select>
+
+    <select id="selectLowerCodeByCodeUpperForPartnerCodeMng" parameterType="com.shop.core.biz.system.vo.request.PartnerCodeRequest$PartnerCodeDropDown"  resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
+        /* com.shop.mapper.code.selectLowerCodeByCodeUpperForPartnerCodeMng */
+        SELECT
+        <include refid="codeColumns" />
+        , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC) AS no
+        , COALESCE((SELECT USER_NM FROM TB_USER X WHERE TC.UPD_USER = X.LOGIN_ID), TC.UPD_USER) AS updNm
+        , COALESCE((SELECT USER_NM FROM TB_USER X WHERE TC.CRE_USER = X.LOGIN_ID), TC.CRE_USER) AS creNm
+        FROM TB_PARTNER_CODE TC
+        WHERE 1 = 1
+        AND TC.DEL_YN = 'N'
+        AND TC.CODE_UPPER = #{codeUpper}
+        AND TC.PARTNER_ID = #{partnerId}
+        <if test="codeNm != null">
+            AND TC.CODE_NM LIKE CONCAT('%', #{codeNm}, '%')
+        </if>
+        <if test="codeCd != null">
+            AND TC.CODE_CD = #{codeCd}
+        </if>
+        <if test='searchKeyword != null and !searchKeyword.equals("")'>
+            AND (
+            TC.CODE_CD LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR TC.CODE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR TC.CODE_DESC LIKE CONCAT('%', #{searchKeyword}, '%')
+            OR TC.CODE_ETC LIKE CONCAT('%', #{searchKeyword}, '%')
+            )
+        </if>
+        <choose>
+            <when test='"NAME".equals(orderType)'>
+                ORDER BY TC.CODE_NM ASC
+            </when>
+            <otherwise>
+                ORDER BY TC.CODE_ORDER ASC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insertPartnerCode" parameterType="com.shop.core.entity.PartnerCode" useGeneratedKeys="true" keyProperty="id">
+        /* com.shop.mapper.code.insertPartnerCode */
+        INSERT INTO TB_PARTNER_CODE
+        (
+        CODE_UPPER
+        , CODE_CD
+        , CODE_NM
+        , PARTNER_ID
+        <if test="codeDesc != null">
+            , CODE_DESC
+        </if>
+        <if test="defCodeVal != null">
+            , DEF_CODE_VAL
+        </if>
+        <if test="codeEtc != null">
+            , CODE_ETC
+        </if>
+        <if test="codeEtc1 != null">
+            , CODE_ETC1
+        </if>
+        <if test="codeEtc2 != null">
+            , CODE_ETC2
+        </if>
+        <if test="codeEtc3 != null">
+            , CODE_ETC3
+        </if>
+        , CODE_ORDER
+        , CRE_USER
+        , UPD_USER
+        <if test="delYn != null">
+            , DEL_YN
+        </if>
+        )
+        VALUES
+        (
+        #{codeUpper}
+        , #{codeCd}
+        , #{codeNm}
+        , #{partnerId}
+        <if test="codeDesc != null">
+            , #{codeDesc}
+        </if>
+        <if test="defCodeVal != null">
+            , #{defCodeVal}
+        </if>
+        <if test="codeEtc != null">
+            , #{codeEtc}
+        </if>
+        <if test="codeEtc1 != null">
+            , #{codeEtc1}
+        </if>
+        <if test="codeEtc2 != null">
+            , #{codeEtc2}
+        </if>
+        <if test="codeEtc3 != null">
+            , #{codeEtc3}
+        </if>
+        <choose>
+            <when test="codeOrder != null">
+                , #{codeOrder}
+            </when>
+            <otherwise>
+                , (SELECT COALESCE(MAX(CODE_ORDER), 0) + 1
+                FROM TB_PARTNER_CODE
+                WHERE PARTNER_ID = #{partnerId}
+                AND CODE_UPPER = #{codeUpper})
+            </otherwise>
+        </choose>
+        , #{creUser}
+        , #{creUser}
+        <if test="delYn != null">
+            , #{delYn}
+        </if>
+        )
+    </insert>
+
+    <update id="updatePartnerCode" parameterType="com.shop.core.entity.PartnerCode">
+        /* com.shop.mapper.code.updatePartnerCode */
+        UPDATE TB_PARTNER_CODE
+        SET UPD_TM   = NOW()
+        , UPD_USER = #{updUser}
+        <if test="codeUpper != null">
+            , CODE_UPPER = #{codeUpper}
+        </if>
+        <if test="codeCd != null">
+            , CODE_CD = #{codeCd}
+        </if>
+        <if test="codeNm != null">
+            , CODE_NM = #{codeNm}
+        </if>
+        <if test="codeDesc != null">
+            , CODE_DESC = #{codeDesc}
+        </if>
+        <if test="defCodeVal != null">
+            , DEF_CODE_VAL = #{defCodeVal}
+        </if>
+        <if test="codeEtc != null">
+            , CODE_ETC = #{codeEtc}
+        </if>
+        <if test="codeEtc1 != null">
+            , CODE_ETC1 = #{codeEtc1}
+        </if>
+        <if test="codeEtc2 != null">
+            , CODE_ETC2 = #{codeEtc2}
+        </if>
+        <if test="codeEtc3 != null">
+            , CODE_ETC3 = #{codeEtc3}
+        </if>
+        <if test="codeOrder != null">
+            , CODE_ORDER = #{codeOrder}
+        </if>
+        <if test="delYn != null">
+            , DEL_YN = #{delYn}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deletePartnerCode" parameterType="com.shop.core.entity.PartnerCode">
+        /* com.shop.mapper.code.deletePartnerCode */
+        UPDATE TB_PARTNER_CODE
+        SET DEL_YN = 'Y'
+        , UPD_USER = #{updUser}
+        , UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>
