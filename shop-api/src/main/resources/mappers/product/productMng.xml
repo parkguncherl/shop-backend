@@ -63,4 +63,76 @@
         </where>
         ORDER BY TPD.ID
     </select>
+
+    <insert id="insertProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertProduct" useGeneratedKeys="true" keyProperty="id">
+        /* com.shop.mapper.product.productMng.insertProduct */
+        INSERT INTO TB_PRODUCT (
+              PARTNER_ID
+            , PROD_CD
+            , PROD_NM
+            , PROD_TP
+            , PROD_DET_TP
+            , COMPOSITION
+            , REP_FILE_ID
+            , DETAIL_FILE_ID
+            , SIZE_FILE_ID
+            , ETC_FILE_ID
+            , MAKE_YMD
+            , ORG_AMT
+            , SELL_AMT
+            , DISCOUNT_RATE
+            , CRE_USER
+            , UPD_USER
+            , IS_SPRING
+            , IS_SUMMER
+            , IS_AUTUMN
+            , IS_WINTER
+        ) VALUES (
+              #{partnerId}
+            , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
+            , #{prodNm}
+            , #{prodTp}
+            , #{prodDetTp}
+            , #{composition}
+            , #{repFileId}
+            , #{detailFileId}
+            , #{sizeFileId}
+            , #{etcFileId}
+            , #{makeYmd}
+            , #{orgAmt}
+            , #{sellAmt}
+            , #{discountRate}
+            , #{creUser}
+            , #{updUser}
+            , #{isSpring}
+            , #{isSummer}
+            , #{isAutumn}
+            , #{isWinter}
+        )
+    </insert>
+
+    <insert id="insertProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertProductDet">
+        /* com.shop.mapper.product.productMng.insertProductDet */
+        INSERT INTO TB_PRODUCT_DET (
+              PRODUCT_ID
+            , PRODUCT_DET_SEQ
+            , PRODUCT_DET_SIZE
+            , PRODUCT_DET_COLOR
+            , SKU_DISCOUNT_RATE
+            , FILE_ID
+            , SLEEP_YN
+            , CRE_USER
+            , UPD_USER
+        ) VALUES (
+              #{productId}
+            , #{productDetSeq}
+            , #{productDetSize}
+            , #{productDetColor}
+            , #{skuDiscountRate}
+            , #{fileId}
+            , #{sleepYn}
+            , #{creUser}
+            , #{updUser}
+        )
+    </insert>
 </mapper>

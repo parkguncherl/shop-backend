@@ -71,4 +71,21 @@ public class ProductMngController {
         List<ProductMngResponse.ProductDetInfo> response = productMngService.selectProdDetInfo(productDetInfoFilter, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
+
+    /**
+     * 상품정보 및 상품상세정보 추가(혹은 product 식별자(id) 가 주어질 시 상품상세정보 추가)
+     *
+     * @param insertProductInfo
+     * @return
+     */
+    @AccessLog("상품정보 및 상품상세정보 추가")
+    @GetMapping(value = "/insertProductInfo")
+    @Operation(summary = "상품정보 및 상품상세정보 추가")
+    public ApiResponse<Void> InsertProductInfo(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductMngRequestInsertProductInfo", description = "상품정보 및 상품상세정보 추가 request dto", in = ParameterIn.QUERY) ProductMngRequest.InsertProductInfo insertProductInfo
+    ) {
+        productMngService.InsertProductInfo(insertProductInfo, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
 }
