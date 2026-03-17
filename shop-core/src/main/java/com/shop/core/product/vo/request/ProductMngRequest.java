@@ -1,5 +1,7 @@
 package com.shop.core.product.vo.request;
 
+import com.shop.core.entity.Product;
+import com.shop.core.entity.ProductDet;
 import com.shop.core.interfaces.RequestFilter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -28,5 +30,17 @@ public class ProductMngRequest {
 
         @Schema(description = "상품상세컬러")
         private String prodDetColor;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestInsertProduct", description = "상품 데이터 추가 dto")
+    public static class InsertProduct extends Product {
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestInsertProductDet", description = "상품상세 데이터 추가 dto")
+    public static class InsertProductDet extends ProductDet {
     }
 }

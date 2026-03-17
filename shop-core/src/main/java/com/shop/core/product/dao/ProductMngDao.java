@@ -46,4 +46,22 @@ public class ProductMngDao {
     public List<ProductMngResponse.ProductDetInfo> selectProdDetInfo(ProductMngRequest.ProductDetInfoFilter productDetInfoFilter) {
         return sqlSession.selectList(NAMESPACE + "selectProdDetInfo", productDetInfoFilter);
     }
+
+    /**
+     * 상품관리-상품정보 추가
+     * @param insertProduct
+     * @return inserted row's cnt
+     */
+    public Integer insertProduct(ProductMngRequest.InsertProduct insertProduct) {
+        return sqlSession.insert(NAMESPACE + "insertProduct", insertProduct);
+    }
+
+    /**
+     * 상품관리-상품상세정보 추가
+     * @param insertProductDet
+     * @return inserted row's cnt
+     */
+    public Integer insertProductDet(ProductMngRequest.InsertProductDet insertProductDet) {
+        return sqlSession.insert(NAMESPACE + "insertProductDet", insertProductDet);
+    }
 }
