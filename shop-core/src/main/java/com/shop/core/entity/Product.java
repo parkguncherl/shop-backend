@@ -42,10 +42,10 @@ public class Product extends BaseEntity implements Serializable {
     private String prodNm;
 
     @Schema(description = "상품유형")
-    private Integer ProdTp;
+    private String ProdTp;
 
     @Schema(description = "상품상세유형")
-    private Integer ProdDetTp;
+    private String ProdDetTp;
 
     @Schema(description = "구성")
     private String composition;
@@ -73,4 +73,16 @@ public class Product extends BaseEntity implements Serializable {
 
     @Schema(description = "할인율")
     private BigDecimal discountRate;
+
+    @Schema(description = "춘계 의상 여부")
+    private String isSpring;
+
+    @Schema(description = "하계 의상 여부")
+    private String isSummer;
+
+    @Schema(description = "추계 의상 여부")
+    private String isAutumn;
+
+    @Schema(description = "동계 의상 여부")
+    private String isWinter;
 }

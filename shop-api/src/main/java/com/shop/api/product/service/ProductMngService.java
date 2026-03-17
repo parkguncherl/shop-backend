@@ -60,6 +60,7 @@ public class ProductMngService {
             throw new CustomRuntimeException("상품상세정보를 찾을 수 없음");
         }
 
+        /** id 존재 여부에 따라 상품정보 및 상세정보 추가 혹은 상세정보 추가로 분기 */
         if (insertProductInfo.getId() == null) {
             Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
 
