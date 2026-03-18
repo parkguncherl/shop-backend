@@ -64,7 +64,7 @@ public class ProductMngController {
     @Operation(summary = "상품상세목록 조회")
     public ApiResponse<List<ProductMngResponse.ProductDetInfo>> selectProdDetInfo(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(name = "ProductMngRequestProductInfoFilter", description = "상품상세목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductDetInfoFilter productDetInfoFilter
+            @Parameter(name = "ProductMngRequestProductDetInfoFilter", description = "상품상세목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductDetInfoFilter productDetInfoFilter
     ) {
         List<ProductMngResponse.ProductDetInfo> response = productMngService.selectProdDetInfo(productDetInfoFilter, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
