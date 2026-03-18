@@ -52,4 +52,10 @@ public class ProductMngRequest {
         @Schema(description = "추가하고자 하는 productDet dto 에 대응하는 field")
         private InsertProductDet productDet;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestUpdateProduct", description = "상품 수정 dto")
+    public static class UpdateProduct extends Product {
+    }
 }

@@ -28,6 +28,10 @@
             , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.DETAIL_FILE_ID AND FDI.DEL_YN = 'N') AS detailFileIdCnt
             , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.SIZE_FILE_ID AND FDI.DEL_YN = 'N') AS sizeFileIdCnt
             , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.ETC_FILE_ID AND FDI.DEL_YN = 'N') AS etcFileIdCnt
+            , TP.IS_SPRING
+            , TP.IS_SUMMER
+            , TP.IS_AUTUMN
+            , TP.IS_WINTER
         FROM TB_PRODUCT TP
               LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID
         <where>
@@ -183,4 +187,40 @@
             , #{updUser}
         )
     </insert>
+
+    <update id="updateProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateProduct">
+        /* com.shop.mapper.menu.updateProduct */
+        UPDATE TB_PRODUCT SET
+              UPD_TM   = NOW()
+            , UPD_USER = #{updUser}
+        <if test="prodNm != null">
+            , PROD_NM = #{prodNm}
+        </if>
+        <if test="prodTp != null">
+            , PROD_TP = #{prodTp}
+        </if>
+        <if test="prodDetTp != null">
+            , PROD_DET_TP = #{prodDetTp}
+        </if>
+        <if test="composition != null">
+            , COMPOSITION = #{composition}
+        </if>
+        <if test="makeYmd != null">
+            , MAKE_YMD = #{makeYmd}
+        </if>
+        <if test="orgAmt != null">
+            , ORG_AMT = #{orgAmt}
+        </if>
+        <if test="sellAmt != null">
+            , SELL_AMT = #{sellAmt}
+        </if>
+        <if test="discountRate != null">
+            , DISCOUNT_RATE = #{discountRate}
+        </if>
+            , IS_SPRING = #{isSpring}
+            , IS_SUMMER = #{isSummer}
+            , IS_AUTUMN = #{isAutumn}
+            , IS_WINTER = #{isWinter}
+        WHERE ID = #{id}
+    </update>
 </mapper>

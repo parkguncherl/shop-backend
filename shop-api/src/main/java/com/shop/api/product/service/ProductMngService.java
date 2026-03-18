@@ -49,12 +49,12 @@ public class ProductMngService {
     }
 
     /**
-     * 상품관리-상품정보 및 상품상세정보 추가(혹은 product 식별자(id) 가 주어질 시 상품상세정보 추가)
+     * 상품관리-상품정보 및 상품상세정보 추가(혹은 product 식별자(id) 가 주어질 시 상품상세정보 추가) 관련 비즈니스 동작 처리
      * @param insertProductInfo
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void InsertProductInfo(ProductMngRequest.InsertProductInfo insertProductInfo, User jwtUser) {
+    public void insertProductInfo(ProductMngRequest.InsertProductInfo insertProductInfo, User jwtUser) {
         if (insertProductInfo.getProductDet() == null) {
             // 상품상세정보는 필수값
             throw new CustomRuntimeException("상품상세정보를 찾을 수 없음");
@@ -84,5 +84,14 @@ public class ProductMngService {
         if (insertedProductDetCnt != 1) {
             throw new CustomRuntimeException("상품상세정보를 정상적으로 추가하지 못함");
         }
+    }
+
+    /**
+     * 상품관리-상품정보 수정 관련 비즈니스 동작 처리
+     * @param updateProduct
+     * @return
+     */
+    public Integer updateProduct(ProductMngRequest.UpdateProduct updateProduct, User jwtUser) {
+        return productMngDao.updateProduct(updateProduct);
     }
 }

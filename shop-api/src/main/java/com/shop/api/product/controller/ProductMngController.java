@@ -79,11 +79,31 @@ public class ProductMngController {
     @AccessLog("상품정보 및 상품상세정보 추가")
     @PutMapping(value = "/insertProductInfo")
     @Operation(summary = "상품정보 및 상품상세정보 추가")
-    public ApiResponse<Void> InsertProductInfo(
+    public ApiResponse<Void> insertProductInfo(
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @RequestBody ProductMngRequest.InsertProductInfo insertProductInfo
     ) {
-        productMngService.InsertProductInfo(insertProductInfo, jwtUser);
+        productMngService.insertProductInfo(insertProductInfo, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 상품관리-상품정보 수정
+     *
+     * @param updateProduct
+     * @return
+     */
+    @AccessLog("상품정보 수정")
+    @PatchMapping(value = "/updateProduct")
+    @Operation(summary = "상품정보 수정")
+    public ApiResponse<Void> updateProduct(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.UpdateProduct updateProduct
+    ) {
+        Integer updatedRowCnt = productMngService.updateProduct(updateProduct, jwtUser);
+        if (updatedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_UPDATE);
+        }
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 }

@@ -64,4 +64,13 @@ public class ProductMngDao {
     public Integer insertProductDet(ProductMngRequest.InsertProductDet insertProductDet) {
         return sqlSession.insert(NAMESPACE + "insertProductDet", insertProductDet);
     }
+
+    /**
+     * 상품관리-상품정보 수정
+     * @param updateProduct
+     * @return updated row's cnt
+     */
+    public Integer updateProduct(ProductMngRequest.UpdateProduct updateProduct) {
+        return sqlSession.update(NAMESPACE + "updateProduct", updateProduct);
+    }
 }
