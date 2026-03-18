@@ -16,9 +16,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -79,11 +77,11 @@ public class ProductMngController {
      * @return
      */
     @AccessLog("상품정보 및 상품상세정보 추가")
-    @GetMapping(value = "/insertProductInfo")
+    @PutMapping(value = "/insertProductInfo")
     @Operation(summary = "상품정보 및 상품상세정보 추가")
     public ApiResponse<Void> InsertProductInfo(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(name = "ProductMngRequestInsertProductInfo", description = "상품정보 및 상품상세정보 추가 request dto", in = ParameterIn.QUERY) ProductMngRequest.InsertProductInfo insertProductInfo
+            @RequestBody ProductMngRequest.InsertProductInfo insertProductInfo
     ) {
         productMngService.InsertProductInfo(insertProductInfo, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);

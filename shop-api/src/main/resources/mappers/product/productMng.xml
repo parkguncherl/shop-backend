@@ -73,20 +73,42 @@
             , PROD_TP
             , PROD_DET_TP
             , COMPOSITION
+        <if test="repFileId != null">
             , REP_FILE_ID
+        </if>
+        <if test="detailFileId != null">
             , DETAIL_FILE_ID
+        </if>
+        <if test="sizeFileId != null">
             , SIZE_FILE_ID
+        </if>
+        <if test="etcFileId != null">
             , ETC_FILE_ID
+        </if>
             , MAKE_YMD
+        <if test="orgAmt != null">
             , ORG_AMT
+        </if>
+        <if test="sellAmt != null">
             , SELL_AMT
+        </if>
+        <if test="discountRate != null">
             , DISCOUNT_RATE
+        </if>
             , CRE_USER
             , UPD_USER
+        <if test="isSpring != null">
             , IS_SPRING
+        </if>
+        <if test="isSummer != null">
             , IS_SUMMER
+        </if>
+        <if test="isAutumn != null">
             , IS_AUTUMN
+        </if>
+        <if test="isWinter != null">
             , IS_WINTER
+        </if>
         ) VALUES (
               #{partnerId}
             , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
@@ -94,20 +116,42 @@
             , #{prodTp}
             , #{prodDetTp}
             , #{composition}
+        <if test="repFileId != null">
             , #{repFileId}
+        </if>
+        <if test="detailFileId != null">
             , #{detailFileId}
+        </if>
+        <if test="sizeFileId != null">
             , #{sizeFileId}
+        </if>
+        <if test="etcFileId != null">
             , #{etcFileId}
+        </if>
             , #{makeYmd}
+        <if test="orgAmt != null">
             , #{orgAmt}
+        </if>
+        <if test="sellAmt != null">
             , #{sellAmt}
+        </if>
+        <if test="discountRate != null">
             , #{discountRate}
+        </if>
             , #{creUser}
             , #{updUser}
+        <if test="isSpring != null">
             , #{isSpring}
+        </if>
+        <if test="isSummer != null">
             , #{isSummer}
+        </if>
+        <if test="isAutumn != null">
             , #{isAutumn}
+        </if>
+        <if test="isWinter != null">
             , #{isWinter}
+        </if>
         )
     </insert>
 
@@ -119,17 +163,21 @@
             , PRODUCT_DET_SIZE
             , PRODUCT_DET_COLOR
             , SKU_DISCOUNT_RATE
+        <if test="fileId != null">
             , FILE_ID
+        </if>
             , SLEEP_YN
             , CRE_USER
             , UPD_USER
         ) VALUES (
               #{productId}
-            , #{productDetSeq}
+            , GET_NEXT_PRODUCT_DET_SEQ(#{productId})
             , #{productDetSize}
             , #{productDetColor}
             , #{skuDiscountRate}
+        <if test="fileId != null">
             , #{fileId}
+        </if>
             , #{sleepYn}
             , #{creUser}
             , #{updUser}

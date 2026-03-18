@@ -65,6 +65,9 @@ public class ProductMngService {
             Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
 
             insertProductInfo.setPartnerId(partnerId);
+
+            insertProductInfo.setCreUser(jwtUser.getLoginId());
+            insertProductInfo.setUpdUser(jwtUser.getLoginId());
             Integer insertedProductCnt = productMngDao.insertProduct(insertProductInfo);
 
             if (insertedProductCnt != 1) {
@@ -72,6 +75,10 @@ public class ProductMngService {
             }
         }
 
+        insertProductInfo.getProductDet().setProductId(insertProductInfo.getId()); // prod Id 할당(요청 시점에 전달된 값 혹은 insert 시점에 할당되어진 값)
+
+        insertProductInfo.getProductDet().setCreUser(jwtUser.getLoginId());
+        insertProductInfo.getProductDet().setUpdUser(jwtUser.getLoginId());
         Integer insertedProductDetCnt = productMngDao.insertProductDet(insertProductInfo.getProductDet());
 
         if (insertedProductDetCnt != 1) {
