@@ -58,4 +58,28 @@ public class ProductMngRequest {
     @Schema(name = "ProductMngRequestUpdateProduct", description = "상품 수정 dto")
     public static class UpdateProduct extends Product {
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestUpdateProductDet", description = "상품상세 수정 dto")
+    public static class UpdateProductDet extends ProductDet {
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestDeleteProduct", description = "상품 삭제 dto")
+    public static class DeleteProduct {
+
+        @Schema(description = "아이디(PK)")
+        private Integer id;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestDeleteProductDet", description = "상품상세 삭제 dto")
+    public static class DeleteProductDet {
+
+        @Schema(description = "아이디(PK)")
+        private Integer id;
+    }
 }

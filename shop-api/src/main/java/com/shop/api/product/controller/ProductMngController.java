@@ -106,4 +106,24 @@ public class ProductMngController {
         }
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
+
+    /**
+     * 상품관리-상품상세정보 수정
+     *
+     * @param updateProductDet
+     * @return
+     */
+    @AccessLog("상품상세정보 수정")
+    @PatchMapping(value = "/updateProductDet")
+    @Operation(summary = "상품상세정보 수정")
+    public ApiResponse<Void> updateProductDet(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.UpdateProductDet updateProductDet
+    ) {
+        Integer updatedRowCnt = productMngService.updateProductDet(updateProductDet, jwtUser);
+        if (updatedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_UPDATE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
 }

@@ -55,6 +55,7 @@
             , TPD.SKU_DISCOUNT_RATE AS skuDiscountRate
             , TPD.FILE_ID AS fileId
             , TPD.SLEEP_YN AS sleepYn
+            , TPD.PRODUCT_DET_CNTN AS productDetCntn
         FROM TB_PRODUCT_DET TPD
         <where>
             AND TPD.DEL_YN = 'N'
@@ -221,6 +222,56 @@
             , IS_SUMMER = #{isSummer}
             , IS_AUTUMN = #{isAutumn}
             , IS_WINTER = #{isWinter}
+        WHERE ID = #{id}
+    </update>
+
+    <update id="updateProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateProductDet">
+        /* com.shop.mapper.menu.updateProductDet */
+        UPDATE TB_PRODUCT_DET SET
+              UPD_TM   = NOW()
+            , UPD_USER = #{updUser}
+        <if test="productId != null">
+            , PRODUCT_ID = #{productId}
+        </if>
+        <if test="productDetSeq != null">
+            , PRODUCT_DET_SEQ = #{productDetSeq}
+        </if>
+        <if test="productDetSize != null">
+            , PRODUCT_DET_SIZE = #{productDetSize}
+        </if>
+        <if test="productDetColor != null">
+            , PRODUCT_DET_COLOR = #{productDetColor}
+        </if>
+        <if test="skuDiscountRate != null">
+            , SKU_DISCOUNT_RATE = #{skuDiscountRate}
+        </if>
+        <if test="fileId != null">
+            , FILE_ID = #{fileId}
+        </if>
+        <if test="sleepYn != null">
+            , SLEEP_YN = #{sleepYn}
+        </if>
+        <if test="productDetCntn != null">
+            , PRODUCT_DET_CNTN = #{productDetCntn}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deleteProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProduct">
+        /* com.shop.mapper.menu.deleteProduct */
+        UPDATE TB_PRODUCT SET
+              UPD_TM   = NOW()
+            , UPD_USER = #{updUser}
+            , DEL_YN = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deleteProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProductDet">
+        /* com.shop.mapper.menu.deleteProductDet */
+        UPDATE TB_PRODUCT_DET SET
+              UPD_TM   = NOW()
+            , UPD_USER = #{updUser}
+            , DEL_YN = 'Y'
         WHERE ID = #{id}
     </update>
 </mapper>

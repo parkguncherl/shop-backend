@@ -94,4 +94,13 @@ public class ProductMngService {
     public Integer updateProduct(ProductMngRequest.UpdateProduct updateProduct, User jwtUser) {
         return productMngDao.updateProduct(updateProduct);
     }
+
+    /**
+     * 상품관리-상품상세정보 수정 관련 비즈니스 동작 처리
+     * @param updateProductDet
+     * @return
+     */
+    public Integer updateProductDet(ProductMngRequest.UpdateProductDet updateProductDet, User jwtUser) {
+        return productMngDao.updateProductDet(updateProductDet);
+    }
 }

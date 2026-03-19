@@ -73,4 +73,31 @@ public class ProductMngDao {
     public Integer updateProduct(ProductMngRequest.UpdateProduct updateProduct) {
         return sqlSession.update(NAMESPACE + "updateProduct", updateProduct);
     }
+
+    /**
+     * 상품관리-상품상세정보 수정
+     * @param updateProductDet
+     * @return updated row's cnt
+     */
+    public Integer updateProductDet(ProductMngRequest.UpdateProductDet updateProductDet) {
+        return sqlSession.update(NAMESPACE + "updateProductDet", updateProductDet);
+    }
+
+    /**
+     * 상품관리-상품정보 삭제
+     * @param deleteProduct
+     * @return deleted row's cnt
+     */
+    public Integer deleteProduct(ProductMngRequest.DeleteProduct deleteProduct) {
+        return sqlSession.update(NAMESPACE + "updateProductDet", deleteProduct);
+    }
+
+    /**
+     * 상품관리-상품상세정보 삭제
+     * @param deleteProductDet
+     * @return deleted row's cnt
+     */
+    public Integer deleteProductDet(ProductMngRequest.DeleteProductDet deleteProductDet) {
+        return sqlSession.update(NAMESPACE + "updateProductDet", deleteProductDet);
+    }
 }
