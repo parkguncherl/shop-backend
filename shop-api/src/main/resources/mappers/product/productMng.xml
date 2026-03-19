@@ -24,6 +24,7 @@
             , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
             , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
             , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
+            , COUNT(TPD) AS prodDetCnt
             , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.REP_FILE_ID AND FDI.DEL_YN = 'N') AS repFileIdCnt
             , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.DETAIL_FILE_ID AND FDI.DEL_YN = 'N') AS detailFileIdCnt
             , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.SIZE_FILE_ID AND FDI.DEL_YN = 'N') AS sizeFileIdCnt
@@ -33,7 +34,7 @@
             , TP.IS_AUTUMN
             , TP.IS_WINTER
         FROM TB_PRODUCT TP
-              LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID
+              LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
         <where>
             AND TP.DEL_YN = 'N'
             <if test='prodNm != null and !prodNm.equals("")'>

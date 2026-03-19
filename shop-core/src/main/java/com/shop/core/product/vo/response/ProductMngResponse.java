@@ -30,6 +30,9 @@ public class ProductMngResponse {
         @Schema(description = "사이즈(종류 나열)")
         private String prodSizes;
 
+        @Schema(description = "연관된 유효한 상품상세 개수")
+        private Integer prodDetCnt;
+
         @Schema(description = "대표이미지 개수")
         private Integer repFileIdCnt;
 
