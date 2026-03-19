@@ -10,6 +10,8 @@
             , A.NEWS_SUB_TITLE AS newsSubTitle
             , A.NEWS_CONTENTS AS newsContents
             , A.FILE_ID AS fileId
+            , (SELECT COUNT(1) FROM TB_FILE_DET X WHERE X.FILE_ID = A.FILE_ID AND X.DEL_YN = 'N') AS imageCnt
+            , (SELECT COUNT(1) FROM TB_CONTENTS_PRODUCT X WHERE X.CONTENTS_ID = A.ID AND DEL_YN = 'N') AS productCnt
         FROM TB_CONTENTS A
         <where>
             AND A.DEL_YN = 'N'

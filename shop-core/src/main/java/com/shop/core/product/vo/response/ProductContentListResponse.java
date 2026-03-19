@@ -13,5 +13,12 @@ public class ProductContentListResponse {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductContentListResponseProductContent", description = "상품컨텐츠목록 영역 상품컨텐츠", type = "object")
     public static class ProductContent extends Contents {
+
+        @Schema(description = "상품수량")
+        private Integer productCnt;
+
+        @Schema(description = "상품수량")
+        private Integer imageCnt;
+
     }
 }
