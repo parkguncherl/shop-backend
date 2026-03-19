@@ -92,6 +92,22 @@ public class ProductMngService {
      * @return
      */
     public Integer updateProduct(ProductMngRequest.UpdateProduct updateProduct, User jwtUser) {
+
+        /** 계절 식별 영역 기본값 할당 영역 */
+        if (updateProduct.getIsSpring() == null) {
+            updateProduct.setIsSpring("N");
+        }
+        if (updateProduct.getIsSummer() == null) {
+            updateProduct.setIsSummer("N");
+        }
+        if (updateProduct.getIsAutumn() == null) {
+            updateProduct.setIsAutumn("N");
+        }
+        if (updateProduct.getIsWinter() == null) {
+            updateProduct.setIsWinter("N");
+        }
+
+        updateProduct.setUpdUser(jwtUser.getLoginId());
         return productMngDao.updateProduct(updateProduct);
     }
 
@@ -101,6 +117,7 @@ public class ProductMngService {
      * @return
      */
     public Integer updateProductDet(ProductMngRequest.UpdateProductDet updateProductDet, User jwtUser) {
+        updateProductDet.setUpdUser(jwtUser.getLoginId());
         return productMngDao.updateProductDet(updateProductDet);
     }
 
