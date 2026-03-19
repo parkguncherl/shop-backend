@@ -72,6 +72,9 @@ public class ProductMngRequest {
 
         @Schema(description = "아이디(PK)")
         private Integer id;
+
+        @Schema(description = "수정자")
+        private String updUser;
     }
 
     @Getter
@@ -81,5 +84,8 @@ public class ProductMngRequest {
 
         @Schema(description = "아이디(PK)")
         private Integer id;
+
+        @Schema(description = "수정자")
+        private String updUser;
     }
 }

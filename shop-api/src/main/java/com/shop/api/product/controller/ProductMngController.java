@@ -126,4 +126,44 @@ public class ProductMngController {
         }
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
+
+    /**
+     * 상품관리-상품정보 삭제
+     *
+     * @param deleteProduct
+     * @return
+     */
+    @AccessLog("상품정보 삭제")
+    @PatchMapping(value = "/deleteProduct")
+    @Operation(summary = "상품정보 삭제")
+    public ApiResponse<Void> deleteProduct(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.DeleteProduct deleteProduct
+    ) {
+        Integer deletedRowCnt = productMngService.deleteProduct(deleteProduct, jwtUser);
+        if (deletedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 상품관리-상품상세정보 삭제
+     *
+     * @param deleteProductDet
+     * @return
+     */
+    @AccessLog("상품상세정보 삭제")
+    @PatchMapping(value = "/deleteProductDet")
+    @Operation(summary = "상품상세정보 삭제")
+    public ApiResponse<Void> deleteProductDet(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.DeleteProductDet deleteProductDet
+    ) {
+        Integer deletedRowCnt = productMngService.deleteProductDet(deleteProductDet, jwtUser);
+        if (deletedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
 }

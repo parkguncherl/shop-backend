@@ -103,4 +103,33 @@ public class ProductMngService {
     public Integer updateProductDet(ProductMngRequest.UpdateProductDet updateProductDet, User jwtUser) {
         return productMngDao.updateProductDet(updateProductDet);
     }
+
+    /**
+     * 상품관리-상품정보 삭제 관련 비즈니스 동작 처리
+     * @param deleteProduct
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Integer deleteProduct(ProductMngRequest.DeleteProduct deleteProduct, User jwtUser) {
+        ProductMngRequest.ProductDetInfoFilter productDetInfoFilter = new ProductMngRequest.ProductDetInfoFilter();
+        productDetInfoFilter.setProdId(deleteProduct.getId());
+
+        List<ProductMngResponse.ProductDetInfo> productDetInfoList = productMngDao.selectProdDetInfo(productDetInfoFilter);
+        if (!productDetInfoList.isEmpty()) {
+            throw new CustomRuntimeException("주어진 식별자에 대응하는 상품 이하 연관된 상품상세정보가 잔존하는 경우 삭제할 수 없음");
+        }
+
+        deleteProduct.setUpdUser(jwtUser.getLoginId());
+        return productMngDao.deleteProduct(deleteProduct);
+    }
+
+    /**
+     * 상품관리-상품상세정보 삭제 관련 비즈니스 동작 처리
+     * @param deleteProductDet
+     * @return
+     */
+    public Integer deleteProductDet(ProductMngRequest.DeleteProductDet deleteProductDet, User jwtUser) {
+        deleteProductDet.setUpdUser(jwtUser.getLoginId());
+        return productMngDao.deleteProductDet(deleteProductDet);
+    }
 }

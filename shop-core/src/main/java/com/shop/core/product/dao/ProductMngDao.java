@@ -89,7 +89,7 @@ public class ProductMngDao {
      * @return deleted row's cnt
      */
     public Integer deleteProduct(ProductMngRequest.DeleteProduct deleteProduct) {
-        return sqlSession.update(NAMESPACE + "updateProductDet", deleteProduct);
+        return sqlSession.update(NAMESPACE + "deleteProduct", deleteProduct);
     }
 
     /**
@@ -98,6 +98,6 @@ public class ProductMngDao {
      * @return deleted row's cnt
      */
     public Integer deleteProductDet(ProductMngRequest.DeleteProductDet deleteProductDet) {
-        return sqlSession.update(NAMESPACE + "updateProductDet", deleteProductDet);
+        return sqlSession.update(NAMESPACE + "deleteProductDet", deleteProductDet);
     }
 }
