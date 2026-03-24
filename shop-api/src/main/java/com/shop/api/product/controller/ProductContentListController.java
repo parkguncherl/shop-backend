@@ -104,4 +104,23 @@ public class ProductContentListController {
             return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
         }
     }
+
+    /**
+     * 상품정보목록 조회(페이징)
+     *
+     * @param productInfoListFilter
+     * @return 페이징 동작에 대응하여 조회된 상품정보목록
+     */
+    @AccessLog("상품정보 목록 조회(페이징)")
+    @GetMapping(value = "/productInfoListPaging")
+    @Operation(summary = "상품정보 목록 조회(페이징)")
+    public ApiResponse<PageResponse<ProductContentListResponse.ProductInfo>> selectProductInfoList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductContentListRequestProductInfoListFilter", description = "상품정보목록 조회 필터", in = ParameterIn.QUERY) ProductContentListRequest.ProductInfoListFilter productInfoListFilter,
+            @Parameter(name = "PageRequest", description = "상품정보목록 조회 페이징") PageRequest<ProductContentListRequest.ProductInfoListFilter> pageRequest
+    ) {
+        pageRequest.setFilter(productInfoListFilter);
+        PageResponse<ProductContentListResponse.ProductInfo> response = productContentListService.selectProductInfoList(pageRequest, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
 }

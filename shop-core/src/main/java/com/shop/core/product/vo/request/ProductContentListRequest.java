@@ -45,4 +45,17 @@ public class ProductContentListRequest {
     @Schema(name = "ProductContentListRequestDeleteProductContents", description = "Contents 삭제 dto")
     public static class DeleteProductContents extends Contents {
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductContentListRequestProductInfoListFilter", description = "상품정보 목록 필터")
+    public static class ProductInfoListFilter implements RequestFilter {
+
+        @Schema(description = "상품명")
+        private String prodNm;
+
+
+        @Schema(description = "lastId")
+        private Integer lastId;
+    }
 }

@@ -124,4 +124,15 @@ public class ProductContentListService {
             throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "정보 삭제 중 문제 발생, 점검!");
         }
     }
+
+    /**
+     * 상품관리-상품컨텐츠목록 조회
+     * @param pageRequest
+     * @return 페이징된 ProductContent List
+     */
+    public PageResponse<ProductContentListResponse.ProductInfo> selectProductInfoList(PageRequest<ProductContentListRequest.ProductInfoListFilter> pageRequest, User jwtUser) {
+//        pageRequest.getFilter().setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
+//        pageRequest.getFilter().setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
+        return productContentListDao.selectProductInfoList(pageRequest);
+    }
 }

@@ -61,4 +61,18 @@ public class ProductContentListDao {
     public int deleteProductContents(ProductContentListRequest.DeleteProductContents deleteProductContents) {
         return sqlSession.update(NAMESPACE.concat("deleteProductContents"), deleteProductContents);
     }
+
+    /**
+     * 상품관리-상품정보목록 조회
+     * @param pageRequest
+     * @return 페이징된 ProductContent List
+     */
+    public PageResponse<ProductContentListResponse.ProductInfo> selectProductInfoList(PageRequest<ProductContentListRequest.ProductInfoListFilter> pageRequest) {
+        List<ProductContentListResponse.ProductInfo> prodContentList = sqlSession.selectList(NAMESPACE + "selectProductInfoList", pageRequest);
+        if (prodContentList != null && !prodContentList.isEmpty()) {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount(), prodContentList, prodContentList.size());
+        } else {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
+        }
+    }
 }
