@@ -108,23 +108,20 @@
     <select id="selectContentsProductInfoList" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$ContentsProductInfoListFilter" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ContentProductInfo">
         /* com.shop.mapper.product.productContentList.selectContentsProductInfoList */
         SELECT
-              TPD.ID AS id
+              TP.ID AS id
             , CP.ID AS contentsProductId
             , CP.SEQ AS contentsProductSeq
-            , TP.ID AS prodId
             , TP.PROD_NM AS prodNm
-            , TPD.PRODUCT_DET_SIZE AS productDetSize
-            , TPD.PRODUCT_DET_COLOR AS productDetColor
+            , TP.SELL_AMT AS sellAmt
             , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
-        FROM TB_PRODUCT_DET TPD
-        JOIN TB_PRODUCT TP ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        FROM TB_PRODUCT TP
         JOIN TB_CONTENTS_PRODUCT CP ON CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N'
         <where>
-            AND TPD.DEL_YN = 'N'
+            AND TP.DEL_YN = 'N'
             AND CP.CONTENTS_ID = #{contentsId}
         </where>
-        GROUP BY TPD.ID,TP.ID, CP.ID
-        ORDER BY TPD.ID
+        GROUP BY TP.ID, CP.ID
+        ORDER BY TP.ID
     </select>
 
 </mapper>
