@@ -1,6 +1,7 @@
 package com.shop.core.product.vo.response;
 
 import com.shop.core.entity.Contents;
+import com.shop.core.entity.Product;
 import com.shop.core.entity.ProductDet;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
@@ -29,19 +30,13 @@ public class ProductContentListResponse {
     @Setter
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductContentListResponseProductInfo", description = "상품컨텐츠목록 영역 상품정보", type = "object")
-    public static class ProductInfo extends ProductDet {
-
-        @Schema(description = "상품상세 id")
-        private Integer prodId;
+    public static class ProductInfo extends Product {
 
         @Schema(description = "매장 식별자")
         private Integer partnerId;
 
         @Schema(description = "매장명")
         private String partnerNm;
-
-        @Schema(description = "상품명")
-        private String prodNm;
 
         @Schema(description = "상품구분명")
         private String prodTpNm;

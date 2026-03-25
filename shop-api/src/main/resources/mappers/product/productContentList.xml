@@ -77,34 +77,30 @@
     <select id="selectProductInfoList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ProductInfo">
         /* com.shop.mapper.product.productContentList.selectProductInfoList */
         SELECT
-              TPD.ID AS id
-            , TP.ID AS prodId
+              TP.ID AS id
             , P.ID AS partnerId
             , P.PARTNER_NM AS partnerNm
             , TP.PROD_CD AS prodCd
             , TP.PROD_TP AS prodTp
             , TP.PROD_NM AS prodNm
-            , TPD.PRODUCT_DET_SIZE AS productDetSize
-            , TPD.PRODUCT_DET_COLOR AS productDetColor
             , TP.ORG_AMT AS orgAmt
             , TP.SELL_AMT AS sellAmt
             , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
-        FROM TB_PRODUCT_DET TPD
-        JOIN TB_PRODUCT TP ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        FROM TB_PRODUCT TP
         JOIN TB_PARTNER P ON P.ID = TP.PARTNER_ID AND P.DEL_YN = 'N'
         <where>
-            AND TPD.DEL_YN = 'N'
+            AND TP.DEL_YN = 'N'
             <if test='filter.prodNm != null and !filter.prodNm.equals("")'>
                 AND TP.PROD_NM LIKE CONCAT('%' ,#{filter.prodNm} ,'%')
             </if>
 
             <if test="filter.lastId != null">
                 AND (
-                TPD.ID.ID > #{filter.lastId}
+                TP.ID > #{filter.lastId}
                 )
             </if>
         </where>
-        GROUP BY TPD.ID,TP.ID, P.ID
+        GROUP BY TP.ID, P.ID
         ORDER BY TP.ID
         LIMIT #{pageRowCount} + 1;
     </select>
