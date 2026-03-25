@@ -115,6 +115,7 @@
             , CP.SEQ AS contentsProductSeq
             , TP.PROD_NM AS prodNm
             , TP.SELL_AMT AS sellAmt
+            , TP.REP_FILE_ID AS repFileId
             , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
         FROM TB_PRODUCT TP
         JOIN TB_CONTENTS_PRODUCT CP ON CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N'

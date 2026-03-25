@@ -146,6 +146,9 @@ public class ProductContentListService {
     public void insertContentsProductList(List<ProductContentListRequest.InsertContentsProduct> insertContentsProductList, User jwtUser) {
         int insertedRowCnt = 0;
         for (ProductContentListRequest.InsertContentsProduct insertContentsProduct : insertContentsProductList) {
+            insertContentsProduct.setCreUser(jwtUser.getLoginId());
+            insertContentsProduct.setUpdUser(jwtUser.getLoginId());
+
             insertedRowCnt += productContentListDao.insertContentsProduct(insertContentsProduct);
         }
         if (insertedRowCnt != insertContentsProductList.size()) {
