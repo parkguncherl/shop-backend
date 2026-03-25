@@ -141,4 +141,20 @@ public class ProductContentListController {
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 
+    /**
+     * 신규 연결상품 데이터 추가
+     *
+     * @param insertContentsProductList
+     * @return
+     */
+    @Operation(summary = "신규 연결상품 데이터 추가", description = "신규 연결상품 데이터를 추가합니다.")
+    @PutMapping("/insertContentsProductList")
+    public ApiResponse<Void> insertContentsProductList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody List<ProductContentListRequest.InsertContentsProduct> insertContentsProductList
+    ) {
+        productContentListService.insertContentsProductList(insertContentsProductList, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
 }

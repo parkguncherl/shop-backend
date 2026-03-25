@@ -2,6 +2,7 @@ package com.shop.core.product.vo.request;
 
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.entity.Contents;
+import com.shop.core.entity.ContentsProduct;
 import com.shop.core.interfaces.RequestFilter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
@@ -54,6 +55,9 @@ public class ProductContentListRequest {
         @Schema(description = "상품명")
         private String prodNm;
 
+        @Schema(description = "컨텐츠 id(해당 id에 대응되지 아니하는 (혹은 애초에 컨텐츠와 관계가 부재한)행을 조회하기 위한 인자(컨텐츠 id에 대응되는 prod 는 이미 추가되었다 여기어 마땅하므로)")
+        private Integer contentsId;
+
 
         @Schema(description = "lastId")
         private Integer lastId;
@@ -61,11 +65,17 @@ public class ProductContentListRequest {
 
     @Getter
     @Setter
-    @Schema(name = "ProductContentListRequestContentsProductInfoListFilter", description = "상품정보 목록 필터")
+    @Schema(name = "ProductContentListRequestContentsProductInfoListFilter", description = "연결상품정보 목록 필터")
     public static class ContentsProductInfoListFilter implements RequestFilter {
 
         @Schema(description = "컨텐츠 id")
         private Integer contentsId;
 
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductContentListRequestInsertContentsProduct", description = "연결상품 추가 요청")
+    public static class InsertContentsProduct extends ContentsProduct {
     }
 }

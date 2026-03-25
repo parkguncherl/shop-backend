@@ -88,8 +88,10 @@
             , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
         FROM TB_PRODUCT TP
         JOIN TB_PARTNER P ON P.ID = TP.PARTNER_ID AND P.DEL_YN = 'N'
+        LEFT JOIN TB_CONTENTS_PRODUCT CP ON CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N'
         <where>
             AND TP.DEL_YN = 'N'
+            AND (CP.CONTENTS_ID ISNULL OR CP.CONTENTS_ID != #{filter.contentsId})
             <if test='filter.prodNm != null and !filter.prodNm.equals("")'>
                 AND TP.PROD_NM LIKE CONCAT('%' ,#{filter.prodNm} ,'%')
             </if>
@@ -121,7 +123,24 @@
             AND CP.CONTENTS_ID = #{contentsId}
         </where>
         GROUP BY TP.ID, CP.ID
-        ORDER BY TP.ID
+        ORDER BY CP.SEQ
     </select>
+
+    <insert id="insertContentsProduct" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$InsertContentsProduct">
+        /* com.shop.mapper.product.productContentList.insertContentsProduct */
+        INSERT INTO TB_CONTENTS_PRODUCT (
+            SEQ ,
+            CONTENTS_ID ,
+            PRODUCT_ID,
+            CRE_USER,
+            UPD_USER
+        ) VALUES (
+            get_next_contents_product_seq(#{contentsId}) ,
+            #{contentsId} ,
+            #{productId} ,
+            #{creUser} ,
+            #{updUser}
+        )
+    </insert>
 
 </mapper>

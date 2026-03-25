@@ -84,4 +84,13 @@ public class ProductContentListDao {
     public List<ProductContentListResponse.ContentProductInfo> selectContentsProductInfoList(ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter) {
         return sqlSession.selectList(NAMESPACE + "selectContentsProductInfoList", contentsProductInfoListFilter);
     }
+
+    /**
+     * 신규 연결상품 데이터 추가
+     * @param insertContentsProduct
+     * @return 추가된 행의 수
+     */
+    public int insertContentsProduct(ProductContentListRequest.InsertContentsProduct insertContentsProduct) {
+        return sqlSession.insert(NAMESPACE.concat("insertContentsProduct"), insertContentsProduct);
+    }
 }

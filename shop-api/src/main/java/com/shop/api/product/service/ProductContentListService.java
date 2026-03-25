@@ -2,24 +2,17 @@ package com.shop.api.product.service;
 
 import com.shop.api.biz.system.service.UserService;
 import com.shop.api.common.service.CommonService;
-import com.shop.api.utils.CommUtil;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.entity.FileDet;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
-import com.shop.core.enums.FilePathType;
 import com.shop.core.enums.GlobalConst;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.core.product.dao.ProductContentListDao;
-import com.shop.core.product.dao.ProductContentsDao;
-import com.shop.core.product.dao.ProductMngDao;
 import com.shop.core.product.vo.request.ProductContentListRequest;
-import com.shop.core.product.vo.request.ProductContentsRequest;
-import com.shop.core.product.vo.request.ProductMngRequest;
 import com.shop.core.product.vo.response.ProductContentListResponse;
-import com.shop.core.product.vo.response.ProductMngResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <pre>
@@ -143,5 +135,21 @@ public class ProductContentListService {
      */
     public List<ProductContentListResponse.ContentProductInfo> selectContentsProductInfoList(ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter, User jwtUser) {
         return productContentListDao.selectContentsProductInfoList(contentsProductInfoListFilter);
+    }
+
+    /**
+     * 신규 연결상품 데이터 추가
+     * @param insertContentsProductList
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void insertContentsProductList(List<ProductContentListRequest.InsertContentsProduct> insertContentsProductList, User jwtUser) {
+        int insertedRowCnt = 0;
+        for (ProductContentListRequest.InsertContentsProduct insertContentsProduct : insertContentsProductList) {
+            insertedRowCnt += productContentListDao.insertContentsProduct(insertContentsProduct);
+        }
+        if (insertedRowCnt != insertContentsProductList.size()) {
+            throw new CustomRuntimeException("추가하고자 하는 연결상품 일부의 추가 동작이 누락 혹은 정상적으로 이루어지지 아니함");
+        }
     }
 }
