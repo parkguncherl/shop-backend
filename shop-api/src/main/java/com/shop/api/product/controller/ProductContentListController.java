@@ -123,4 +123,22 @@ public class ProductContentListController {
         PageResponse<ProductContentListResponse.ProductInfo> response = productContentListService.selectProductInfoList(pageRequest, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
+
+    /**
+     * 상품관리-연결상품정보 목록 조회
+     *
+     * @param contentsProductInfoListFilter
+     * @return 연결상품정보 목록
+     */
+    @AccessLog("연결상품정보 목록")
+    @GetMapping(value = "/contentsProductInfoList")
+    @Operation(summary = "연결상품정보 목록")
+    public ApiResponse<List<ProductContentListResponse.ContentProductInfo>> selectContentsProductInfoList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductContentListRequestContentsProductInfoListFilter", description = "연결상품정보목록 조회 필터", in = ParameterIn.QUERY) ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter
+    ) {
+        List<ProductContentListResponse.ContentProductInfo> response = productContentListService.selectContentsProductInfoList(contentsProductInfoListFilter, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
 }

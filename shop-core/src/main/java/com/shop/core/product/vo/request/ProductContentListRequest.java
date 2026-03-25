@@ -58,4 +58,14 @@ public class ProductContentListRequest {
         @Schema(description = "lastId")
         private Integer lastId;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductContentListRequestContentsProductInfoListFilter", description = "상품정보 목록 필터")
+    public static class ContentsProductInfoListFilter implements RequestFilter {
+
+        @Schema(description = "컨텐츠 id")
+        private Integer contentsId;
+
+    }
 }

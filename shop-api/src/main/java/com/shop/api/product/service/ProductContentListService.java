@@ -135,4 +135,13 @@ public class ProductContentListService {
 //        pageRequest.getFilter().setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
         return productContentListDao.selectProductInfoList(pageRequest);
     }
+
+    /**
+     * 상품관리-연결상품정보 목록 조회
+     * @param contentsProductInfoListFilter
+     * @return ContentProductInfo List
+     */
+    public List<ProductContentListResponse.ContentProductInfo> selectContentsProductInfoList(ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter, User jwtUser) {
+        return productContentListDao.selectContentsProductInfoList(contentsProductInfoListFilter);
+    }
 }

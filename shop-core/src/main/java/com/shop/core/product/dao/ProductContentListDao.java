@@ -75,4 +75,13 @@ public class ProductContentListDao {
             return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
         }
     }
+
+    /**
+     * 상품관리-연결상품정보 목록 조회
+     * @param contentsProductInfoListFilter
+     * @return ContentProductInfo List
+     */
+    public List<ProductContentListResponse.ContentProductInfo> selectContentsProductInfoList(ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter) {
+        return sqlSession.selectList(NAMESPACE + "selectContentsProductInfoList", contentsProductInfoListFilter);
+    }
 }
