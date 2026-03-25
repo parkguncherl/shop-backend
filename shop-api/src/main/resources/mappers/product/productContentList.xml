@@ -78,31 +78,30 @@
         /* com.shop.mapper.product.productContentList.selectProductInfoList */
         SELECT
               TP.ID AS id
-            , P.ID AS partnerId
-            , P.PARTNER_NM AS partnerNm
             , TP.PROD_CD AS prodCd
             , TP.PROD_TP AS prodTp
             , TP.PROD_NM AS prodNm
             , TP.ORG_AMT AS orgAmt
             , TP.SELL_AMT AS sellAmt
             , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
+            , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
+            , TP.DISCOUNT_RATE AS discountRate
+            , (SELECT COUNT(1) FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N') AS contentsProductCnt
         FROM TB_PRODUCT TP
-        JOIN TB_PARTNER P ON P.ID = TP.PARTNER_ID AND P.DEL_YN = 'N'
-        LEFT JOIN TB_CONTENTS_PRODUCT CP ON CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N'
         <where>
             AND TP.DEL_YN = 'N'
-            AND (CP.CONTENTS_ID ISNULL OR CP.CONTENTS_ID != #{filter.contentsId})
+            AND NOT EXISTS (SELECT 1 FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.CONTENTS_ID = #{filter.contentsId})
             <if test='filter.prodNm != null and !filter.prodNm.equals("")'>
                 AND TP.PROD_NM LIKE CONCAT('%' ,#{filter.prodNm} ,'%')
             </if>
-
             <if test="filter.lastId != null">
                 AND (
                 TP.ID > #{filter.lastId}
                 )
             </if>
         </where>
-        GROUP BY TP.ID, P.ID
         ORDER BY TP.ID
         LIMIT #{pageRowCount} + 1;
     </select>
@@ -116,7 +115,11 @@
             , TP.PROD_NM AS prodNm
             , TP.SELL_AMT AS sellAmt
             , TP.REP_FILE_ID AS repFileId
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
             , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
+            , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
+            , TP.DISCOUNT_RATE AS discountRate
         FROM TB_PRODUCT TP
         JOIN TB_CONTENTS_PRODUCT CP ON CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N'
         <where>

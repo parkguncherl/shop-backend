@@ -42,7 +42,7 @@ public class ProductDet extends BaseEntity implements Serializable {
     private String productDetColor;
 
     @Schema(description = "스큐 할인율")
-    private Integer skuDiscountRate;
+    private BigDecimal skuDiscountRate;
 
     @Schema(description = "file id")
     private Integer fileId;

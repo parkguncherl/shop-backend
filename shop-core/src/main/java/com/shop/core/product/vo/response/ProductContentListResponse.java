@@ -47,6 +47,20 @@ public class ProductContentListResponse {
         @Schema(description = "판매가")
         private BigDecimal sellAmt;
 
+        @Schema(description = "상품소분류명")
+        private String prodDetTpNm;
+
+        @Schema(description = "컬러등")
+        private String prodColors;
+
+        @Schema(description = "사이즈들")
+        private String prodSizes;
+
+        @Schema(description = "할인율")
+        private BigDecimal discountRate;
+
+        @Schema(description = "등록건수")
+        private Integer contentsProductCnt;
     }
 
     @Getter
@@ -61,7 +75,17 @@ public class ProductContentListResponse {
         @Schema(description = "연결상품 정보 순서")
         private Integer contentsProductSeq;
 
+        @Schema(description = "상품분류명")
+        private String prodTpNm;
+
         @Schema(description = "상품소분류명")
         private String prodDetTpNm;
+
+        @Schema(description = "컬러등")
+        private String prodColors;
+
+        @Schema(description = "사이즈들")
+        private String prodSizes;
+
     }
 }
