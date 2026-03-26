@@ -177,38 +177,10 @@ public class ProductContentListService {
         List<ProductContentListResponse.ContentProductInfo> contentsProductInfoList = productContentListDao.selectContentsProductInfoList(contentsProductInfoListFilter);
         List<ProductContentListRequest.UpdateContentsProduct> updateContentsProductDtoList = new ArrayList<>();
 
-        if (updateContentsProductSeq.getFromSeq() > updateContentsProductSeq.getToSeq()) {
+        if (updateContentsProductSeq.getFromSeq() < updateContentsProductSeq.getToSeq()) {
             // 하단 행으로의 이동
 
-            // 조회된 배열 요소 중 fromSeq 이하 toSeq 이상에 대응하는 seq 를 갖는 요소만을 필터링
-            List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
-                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getToSeq() || contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getFromSeq()
-            )).toList();
-
-            updateContentsProductDtoList = contentsProductInfoListFromSeqToDestSeq.stream().map((contentProductInfo) -> {
-                ProductContentListRequest.UpdateContentsProduct updateContentsProductDto = new ProductContentListRequest.UpdateContentsProduct();
-
-                if (Objects.equals(contentProductInfo.getContentsProductSeq(), updateContentsProductSeq.getFromSeq())) {
-                    // 이동하고자 하는 대상 요소에 대응하는 요소
-                    updateContentsProductDto.setId(contentProductInfo.getId()); // 수정에 필요한 식별자 할당
-                    updateContentsProductDto.setSeq(updateContentsProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
-
-                    return updateContentsProductDto;
-                } else {
-                    // 이외에는 -1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 위로 이동)
-                    updateContentsProductDto.setId(contentProductInfo.getId()); // 수정에 필요한 식별자 할당
-                    updateContentsProductDto.setSeq(updateContentsProductDto.getSeq() - 1); // 이동하고자 하는 seq(기존 seq - 1) 할당
-
-                    return updateContentsProductDto;
-                }
-            }).toList();
-
-            //contentsProductInfoList.subList()
-
-        } else if (updateContentsProductSeq.getToSeq() > updateContentsProductSeq.getFromSeq()) {
-            // 상단 행으로의 이동
-
-            // 조회된 배열 요소 중 toSeq 이하 fromSeq 이상에 대응하는 seq 를 갖는 요소만을 필터링
+            // 조회된 배열 요소 중 fromSeq 이상 toSeq 이하에 대응하는 seq 를 갖는 요소만을 필터링
             List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
                     contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getFromSeq() || contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getToSeq()
             )).toList();
@@ -218,14 +190,42 @@ public class ProductContentListService {
 
                 if (Objects.equals(contentProductInfo.getContentsProductSeq(), updateContentsProductSeq.getFromSeq())) {
                     // 이동하고자 하는 대상 요소에 대응하는 요소
-                    updateContentsProductDto.setId(contentProductInfo.getId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(updateContentsProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
+
+                    return updateContentsProductDto;
+                } else {
+                    // 이외에는 -1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 위로 이동)
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(contentProductInfo.getContentsProductSeq() - 1); // 이동하고자 하는 seq(기존 seq - 1) 할당
+
+                    return updateContentsProductDto;
+                }
+            }).toList();
+
+            //contentsProductInfoList.subList()
+
+        } else if (updateContentsProductSeq.getToSeq() < updateContentsProductSeq.getFromSeq()) {
+            // 상단 행으로의 이동
+
+            // 조회된 배열 요소 중 toSeq 이하 fromSeq 이상에 대응하는 seq 를 갖는 요소만을 필터링
+            List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
+                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getToSeq() || contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getFromSeq()
+            )).toList();
+
+            updateContentsProductDtoList = contentsProductInfoListFromSeqToDestSeq.stream().map((contentProductInfo) -> {
+                ProductContentListRequest.UpdateContentsProduct updateContentsProductDto = new ProductContentListRequest.UpdateContentsProduct();
+
+                if (Objects.equals(contentProductInfo.getContentsProductSeq(), updateContentsProductSeq.getFromSeq())) {
+                    // 이동하고자 하는 대상 요소에 대응하는 요소
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
                     updateContentsProductDto.setSeq(updateContentsProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
 
                     return updateContentsProductDto;
                 } else {
                     // 이외에는 +1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 아래로 이동)
-                    updateContentsProductDto.setId(contentProductInfo.getId()); // 수정에 필요한 식별자 할당
-                    updateContentsProductDto.setSeq(updateContentsProductDto.getSeq() + 1); // 이동하고자 하는 seq(기존 seq + 1) 할당
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(contentProductInfo.getContentsProductSeq() + 1); // 이동하고자 하는 seq(기존 seq + 1) 할당
 
                     return updateContentsProductDto;
                 }

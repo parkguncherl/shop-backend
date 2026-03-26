@@ -157,4 +157,20 @@ public class ProductContentListController {
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 
+    /**
+     * 전달된 컨텐츠 식별자(contentsId) 에 대응하는 contentsProduct 의 seq 변환
+     *
+     * @param updateContentsProductSeq
+     * @return
+     */
+    @Operation(summary = "contentsProduct 의 seq 변환", description = "contentsProduct 의 seq 를 주어진 인자를 통해 변환합니다.")
+    @PatchMapping("/updateContentsProductSeq")
+    public ApiResponse<Void> updateContentsProductSeq(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductContentListRequest.UpdateContentsProductSeq updateContentsProductSeq
+    ) {
+        productContentListService.updateContentsProductSeq(updateContentsProductSeq, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
 }
