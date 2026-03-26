@@ -182,7 +182,7 @@ public class ProductContentListService {
 
             // 조회된 배열 요소 중 fromSeq 이상 toSeq 이하에 대응하는 seq 를 갖는 요소만을 필터링
             List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
-                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getFromSeq() || contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getToSeq()
+                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getFromSeq() && contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getToSeq()
             )).toList();
 
             updateContentsProductDtoList = contentsProductInfoListFromSeqToDestSeq.stream().map((contentProductInfo) -> {
@@ -208,9 +208,9 @@ public class ProductContentListService {
         } else if (updateContentsProductSeq.getToSeq() < updateContentsProductSeq.getFromSeq()) {
             // 상단 행으로의 이동
 
-            // 조회된 배열 요소 중 toSeq 이하 fromSeq 이상에 대응하는 seq 를 갖는 요소만을 필터링
+            // 조회된 배열 요소 중 fromSeq 이하 toSeq 이상에 대응하는 seq 를 갖는 요소만을 필터링
             List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
-                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getToSeq() || contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getFromSeq()
+                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getToSeq() && contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getFromSeq()
             )).toList();
 
             updateContentsProductDtoList = contentsProductInfoListFromSeqToDestSeq.stream().map((contentProductInfo) -> {
