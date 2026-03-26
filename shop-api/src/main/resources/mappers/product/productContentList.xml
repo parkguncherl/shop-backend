@@ -102,7 +102,7 @@
                 )
             </if>
         </where>
-        ORDER BY TP.ID
+        ORDER BY TP.PROD_NM
         LIMIT #{pageRowCount} + 1;
     </select>
 
