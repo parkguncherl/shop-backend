@@ -147,4 +147,22 @@
         )
     </insert>
 
+    <update id="updateContentsProduct" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$UpdateContentsProduct">
+        /* com.shop.mapper.product.productContentList.updateContentsProduct */
+        UPDATE TB_CONTENTS_PRODUCT
+        SET
+        <if test='seq != null'>
+            SEQ = #{seq},
+        </if>
+        <if test='contentsId != null'>
+            CONTENTS_ID = #{contentsId},
+        </if>
+        <if test='productId != null'>
+            PRODUCT_ID =  #{productId},
+        </if>
+            UPD_USER = #{updUser},
+            UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
 </mapper>

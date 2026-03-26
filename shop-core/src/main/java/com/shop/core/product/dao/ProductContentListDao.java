@@ -3,6 +3,7 @@ package com.shop.core.product.dao;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.entity.Contents;
+import com.shop.core.entity.ContentsProduct;
 import com.shop.core.product.vo.request.ProductContentListRequest;
 import com.shop.core.product.vo.response.ProductContentListResponse;
 import lombok.RequiredArgsConstructor;
@@ -92,5 +93,14 @@ public class ProductContentListDao {
      */
     public int insertContentsProduct(ProductContentListRequest.InsertContentsProduct insertContentsProduct) {
         return sqlSession.insert(NAMESPACE.concat("insertContentsProduct"), insertContentsProduct);
+    }
+
+    /**
+     * 기존 연결상품 데이터 수정
+     * @param updateContentsProduct
+     * @return 수정된 행의 수
+     */
+    public int updateContentsProduct(ProductContentListRequest.UpdateContentsProduct updateContentsProduct) {
+        return sqlSession.update(NAMESPACE.concat("updateContentsProduct"), updateContentsProduct);
     }
 }
