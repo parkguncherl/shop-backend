@@ -78,4 +78,25 @@ public class ProductContentListRequest {
     @Schema(name = "ProductContentListRequestInsertContentsProduct", description = "연결상품 추가 요청")
     public static class InsertContentsProduct extends ContentsProduct {
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductContentListRequestUpdateContentsProduct", description = "연결상품 수정 요청")
+    public static class UpdateContentsProduct extends ContentsProduct {
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductContentListRequestUpdateContentsProductSeq", description = "연결상품 seq 수정 요청")
+    public static class UpdateContentsProductSeq {
+
+        @Schema(description = "대상 요소의 기존 seq")
+        private Integer fromSeq;
+
+        @Schema(description = "대상 요소가 지망하는 seq")
+        private Integer toSeq;
+
+        @Schema(description = "컨텐츠 id")
+        private Integer contentsId;
+    }
 }

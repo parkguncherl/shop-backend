@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -153,6 +155,91 @@ public class ProductContentListService {
         }
         if (insertedRowCnt != insertContentsProductList.size()) {
             throw new CustomRuntimeException("추가하고자 하는 연결상품 일부의 추가 동작이 누락 혹은 정상적으로 이루어지지 아니함");
+        }
+    }
+
+    /**
+     * 전달된 컨텐츠 식별자(contentsId) 에 대응하는 contentsProduct 의 seq 변환, 기존 from seq 에 대응하는 요소를 to seq 로 이동,
+     * 또한 이들을 포함한 중간 요소들의 seq를 from to seq 의 대소비교 결과에 따라 +-1씩 조정
+     *
+     * @param updateContentsProductSeq
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void updateContentsProductSeq(ProductContentListRequest.UpdateContentsProductSeq updateContentsProductSeq, User jwtUser) {
+        if (updateContentsProductSeq.getFromSeq() == null ||  updateContentsProductSeq.getToSeq() == null || updateContentsProductSeq.getFromSeq().equals(updateContentsProductSeq.getToSeq())) {
+            throw new IllegalArgumentException("from seq, to Seq 값 중 일부가 부재함 혹은 이들이 고유하여 요청 처리에 사용할 수 없음");
+        }
+
+        ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter = new ProductContentListRequest.ContentsProductInfoListFilter();
+        contentsProductInfoListFilter.setContentsId(updateContentsProductSeq.getContentsId());
+
+        List<ProductContentListResponse.ContentProductInfo> contentsProductInfoList = productContentListDao.selectContentsProductInfoList(contentsProductInfoListFilter);
+        List<ProductContentListRequest.UpdateContentsProduct> updateContentsProductDtoList = new ArrayList<>();
+
+        if (updateContentsProductSeq.getFromSeq() < updateContentsProductSeq.getToSeq()) {
+            // 하단 행으로의 이동
+
+            // 조회된 배열 요소 중 fromSeq 이상 toSeq 이하에 대응하는 seq 를 갖는 요소만을 필터링
+            List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
+                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getFromSeq() && contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getToSeq()
+            )).toList();
+
+            updateContentsProductDtoList = contentsProductInfoListFromSeqToDestSeq.stream().map((contentProductInfo) -> {
+                ProductContentListRequest.UpdateContentsProduct updateContentsProductDto = new ProductContentListRequest.UpdateContentsProduct();
+
+                if (Objects.equals(contentProductInfo.getContentsProductSeq(), updateContentsProductSeq.getFromSeq())) {
+                    // 이동하고자 하는 대상 요소에 대응하는 요소
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(updateContentsProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
+
+                    return updateContentsProductDto;
+                } else {
+                    // 이외에는 -1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 위로 이동)
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(contentProductInfo.getContentsProductSeq() - 1); // 이동하고자 하는 seq(기존 seq - 1) 할당
+
+                    return updateContentsProductDto;
+                }
+            }).toList();
+
+            //contentsProductInfoList.subList()
+
+        } else if (updateContentsProductSeq.getToSeq() < updateContentsProductSeq.getFromSeq()) {
+            // 상단 행으로의 이동
+
+            // 조회된 배열 요소 중 fromSeq 이하 toSeq 이상에 대응하는 seq 를 갖는 요소만을 필터링
+            List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
+                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getToSeq() && contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getFromSeq()
+            )).toList();
+
+            updateContentsProductDtoList = contentsProductInfoListFromSeqToDestSeq.stream().map((contentProductInfo) -> {
+                ProductContentListRequest.UpdateContentsProduct updateContentsProductDto = new ProductContentListRequest.UpdateContentsProduct();
+
+                if (Objects.equals(contentProductInfo.getContentsProductSeq(), updateContentsProductSeq.getFromSeq())) {
+                    // 이동하고자 하는 대상 요소에 대응하는 요소
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(updateContentsProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
+
+                    return updateContentsProductDto;
+                } else {
+                    // 이외에는 +1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 아래로 이동)
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(contentProductInfo.getContentsProductSeq() + 1); // 이동하고자 하는 seq(기존 seq + 1) 할당
+
+                    return updateContentsProductDto;
+                }
+            }).toList();
+        }
+        int insertedRowCnt = 0;
+        for (ProductContentListRequest.UpdateContentsProduct updateContentsProduct : updateContentsProductDtoList) {
+            updateContentsProduct.setCreUser(jwtUser.getLoginId());
+            updateContentsProduct.setUpdUser(jwtUser.getLoginId());
+
+            insertedRowCnt += productContentListDao.updateContentsProduct(updateContentsProduct);
+        }
+        if (insertedRowCnt != updateContentsProductDtoList.size()) {
+            throw new CustomRuntimeException("순서를 수정하고자 하는 연결상품 일부의 수정 동작이 누락 혹은 정상적으로 이루어지지 아니함");
         }
     }
 }
