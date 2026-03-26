@@ -9,6 +9,7 @@
             , B.MENU_NM AS menuNm
          FROM TB_FAVORITES A
          JOIN TB_MENU B ON A.MENU_URI = B.MENU_URI AND B.DEL_YN ='N'
+         JOIN TB_MENU_AUTH C ON B.MENU_CD = C.MENU_CD AND C.AUTH_CD = A.AUTH_CD
         WHERE A.USER_ID = #{id}
           AND A.AUTH_CD = #{authCd}
         <if test='menuUri != null  and !menuUri.equals("")'>
