@@ -1,14 +1,10 @@
 package com.shop.api.common.service;
 
 import com.shop.api.biz.system.service.UserService;
-import com.shop.api.properties.GlobalProperties;
 import com.shop.api.utils.ByteArrayMultipartFile;
 import com.shop.core.biz.common.dao.FileDao;
-import com.shop.core.biz.common.dao.GridDao;
-import com.shop.core.biz.common.dao.SmsDao;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.response.CommonResponse;
-import com.shop.core.biz.system.dao.UserDao;
 import com.shop.core.entity.*;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.enums.FilePathType;
@@ -16,6 +12,7 @@ import com.shop.core.enums.GlobalConst;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.api.utils.CommUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +28,11 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -40,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,15 +58,11 @@ import java.util.UUID;
 public class CommonService {
 
     private final UserService userService;
-    //private final SmsDao smsDao;
     private final FileDao fileDao;
-    //private final UserDao userDao;
-    //private final GridDao gridDao;
     private final FileService fileService;
-
-    //private final GlobalProperties globalProperties;
     private final S3Presigner presigner;
     private final S3Client s3Client;
+    private record ConvertResult(byte[] bytes, String contentType, String extension) {}
 
 
     public CommonService(
@@ -79,11 +77,7 @@ public class CommonService {
             @Qualifier("buildS3ClientWithR2Specific") S3Client s3Client // 주입 과정에서의 불완전성을 제거하기 위해 어노테이션 기반 주입 대신 다음과 같은 명시적 생성자 선언
     ) {
         this.userService = userService;
-        //this.smsDao = smsDao;
         this.fileDao = fileDao;
-        //this.userDao = userDao;
-        //this.gridDao = gridDao;
-        //this.globalProperties = globalProperties;
         this.fileService = fileService;
         this.presigner = presigner;
         this.s3Client = s3Client;
@@ -115,19 +109,54 @@ public class CommonService {
         return fileDao.selectFileList(fileId);
     }
 
-    /**
-     * 파일_등록
-     *
-     * @param file
-     * @return
-     */
-    public Integer insertFile(FileMng file) {
-        return fileDao.insertFile(file);
+
+    /* webpImageUpload */
+    public FileDet webpImageUpload(MultipartFile file, String key, String fileType, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
+
+        if (file.getContentType() == null || !file.getContentType().startsWith("image")) {
+            throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
+        }
+
+
+        ConvertResult result = this.optimizeAndConvertToWebp(file);
+        String finalKey = key.replaceAll("\\.[^.]+$", "." + result.extension());
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(BUKET_NAME)
+                .key(finalKey)
+                .contentType(result.contentType())
+                .build();
+
+        s3Client.putObject(putObjectRequest,RequestBody.fromBytes(result.bytes()));
+
+        // 파일정보가 있는경우는 생략한다.
+        if(fileId == null || fileId.compareTo(0) == 0) {
+            FileMng fileMng = new FileMng();
+            fileMng.setFileType(fileType);
+            fileMng.setCreUser(jwtUser.getLoginId());
+            fileMng.setUpdUser(jwtUser.getLoginId());
+            fileDao.insertFile(fileMng);
+            fileId = fileMng.getId();
+        }
+
+        FileDet fileDet = new FileDet();
+        fileDet.setFileId(fileId);
+        fileDet.setFileSeq(fileSeq);
+        fileDet.setBucketName(BUKET_NAME);
+        fileDet.setFileNm(finalKey);
+        fileDet.setSysFileNm(key);
+        fileDet.setFileSize(new BigDecimal(file.getSize()).intValue());
+        fileDet.setFileExt(CommUtil.getFileExtension(finalKey));
+        fileDet.setCreUser(jwtUser.getLoginId());
+        fileDet.setUpdUser(jwtUser.getLoginId());
+        fileDao.insertFileDet(fileDet);
+        //String url = this.getFileUrl(BUKET_NAME, key);
+        return fileDet;
+
     }
 
-
-    /* file upload */
-    public FileDet uploadFile(MultipartFile file, String key, String originalFileName, String fileType, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
+    /* 일반 file upload */
+    public FileDet uploadDocFile(MultipartFile file, String key, String originalFileName, String fileType, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(BUKET_NAME)
@@ -375,11 +404,26 @@ public class CommonService {
         return fileDowns;
     }
 
+    public FileDet fileImageUploadComm(User jwtUser, MultipartFile file, Integer fileId, Integer fileSeq) throws IOException {
+        String originalFileName = file.getOriginalFilename();
+        String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+
+        // 이미지는 반드시 압축
+        if(file.getContentType().startsWith("image")) {
+            return this.webpImageUpload(file, sysFileNm, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
+        } else {
+            throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
+        }
+
+    }
+
+
     public FileDet fileUploadComm(User jwtUser, MultipartFile file, Integer fileId, Integer fileSeq) throws IOException {
         String originalFileName = file.getOriginalFilename();
         String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
-        return this.uploadFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
+        return this.uploadDocFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
     }
+
 
     /**
      * BufferedImage 리사이징 (고품질)
@@ -582,5 +626,56 @@ public class CommonService {
             return updatedRowsCnt;
         }
     }
+
+    private ConvertResult optimizeAndConvertToWebp(MultipartFile file) throws IOException {
+
+        // 1️⃣ 이미지 여부 체크
+        if (file.getContentType() == null || !file.getContentType().startsWith("image")) {
+            return new ConvertResult(file.getBytes(), file.getContentType(), getExtension(file.getOriginalFilename()));
+        }
+
+        // 2️⃣ 리사이즈 + 압축
+        BufferedImage resizedImage = Thumbnails.of(file.getInputStream())
+                .width(1000)
+                .outputQuality(0.75)
+                .asBufferedImage();
+
+        // 3️⃣ WebP writer 확인
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/webp");
+
+        if (!writers.hasNext()) {
+            // WebP writer 없으면 JPG fallback
+            ByteArrayOutputStream fallback = new ByteArrayOutputStream();
+            ImageIO.write(resizedImage, "jpg", fallback);
+            return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
+        }
+
+        // 4️⃣ WebP 변환
+        ImageWriter writer = writers.next();
+        ByteArrayOutputStream webpStream = new ByteArrayOutputStream();
+
+        try (ImageOutputStream ios = ImageIO.createImageOutputStream(webpStream)) {
+            writer.setOutput(ios);
+
+            ImageWriteParam param = writer.getDefaultWriteParam();
+            if (param.canWriteCompressed()) {
+                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                param.setCompressionType("Lossy");
+                param.setCompressionQuality(0.8f);
+            }
+
+            writer.write(null, new IIOImage(resizedImage, null, null), param);
+        } finally {
+            writer.dispose();
+        }
+
+        return new ConvertResult(webpStream.toByteArray(), "image/webp", "webp");
+    }
+
+    private String getExtension(String filename) {
+        if (filename == null || !filename.contains(".")) return "bin";
+        return filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+    }
+
 }
 

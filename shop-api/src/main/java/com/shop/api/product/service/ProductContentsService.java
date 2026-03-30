@@ -55,7 +55,7 @@ public class ProductContentsService {
             String originalFileName = file.getOriginalFilename();
             String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
 
-            FileDet fileDet = commonService.uploadFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
+            FileDet fileDet = commonService.webpImageUpload(file, sysFileNm, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
 
             if (fileId == 0) {
                 fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
