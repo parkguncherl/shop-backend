@@ -61,18 +61,31 @@ public class ProductMngService {
         }
 
         /** id 존재 여부에 따라 상품정보 및 상세정보 추가 혹은 상세정보 추가로 분기 */
-        if (insertProductInfo.getId() == null) {
-            Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
+        // todo 마이그레이션 이후 더 이상 무의미하다 여겨질 시 제거
+//        if (insertProductInfo.getId() == null) {
+//            Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
+//
+//            insertProductInfo.setPartnerId(partnerId);
+//
+//            insertProductInfo.setCreUser(jwtUser.getLoginId());
+//            insertProductInfo.setUpdUser(jwtUser.getLoginId());
+//            Integer insertedProductCnt = productMngDao.insertProduct(insertProductInfo);
+//
+//            if (insertedProductCnt != 1) {
+//                throw new CustomRuntimeException("상품정보를 정상적으로 추가하지 못함");
+//            }
+//        }
 
-            insertProductInfo.setPartnerId(partnerId);
+        Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
 
-            insertProductInfo.setCreUser(jwtUser.getLoginId());
-            insertProductInfo.setUpdUser(jwtUser.getLoginId());
-            Integer insertedProductCnt = productMngDao.insertProduct(insertProductInfo);
+        insertProductInfo.setPartnerId(partnerId);
 
-            if (insertedProductCnt != 1) {
-                throw new CustomRuntimeException("상품정보를 정상적으로 추가하지 못함");
-            }
+        insertProductInfo.setCreUser(jwtUser.getLoginId());
+        insertProductInfo.setUpdUser(jwtUser.getLoginId());
+        Integer insertedProductCnt = productMngDao.insertProduct(insertProductInfo);
+
+        if (insertedProductCnt != 1) {
+            throw new CustomRuntimeException("상품정보를 정상적으로 추가하지 못함");
         }
 
         insertProductInfo.getProductDet().setProductId(insertProductInfo.getId()); // prod Id 할당(요청 시점에 전달된 값 혹은 insert 시점에 할당되어진 값)
@@ -84,6 +97,20 @@ public class ProductMngService {
         if (insertedProductDetCnt != 1) {
             throw new CustomRuntimeException("상품상세정보를 정상적으로 추가하지 못함");
         }
+    }
+
+    /**
+     * 상품관리-상품상세정보 추가 관련 비즈니스 동작 처리
+     * @param insertProductDet
+     * @return
+     */
+    public Integer insertProductDet(ProductMngRequest.InsertProductDet insertProductDet, User jwtUser) {
+        if (insertProductDet.getProductId() == null) {
+            throw new IllegalArgumentException("연관 상품정보 식별자를 찾을 수 없음");
+        }
+        insertProductDet.setCreUser(jwtUser.getLoginId());
+        insertProductDet.setUpdUser(jwtUser.getLoginId());
+        return productMngDao.insertProductDet(insertProductDet);
     }
 
     /**
