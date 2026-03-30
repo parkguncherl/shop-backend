@@ -172,6 +172,9 @@
         <if test="fileId != null">
             , FILE_ID
         </if>
+        <if test="productDetCntn != null">
+            , PRODUCT_DET_CNTN
+        </if>
             , SLEEP_YN
             , CRE_USER
             , UPD_USER
@@ -183,6 +186,9 @@
             , #{skuDiscountRate}
         <if test="fileId != null">
             , #{fileId}
+        </if>
+        <if test="productDetCntn != null">
+            , #{productDetCntn}
         </if>
             , #{sleepYn}
             , #{creUser}
