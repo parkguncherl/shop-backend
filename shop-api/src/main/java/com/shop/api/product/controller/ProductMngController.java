@@ -88,6 +88,26 @@ public class ProductMngController {
     }
 
     /**
+     * 상품상세정보 추가
+     *
+     * @param insertProductDet
+     * @return
+     */
+    @AccessLog("상품상세정보 추가")
+    @PutMapping(value = "/insertProductDet")
+    @Operation(summary = "상품상세정보 추가")
+    public ApiResponse<Void> insertProductDet(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.InsertProductDet insertProductDet
+    ) {
+        Integer insertedRowCnt = productMngService.insertProductDet(insertProductDet, jwtUser);
+        if (insertedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_CREATE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
      * 상품관리-상품정보 수정
      *
      * @param updateProduct

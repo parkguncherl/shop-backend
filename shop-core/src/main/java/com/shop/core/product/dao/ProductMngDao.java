@@ -1,7 +1,5 @@
 package com.shop.core.product.dao;
 
-import com.shop.core.biz.common.vo.request.PageRequest;
-import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.product.vo.request.ProductMngRequest;
 import com.shop.core.product.vo.response.ProductMngResponse;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +50,7 @@ public class ProductMngDao {
      * @param insertProduct
      * @return inserted row's cnt
      */
-    public Integer insertProduct(ProductMngRequest.InsertProduct insertProduct) {
+    public int insertProduct(ProductMngRequest.InsertProduct insertProduct) {
         return sqlSession.insert(NAMESPACE + "insertProduct", insertProduct);
     }
 
@@ -61,7 +59,7 @@ public class ProductMngDao {
      * @param insertProductDet
      * @return inserted row's cnt
      */
-    public Integer insertProductDet(ProductMngRequest.InsertProductDet insertProductDet) {
+    public int insertProductDet(ProductMngRequest.InsertProductDet insertProductDet) {
         return sqlSession.insert(NAMESPACE + "insertProductDet", insertProductDet);
     }
 
@@ -70,7 +68,7 @@ public class ProductMngDao {
      * @param updateProduct
      * @return updated row's cnt
      */
-    public Integer updateProduct(ProductMngRequest.UpdateProduct updateProduct) {
+    public int updateProduct(ProductMngRequest.UpdateProduct updateProduct) {
         return sqlSession.update(NAMESPACE + "updateProduct", updateProduct);
     }
 
@@ -79,7 +77,7 @@ public class ProductMngDao {
      * @param updateProductDet
      * @return updated row's cnt
      */
-    public Integer updateProductDet(ProductMngRequest.UpdateProductDet updateProductDet) {
+    public int updateProductDet(ProductMngRequest.UpdateProductDet updateProductDet) {
         return sqlSession.update(NAMESPACE + "updateProductDet", updateProductDet);
     }
 
@@ -88,7 +86,7 @@ public class ProductMngDao {
      * @param deleteProduct
      * @return deleted row's cnt
      */
-    public Integer deleteProduct(ProductMngRequest.DeleteProduct deleteProduct) {
+    public int deleteProduct(ProductMngRequest.DeleteProduct deleteProduct) {
         return sqlSession.update(NAMESPACE + "deleteProduct", deleteProduct);
     }
 
@@ -97,7 +95,7 @@ public class ProductMngDao {
      * @param deleteProductDet
      * @return deleted row's cnt
      */
-    public Integer deleteProductDet(ProductMngRequest.DeleteProductDet deleteProductDet) {
+    public int deleteProductDet(ProductMngRequest.DeleteProductDet deleteProductDet) {
         return sqlSession.update(NAMESPACE + "deleteProductDet", deleteProductDet);
     }
 }
