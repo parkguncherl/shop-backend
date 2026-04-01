@@ -3,8 +3,6 @@ package com.shop.api.product.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.product.service.ProductMngService;
-import com.shop.core.biz.common.vo.request.PageRequest;
-import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
@@ -67,6 +65,23 @@ public class ProductMngController {
             @Parameter(name = "ProductMngRequestProductDetInfoFilter", description = "상품상세목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductDetInfoFilter productDetInfoFilter
     ) {
         List<ProductMngResponse.ProductDetInfo> response = productMngService.selectProdDetInfo(productDetInfoFilter, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
+     * 상품관리-카테고리 연결상품정보 목록 조회
+     *
+     * @param categoryProductInfoFilter
+     * @return 카테고리 연결상품정보 목록
+     */
+    @AccessLog("카테고리 연결상품정보 목록")
+    @GetMapping(value = "/categoryProductInfoList")
+    @Operation(summary = "카테고리 연결상품정보 목록")
+    public ApiResponse<List<ProductMngResponse.CategoryProductInfo>> selectCategoryProductInfoList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductMngRequestCategoryProductInfoFilter", description = "카테고리 연결상품정보목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.CategoryProductInfoFilter categoryProductInfoFilter
+    ) {
+        List<ProductMngResponse.CategoryProductInfo> response = productMngService.selectCategoryProductInfoList(categoryProductInfoFilter, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 

@@ -1,5 +1,6 @@
 package com.shop.core.product.vo.response;
 
+import com.shop.core.entity.CategoryProduct;
 import com.shop.core.entity.Product;
 import com.shop.core.entity.ProductDet;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,5 +52,12 @@ public class ProductMngResponse {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductMngResponseProductDetInfo", description = "상품관리 영역 상품상세정보", type = "object")
     public static class ProductDetInfo extends ProductDet {
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode(callSuper = false)
+    @Schema(name = "ProductMngResponseCategoryProductInfo", description = "카테고리 연결상품정보", type = "object")
+    public static class CategoryProductInfo extends CategoryProduct {
     }
 }

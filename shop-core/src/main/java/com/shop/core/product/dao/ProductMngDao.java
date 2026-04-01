@@ -46,6 +46,15 @@ public class ProductMngDao {
     }
 
     /**
+     * 상품관리-카테고리 연결상품정보 목록 조회
+     * @param categoryProductInfoFilter
+     * @return CategoryProductInfo List
+     */
+    public List<ProductMngResponse.CategoryProductInfo> selectCategoryProductInfoList(ProductMngRequest.CategoryProductInfoFilter categoryProductInfoFilter) {
+        return sqlSession.selectList(NAMESPACE + "selectCategoryProductInfoList", categoryProductInfoFilter);
+    }
+
+    /**
      * 상품관리-상품정보 추가
      * @param insertProduct
      * @return inserted row's cnt

@@ -70,6 +70,49 @@
         ORDER BY TPD.ID
     </select>
 
+    <select id="selectCategoryProductInfoList" parameterType="com.shop.core.product.vo.request.ProductMngRequest$CategoryProductInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$CategoryProductInfo">
+        /* com.shop.mapper.product.productMng.selectCategoryProductInfoList */
+        SELECT
+        TP.ID AS id
+        , TP.PARTNER_ID AS partnerId
+        , TP.PROD_CD AS prodCd
+        , TP.PROD_NM AS prodNm
+        , TP.PROD_TP AS prodTp
+        , TP.PROD_DET_TP AS prodDetTp
+        , TP.COMPOSITION AS composition
+        , TP.REP_FILE_ID AS repFileId
+        , TP.DETAIL_FILE_ID AS detailFileId
+        , TP.SIZE_FILE_ID AS sizeFileId
+        , TP.ETC_FILE_ID AS etcFileId
+        , TP.MAKE_YMD AS makeYmd
+        , TP.ORG_AMT AS orgAmt
+        , TP.SELL_AMT AS sellAmt
+        , TP.DISCOUNT_RATE AS discountRate
+        , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+        , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+        , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
+        , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
+        , COUNT(TPD) AS prodDetCnt
+        , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.REP_FILE_ID AND FDI.DEL_YN = 'N') AS repFileIdCnt
+        , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.DETAIL_FILE_ID AND FDI.DEL_YN = 'N') AS detailFileIdCnt
+        , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.SIZE_FILE_ID AND FDI.DEL_YN = 'N') AS sizeFileIdCnt
+        , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.ETC_FILE_ID AND FDI.DEL_YN = 'N') AS etcFileIdCnt
+        , TP.IS_SPRING
+        , TP.IS_SUMMER
+        , TP.IS_AUTUMN
+        , TP.IS_WINTER
+        FROM TB_PRODUCT TP
+        LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        <where>
+            AND TP.DEL_YN = 'N'
+            <if test='prodNm != null and !prodNm.equals("")'>
+                AND TP.PROD_NM LIKE CONCAT('%' ,#{prodNm} ,'%')
+            </if>
+        </where>
+        GROUP BY TP.ID
+        ORDER BY TP.ID;
+    </select>
+
     <insert id="insertProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertProduct" useGeneratedKeys="true" keyProperty="id">
         /* com.shop.mapper.product.productMng.insertProduct */
         INSERT INTO TB_PRODUCT (

@@ -35,6 +35,18 @@ public class ProductMngRequest {
 
     @Getter
     @Setter
+    @Schema(name = "ProductMngRequestCategoryProductInfoFilter", description = "카테고리 연결상품정보 필터")
+    public static class CategoryProductInfoFilter implements RequestFilter {
+
+        @Schema(description = "productId")
+        private Integer prodId;
+
+        @Schema(description = "상품상세컬러")
+        private String prodDetColor;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "ProductMngRequestInsertProduct", description = "상품 추가 dto")
     public static class InsertProduct extends Product {
     }
