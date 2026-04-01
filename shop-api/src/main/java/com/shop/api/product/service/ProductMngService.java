@@ -206,4 +206,14 @@ public class ProductMngService {
         updateCategoryProduct.setUpdUser(jwtUser.getLoginId());
         return productMngDao.updateCategoryProduct(updateCategoryProduct);
     }
+
+    /**
+     * 카테고리 연결상품 데이터 삭제 관련 비즈니스 로직
+     * @param deleteCategoryProduct
+     * @return 추가된 행의 수
+     */
+    public Integer deleteCategoryProduct(ProductMngRequest.DeleteCategoryProduct deleteCategoryProduct, User jwtUser) {
+        deleteCategoryProduct.setUpdUser(jwtUser.getLoginId());
+        return productMngDao.deleteCategoryProduct(deleteCategoryProduct);
+    }
 }

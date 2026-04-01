@@ -98,7 +98,6 @@
             , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
 
             , CPD.ID AS categoryProductId
-            , CPD.ID AS categoryProductId
             , CPD.SEQ AS seq
             , CPD.CATEGORY_ID AS categoryId
         FROM TB_PRODUCT TP
@@ -358,6 +357,15 @@
         </if>
         UPD_USER = #{updUser},
         UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deleteCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteCategoryProduct">
+        /* com.shop.mapper.product.productMng.deleteCategoryProduct */
+        UPDATE TB_CATEGORY_PRODUCT SET
+              UPD_TM = NOW()
+            , UPD_USER = #{updUser}
+            , DEL_YN = 'Y'
         WHERE ID = #{id}
     </update>
 </mapper>

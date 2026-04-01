@@ -110,4 +110,16 @@ public class ProductMngRequest {
     @Schema(name = "ProductMngRequestUpdateCategoryProduct", description = "카테고리 연결상품 수정 요청")
     public static class UpdateCategoryProduct extends CategoryProduct {
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestDeleteCategoryProduct", description = "카테고리 연결상품 삭제 요청")
+    public static class DeleteCategoryProduct {
+
+        @Schema(description = "아이디(PK)")
+        private Integer id;
+
+        @Schema(description = "수정자")
+        private String updUser;
+    }
 }

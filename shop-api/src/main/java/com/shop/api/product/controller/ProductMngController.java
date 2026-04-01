@@ -241,4 +241,24 @@ public class ProductMngController {
         }
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
+
+    /**
+     * 카테고리 연결상품 데이터 삭제
+     *
+     * @param deleteCategoryProduct
+     * @return
+     */
+    @AccessLog("카테고리 연결상품 데이터 삭제")
+    @PatchMapping(value = "/deleteCategoryProduct")
+    @Operation(summary = "카테고리 연결상품 데이터 삭제")
+    public ApiResponse<Void> deleteCategoryProduct(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.DeleteCategoryProduct deleteCategoryProduct
+    ) {
+        Integer deletedRowCnt = productMngService.deleteCategoryProduct(deleteCategoryProduct, jwtUser);
+        if (deletedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
 }

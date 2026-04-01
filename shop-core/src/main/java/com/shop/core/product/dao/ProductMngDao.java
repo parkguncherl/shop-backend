@@ -123,6 +123,15 @@ public class ProductMngDao {
      * @return 추가된 행의 수
      */
     public int updateCategoryProduct(ProductMngRequest.UpdateCategoryProduct updateCategoryProduct) {
-        return sqlSession.update(NAMESPACE + "insertCategoryProduct", updateCategoryProduct);
+        return sqlSession.update(NAMESPACE + "updateCategoryProduct", updateCategoryProduct);
+    }
+
+    /**
+     * 카테고리 연결상품 데이터 삭제
+     * @param deleteCategoryProduct
+     * @return 삭제된 행의 수
+     */
+    public int deleteCategoryProduct(ProductMngRequest.DeleteCategoryProduct deleteCategoryProduct) {
+        return sqlSession.update(NAMESPACE + "deleteCategoryProduct", deleteCategoryProduct);
     }
 }
