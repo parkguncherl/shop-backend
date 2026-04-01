@@ -58,6 +58,18 @@ public class ProductMngResponse {
     @Setter
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductMngResponseCategoryProductInfo", description = "카테고리 연결상품정보", type = "object")
-    public static class CategoryProductInfo extends CategoryProduct {
+    public static class CategoryProductInfo extends Product {
+
+        @Schema(description = "카테고리 연결상품정보 아이디(PK)")
+        private Integer categoryProductId;
+
+        @Schema(description = "순서")
+        private Integer seq;
+
+        @Schema(description = "카테고리 id")
+        private Integer categoryId;
+
+//        @Schema(description = "상품 id")
+//        private Integer productId;
     }
 }
