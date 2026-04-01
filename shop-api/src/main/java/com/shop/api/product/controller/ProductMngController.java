@@ -201,4 +201,44 @@ public class ProductMngController {
         }
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
+
+    /**
+     * 신규 카테고리 연결상품 데이터 추가
+     *
+     * @param insertCategoryProduct
+     * @return
+     */
+    @AccessLog("카테고리 연결상품 데이터 추가")
+    @PatchMapping(value = "/insertCategoryProduct")
+    @Operation(summary = "카테고리 연결상품 데이터 추가")
+    public ApiResponse<Void> insertCategoryProduct(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.InsertCategoryProduct insertCategoryProduct
+    ) {
+        Integer insertedRowCnt = productMngService.insertCategoryProduct(insertCategoryProduct, jwtUser);
+        if (insertedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_CREATE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 기존 카테고리 연결상품 데이터 수정
+     *
+     * @param updateCategoryProduct
+     * @return
+     */
+    @AccessLog("카테고리 연결상품 데이터 수정")
+    @PatchMapping(value = "/updateCategoryProduct")
+    @Operation(summary = "카테고리 연결상품 데이터 수정")
+    public ApiResponse<Void> updateCategoryProduct(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.UpdateCategoryProduct updateCategoryProduct
+    ) {
+        Integer updatedRowCnt = productMngService.updateCategoryProduct(updateCategoryProduct, jwtUser);
+        if (updatedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_UPDATE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
 }

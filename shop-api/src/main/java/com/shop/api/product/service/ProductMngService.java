@@ -185,4 +185,25 @@ public class ProductMngService {
         deleteProductDet.setUpdUser(jwtUser.getLoginId());
         return productMngDao.deleteProductDet(deleteProductDet);
     }
+
+    /**
+     * 신규 카테고리 연결상품 데이터 추가 관련 비즈니스 로직
+     * @param insertCategoryProduct
+     * @return 추가된 행의 수
+     */
+    public Integer insertCategoryProduct(ProductMngRequest.InsertCategoryProduct insertCategoryProduct, User jwtUser) {
+        insertCategoryProduct.setCreUser(jwtUser.getLoginId());
+        insertCategoryProduct.setUpdUser(jwtUser.getLoginId());
+        return productMngDao.insertCategoryProduct(insertCategoryProduct);
+    }
+
+    /**
+     * 기존 카테고리 연결상품 데이터 수정 관련 비즈니스 로직
+     * @param updateCategoryProduct
+     * @return 추가된 행의 수
+     */
+    public Integer updateCategoryProduct(ProductMngRequest.UpdateCategoryProduct updateCategoryProduct, User jwtUser) {
+        updateCategoryProduct.setUpdUser(jwtUser.getLoginId());
+        return productMngDao.updateCategoryProduct(updateCategoryProduct);
+    }
 }
