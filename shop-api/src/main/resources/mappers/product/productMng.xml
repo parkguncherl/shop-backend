@@ -197,7 +197,7 @@
     </insert>
 
     <update id="updateProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateProduct">
-        /* com.shop.mapper.menu.updateProduct */
+        /* com.shop.mapper.product.productMng.updateProduct */
         UPDATE TB_PRODUCT SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -233,7 +233,7 @@
     </update>
 
     <update id="updateProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateProductDet">
-        /* com.shop.mapper.menu.updateProductDet */
+        /* com.shop.mapper.product.productMng.updateProductDet */
         UPDATE TB_PRODUCT_DET SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -265,7 +265,7 @@
     </update>
 
     <update id="deleteProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProduct">
-        /* com.shop.mapper.menu.deleteProduct */
+        /* com.shop.mapper.product.productMng.deleteProduct */
         UPDATE TB_PRODUCT SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -274,11 +274,46 @@
     </update>
 
     <update id="deleteProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProductDet">
-        /* com.shop.mapper.menu.deleteProductDet */
+        /* com.shop.mapper.product.productMng.deleteProductDet */
         UPDATE TB_PRODUCT_DET SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
             , DEL_YN = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+    <insert id="insertCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertCategoryProduct">
+        /* com.shop.mapper.product.productMng.insertCategoryProduct */
+        INSERT INTO TB_CATEGORY_PRODUCT (
+            SEQ ,
+            CATEGORY_ID ,
+            PRODUCT_ID,
+            CRE_USER,
+            UPD_USER
+        ) VALUES (
+            get_next_category_product_seq(#{categoryId}) ,
+            #{categoryId} ,
+            #{productId} ,
+            #{creUser} ,
+            #{updUser}
+        )
+    </insert>
+
+    <update id="updateCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateCategoryProduct">
+        /* com.shop.mapper.product.productMng.updateCategoryProduct */
+        UPDATE TB_CATEGORY_PRODUCT
+        SET
+        <if test='seq != null'>
+            SEQ = #{seq},
+        </if>
+        <if test='categoryId != null'>
+            CATEGORY_ID = #{categoryId},
+        </if>
+        <if test='productId != null'>
+            PRODUCT_ID =  #{productId},
+        </if>
+        UPD_USER = #{updUser},
+        UPD_TM = NOW()
         WHERE ID = #{id}
     </update>
 </mapper>

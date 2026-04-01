@@ -98,4 +98,22 @@ public class ProductMngDao {
     public int deleteProductDet(ProductMngRequest.DeleteProductDet deleteProductDet) {
         return sqlSession.update(NAMESPACE + "deleteProductDet", deleteProductDet);
     }
+
+    /**
+     * 신규 카테고리 연결상품 데이터 추가
+     * @param insertCategoryProduct
+     * @return 추가된 행의 수
+     */
+    public int insertCategoryProduct(ProductMngRequest.InsertCategoryProduct insertCategoryProduct) {
+        return sqlSession.insert(NAMESPACE + "insertCategoryProduct", insertCategoryProduct);
+    }
+
+    /**
+     * 기존 카테고리 연결상품 데이터 수정
+     * @param updateCategoryProduct
+     * @return 추가된 행의 수
+     */
+    public int updateCategoryProduct(ProductMngRequest.UpdateCategoryProduct updateCategoryProduct) {
+        return sqlSession.update(NAMESPACE + "insertCategoryProduct", updateCategoryProduct);
+    }
 }

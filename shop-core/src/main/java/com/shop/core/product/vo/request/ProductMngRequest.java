@@ -1,5 +1,6 @@
 package com.shop.core.product.vo.request;
 
+import com.shop.core.entity.CategoryProduct;
 import com.shop.core.entity.Product;
 import com.shop.core.entity.ProductDet;
 import com.shop.core.interfaces.RequestFilter;
@@ -87,5 +88,17 @@ public class ProductMngRequest {
 
         @Schema(description = "수정자")
         private String updUser;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestInsertCategoryProduct", description = "카테고리 연결상품 추가 요청")
+    public static class InsertCategoryProduct extends CategoryProduct {
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestUpdateCategoryProduct", description = "카테고리 연결상품 수정 요청")
+    public static class UpdateCategoryProduct extends CategoryProduct {
     }
 }
