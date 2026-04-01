@@ -60,6 +60,13 @@ public class ProductMngResponse {
     @Schema(name = "ProductMngResponseCategoryProductInfo", description = "카테고리 연결상품정보", type = "object")
     public static class CategoryProductInfo extends Product {
 
+        @Schema(description = "색상(종류 나열)")
+        private String prodColors;
+
+        @Schema(description = "사이즈(종류 나열)")
+        private String prodSizes;
+
+        /** 이하 CategoryProduct 테이블 관련 */
         @Schema(description = "카테고리 연결상품정보 아이디(PK)")
         private Integer categoryProductId;
 

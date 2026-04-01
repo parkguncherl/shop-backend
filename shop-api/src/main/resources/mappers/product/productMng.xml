@@ -94,6 +94,8 @@
             , TP.IS_SUMMER
             , TP.IS_AUTUMN
             , TP.IS_WINTER
+            , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
+            , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
 
             , CPD.ID AS categoryProductId
             , CPD.ID AS categoryProductId
@@ -101,12 +103,14 @@
             , CPD.CATEGORY_ID AS categoryId
         FROM TB_PRODUCT TP
         JOIN TB_CATEGORY_PRODUCT CPD ON TP.ID = CPD.PRODUCT_ID AND CPD.DEL_YN = 'N'
+        LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
         <where>
             AND TP.DEL_YN = 'N'
             <if test='categoryId != null'>
                 AND CPD.CATEGORY_ID = #{categoryId}
             </if>
         </where>
+        GROUP BY TP.ID, CPD.ID
         ORDER BY TP.ID;
     </select>
 
