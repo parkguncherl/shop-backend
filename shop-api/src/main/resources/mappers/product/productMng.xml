@@ -96,8 +96,8 @@
             , TP.IS_WINTER
             , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
             , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
-
             , CPD.ID AS categoryProductId
+            , FN_GET_PARTNER_CODE('P0001', CPD.CATEGORY_ID::TEXT , TP.PARTNER_ID) AS categoryNm
             , CPD.SEQ AS seq
             , CPD.CATEGORY_ID AS categoryId
         FROM TB_PRODUCT TP
