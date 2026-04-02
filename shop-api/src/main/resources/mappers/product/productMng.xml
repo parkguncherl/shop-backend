@@ -110,7 +110,7 @@
             </if>
         </where>
         GROUP BY TP.ID, CPD.ID
-        ORDER BY TP.ID;
+        ORDER BY CPD.SEQ;
     </select>
 
     <insert id="insertProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertProduct" useGeneratedKeys="true" keyProperty="id">

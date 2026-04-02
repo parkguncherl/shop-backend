@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -224,5 +226,91 @@ public class ProductMngService {
     public Integer deleteCategoryProduct(ProductMngRequest.DeleteCategoryProduct deleteCategoryProduct, User jwtUser) {
         deleteCategoryProduct.setUpdUser(jwtUser.getLoginId());
         return productMngDao.deleteCategoryProduct(deleteCategoryProduct);
+    }
+
+    /**
+     * 전달된 카테고리 식별자(categoryId) 에 대응하는 categoryProduct 의 seq 변환, 기존 from seq 에 대응하는 요소를 to seq 로 이동,
+     * 또한 이들을 포함한 중간 요소들의 seq를 from to seq 의 대소비교 결과에 따라 +-1씩 조정
+     *
+     * @param updateCategoryProductSeq
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void updateCategoryProductSeq(ProductMngRequest.UpdateCategoryProductSeq updateCategoryProductSeq, User jwtUser) {
+        if (updateCategoryProductSeq.getFromSeq() == null ||  updateCategoryProductSeq.getToSeq() == null || updateCategoryProductSeq.getFromSeq().equals(updateCategoryProductSeq.getToSeq())) {
+            throw new IllegalArgumentException("from seq, to Seq 값 중 일부가 부재함 혹은 이들이 고유하여 요청 처리에 사용할 수 없음");
+        }
+
+        ProductMngRequest.CategoryProductInfoFilter categoryProductInfoFilter = new ProductMngRequest.CategoryProductInfoFilter();
+        categoryProductInfoFilter.setCategoryId(updateCategoryProductSeq.getCategoryId());
+
+        // 목록 조회
+        List<ProductMngResponse.CategoryProductInfo> categoryProductInfoList = productMngDao.selectCategoryProductInfoList(categoryProductInfoFilter);
+        List<ProductMngRequest.UpdateCategoryProduct> updateCategoryProductDtoList = new ArrayList<>();
+
+        if (updateCategoryProductSeq.getFromSeq() < updateCategoryProductSeq.getToSeq()) {
+            // 하단 행으로의 이동
+
+            // 조회된 배열 요소 중 fromSeq 이상 toSeq 이하에 대응하는 seq 를 갖는 요소만을 필터링
+            List<ProductMngResponse.CategoryProductInfo> categoryProductInfoListFromSeqToDestSeq = categoryProductInfoList.stream().filter((contentProductInfo ->
+                    contentProductInfo.getSeq() >= updateCategoryProductSeq.getFromSeq() && contentProductInfo.getSeq() <= updateCategoryProductSeq.getToSeq()
+            )).toList();
+
+            updateCategoryProductDtoList = categoryProductInfoListFromSeqToDestSeq.stream().map((categoryProductInfo) -> {
+                ProductMngRequest.UpdateCategoryProduct updateCategoryProductDto = new ProductMngRequest.UpdateCategoryProduct();
+
+                if (Objects.equals(categoryProductInfo.getSeq(), updateCategoryProductSeq.getFromSeq())) {
+                    // 이동하고자 하는 대상 요소에 대응하는 요소
+                    updateCategoryProductDto.setId(categoryProductInfo.getCategoryProductId()); // 수정에 필요한 식별자 할당(카테고리 연결상품 id(selectCategoryProductInfoList 쿼리문 참조))
+                    updateCategoryProductDto.setSeq(updateCategoryProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
+
+                    return updateCategoryProductDto;
+                } else {
+                    // 이외에는 -1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 위로 이동)
+                    updateCategoryProductDto.setId(categoryProductInfo.getCategoryProductId()); // 수정에 필요한 식별자 할당(카테고리 연결상품 id(카테고리 연결상품 id(selectCategoryProductInfoList 쿼리문 참조))
+                    updateCategoryProductDto.setSeq(categoryProductInfo.getSeq() - 1); // 이동하고자 하는 seq(기존 seq - 1) 할당
+
+                    return updateCategoryProductDto;
+                }
+            }).toList();
+
+            //contentsProductInfoList.subList()
+
+        } else if (updateCategoryProductSeq.getToSeq() < updateCategoryProductSeq.getFromSeq()) {
+            // 상단 행으로의 이동
+
+            // 조회된 배열 요소 중 fromSeq 이하 toSeq 이상에 대응하는 seq 를 갖는 요소만을 필터링
+            List<ProductMngResponse.CategoryProductInfo> categoryProductInfoListFromSeqToDestSeq = categoryProductInfoList.stream().filter((contentProductInfo ->
+                    contentProductInfo.getSeq() >= updateCategoryProductSeq.getToSeq() && contentProductInfo.getSeq() <= updateCategoryProductSeq.getFromSeq()
+            )).toList();
+
+            updateCategoryProductDtoList = categoryProductInfoListFromSeqToDestSeq.stream().map((categoryProductInfo) -> {
+                ProductMngRequest.UpdateCategoryProduct updateCategoryProductDto = new ProductMngRequest.UpdateCategoryProduct();
+
+                if (Objects.equals(categoryProductInfo.getSeq(), updateCategoryProductSeq.getFromSeq())) {
+                    // 이동하고자 하는 대상 요소에 대응하는 요소
+                    updateCategoryProductDto.setId(categoryProductInfo.getCategoryProductId()); // 수정에 필요한 식별자 할당(카테고리 연결상품 id(카테고리 연결상품 id(selectCategoryProductInfoList 쿼리문 참조))
+                    updateCategoryProductDto.setSeq(updateCategoryProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
+
+                    return updateCategoryProductDto;
+                } else {
+                    // 이외에는 +1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 아래로 이동)
+                    updateCategoryProductDto.setId(categoryProductInfo.getCategoryProductId()); // 수정에 필요한 식별자 할당(카테고리 연결상품 id(카테고리 연결상품 id(selectCategoryProductInfoList 쿼리문 참조))
+                    updateCategoryProductDto.setSeq(categoryProductInfo.getSeq() + 1); // 이동하고자 하는 seq(기존 seq + 1) 할당
+
+                    return updateCategoryProductDto;
+                }
+            }).toList();
+        }
+        int insertedRowCnt = 0;
+        for (ProductMngRequest.UpdateCategoryProduct updateCategoryProduct : updateCategoryProductDtoList) {
+            updateCategoryProduct.setCreUser(jwtUser.getLoginId());
+            updateCategoryProduct.setUpdUser(jwtUser.getLoginId());
+
+            insertedRowCnt += productMngDao.updateCategoryProduct(updateCategoryProduct);
+        }
+        if (insertedRowCnt != updateCategoryProductDtoList.size()) {
+            throw new CustomRuntimeException("순서를 수정하고자 하는 카테고리 연결상품 일부의 수정 동작이 누락 혹은 정상적으로 이루어지지 아니함");
+        }
     }
 }

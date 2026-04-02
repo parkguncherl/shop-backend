@@ -278,4 +278,20 @@ public class ProductMngController {
         }
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
+
+    /**
+     * 전달된 카테고리 식별자(categoryId) 에 대응하는 categoryProduct 의 seq 변환
+     *
+     * @param updateCategoryProductSeq
+     * @return
+     */
+    @Operation(summary = "categoryProduct 의 seq 변환", description = "categoryProduct 의 seq 를 주어진 인자를 통해 변환합니다.")
+    @PatchMapping("/updateCategoryProductSeq")
+    public ApiResponse<Void> updateCategoryProductSeq(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.UpdateCategoryProductSeq updateCategoryProductSeq
+    ) {
+        productMngService.updateCategoryProductSeq(updateCategoryProductSeq, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
 }

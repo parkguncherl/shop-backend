@@ -134,4 +134,19 @@ public class ProductMngRequest {
         @Schema(description = "수정자")
         private String updUser;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestUpdateCategoryProductSeq", description = "카테고리 연결상품(categoryProduct) seq 수정 요청")
+    public static class UpdateCategoryProductSeq {
+
+        @Schema(description = "대상 요소의 기존 seq")
+        private Integer fromSeq;
+
+        @Schema(description = "대상 요소가 지망하는 seq")
+        private Integer toSeq;
+
+        @Schema(description = "(연결상품의 부분집합을 식별 가능토록 하는) 카테고리 id")
+        private Integer categoryId;
+    }
 }
