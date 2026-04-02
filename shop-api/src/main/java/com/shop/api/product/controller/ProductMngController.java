@@ -203,6 +203,23 @@ public class ProductMngController {
     }
 
     /**
+     * 상품관리-일부 제외된 상품정보 조회
+     *
+     * @param productInfoWithExclusionFilter
+     * @return 조회된 ProductInfoByExclusion List
+     */
+    @AccessLog("상품목록 조회")
+    @GetMapping(value = "/prodInfoListWithExclusion")
+    @Operation(summary = "상품목록 조회")
+    public ApiResponse<List<ProductMngResponse.ProductInfoByExclusion>> selectProdInfoListWithExclusion(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductMngRequestProductInfoFilter", description = "상품목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductInfoWithExclusionFilter productInfoWithExclusionFilter
+    ) {
+        List<ProductMngResponse.ProductInfoByExclusion> response = productMngService.selectProdInfoListWithExclusion(productInfoWithExclusionFilter, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
      * 신규 카테고리 연결상품 데이터 추가
      *
      * @param insertCategoryProduct

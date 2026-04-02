@@ -109,6 +109,15 @@ public class ProductMngDao {
     }
 
     /**
+     * 상품관리-일부 제외된 상품정보 조회
+     * @param productInfoWithExclusionFilter
+     * @return ProductInfoByExclusion List
+     */
+    public List<ProductMngResponse.ProductInfoByExclusion> selectProdInfoListWithExclusion(ProductMngRequest.ProductInfoWithExclusionFilter productInfoWithExclusionFilter) {
+        return sqlSession.selectList(NAMESPACE + "selectProdInfoListWithExclusion", productInfoWithExclusionFilter);
+    }
+
+    /**
      * 신규 카테고리 연결상품 데이터 추가
      * @param insertCategoryProduct
      * @return 추가된 행의 수

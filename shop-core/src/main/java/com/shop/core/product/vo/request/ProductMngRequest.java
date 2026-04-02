@@ -101,6 +101,18 @@ public class ProductMngRequest {
 
     @Getter
     @Setter
+    @Schema(name = "ProductMngRequestProductInfoWithExclusionFilter", description = "제외를 포함하는 상품 정보 필터")
+    public static class ProductInfoWithExclusionFilter implements RequestFilter {
+
+        @Schema(description = "상품명")
+        private String prodNm;
+
+        @Schema(description = "카테고리 id(lower partnerCode id)")
+        private Integer categoryId;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "ProductMngRequestInsertCategoryProduct", description = "카테고리 연결상품 추가 요청")
     public static class InsertCategoryProduct extends CategoryProduct {
     }

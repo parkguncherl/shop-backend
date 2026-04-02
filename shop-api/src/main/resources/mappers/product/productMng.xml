@@ -325,6 +325,38 @@
         WHERE ID = #{id}
     </update>
 
+    <select id="selectProdInfoListWithExclusion" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoWithExclusionFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfoByExclusion">
+        /* com.shop.mapper.product.productMng.selectProdInfoListWithExclusion */
+        SELECT
+              TP.ID AS id
+            , TP.PARTNER_ID AS partnerId
+            , TP.PROD_CD AS prodCd
+            , TP.PROD_NM AS prodNm
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
+            , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
+        FROM TB_PRODUCT TP
+            LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        <where>
+            AND TP.DEL_YN = 'N'
+            <if test='prodNm != null and !prodNm.equals("")'>
+                AND TP.PROD_NM LIKE CONCAT('%' ,#{prodNm} ,'%')
+            </if>
+            AND NOT EXISTS (
+                SELECT 1 FROM TB_CATEGORY_PRODUCT CPD
+                <where>
+                    AND CPD.PRODUCT_ID = TP.ID
+                    <if test="categoryId != null">
+                        AND CPD.CATEGORY_ID = #{categoryId}
+                    </if>
+                </where>
+            )
+        </where>
+        GROUP BY TP.ID
+        ORDER BY TP.ID;
+    </select>
+
     <insert id="insertCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertCategoryProduct">
         /* com.shop.mapper.product.productMng.insertCategoryProduct */
         INSERT INTO TB_CATEGORY_PRODUCT (
