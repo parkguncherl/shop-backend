@@ -89,7 +89,7 @@ public class ProductMngResponse {
         @Schema(description = "카테고리 연결상품정보 아이디(PK)")
         private Integer categoryProductId;
 
-        @Schema(description = "카테고리 연결상품정보 아이디(PK)")
+        @Schema(description = "카테고리 연결상품정보 카테고리명")
         private String categoryNm;
 
         @Schema(description = "순서")

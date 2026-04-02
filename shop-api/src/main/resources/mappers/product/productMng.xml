@@ -346,6 +346,7 @@
             AND NOT EXISTS (
                 SELECT 1 FROM TB_CATEGORY_PRODUCT CPD
                 <where>
+                    AND CPD.DEL_YN = 'N'
                     AND CPD.PRODUCT_ID = TP.ID
                     <if test="categoryId != null">
                         AND CPD.CATEGORY_ID = #{categoryId}
