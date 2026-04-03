@@ -52,12 +52,10 @@ public class ContactController {
     @GetMapping(value = "/paging")
     @Operation(summary = "접속로그 목록 조회 (페이징)")
     public ApiResponse<PageResponse<ContactResponse.Paging>> selectContactPaging(
-            //@Parameter ContactRequest.PagingFilter filter,
+            @Parameter ContactRequest.PagingFilter filter,
             @Parameter PageRequest<ContactRequest.PagingFilter> pageRequest
     ) {
-//        log.debug("<======= ContactRequest.PagingFilter: {}", filter);
-
-  //      pageRequest.setFilter(filter);
+        pageRequest.setFilter(filter);
         PageResponse<ContactResponse.Paging> response = contactService.selectContactListPaging(pageRequest);
 
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
