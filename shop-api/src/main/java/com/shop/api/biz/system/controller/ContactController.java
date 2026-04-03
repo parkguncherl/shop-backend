@@ -6,6 +6,7 @@ import com.shop.api.biz.system.service.ContactService;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.request.ContactRequest;
+import com.shop.core.biz.system.vo.request.MenuRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.ContactResponse;
 import com.shop.core.entity.Contact;
@@ -13,6 +14,7 @@ import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,16 +46,18 @@ public class ContactController {
     /**
      * 접속로그_목록_조회 (페이징)
      * @param pageRequest
-     * @param filter
      * @return
      */
     @AccessLog("접속로그 조회")
     @GetMapping(value = "/paging")
     @Operation(summary = "접속로그 목록 조회 (페이징)")
-    public ApiResponse<PageResponse<ContactResponse.Paging>> selectContactPaging(PageRequest<ContactRequest.PagingFilter> pageRequest, ContactRequest.PagingFilter filter) {
-        log.debug("<======= ContactRequest.PagingFilter: {}", filter);
+    public ApiResponse<PageResponse<ContactResponse.Paging>> selectContactPaging(
+            //@Parameter ContactRequest.PagingFilter filter,
+            @Parameter PageRequest<ContactRequest.PagingFilter> pageRequest
+    ) {
+//        log.debug("<======= ContactRequest.PagingFilter: {}", filter);
 
-        pageRequest.setFilter(filter);
+  //      pageRequest.setFilter(filter);
         PageResponse<ContactResponse.Paging> response = contactService.selectContactListPaging(pageRequest);
 
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);

@@ -7,7 +7,6 @@ import com.shop.core.biz.system.vo.response.ContactResponse;
 import com.shop.core.entity.Contact;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 

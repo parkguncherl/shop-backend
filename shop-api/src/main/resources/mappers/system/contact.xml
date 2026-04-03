@@ -47,14 +47,14 @@
         FROM TB_CONTACT A
         LEFT OUTER JOIN TB_USER B ON B.ID = A.USER_ID
         WHERE 1 = 1
-        <if test='filter.loginId != null and !filter.loginId.equals("")'>
-            AND USER_ID = #{filter.loginId}
+        <if test='loginId != null and !loginId.equals("")'>
+            AND USER_ID = #{loginId}
         </if>
-        <if test='filter.tranType != null and !filter.tranType.equals("")'>
-            AND TRAN_TYPE = #{filter.tranType}
+        <if test='tranType != null and !tranType.equals("")'>
+            AND TRAN_TYPE = #{tranType}
         </if>
-        <if test='filter.partnerId != null and !filter.partnerId.equals("")'>
-            AND A.PARTNER_ID = #{filter.partnerId}
+        <if test='partnerId != null and !partnerId.equals("")'>
+            AND A.PARTNER_ID = #{partnerId}
         </if>
         ORDER BY A.ID DESC
         OFFSET ((#{curPage}-1) * #{pageRowCount}) ROWS FETCH NEXT #{pageRowCount} ROWS ONLY

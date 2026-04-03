@@ -1,11 +1,5 @@
 package com.shop.core.biz.system.dao;
 
-import com.shop.core.biz.common.vo.request.PageRequest;
-import com.shop.core.biz.common.vo.response.PageResponse;
-import com.shop.core.biz.system.vo.request.ContactRequest;
-import com.shop.core.biz.system.vo.response.ApiResponse;
-import com.shop.core.biz.system.vo.response.ContactResponse;
-import com.shop.core.entity.Contact;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.exception.CustomRuntimeException;
 import io.micrometer.common.util.StringUtils;

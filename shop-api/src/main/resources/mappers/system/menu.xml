@@ -42,8 +42,7 @@
         SELECT
         <include refid="menuColumns" />
         FROM TB_MENU TM
-        WHERE 1=1
-        AND DEL_YN = 'N'
+        WHERE DEL_YN = 'N'
         AND UP_MENU_CD = #{upMenuCd}
         AND MENU_CD = #{menuCd}
         <if test="menuOrder != null">

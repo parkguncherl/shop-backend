@@ -53,7 +53,6 @@ public class MenuController {
     /**
      * 메뉴접근_권한관리_목록_조회 (페이징)
      *
-     * @param jwtUser
      * @param filter
      * @param pageRequest
      * @return
@@ -62,7 +61,6 @@ public class MenuController {
     @GetMapping(value = "/paging")
     @Operation(summary = "메뉴접근 권한관리 목록 조회 (페이징)")
     public ApiResponse<PageResponse<MenuResponse.Paging>> selectMenuListPaging(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter(name = "MenuRequestPagingFilter", description = "메뉴접근 권한관리 목록 조회 (페이징) 필터", in = ParameterIn.PATH) MenuRequest.PagingFilter filter,
             @Parameter(name = "PageRequest", description = "메뉴접근 권한관리 목록 조회 페이징") PageRequest<MenuRequest.PagingFilter> pageRequest
     ) {
@@ -392,7 +390,8 @@ public class MenuController {
         if (StringUtils.isNotEmpty(meunUri) && menuCd.length() == 4) {
             Menu menu2 = new Menu();
             menu2.setMenuUri(meunUri);
-            menu2.setId(id);
+            menu2.setUpMenuCd(upMenuCd);
+            menu2.setMenuCd(menuCd);
             if (menuService.selectMenuByUK(menu2) != null) {
                 return new ApiResponse<>(ApiResultCode.DUPLICATE_URI);
             }
