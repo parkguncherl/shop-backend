@@ -116,8 +116,11 @@ public class CommonService {
         }
 
         String originalFileName = file.getOriginalFilename();
-
         ConvertResult result = this.optimizeAndConvertToWebp(file);
+
+        //resizeImageKeepAspectRatio(file, Integer.parseInt(commonRequest.getImageFileWidth()), Integer.parseInt(commonRequest.getImageFileHeight()));
+
+
         String finalKey = key.replaceAll("\\.[^.]+$", "." + result.extension());
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -683,17 +686,31 @@ public class CommonService {
             return new ConvertResult(file.getBytes(), file.getContentType(), getExtension(file.getOriginalFilename()));
         }
 
-        // 2️⃣ 리사이즈 + 압축
-        BufferedImage resizedImage = Thumbnails.of(file.getInputStream())
-                .width(1000)
-                .outputQuality(0.75)
+        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
+
+        int targetWidth = width;
+        int targetHeight = height;
+
+        // ✅ 가로 1000 초과일 때만 리사이즈
+        if (width > 1000) {
+            targetWidth = 1000;
+            targetHeight = (int) (((double) height / width) * 1000);
+        }
+
+        // 2️⃣ 리사이즈 + 압축 (확대 방지)
+        BufferedImage resizedImage = Thumbnails.of(originalImage)
+                .size(targetWidth, targetHeight)
+                .outputQuality(0.85) // 🔥 0.75 → 0.85 추천
                 .asBufferedImage();
 
         // 3️⃣ WebP writer 확인
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/webp");
 
         if (!writers.hasNext()) {
-            // WebP writer 없으면 JPG fallback
+            // 👉 fallback (JPG)
             ByteArrayOutputStream fallback = new ByteArrayOutputStream();
             ImageIO.write(resizedImage, "jpg", fallback);
             return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
@@ -710,7 +727,7 @@ public class CommonService {
             if (param.canWriteCompressed()) {
                 param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 param.setCompressionType("Lossy");
-                param.setCompressionQuality(0.8f);
+                param.setCompressionQuality(0.85f); // 🔥 통일
             }
 
             writer.write(null, new IIOImage(resizedImage, null, null), param);
