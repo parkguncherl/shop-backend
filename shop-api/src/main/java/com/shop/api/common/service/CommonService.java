@@ -408,6 +408,23 @@ public class CommonService {
      * 다수의 파일 업로드
      * desc: 해당 영역은 전적으로 다수 파일 업로드 요청에 따른 업로드(fileDet 추가 및 버킷에 오브젝트 저장 요청)만을 수행한다
      *
+     * @param fileUpdate
+     * @return fileDowns
+     * */
+    public void imageFileUpdate(CommonRequest.FileUpdate fileUpdate, User jwtUser) {
+        try {
+            FileDet fileDetOrg = fileDao.selectFileDetByKey(fileUpdate.getFileDetId());
+            this.fileImageUploadComm(jwtUser, fileUpdate.getUploadFile(), fileDetOrg.getFileId(), fileDetOrg.getFileSeq());
+        } catch (Exception e) {
+            throw new CustomRuntimeException(ApiResultCode.FAIL, "이미지 업로드시 오류가 발생하였습니다.");
+        }
+    }
+
+
+    /**
+     * 다수의 파일 업로드
+     * desc: 해당 영역은 전적으로 다수 파일 업로드 요청에 따른 업로드(fileDet 추가 및 버킷에 오브젝트 저장 요청)만을 수행한다
+     *
      * @param commonRequest
      * @return fileDowns
      * */
@@ -435,7 +452,6 @@ public class CommonService {
 
         return fileDowns;
     }
-
 
     public FileDet fileImageUploadComm(User jwtUser, MultipartFile file, Integer fileId, Integer fileSeq) throws IOException {
         String originalFileName = file.getOriginalFilename();

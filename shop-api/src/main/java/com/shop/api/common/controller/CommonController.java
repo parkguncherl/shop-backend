@@ -137,6 +137,28 @@ public class CommonController {
         return new ApiResponse<>(ApiResultCode.SUCCESS, fileDownList);
     }
 
+
+
+    /**
+     * 개별_파일_조회
+     */
+    @PostMapping(value = "/imgfile/update")
+    @Operation(summary = "개별 파일 조회")
+    public ApiResponse<ApiResultCode> imageFileUpdate(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "CommonRequestFileUploads", description = "파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUpdate fileUpdate
+    ) {
+        // 필수값 체크
+        if (fileUpdate.getFileDetId() == null || fileUpdate.getFileDetId() <= 0) {
+            return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE, "파일 상세id 가 입력되지 않았습니다.");
+        }
+
+        commonService.imageFileUpdate(fileUpdate, jwtUser);
+
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+
     /**
      * 파일_삭제 (개별)
      *

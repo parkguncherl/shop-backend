@@ -54,6 +54,18 @@ public class FileDao {
         return selectFile;
     }
 
+
+
+    /**
+     * 파일_조회 (by ID)
+     *
+     * @param id
+     * @return
+     */
+    public FileDet selectFileDetByKey(Integer id) {
+        return sqlSession.selectOne(PRE_NS.concat("selectFileDetByKey"), id);
+    }
+
     /**
      * 파일_목록_조회 (by ID)
      *

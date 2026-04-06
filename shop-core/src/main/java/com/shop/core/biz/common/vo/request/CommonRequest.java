@@ -136,6 +136,21 @@ public class CommonRequest {
         List<MultipartFile> uploadFiles;
     }
 
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @Schema(name = "CommonRequestFileUpdate", description = "파일수정 요청 파라미터")
+    public static class FileUpdate {
+
+        @Schema(description = "fileDetId ")
+        private Integer fileDetId;
+
+        @Schema(description = "파일")
+        MultipartFile uploadFile;
+    }
+
+
     @Getter
     @Setter
     @EqualsAndHashCode

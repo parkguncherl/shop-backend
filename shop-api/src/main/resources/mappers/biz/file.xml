@@ -44,6 +44,21 @@
         AND DEL_YN = 'N'
     </select>
 
+    <!-- 파일 상세 조회 -->
+    <select id="selectFileDetByKey" resultType="com.shop.core.entity.FileDet">
+        /* com.shop.mapper.file.selectFileDetByKey */
+        SELECT
+            FILE_ID     AS fileId,
+            FILE_SEQ    AS fileSeq,
+            BUCKET_NAME AS bucketName,
+            SYS_FILE_NM AS sysFileNm,
+            FILE_EXT    AS fileExt,
+            FILE_NM     AS fileNm,
+            FILE_SIZE   AS fileSize
+        FROM TB_FILE_DET
+        WHERE ID = #{id}
+    </select>
+
     <!-- 파일 등록 -->
     <insert id="insertFile" parameterType="com.shop.core.entity.FileMng" useGeneratedKeys="true" keyProperty="id">
         /* com.shop.mapper.file.insertFile */
