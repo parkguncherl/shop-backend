@@ -1,7 +1,10 @@
 package com.shop.api.product.service;
 
 import com.shop.api.biz.system.service.UserService;
+import com.shop.core.biz.common.dao.FileDao;
+import com.shop.core.entity.FileMng;
 import com.shop.core.entity.User;
+import com.shop.core.enums.FilePathType;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.core.product.dao.ProductMngDao;
 import com.shop.core.product.vo.request.ProductMngRequest;
@@ -30,6 +33,8 @@ import java.util.Objects;
 public class ProductMngService {
 
     private final ProductMngDao productMngDao;
+    private final FileDao fileDao;
+
     private final UserService userService;
 
     /**
@@ -72,31 +77,26 @@ public class ProductMngService {
         }
 
         /** id 존재 여부에 따라 상품정보 및 상세정보 추가 혹은 상세정보 추가로 분기 */
-        // todo 마이그레이션 이후 더 이상 무의미하다 여겨질 시 제거
-//        if (insertProductInfo.getId() == null) {
-//            Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
-//
-//            insertProductInfo.setPartnerId(partnerId);
-//
-//            insertProductInfo.setCreUser(jwtUser.getLoginId());
-//            insertProductInfo.setUpdUser(jwtUser.getLoginId());
-//            Integer insertedProductCnt = productMngDao.insertProduct(insertProductInfo);
-//
-//            if (insertedProductCnt != 1) {
-//                throw new CustomRuntimeException("상품정보를 정상적으로 추가하지 못함");
-//            }
-//        }
+        if (insertProductInfo.getId() == null) {
+            // tb_file 인서트 영역
+            FileMng fileMng = new FileMng();
+            fileMng.setFileType(FilePathType.PRODUCT_CONTENTS.getCode());
+            fileMng.setCreUser(jwtUser.getLoginId());
+            fileMng.setUpdUser(jwtUser.getLoginId());
+            fileDao.insertFile(fileMng);
+            insertProductInfo.setRepFileId(fileMng.getId()); // fileId 할당
 
-        Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
+            Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
 
-        insertProductInfo.setPartnerId(partnerId);
+            insertProductInfo.setPartnerId(partnerId);
 
-        insertProductInfo.setCreUser(jwtUser.getLoginId());
-        insertProductInfo.setUpdUser(jwtUser.getLoginId());
-        Integer insertedProductCnt = productMngDao.insertProduct(insertProductInfo);
+            insertProductInfo.setCreUser(jwtUser.getLoginId());
+            insertProductInfo.setUpdUser(jwtUser.getLoginId());
+            Integer insertedProductCnt = productMngDao.insertProduct(insertProductInfo);
 
-        if (insertedProductCnt != 1) {
-            throw new CustomRuntimeException("상품정보를 정상적으로 추가하지 못함");
+            if (insertedProductCnt != 1) {
+                throw new CustomRuntimeException("상품정보를 정상적으로 추가하지 못함");
+            }
         }
 
         insertProductInfo.getProductDet().setProductId(insertProductInfo.getId()); // prod Id 할당(요청 시점에 전달된 값 혹은 insert 시점에 할당되어진 값)
