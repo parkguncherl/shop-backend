@@ -79,12 +79,45 @@ public class ProductMngService {
         /** id 존재 여부에 따라 상품정보 및 상세정보 추가 혹은 상세정보 추가로 분기 */
         if (insertProductInfo.getId() == null) {
             // tb_file 인서트 영역
-            FileMng fileMng = new FileMng();
-            fileMng.setFileType(FilePathType.PRODUCT_CONTENTS.getCode());
-            fileMng.setCreUser(jwtUser.getLoginId());
-            fileMng.setUpdUser(jwtUser.getLoginId());
-            fileDao.insertFile(fileMng);
-            insertProductInfo.setRepFileId(fileMng.getId()); // fileId 할당
+            FileMng fileMngForRep = new FileMng();
+            fileMngForRep.setFileType(FilePathType.PRODUCT_CONTENTS.getCode());
+            fileMngForRep.setCreUser(jwtUser.getLoginId());
+            fileMngForRep.setUpdUser(jwtUser.getLoginId());
+            Integer insertedFileInfoCntForRep = fileDao.insertFile(fileMngForRep);
+            if (!insertedFileInfoCntForRep.equals(1)) {
+                throw new CustomRuntimeException("상품정보에 연계되어지는 파일(이미지) 정보가 정상 추가되지 못함");
+            }
+            insertProductInfo.setRepFileId(fileMngForRep.getId()); // fileId 할당(for rep)
+
+            FileMng fileMngForDetail = new FileMng();
+            fileMngForDetail.setFileType(FilePathType.PRODUCT_CONTENTS.getCode());
+            fileMngForDetail.setCreUser(jwtUser.getLoginId());
+            fileMngForDetail.setUpdUser(jwtUser.getLoginId());
+            Integer insertedFileInfoCntForDetail = fileDao.insertFile(fileMngForDetail);
+            if (!insertedFileInfoCntForDetail.equals(1)) {
+                throw new CustomRuntimeException("상품정보에 연계되어지는 파일(이미지) 정보가 정상 추가되지 못함");
+            }
+            insertProductInfo.setDetailFileId(fileMngForDetail.getId()); // fileId 할당(for detail)
+
+            FileMng fileMngForSize = new FileMng();
+            fileMngForSize.setFileType(FilePathType.PRODUCT_CONTENTS.getCode());
+            fileMngForSize.setCreUser(jwtUser.getLoginId());
+            fileMngForSize.setUpdUser(jwtUser.getLoginId());
+            Integer insertedFileInfoCntForSize = fileDao.insertFile(fileMngForSize);
+            if (!insertedFileInfoCntForSize.equals(1)) {
+                throw new CustomRuntimeException("상품정보에 연계되어지는 파일(이미지) 정보가 정상 추가되지 못함");
+            }
+            insertProductInfo.setSizeFileId(fileMngForSize.getId()); // fileId 할당(for size)
+
+            FileMng fileMngForEtc = new FileMng();
+            fileMngForEtc.setFileType(FilePathType.PRODUCT_CONTENTS.getCode());
+            fileMngForEtc.setCreUser(jwtUser.getLoginId());
+            fileMngForEtc.setUpdUser(jwtUser.getLoginId());
+            Integer insertedFileInfoCntForEtc = fileDao.insertFile(fileMngForEtc);
+            if (!insertedFileInfoCntForEtc.equals(1)) {
+                throw new CustomRuntimeException("상품정보에 연계되어지는 파일(이미지) 정보가 정상 추가되지 못함");
+            }
+            insertProductInfo.setEtcFileId(fileMngForEtc.getId()); // fileId 할당(for etc)
 
             Integer partnerId = userService.selectPartnerIdByLoginId(jwtUser.getLoginId());
 
