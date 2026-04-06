@@ -115,6 +115,7 @@ public class CommonService {
             throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
         }
 
+        String originalFileName = file.getOriginalFilename();
 
         ConvertResult result = this.optimizeAndConvertToWebp(file);
         String finalKey = key.replaceAll("\\.[^.]+$", "." + result.extension());
@@ -141,8 +142,8 @@ public class CommonService {
         fileDet.setFileId(fileId);
         fileDet.setFileSeq(fileSeq);
         fileDet.setBucketName(BUKET_NAME);
-        fileDet.setFileNm(finalKey);
-        fileDet.setSysFileNm(key);
+        fileDet.setFileNm(originalFileName);
+        fileDet.setSysFileNm(finalKey);
         fileDet.setFileSize(new BigDecimal(file.getSize()).intValue());
         fileDet.setFileExt(CommUtil.getFileExtension(finalKey));
         fileDet.setCreUser(jwtUser.getLoginId());
