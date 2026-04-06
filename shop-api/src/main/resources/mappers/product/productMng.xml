@@ -33,6 +33,10 @@
             , TP.IS_SUMMER
             , TP.IS_AUTUMN
             , TP.IS_WINTER
+            , CONCAT(CASE WHEN TP.IS_SPRING = 'Y' THEN 'S' ELSE '_' END,
+                     CASE WHEN TP.IS_SUMMER = 'Y' THEN 'S' ELSE '_' END,
+                     CASE WHEN TP.IS_AUTUMN = 'Y' THEN 'F' ELSE '_' END,
+                     CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END) AS SEASON
         FROM TB_PRODUCT TP
               LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
         <where>

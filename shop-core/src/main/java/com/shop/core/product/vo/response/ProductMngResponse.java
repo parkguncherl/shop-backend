@@ -45,6 +45,9 @@ public class ProductMngResponse {
 
         @Schema(description = "기타이미지 개수")
         private Integer etcFileIdCnt;
+
+        @Schema(description = "시즌")
+        private String season;
     }
 
     @Getter

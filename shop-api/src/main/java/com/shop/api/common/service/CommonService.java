@@ -40,10 +40,8 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <pre>
@@ -409,7 +407,7 @@ public class CommonService {
         String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
 
         // 이미지는 반드시 압축
-        if(file.getContentType().startsWith("image")) {
+        if(Objects.requireNonNull(file.getContentType()).startsWith("image")) {
             return this.webpImageUpload(file, sysFileNm, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
         } else {
             throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
