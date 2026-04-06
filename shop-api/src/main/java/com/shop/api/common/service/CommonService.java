@@ -403,6 +403,40 @@ public class CommonService {
         return fileDowns;
     }
 
+
+    /**
+     * 다수의 파일 업로드
+     * desc: 해당 영역은 전적으로 다수 파일 업로드 요청에 따른 업로드(fileDet 추가 및 버킷에 오브젝트 저장 요청)만을 수행한다
+     *
+     * @param commonRequest
+     * @return fileDowns
+     * */
+    public List<CommonResponse.FileDown> imgFileUploads(CommonRequest.FileUploads commonRequest, User jwtUser) throws IOException {
+        List<CommonResponse.FileDown> fileDowns = new ArrayList<>();
+        List<MultipartFile> fileList = commonRequest.getUploadFiles();
+        Integer fileId = commonRequest.getFileId() == null ? 0 : commonRequest.getFileId();
+        Integer fileSeq = 0;
+        for (MultipartFile file : fileList) {
+            if(fileId > 0){
+                fileSeq = fileService.selectMaxFileSeq(fileId);
+            } else {
+                fileSeq++;
+            }
+
+            FileDet fileDet = this.fileImageUploadComm(jwtUser, file, fileId, fileSeq);
+            fileId = fileDet.getFileId();
+            CommonResponse.FileDown fileDown = new CommonResponse.FileDown();
+            fileDown.setFileNm(fileDet.getFileNm());
+            fileDown.setFileId(fileDet.getFileId());
+            fileDown.setSysFileNm(fileDet.getSysFileNm());
+            fileDown.setFileSeq(fileDet.getFileSeq());
+            fileDowns.add(fileDown);
+        }
+
+        return fileDowns;
+    }
+
+
     public FileDet fileImageUploadComm(User jwtUser, MultipartFile file, Integer fileId, Integer fileSeq) throws IOException {
         String originalFileName = file.getOriginalFilename();
         String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
