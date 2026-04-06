@@ -131,4 +131,18 @@ public class PartnerCodeDao {
         return sqlSession.delete(PRE_NS.concat("deletePartnerCode"), code);
     }
 
+
+    /**
+     * 코드_값 조회 ( 자동생성되게하기 위해 )
+     *
+     * @param partnerId
+     * @param codeUpper
+     * @return
+     */
+    public Integer getAutoGenCodeCd(Integer partnerId, String codeUpper) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("partnerId", partnerId);
+        params.put("codeUpper", codeUpper);
+        return sqlSession.selectOne(PRE_NS.concat("getAutoGenCodeCd"), params);
+    }
 }

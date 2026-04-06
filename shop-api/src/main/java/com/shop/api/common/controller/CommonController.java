@@ -100,39 +100,6 @@ public class CommonController {
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter(name = "CommonRequestFileUpload", description = "파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUpload commonRequest
     ) throws IOException {
-//        Integer fileId = commonRequest.getFileId() == null ? 0 : commonRequest.getFileId();
-//
-//        if(fileId.compareTo(0) > 0){
-//            commonService.deleteAllFiles(fileId, jwtUser);
-//        }
-//
-//        FileDet fileDet;
-//
-//        if(commonRequest.getUploadFile() != null
-//                && StringUtils.isNotBlank(commonRequest.getImageFileHeight())
-//                && StringUtils.isNotBlank(commonRequest.getImageFileWidth())
-//                && StringUtils.isNumeric(commonRequest.getImageFileWidth())
-//                && StringUtils.isNumeric(commonRequest.getImageFileWidth())
-//        ) {
-//            // 이미지 파일로서 너비, 높이가 주어진 경우
-//            byte[] resizedImageBytes = commonService.resizeImageKeepAspectRatio(commonRequest.getUploadFile(), Integer.parseInt(commonRequest.getImageFileWidth()), Integer.parseInt(commonRequest.getImageFileHeight()));
-//
-//            MultipartFile resizedFile = new ByteArrayMultipartFile(
-//                    resizedImageBytes,
-//                    commonRequest.getUploadFile().getOriginalFilename(),
-//                    commonRequest.getUploadFile().getContentType()
-//            );
-//            fileDet = commonService.fileUploadComm(jwtUser, resizedFile, fileId, 1); // 단건파일 올리는경우는 반드시 0, 1
-//        } else {
-//            fileDet = commonService.fileUploadComm(jwtUser, commonRequest.getUploadFile(), fileId, 1); // 단건파일 올리는경우는 반드시 0, 1
-//        }
-//
-//        CommonResponse.FileDown fileDown = new CommonResponse.FileDown();
-//        fileDown.setFileNm(fileDet.getFileNm());
-//        fileDown.setFileId(fileDet.getFileId());
-//        fileDown.setSysFileNm(fileDet.getSysFileNm());
-//        fileDown.setFileSeq(fileDet.getFileSeq());
-
         CommonResponse.FileDown fileDown = commonService.fileUpload(commonRequest, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS, fileDown);
     }
@@ -149,26 +116,24 @@ public class CommonController {
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter(name = "CommonRequestFileUploads", description = "다중 파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUploads commonRequest
     ) throws IOException {
-//        List<CommonResponse.FileDown> fileDowns = new ArrayList<>();
-//        List<MultipartFile> fileList = commonRequest.getUploadFiles();
-//        Integer fileId = commonRequest.getFileId() == null ? 0 : commonRequest.getFileId();
-//        Integer fileSeq = 0;
-//        for (MultipartFile file : fileList) {
-//            if(fileId > 0){
-//                fileSeq = fileService.selectMaxFileSeq(fileId);
-//            } else {
-//                fileSeq++;
-//            }
-//            FileDet fileDet = commonService.fileUploadComm(jwtUser, file, fileId, fileSeq);
-//            fileId = fileDet.getFileId();
-//            CommonResponse.FileDown fileDown = new CommonResponse.FileDown();
-//            fileDown.setFileNm(fileDet.getFileNm());
-//            fileDown.setFileId(fileDet.getFileId());
-//            fileDown.setSysFileNm(fileDet.getSysFileNm());
-//            fileDown.setFileSeq(fileDet.getFileSeq());
-//            fileDowns.add(fileDown);
-//        }
         List<CommonResponse.FileDown> fileDownList = commonService.fileUploads(commonRequest, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, fileDownList);
+    }
+
+
+    /**
+     * 다중_파일_업로드
+     *
+     * @param jwtUser
+     * @param commonRequest
+     */
+    @PostMapping(value = "/imgfile/uploads")
+    @Operation(summary = "다중 파일 업로드")
+    public ApiResponse<List<CommonResponse.FileDown>> imgFileUploads(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "CommonRequestFileUploads", description = "다중 파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUploads commonRequest
+    ) throws IOException {
+        List<CommonResponse.FileDown> fileDownList = commonService.imgFileUploads(commonRequest, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS, fileDownList);
     }
 

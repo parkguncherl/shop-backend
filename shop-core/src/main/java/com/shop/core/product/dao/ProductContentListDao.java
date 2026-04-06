@@ -3,6 +3,7 @@ package com.shop.core.product.dao;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.entity.Contents;
+import com.shop.core.entity.ContentsProduct;
 import com.shop.core.product.vo.request.ProductContentListRequest;
 import com.shop.core.product.vo.response.ProductContentListResponse;
 import lombok.RequiredArgsConstructor;
@@ -60,5 +61,46 @@ public class ProductContentListDao {
      */
     public int deleteProductContents(ProductContentListRequest.DeleteProductContents deleteProductContents) {
         return sqlSession.update(NAMESPACE.concat("deleteProductContents"), deleteProductContents);
+    }
+
+    /**
+     * 상품관리-상품정보목록 조회
+     * @param pageRequest
+     * @return 페이징된 ProductContent List
+     */
+    public PageResponse<ProductContentListResponse.ProductInfo> selectProductInfoList(PageRequest<ProductContentListRequest.ProductInfoListFilter> pageRequest) {
+        List<ProductContentListResponse.ProductInfo> prodContentList = sqlSession.selectList(NAMESPACE + "selectProductInfoList", pageRequest);
+        if (prodContentList != null && !prodContentList.isEmpty()) {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount(), prodContentList, prodContentList.size());
+        } else {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
+        }
+    }
+
+    /**
+     * 상품관리-연결상품정보 목록 조회
+     * @param contentsProductInfoListFilter
+     * @return ContentProductInfo List
+     */
+    public List<ProductContentListResponse.ContentProductInfo> selectContentsProductInfoList(ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter) {
+        return sqlSession.selectList(NAMESPACE + "selectContentsProductInfoList", contentsProductInfoListFilter);
+    }
+
+    /**
+     * 신규 연결상품 데이터 추가
+     * @param insertContentsProduct
+     * @return 추가된 행의 수
+     */
+    public int insertContentsProduct(ProductContentListRequest.InsertContentsProduct insertContentsProduct) {
+        return sqlSession.insert(NAMESPACE.concat("insertContentsProduct"), insertContentsProduct);
+    }
+
+    /**
+     * 기존 연결상품 데이터 수정
+     * @param updateContentsProduct
+     * @return 수정된 행의 수
+     */
+    public int updateContentsProduct(ProductContentListRequest.UpdateContentsProduct updateContentsProduct) {
+        return sqlSession.update(NAMESPACE.concat("updateContentsProduct"), updateContentsProduct);
     }
 }

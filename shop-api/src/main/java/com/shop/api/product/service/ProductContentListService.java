@@ -2,24 +2,17 @@ package com.shop.api.product.service;
 
 import com.shop.api.biz.system.service.UserService;
 import com.shop.api.common.service.CommonService;
-import com.shop.api.utils.CommUtil;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.entity.FileDet;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
-import com.shop.core.enums.FilePathType;
 import com.shop.core.enums.GlobalConst;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.core.product.dao.ProductContentListDao;
-import com.shop.core.product.dao.ProductContentsDao;
-import com.shop.core.product.dao.ProductMngDao;
 import com.shop.core.product.vo.request.ProductContentListRequest;
-import com.shop.core.product.vo.request.ProductContentsRequest;
-import com.shop.core.product.vo.request.ProductMngRequest;
 import com.shop.core.product.vo.response.ProductContentListResponse;
-import com.shop.core.product.vo.response.ProductMngResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,8 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -73,13 +67,7 @@ public class ProductContentListService {
             Integer fileSeq = 0;
             for (MultipartFile file : fileList) {
                 fileSeq++;
-                
-//                String originalFileName = file.getOriginalFilename();
-//                String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
-//
-//                FileDet fileDet = commonService.uploadFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
-
-                FileDet fileDet = commonService.fileUploadComm(jwtUser, file, fileId, fileSeq);
+                FileDet fileDet = commonService.fileImageUploadComm(jwtUser, file, fileId, fileSeq); // 상품컨텐츠에는 반드시 이미지만 들어간다.
                 if (fileId == 0) {
                     fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
                     insertProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의
@@ -122,6 +110,130 @@ public class ProductContentListService {
         Integer deletedRowCnt = productContentListDao.deleteProductContents(deleteProductContents);
         if (!deletedRowCnt.equals(1)) {
             throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "정보 삭제 중 문제 발생, 점검!");
+        }
+    }
+
+    /**
+     * 상품관리-상품컨텐츠목록 조회
+     * @param pageRequest
+     * @return 페이징된 ProductContent List
+     */
+    public PageResponse<ProductContentListResponse.ProductInfo> selectProductInfoList(PageRequest<ProductContentListRequest.ProductInfoListFilter> pageRequest, User jwtUser) {
+//        pageRequest.getFilter().setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
+//        pageRequest.getFilter().setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
+        return productContentListDao.selectProductInfoList(pageRequest);
+    }
+
+    /**
+     * 상품관리-연결상품정보 목록 조회
+     * @param contentsProductInfoListFilter
+     * @return ContentProductInfo List
+     */
+    public List<ProductContentListResponse.ContentProductInfo> selectContentsProductInfoList(ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter, User jwtUser) {
+        return productContentListDao.selectContentsProductInfoList(contentsProductInfoListFilter);
+    }
+
+    /**
+     * 신규 연결상품 데이터 추가
+     * @param insertContentsProductList
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void insertContentsProductList(List<ProductContentListRequest.InsertContentsProduct> insertContentsProductList, User jwtUser) {
+        int insertedRowCnt = 0;
+        for (ProductContentListRequest.InsertContentsProduct insertContentsProduct : insertContentsProductList) {
+            insertContentsProduct.setCreUser(jwtUser.getLoginId());
+            insertContentsProduct.setUpdUser(jwtUser.getLoginId());
+
+            insertedRowCnt += productContentListDao.insertContentsProduct(insertContentsProduct);
+        }
+        if (insertedRowCnt != insertContentsProductList.size()) {
+            throw new CustomRuntimeException("추가하고자 하는 연결상품 일부의 추가 동작이 누락 혹은 정상적으로 이루어지지 아니함");
+        }
+    }
+
+    /**
+     * 전달된 컨텐츠 식별자(contentsId) 에 대응하는 contentsProduct 의 seq 변환, 기존 from seq 에 대응하는 요소를 to seq 로 이동,
+     * 또한 이들을 포함한 중간 요소들의 seq를 from to seq 의 대소비교 결과에 따라 +-1씩 조정
+     *
+     * @param updateContentsProductSeq
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void updateContentsProductSeq(ProductContentListRequest.UpdateContentsProductSeq updateContentsProductSeq, User jwtUser) {
+        if (updateContentsProductSeq.getFromSeq() == null ||  updateContentsProductSeq.getToSeq() == null || updateContentsProductSeq.getFromSeq().equals(updateContentsProductSeq.getToSeq())) {
+            throw new IllegalArgumentException("from seq, to Seq 값 중 일부가 부재함 혹은 이들이 고유하여 요청 처리에 사용할 수 없음");
+        }
+
+        ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter = new ProductContentListRequest.ContentsProductInfoListFilter();
+        contentsProductInfoListFilter.setContentsId(updateContentsProductSeq.getContentsId());
+
+        List<ProductContentListResponse.ContentProductInfo> contentsProductInfoList = productContentListDao.selectContentsProductInfoList(contentsProductInfoListFilter);
+        List<ProductContentListRequest.UpdateContentsProduct> updateContentsProductDtoList = new ArrayList<>();
+
+        if (updateContentsProductSeq.getFromSeq() < updateContentsProductSeq.getToSeq()) {
+            // 하단 행으로의 이동
+
+            // 조회된 배열 요소 중 fromSeq 이상 toSeq 이하에 대응하는 seq 를 갖는 요소만을 필터링
+            List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
+                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getFromSeq() && contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getToSeq()
+            )).toList();
+
+            updateContentsProductDtoList = contentsProductInfoListFromSeqToDestSeq.stream().map((contentProductInfo) -> {
+                ProductContentListRequest.UpdateContentsProduct updateContentsProductDto = new ProductContentListRequest.UpdateContentsProduct();
+
+                if (Objects.equals(contentProductInfo.getContentsProductSeq(), updateContentsProductSeq.getFromSeq())) {
+                    // 이동하고자 하는 대상 요소에 대응하는 요소
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(updateContentsProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
+
+                    return updateContentsProductDto;
+                } else {
+                    // 이외에는 -1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 위로 이동)
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(contentProductInfo.getContentsProductSeq() - 1); // 이동하고자 하는 seq(기존 seq - 1) 할당
+
+                    return updateContentsProductDto;
+                }
+            }).toList();
+
+            //contentsProductInfoList.subList()
+
+        } else if (updateContentsProductSeq.getToSeq() < updateContentsProductSeq.getFromSeq()) {
+            // 상단 행으로의 이동
+
+            // 조회된 배열 요소 중 fromSeq 이하 toSeq 이상에 대응하는 seq 를 갖는 요소만을 필터링
+            List<ProductContentListResponse.ContentProductInfo> contentsProductInfoListFromSeqToDestSeq = contentsProductInfoList.stream().filter((contentProductInfo ->
+                    contentProductInfo.getContentsProductSeq() >= updateContentsProductSeq.getToSeq() && contentProductInfo.getContentsProductSeq() <= updateContentsProductSeq.getFromSeq()
+            )).toList();
+
+            updateContentsProductDtoList = contentsProductInfoListFromSeqToDestSeq.stream().map((contentProductInfo) -> {
+                ProductContentListRequest.UpdateContentsProduct updateContentsProductDto = new ProductContentListRequest.UpdateContentsProduct();
+
+                if (Objects.equals(contentProductInfo.getContentsProductSeq(), updateContentsProductSeq.getFromSeq())) {
+                    // 이동하고자 하는 대상 요소에 대응하는 요소
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(updateContentsProductSeq.getToSeq()); // 이동하고자 하는 seq(to) 할당
+
+                    return updateContentsProductDto;
+                } else {
+                    // 이외에는 +1씩 조정(나머지 요소는 fromSeq 에 대응하는 요소가 이동한 공백을 채우려 한칸씩 아래로 이동)
+                    updateContentsProductDto.setId(contentProductInfo.getContentsProductId()); // 수정에 필요한 식별자 할당
+                    updateContentsProductDto.setSeq(contentProductInfo.getContentsProductSeq() + 1); // 이동하고자 하는 seq(기존 seq + 1) 할당
+
+                    return updateContentsProductDto;
+                }
+            }).toList();
+        }
+        int insertedRowCnt = 0;
+        for (ProductContentListRequest.UpdateContentsProduct updateContentsProduct : updateContentsProductDtoList) {
+            updateContentsProduct.setCreUser(jwtUser.getLoginId());
+            updateContentsProduct.setUpdUser(jwtUser.getLoginId());
+
+            insertedRowCnt += productContentListDao.updateContentsProduct(updateContentsProduct);
+        }
+        if (insertedRowCnt != updateContentsProductDtoList.size()) {
+            throw new CustomRuntimeException("순서를 수정하고자 하는 연결상품 일부의 수정 동작이 누락 혹은 정상적으로 이루어지지 아니함");
         }
     }
 }

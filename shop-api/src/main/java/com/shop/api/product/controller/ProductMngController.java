@@ -3,8 +3,6 @@ package com.shop.api.product.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.product.service.ProductMngService;
-import com.shop.core.biz.common.vo.request.PageRequest;
-import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
@@ -71,6 +69,23 @@ public class ProductMngController {
     }
 
     /**
+     * 상품관리-카테고리 연결상품정보 목록 조회
+     *
+     * @param categoryProductInfoFilter
+     * @return 카테고리 연결상품정보 목록
+     */
+    @AccessLog("카테고리 연결상품정보 목록")
+    @GetMapping(value = "/categoryProductInfoList")
+    @Operation(summary = "카테고리 연결상품정보 목록")
+    public ApiResponse<List<ProductMngResponse.CategoryProductInfo>> selectCategoryProductInfoList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductMngRequestCategoryProductInfoFilter", description = "카테고리 연결상품정보목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.CategoryProductInfoFilter categoryProductInfoFilter
+    ) {
+        List<ProductMngResponse.CategoryProductInfo> response = productMngService.selectCategoryProductInfoList(categoryProductInfoFilter, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
      * 상품정보 및 상품상세정보 추가(혹은 product 식별자(id) 가 주어질 시 상품상세정보 추가)
      *
      * @param insertProductInfo
@@ -84,6 +99,26 @@ public class ProductMngController {
             @RequestBody ProductMngRequest.InsertProductInfo insertProductInfo
     ) {
         productMngService.insertProductInfo(insertProductInfo, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 상품상세정보 추가
+     *
+     * @param insertProductDet
+     * @return
+     */
+    @AccessLog("상품상세정보 추가")
+    @PutMapping(value = "/insertProductDet")
+    @Operation(summary = "상품상세정보 추가")
+    public ApiResponse<Void> insertProductDet(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.InsertProductDet insertProductDet
+    ) {
+        Integer insertedRowCnt = productMngService.insertProductDet(insertProductDet, jwtUser);
+        if (insertedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_CREATE);
+        }
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 
@@ -164,6 +199,99 @@ public class ProductMngController {
         if (deletedRowCnt != 1) {
             return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
         }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 상품관리-일부 제외된 상품정보 조회
+     *
+     * @param productInfoWithExclusionFilter
+     * @return 조회된 ProductInfoByExclusion List
+     */
+    @AccessLog("상품목록 조회")
+    @GetMapping(value = "/prodInfoListWithExclusion")
+    @Operation(summary = "상품목록 조회")
+    public ApiResponse<List<ProductMngResponse.ProductInfoByExclusion>> selectProdInfoListWithExclusion(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductMngRequestProductInfoFilter", description = "상품목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductInfoWithExclusionFilter productInfoWithExclusionFilter
+    ) {
+        List<ProductMngResponse.ProductInfoByExclusion> response = productMngService.selectProdInfoListWithExclusion(productInfoWithExclusionFilter, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
+     * 신규 카테고리 연결상품 데이터 추가
+     *
+     * @param insertCategoryProduct
+     * @return
+     */
+    @AccessLog("카테고리 연결상품 데이터 추가")
+    @PatchMapping(value = "/insertCategoryProduct")
+    @Operation(summary = "카테고리 연결상품 데이터 추가")
+    public ApiResponse<Void> insertCategoryProduct(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.InsertCategoryProduct insertCategoryProduct
+    ) {
+        Integer insertedRowCnt = productMngService.insertCategoryProduct(insertCategoryProduct, jwtUser);
+        if (insertedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_CREATE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 기존 카테고리 연결상품 데이터 수정
+     *
+     * @param updateCategoryProduct
+     * @return
+     */
+    @AccessLog("카테고리 연결상품 데이터 수정")
+    @PatchMapping(value = "/updateCategoryProduct")
+    @Operation(summary = "카테고리 연결상품 데이터 수정")
+    public ApiResponse<Void> updateCategoryProduct(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.UpdateCategoryProduct updateCategoryProduct
+    ) {
+        Integer updatedRowCnt = productMngService.updateCategoryProduct(updateCategoryProduct, jwtUser);
+        if (updatedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_UPDATE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 카테고리 연결상품 데이터 삭제
+     *
+     * @param deleteCategoryProduct
+     * @return
+     */
+    @AccessLog("카테고리 연결상품 데이터 삭제")
+    @PatchMapping(value = "/deleteCategoryProduct")
+    @Operation(summary = "카테고리 연결상품 데이터 삭제")
+    public ApiResponse<Void> deleteCategoryProduct(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.DeleteCategoryProduct deleteCategoryProduct
+    ) {
+        Integer deletedRowCnt = productMngService.deleteCategoryProduct(deleteCategoryProduct, jwtUser);
+        if (deletedRowCnt != 1) {
+            return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 전달된 카테고리 식별자(categoryId) 에 대응하는 categoryProduct 의 seq 변환
+     *
+     * @param updateCategoryProductSeq
+     * @return
+     */
+    @Operation(summary = "categoryProduct 의 seq 변환", description = "categoryProduct 의 seq 를 주어진 인자를 통해 변환합니다.")
+    @PatchMapping("/updateCategoryProductSeq")
+    public ApiResponse<Void> updateCategoryProductSeq(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductMngRequest.UpdateCategoryProductSeq updateCategoryProductSeq
+    ) {
+        productMngService.updateCategoryProductSeq(updateCategoryProductSeq, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 }

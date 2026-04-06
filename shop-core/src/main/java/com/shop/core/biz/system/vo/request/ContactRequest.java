@@ -33,7 +33,8 @@ public class ContactRequest {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ContactRequestPagingFilter", description = "접속로그 페이징 필터", type = "object")
     @ParameterObject
-    public class PagingFilter implements RequestFilter {
+    public static class PagingFilter implements RequestFilter {
+
         @Schema(required = false)
         @Parameter(description = "로그인 ID")
         private String loginId;
@@ -69,7 +70,7 @@ public class ContactRequest {
     @Setter
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ContactRequestCreate", description = "접속로그 생성 요청 파라미터")
-    public class Create extends Contact {
+    public static class Create extends Contact {
         @Schema(description = "상위코드", required = false)
         private String upMenuCd;
 
@@ -90,7 +91,7 @@ public class ContactRequest {
     @Setter
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ContactRequestUpdate", description = "접속로그 수정 요청 파라미터")
-    public class Update extends Contact {
+    public static class Update extends Contact {
     }
 
     @Getter

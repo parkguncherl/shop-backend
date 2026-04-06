@@ -104,4 +104,73 @@ public class ProductContentListController {
             return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
         }
     }
+
+    /**
+     * 상품정보목록 조회(페이징)
+     *
+     * @param productInfoListFilter
+     * @return 페이징 동작에 대응하여 조회된 상품정보목록
+     */
+    @AccessLog("상품정보 목록 조회(페이징)")
+    @GetMapping(value = "/productInfoListPaging")
+    @Operation(summary = "상품정보 목록 조회(페이징)")
+    public ApiResponse<PageResponse<ProductContentListResponse.ProductInfo>> selectProductInfoList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductContentListRequestProductInfoListFilter", description = "상품정보목록 조회 필터", in = ParameterIn.QUERY) ProductContentListRequest.ProductInfoListFilter productInfoListFilter,
+            @Parameter(name = "PageRequest", description = "상품정보목록 조회 페이징") PageRequest<ProductContentListRequest.ProductInfoListFilter> pageRequest
+    ) {
+        pageRequest.setFilter(productInfoListFilter);
+        PageResponse<ProductContentListResponse.ProductInfo> response = productContentListService.selectProductInfoList(pageRequest, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
+     * 상품관리-연결상품정보 목록 조회
+     *
+     * @param contentsProductInfoListFilter
+     * @return 연결상품정보 목록
+     */
+    @AccessLog("연결상품정보 목록")
+    @GetMapping(value = "/contentsProductInfoList")
+    @Operation(summary = "연결상품정보 목록")
+    public ApiResponse<List<ProductContentListResponse.ContentProductInfo>> selectContentsProductInfoList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductContentListRequestContentsProductInfoListFilter", description = "연결상품정보목록 조회 필터", in = ParameterIn.QUERY) ProductContentListRequest.ContentsProductInfoListFilter contentsProductInfoListFilter
+    ) {
+        List<ProductContentListResponse.ContentProductInfo> response = productContentListService.selectContentsProductInfoList(contentsProductInfoListFilter, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
+     * 신규 연결상품 데이터 추가
+     *
+     * @param insertContentsProductList
+     * @return
+     */
+    @Operation(summary = "신규 연결상품 데이터 추가", description = "신규 연결상품 데이터를 추가합니다.")
+    @PutMapping("/insertContentsProductList")
+    public ApiResponse<Void> insertContentsProductList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody List<ProductContentListRequest.InsertContentsProduct> insertContentsProductList
+    ) {
+        productContentListService.insertContentsProductList(insertContentsProductList, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 전달된 컨텐츠 식별자(contentsId) 에 대응하는 contentsProduct 의 seq 변환
+     *
+     * @param updateContentsProductSeq
+     * @return
+     */
+    @Operation(summary = "contentsProduct 의 seq 변환", description = "contentsProduct 의 seq 를 주어진 인자를 통해 변환합니다.")
+    @PatchMapping("/updateContentsProductSeq")
+    public ApiResponse<Void> updateContentsProductSeq(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ProductContentListRequest.UpdateContentsProductSeq updateContentsProductSeq
+    ) {
+        productContentListService.updateContentsProductSeq(updateContentsProductSeq, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
 }

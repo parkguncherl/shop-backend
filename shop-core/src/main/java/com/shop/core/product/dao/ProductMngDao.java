@@ -1,7 +1,5 @@
 package com.shop.core.product.dao;
 
-import com.shop.core.biz.common.vo.request.PageRequest;
-import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.product.vo.request.ProductMngRequest;
 import com.shop.core.product.vo.response.ProductMngResponse;
 import lombok.RequiredArgsConstructor;
@@ -48,11 +46,20 @@ public class ProductMngDao {
     }
 
     /**
+     * 상품관리-카테고리 연결상품정보 목록 조회
+     * @param categoryProductInfoFilter
+     * @return CategoryProductInfo List
+     */
+    public List<ProductMngResponse.CategoryProductInfo> selectCategoryProductInfoList(ProductMngRequest.CategoryProductInfoFilter categoryProductInfoFilter) {
+        return sqlSession.selectList(NAMESPACE + "selectCategoryProductInfoList", categoryProductInfoFilter);
+    }
+
+    /**
      * 상품관리-상품정보 추가
      * @param insertProduct
      * @return inserted row's cnt
      */
-    public Integer insertProduct(ProductMngRequest.InsertProduct insertProduct) {
+    public int insertProduct(ProductMngRequest.InsertProduct insertProduct) {
         return sqlSession.insert(NAMESPACE + "insertProduct", insertProduct);
     }
 
@@ -61,7 +68,7 @@ public class ProductMngDao {
      * @param insertProductDet
      * @return inserted row's cnt
      */
-    public Integer insertProductDet(ProductMngRequest.InsertProductDet insertProductDet) {
+    public int insertProductDet(ProductMngRequest.InsertProductDet insertProductDet) {
         return sqlSession.insert(NAMESPACE + "insertProductDet", insertProductDet);
     }
 
@@ -70,7 +77,7 @@ public class ProductMngDao {
      * @param updateProduct
      * @return updated row's cnt
      */
-    public Integer updateProduct(ProductMngRequest.UpdateProduct updateProduct) {
+    public int updateProduct(ProductMngRequest.UpdateProduct updateProduct) {
         return sqlSession.update(NAMESPACE + "updateProduct", updateProduct);
     }
 
@@ -79,7 +86,7 @@ public class ProductMngDao {
      * @param updateProductDet
      * @return updated row's cnt
      */
-    public Integer updateProductDet(ProductMngRequest.UpdateProductDet updateProductDet) {
+    public int updateProductDet(ProductMngRequest.UpdateProductDet updateProductDet) {
         return sqlSession.update(NAMESPACE + "updateProductDet", updateProductDet);
     }
 
@@ -88,7 +95,7 @@ public class ProductMngDao {
      * @param deleteProduct
      * @return deleted row's cnt
      */
-    public Integer deleteProduct(ProductMngRequest.DeleteProduct deleteProduct) {
+    public int deleteProduct(ProductMngRequest.DeleteProduct deleteProduct) {
         return sqlSession.update(NAMESPACE + "deleteProduct", deleteProduct);
     }
 
@@ -97,7 +104,43 @@ public class ProductMngDao {
      * @param deleteProductDet
      * @return deleted row's cnt
      */
-    public Integer deleteProductDet(ProductMngRequest.DeleteProductDet deleteProductDet) {
+    public int deleteProductDet(ProductMngRequest.DeleteProductDet deleteProductDet) {
         return sqlSession.update(NAMESPACE + "deleteProductDet", deleteProductDet);
+    }
+
+    /**
+     * 상품관리-일부 제외된 상품정보 조회
+     * @param productInfoWithExclusionFilter
+     * @return ProductInfoByExclusion List
+     */
+    public List<ProductMngResponse.ProductInfoByExclusion> selectProdInfoListWithExclusion(ProductMngRequest.ProductInfoWithExclusionFilter productInfoWithExclusionFilter) {
+        return sqlSession.selectList(NAMESPACE + "selectProdInfoListWithExclusion", productInfoWithExclusionFilter);
+    }
+
+    /**
+     * 신규 카테고리 연결상품 데이터 추가
+     * @param insertCategoryProduct
+     * @return 추가된 행의 수
+     */
+    public int insertCategoryProduct(ProductMngRequest.InsertCategoryProduct insertCategoryProduct) {
+        return sqlSession.insert(NAMESPACE + "insertCategoryProduct", insertCategoryProduct);
+    }
+
+    /**
+     * 기존 카테고리 연결상품 데이터 수정
+     * @param updateCategoryProduct
+     * @return 추가된 행의 수
+     */
+    public int updateCategoryProduct(ProductMngRequest.UpdateCategoryProduct updateCategoryProduct) {
+        return sqlSession.update(NAMESPACE + "updateCategoryProduct", updateCategoryProduct);
+    }
+
+    /**
+     * 카테고리 연결상품 데이터 삭제
+     * @param deleteCategoryProduct
+     * @return 삭제된 행의 수
+     */
+    public int deleteCategoryProduct(ProductMngRequest.DeleteCategoryProduct deleteCategoryProduct) {
+        return sqlSession.update(NAMESPACE + "deleteCategoryProduct", deleteCategoryProduct);
     }
 }

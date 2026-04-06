@@ -74,4 +74,95 @@
         WHERE ID = #{id}
     </update>
 
+    <select id="selectProductInfoList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ProductInfo">
+        /* com.shop.mapper.product.productContentList.selectProductInfoList */
+        SELECT
+              TP.ID AS id
+            , TP.PROD_CD AS prodCd
+            , TP.PROD_TP AS prodTp
+            , TP.PROD_NM AS prodNm
+            , TP.ORG_AMT AS orgAmt
+            , TP.SELL_AMT AS sellAmt
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
+            , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
+            , TP.DISCOUNT_RATE AS discountRate
+            , (SELECT COUNT(1) FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N') AS contentsProductCnt
+        FROM TB_PRODUCT TP
+        <where>
+            AND TP.DEL_YN = 'N'
+            AND NOT EXISTS (SELECT 1 FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.CONTENTS_ID = #{filter.contentsId})
+            <if test='filter.prodNm != null and !filter.prodNm.equals("")'>
+                AND TP.PROD_NM LIKE CONCAT('%' ,#{filter.prodNm} ,'%')
+            </if>
+            <if test="filter.lastId != null">
+                AND (
+                TP.ID > #{filter.lastId}
+                )
+            </if>
+        </where>
+        ORDER BY TP.PROD_NM
+        LIMIT #{pageRowCount} + 1;
+    </select>
+
+    <select id="selectContentsProductInfoList" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$ContentsProductInfoListFilter" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ContentProductInfo">
+        /* com.shop.mapper.product.productContentList.selectContentsProductInfoList */
+        SELECT
+              TP.ID AS id
+            , CP.ID AS contentsProductId
+            , CP.SEQ AS contentsProductSeq
+            , TP.PROD_NM AS prodNm
+            , TP.SELL_AMT AS sellAmt
+            , TP.REP_FILE_ID AS repFileId
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
+            , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
+            , TP.DISCOUNT_RATE AS discountRate
+        FROM TB_PRODUCT TP
+        JOIN TB_CONTENTS_PRODUCT CP ON CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N'
+        <where>
+            AND TP.DEL_YN = 'N'
+            AND CP.CONTENTS_ID = #{contentsId}
+        </where>
+        GROUP BY TP.ID, CP.ID
+        ORDER BY CP.SEQ
+    </select>
+
+    <insert id="insertContentsProduct" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$InsertContentsProduct">
+        /* com.shop.mapper.product.productContentList.insertContentsProduct */
+        INSERT INTO TB_CONTENTS_PRODUCT (
+            SEQ ,
+            CONTENTS_ID ,
+            PRODUCT_ID,
+            CRE_USER,
+            UPD_USER
+        ) VALUES (
+            get_next_contents_product_seq(#{contentsId}) ,
+            #{contentsId} ,
+            #{productId} ,
+            #{creUser} ,
+            #{updUser}
+        )
+    </insert>
+
+    <update id="updateContentsProduct" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$UpdateContentsProduct">
+        /* com.shop.mapper.product.productContentList.updateContentsProduct */
+        UPDATE TB_CONTENTS_PRODUCT
+        SET
+        <if test='seq != null'>
+            SEQ = #{seq},
+        </if>
+        <if test='contentsId != null'>
+            CONTENTS_ID = #{contentsId},
+        </if>
+        <if test='productId != null'>
+            PRODUCT_ID =  #{productId},
+        </if>
+            UPD_USER = #{updUser},
+            UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
 </mapper>

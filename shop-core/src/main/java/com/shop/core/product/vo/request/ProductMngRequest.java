@@ -1,5 +1,6 @@
 package com.shop.core.product.vo.request;
 
+import com.shop.core.entity.CategoryProduct;
 import com.shop.core.entity.Product;
 import com.shop.core.entity.ProductDet;
 import com.shop.core.interfaces.RequestFilter;
@@ -30,6 +31,15 @@ public class ProductMngRequest {
 
         @Schema(description = "상품상세컬러")
         private String prodDetColor;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestCategoryProductInfoFilter", description = "카테고리 연결상품정보 필터")
+    public static class CategoryProductInfoFilter implements RequestFilter {
+
+        @Schema(description = "대응되는 category id")
+        private Integer categoryId;
     }
 
     @Getter
@@ -87,5 +97,56 @@ public class ProductMngRequest {
 
         @Schema(description = "수정자")
         private String updUser;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestProductInfoWithExclusionFilter", description = "제외를 포함하는 상품 정보 필터")
+    public static class ProductInfoWithExclusionFilter implements RequestFilter {
+
+        @Schema(description = "상품명")
+        private String prodNm;
+
+        @Schema(description = "카테고리 id(lower partnerCode id)")
+        private Integer categoryId;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestInsertCategoryProduct", description = "카테고리 연결상품 추가 요청")
+    public static class InsertCategoryProduct extends CategoryProduct {
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestUpdateCategoryProduct", description = "카테고리 연결상품 수정 요청")
+    public static class UpdateCategoryProduct extends CategoryProduct {
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestDeleteCategoryProduct", description = "카테고리 연결상품 삭제 요청")
+    public static class DeleteCategoryProduct {
+
+        @Schema(description = "아이디(PK)")
+        private Integer id;
+
+        @Schema(description = "수정자")
+        private String updUser;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductMngRequestUpdateCategoryProductSeq", description = "카테고리 연결상품(categoryProduct) seq 수정 요청")
+    public static class UpdateCategoryProductSeq {
+
+        @Schema(description = "대상 요소의 기존 seq")
+        private Integer fromSeq;
+
+        @Schema(description = "대상 요소가 지망하는 seq")
+        private Integer toSeq;
+
+        @Schema(description = "(연결상품의 부분집합을 식별 가능토록 하는) 카테고리 id")
+        private Integer categoryId;
     }
 }

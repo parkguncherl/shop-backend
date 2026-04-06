@@ -78,10 +78,9 @@ public class FileDao {
      * 파일_등록
      *
      * @param fileDet
-     * @return
      */
-    public Integer insertFileDet(FileDet fileDet) {
-        return sqlSession.insert(PRE_NS.concat("insertFileDet"), fileDet);
+    public void insertFileDet(FileDet fileDet) {
+        sqlSession.insert(PRE_NS.concat("insertFileDet"), fileDet);
     }
 
 

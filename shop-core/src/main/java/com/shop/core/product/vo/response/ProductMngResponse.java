@@ -1,5 +1,6 @@
 package com.shop.core.product.vo.response;
 
+import com.shop.core.entity.CategoryProduct;
 import com.shop.core.entity.Product;
 import com.shop.core.entity.ProductDet;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,6 +45,9 @@ public class ProductMngResponse {
 
         @Schema(description = "기타이미지 개수")
         private Integer etcFileIdCnt;
+
+        @Schema(description = "시즌")
+        private String season;
     }
 
     @Getter
@@ -51,5 +55,53 @@ public class ProductMngResponse {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductMngResponseProductDetInfo", description = "상품관리 영역 상품상세정보", type = "object")
     public static class ProductDetInfo extends ProductDet {
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode(callSuper = false)
+    @Schema(name = "ProductMngResponseProductInfoByExclusion", description = "상품관리 영역 제외를 포함하는 상품정보", type = "object")
+    public static class ProductInfoByExclusion extends Product {
+
+        @Schema(description = "상품구분명")
+        private String prodTpNm;
+
+        @Schema(description = "상품상세구분명")
+        private String prodDetTpNm;
+
+        @Schema(description = "색상(종류 나열)")
+        private String prodColors;
+
+        @Schema(description = "사이즈(종류 나열)")
+        private String prodSizes;
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode(callSuper = false)
+    @Schema(name = "ProductMngResponseCategoryProductInfo", description = "카테고리 연결상품정보", type = "object")
+    public static class CategoryProductInfo extends Product {
+
+        @Schema(description = "색상(종류 나열)")
+        private String prodColors;
+
+        @Schema(description = "사이즈(종류 나열)")
+        private String prodSizes;
+
+        /** 이하 CategoryProduct 테이블 관련 */
+        @Schema(description = "카테고리 연결상품정보 아이디(PK)")
+        private Integer categoryProductId;
+
+        @Schema(description = "카테고리 연결상품정보 카테고리명")
+        private String categoryNm;
+
+        @Schema(description = "순서")
+        private Integer seq;
+
+        @Schema(description = "카테고리 id")
+        private Integer categoryId;
+
+//        @Schema(description = "상품 id")
+//        private Integer productId;
     }
 }

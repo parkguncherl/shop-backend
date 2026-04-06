@@ -33,6 +33,10 @@
             , TP.IS_SUMMER
             , TP.IS_AUTUMN
             , TP.IS_WINTER
+            , CONCAT(CASE WHEN TP.IS_SPRING = 'Y' THEN 'S' ELSE '_' END,
+                     CASE WHEN TP.IS_SUMMER = 'Y' THEN 'S' ELSE '_' END,
+                     CASE WHEN TP.IS_AUTUMN = 'Y' THEN 'F' ELSE '_' END,
+                     CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END) AS SEASON
         FROM TB_PRODUCT TP
               LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
         <where>
@@ -68,6 +72,49 @@
             </if>
         </where>
         ORDER BY TPD.ID
+    </select>
+
+    <select id="selectCategoryProductInfoList" parameterType="com.shop.core.product.vo.request.ProductMngRequest$CategoryProductInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$CategoryProductInfo">
+        /* com.shop.mapper.product.productMng.selectCategoryProductInfoList */
+        SELECT
+              TP.ID AS id
+            , TP.PARTNER_ID AS partnerId
+            , TP.PROD_CD AS prodCd
+            , TP.PROD_NM AS prodNm
+            , TP.PROD_TP AS prodTp
+            , TP.PROD_DET_TP AS prodDetTp
+            , TP.COMPOSITION AS composition
+            , TP.REP_FILE_ID AS repFileId
+            , TP.DETAIL_FILE_ID AS detailFileId
+            , TP.SIZE_FILE_ID AS sizeFileId
+            , TP.ETC_FILE_ID AS etcFileId
+            , TP.MAKE_YMD AS makeYmd
+            , TP.ORG_AMT AS orgAmt
+            , TP.SELL_AMT AS sellAmt
+            , TP.DISCOUNT_RATE AS discountRate
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , TP.IS_SPRING
+            , TP.IS_SUMMER
+            , TP.IS_AUTUMN
+            , TP.IS_WINTER
+            , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
+            , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
+            , CPD.ID AS categoryProductId
+            , FN_GET_PARTNER_CODE_ID(CPD.CATEGORY_ID) AS categoryNm
+            , CPD.SEQ AS seq
+            , CPD.CATEGORY_ID AS categoryId
+        FROM TB_PRODUCT TP
+        JOIN TB_CATEGORY_PRODUCT CPD ON TP.ID = CPD.PRODUCT_ID AND CPD.DEL_YN = 'N'
+        LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        <where>
+            AND TP.DEL_YN = 'N'
+            <if test='categoryId != null'>
+                AND CPD.CATEGORY_ID = #{categoryId}
+            </if>
+        </where>
+        GROUP BY TP.ID, CPD.ID
+        ORDER BY CPD.SEQ;
     </select>
 
     <insert id="insertProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertProduct" useGeneratedKeys="true" keyProperty="id">
@@ -172,6 +219,9 @@
         <if test="fileId != null">
             , FILE_ID
         </if>
+        <if test="productDetCntn != null">
+            , PRODUCT_DET_CNTN
+        </if>
             , SLEEP_YN
             , CRE_USER
             , UPD_USER
@@ -184,6 +234,9 @@
         <if test="fileId != null">
             , #{fileId}
         </if>
+        <if test="productDetCntn != null">
+            , #{productDetCntn}
+        </if>
             , #{sleepYn}
             , #{creUser}
             , #{updUser}
@@ -191,7 +244,7 @@
     </insert>
 
     <update id="updateProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateProduct">
-        /* com.shop.mapper.menu.updateProduct */
+        /* com.shop.mapper.product.productMng.updateProduct */
         UPDATE TB_PRODUCT SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -227,7 +280,7 @@
     </update>
 
     <update id="updateProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateProductDet">
-        /* com.shop.mapper.menu.updateProductDet */
+        /* com.shop.mapper.product.productMng.updateProductDet */
         UPDATE TB_PRODUCT_DET SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -259,7 +312,7 @@
     </update>
 
     <update id="deleteProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProduct">
-        /* com.shop.mapper.menu.deleteProduct */
+        /* com.shop.mapper.product.productMng.deleteProduct */
         UPDATE TB_PRODUCT SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -268,9 +321,86 @@
     </update>
 
     <update id="deleteProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProductDet">
-        /* com.shop.mapper.menu.deleteProductDet */
+        /* com.shop.mapper.product.productMng.deleteProductDet */
         UPDATE TB_PRODUCT_DET SET
               UPD_TM   = NOW()
+            , UPD_USER = #{updUser}
+            , DEL_YN = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+    <select id="selectProdInfoListWithExclusion" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoWithExclusionFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfoByExclusion">
+        /* com.shop.mapper.product.productMng.selectProdInfoListWithExclusion */
+        SELECT
+              TP.ID AS id
+            , TP.PARTNER_ID AS partnerId
+            , TP.PROD_CD AS prodCd
+            , TP.PROD_NM AS prodNm
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
+            , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
+        FROM TB_PRODUCT TP
+            LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        <where>
+            AND TP.DEL_YN = 'N'
+            <if test='prodNm != null and !prodNm.equals("")'>
+                AND TP.PROD_NM LIKE CONCAT('%' ,#{prodNm} ,'%')
+            </if>
+            AND NOT EXISTS (
+                SELECT 1 FROM TB_CATEGORY_PRODUCT CPD
+                <where>
+                    AND CPD.DEL_YN = 'N'
+                    AND CPD.PRODUCT_ID = TP.ID
+                    <if test="categoryId != null">
+                        AND CPD.CATEGORY_ID = #{categoryId}
+                    </if>
+                </where>
+            )
+        </where>
+        GROUP BY TP.ID
+        ORDER BY TP.ID;
+    </select>
+
+    <insert id="insertCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertCategoryProduct">
+        /* com.shop.mapper.product.productMng.insertCategoryProduct */
+        INSERT INTO TB_CATEGORY_PRODUCT (
+            SEQ ,
+            CATEGORY_ID ,
+            PRODUCT_ID,
+            CRE_USER,
+            UPD_USER
+        ) VALUES (
+            get_next_category_product_seq(#{categoryId}) ,
+            #{categoryId} ,
+            #{productId} ,
+            #{creUser} ,
+            #{updUser}
+        )
+    </insert>
+
+    <update id="updateCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateCategoryProduct">
+        /* com.shop.mapper.product.productMng.updateCategoryProduct */
+        UPDATE TB_CATEGORY_PRODUCT
+        SET
+        <if test='seq != null'>
+            SEQ = #{seq},
+        </if>
+        <if test='categoryId != null'>
+            CATEGORY_ID = #{categoryId},
+        </if>
+        <if test='productId != null'>
+            PRODUCT_ID =  #{productId},
+        </if>
+        UPD_USER = #{updUser},
+        UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deleteCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteCategoryProduct">
+        /* com.shop.mapper.product.productMng.deleteCategoryProduct */
+        UPDATE TB_CATEGORY_PRODUCT SET
+              UPD_TM = NOW()
             , UPD_USER = #{updUser}
             , DEL_YN = 'Y'
         WHERE ID = #{id}

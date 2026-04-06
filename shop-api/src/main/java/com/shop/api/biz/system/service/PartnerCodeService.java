@@ -106,6 +106,12 @@ public class PartnerCodeService {
                 partnerCodeUpper = partnerCode.getCodeUpper();
             }
 
+
+            if("NO_CODECD_AUTO_INCREMENT".equals(codeRequest.getCreateType())) {
+                Integer codeVal = this.getAutoGenCodeCd(user.getPartnerId(), partnerCodeUpper);
+                partnerCode.setCodeCd(codeVal.toString());
+            }
+
            if(StringUtils.isEmpty(partnerCode.getCodeCd())){
                     throw new CustomRuntimeException(ApiResultCode.FAIL, "코드값이 존재하지 않습니다.");
                 }
@@ -191,4 +197,14 @@ public class PartnerCodeService {
         return true;
     }
 
+    /**
+     * 코드_값 조회 ( 자동생성되게하기 위해 )
+     *
+     * @param partnerId
+     * @param codeUpper
+     * @return
+     */
+    public Integer getAutoGenCodeCd(Integer partnerId, String codeUpper) {
+        return partnerCodeDao.getAutoGenCodeCd(partnerId, codeUpper);
+    }
 }
