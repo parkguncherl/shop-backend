@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mappers.partner">
+    <sql id="partnerColumns">
+          ID                    AS id
+        , UPPER_PARTNER_ID      AS upperPartnerId
+        , FILE_ID               AS fileId
+        , LOGIS_ID              AS logisId
+        , PARTNER_NM            AS partnerNm
+        , SHORT_NM              AS shortNm
+        , PARTNER_TEL_NO        AS partnerTelNo
+        , REP_NM                AS repNm
+        , REP_TEL_NO            AS repTelNo
+        , COMP_NO               AS compNo
+        , DETAIL_INFO           AS detailInfo
+        , PARTNER_EMAIL         AS partnerEmail
+        , CRE_USER              AS creUser
+        , CRE_TM                AS creTm
+        , UPD_USER              AS updUser
+        , UPD_TM                AS updTm
+        , DEL_YN                AS deleteYn
+        , ADD_TIME              AS addTime
+        , ETC_ACC_CNTN          AS etcAccCntn
+        , MISONG_YN             AS misongYn
+        , SIZE_INFO             AS sizeInfo
+        , ORDER_SHORT_NM        AS orderShortNm
+        , ORDER_SEQ             AS orderSeq
+    </sql>
+
+    <select id="selectPartnerListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Paging">
+        /* com.shop.mapper.partner.selectPartnerListPaging */
+        SELECT
+              COUNT(1) OVER() AS totalRowCount,
+              ROW_NUMBER() OVER(ORDER BY TP.ID ASC) AS no,
+              TP.ID AS id,
+              TP.UPPER_PARTNER_ID AS upperPartnerId,
+              UPPER_TP.PARTNER_NM AS upperPartnerNm,  -- 셀프 조인을 통해 UPPER_PARTNER_ID의 PARTNER_NM을 가져옴
+              TP.FILE_ID AS fileId,
+              TP.LOGIS_ID AS logisId,
+              TP.PARTNER_NM AS partnerNm,
+              TP.SHORT_NM AS shortNm,
+              TP.PARTNER_TEL_NO AS partnerTelNo,
+              TP.REP_NM AS repNm,
+              TP.REP_TEL_NO AS repTelNo,
+              TP.COMP_NO AS compNo,
+              TP.DETAIL_INFO AS detailInfo,
+              TP.PARTNER_EMAIL AS partnerEmail,
+              TP.CRE_TM AS creTm,
+              TP.CRE_USER AS creUser,
+              FN_GET_USERNAME(TP.CRE_USER) as creuserNm,
+              TP.UPD_TM AS updTm,
+              TP.UPD_USER AS updUser,
+              FN_GET_USERNAME(TP.UPD_USER) as upduserNm,
+              TP.DEL_YN AS deleteYn,
+              TP.ADD_TIME AS addTime,
+              TP.MISONG_YN AS misongYn,
+              TP.SIZE_INFO AS sizeInfo,
+              TP.ORDER_SHORT_NM AS orderShortNm,
+              TP.PARTNER_ADDR AS partnerAddr,  -- 파트너 주소
+              TP.PARTNER_ADDR_ETC AS partneraddrEtc, -- 파트너 주소2
+              TP.SNS_ID AS snsId, -- SNS 정보
+              TP.ETC_CNTN AS etcCntn, -- 기타
+              TP.LOGIS_ID AS logisId,
+              TP.ORDER_SEQ ,
+              (SELECT X.LOGIS_NM FROM TB_LOGIS X WHERE X.ID = TP.LOGIS_ID) AS logisNm
+        FROM
+            TB_PARTNER AS TP
+        LEFT JOIN
+            TB_PARTNER AS UPPER_TP ON TP.UPPER_PARTNER_ID = UPPER_TP.ID
+        WHERE TP.DEL_YN = 'N'
+        <if test='filter.partnerNm != null and !filter.partnerNm.equals("")'>
+            AND TP.PARTNER_NM LIKE '%' || #{filter.partnerNm} || '%'
+        </if>
+        <if test='filter.startDate != null and !filter.startDate.equals("") and filter.endDate != null and !filter.endDate.equals("")'>
+            AND TP.CRE_TM BETWEEN #{filter.startDate} AND #{filter.endDate} + INTERVAL '1 day'
+        </if>
+        <if test='filter.upperPartnerId != null'>
+            <choose>
+                <when test='filter.upperPartnerId.equals("0")'>
+                    AND TP.UPPER_PARTNER_ID = 0
+                </when>
+                <when test='filter.upperPartnerId.equals("any")'>
+                    AND TP.UPPER_PARTNER_ID != 0
+                </when>
+            </choose>
+        </if>
+        ORDER BY
+            TP.ID DESC
+        OFFSET
+            ((#{curPage}-1) * #{pageRowCount}) ROWS
+            FETCH NEXT
+            #{pageRowCount} ROWS ONLY
+    </select>
+
+    <select id="selectPartnerList" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
+        /* com.shop.mapper.partner.selectPartnerList */
+        SELECT
+            ID AS id,
+            UPPER_PARTNER_ID AS upperPartnerId,
+            FILE_ID AS fileId,
+            LOGIS_ID AS logisId,
+            PARTNER_NM AS partnerNm,
+            SHORT_NM AS shortNm,
+            PARTNER_TEL_NO AS partnerTelNo,
+            REP_NM AS repNm,
+            REP_TEL_NO AS repTelNo,
+            COMP_NO AS compNo,
+            DETAIL_INFO AS detailInfo,
+            PARTNER_EMAIL AS partnerEmail,
+            CRE_USER AS creUser,
+            CRE_TM AS creTm,
+            UPD_USER AS updUser,
+            UPD_TM AS updTm,
+            DEL_YN AS deleteYn,
+            ADD_TIME AS addTime,
+            ETC_ACC_CNTN AS etcAccCntn,
+            MISONG_YN AS misongYn,
+            SIZE_INFO AS sizeInfo,
+            ORDER_SHORT_NM AS orderShortNm
+        FROM
+            TB_PARTNER
+        WHERE
+            DEL_YN = 'N'
+        <if test="logisId != null and logisId > 0">
+            AND LOGIS_ID = #{logisId}
+        </if>
+        ORDER BY
+            PARTNER_NM ASC;
+    </select>
+
+    <select id="selectMyPartnerByLoginId" parameterType="String" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
+        /* com.shop.mapper.partner.selectMyPartnerByLoginId */
+        SELECT
+            A.ID AS id,
+            A.UPPER_PARTNER_ID AS upperPartnerId,
+            B.PARTNER_NM AS upperPartnerNm,
+            A.FILE_ID AS fileId,
+            A.LOGIS_ID AS logisId,
+            A.PARTNER_NM AS partnerNm,
+            A.SHORT_NM AS shortNm,
+            A.PARTNER_TEL_NO AS partnerTelNo,
+            A.REP_NM AS repNm,
+            A.REP_TEL_NO AS repTelNo,
+            A.COMP_NO AS compNo,
+            A.DETAIL_INFO AS detailInfo,
+            A.PARTNER_EMAIL AS partnerEmail,
+            A.CRE_TM AS creTm,
+            A.UPD_TM AS updTm,
+            A.DEL_YN AS deleteYn,
+            A.ADD_TIME AS addTime,
+            A.ETC_ACC_CNTN AS etcAccCntn,
+            A.MISONG_YN AS misongYn,
+            A.SIZE_INFO AS sizeInfo,
+            A.ORDER_SHORT_NM AS orderShortNm,
+            A.FACSETTLE_ETC_CNTN AS facsettleEtcCntn,
+            A.SEL_GB1_CNTN AS selGb1Cntn,
+            A.SEL_GB2_CNTN AS selGb2Cntn,
+            A.FAC_GB1_CNTN AS facGb1Cntn,
+            A.FAC_GB2_CNTN AS facGb2Cntn,
+            COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.CRE_USER = X.LOGIN_ID), A.CRE_USER) AS creUser,
+            COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.UPD_USER = X.LOGIN_ID), A.UPD_USER) AS updUser
+        FROM
+            TB_PARTNER A
+                LEFT JOIN
+            TB_PARTNER B ON A.UPPER_PARTNER_ID = B.ID
+                JOIN
+            TB_USER U ON A.ID = U.PARTNER_ID
+        WHERE
+            U.LOGIN_ID = #{loginId}
+          AND
+            A.DEL_YN = 'N'
+            LIMIT 1
+    </select>
+
+    <select id="selectPartnerListForSearching" parameterType="com.shop.core.biz.partner.vo.request.PartnerRequest$FilterForList" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$ForSearching">
+        /* com.shop.mapper.partner.selectPartnerListForSearching */
+        SELECT
+            ID AS id,
+            UPPER_PARTNER_ID AS upperPartnerId,
+            FILE_ID AS fileId,
+            LOGIS_ID AS logisId,
+            PARTNER_NM AS partnerNm,
+            SHORT_NM AS shortNm,
+            PARTNER_TEL_NO AS partnerTelNo,
+            REP_NM AS repNm,
+            REP_TEL_NO AS repTelNo,
+            COMP_NO AS compNo,
+            DETAIL_INFO AS detailInfo,
+            PARTNER_EMAIL AS partnerEmail,
+            CRE_USER AS creUser,
+            CRE_TM AS creTm,
+            UPD_USER AS updUser,
+            UPD_TM AS updTm,
+            DEL_YN AS deleteYn,
+            ADD_TIME AS addTime,
+            ETC_ACC_CNTN AS etcAccCntn,
+            MISONG_YN AS misongYn,
+            SIZE_INFO AS sizeInfo,
+            ORDER_SHORT_NM AS orderShortNm
+        FROM TB_PARTNER P
+        WHERE P.DEL_YN = 'N'
+        <if test="partnerNm != null and partnerNm != ''">
+            AND P.PARTNER_NM LIKE CONCAT('%', #{partnerNm}, '%')
+        </if>
+        ORDER BY PARTNER_NM ASC;
+    </select>
+
+    <select id="selectPartnerByCompNo" parameterType="String" resultType="com.shop.core.entity.Partner">
+        /* com.shop.mapper.partner.selectPartnerByCompNo */
+        SELECT <include refid="partnerColumns" />
+        FROM TB_PARTNER AS TP
+        WHERE TP.COMP_NO = #{compNo}
+        AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectPartnerById" parameterType="com.shop.core.entity.Partner" resultType="com.shop.core.entity.Partner">
+        /* com.shop.mapper.partner.selectPartnerById */
+        SELECT
+            A.ID AS id
+             , A.UPPER_PARTNER_ID AS upperPartnerId
+             , A.FILE_ID AS fileId
+             , A.LOGIS_ID AS logisId
+             , A.PARTNER_NM AS partnerNm
+             , A.PARTNER_ENG_NM AS partnerEngNm
+             , A.SHORT_NM AS shortNm
+             , A.PARTNER_TEL_NO AS partnerTelNo
+             , A.REP_NM AS repNm
+             , A.REP_TEL_NO AS repTelNo
+             , A.COMP_NO AS compNo
+             , A.PARTNER_EMAIL AS partnerEmail
+             , A.ADD_TIME AS addTime
+             , A.DETAIL_INFO AS detailInfo
+             , FN_GET_USERNAME(A.CRE_USER) AS creUser
+             , A.CRE_TM AS creTm
+             , FN_GET_USERNAME(A.UPD_USER) AS updUser
+             , A.UPD_TM AS updTm
+             , A.DEL_YN AS deleteYn
+             , A.ETC_ACC_CNTN AS etcAccCntn
+             , A.MISONG_YN AS misongYn
+             , A.SIZE_INFO AS sizeInfo
+             , A.ORDER_SHORT_NM AS orderShortNm
+             , A.COMP_INFO AS compInfo
+             , A.GUBUN_INFO AS gubunInfo
+             , A.SETTL_CD AS settlCd
+             , A.COMP_PRN_CD AS compPrnCd
+             , A.SAMPLE_PRN_YN AS samplePrnYn
+             , A.PARTNER_ADDR AS partnerAddr
+             , A.PARTNER_ADDR_ETC AS partnerAddrEtc
+             , A.SNS_TYPE AS snsType
+             , A.SNS_ID AS snsId
+             , A.ETC_CNTN AS etcCntn
+             , A.SEL_GB1_CNTN AS selGb1Cntn
+             , A.SEL_GB2_CNTN AS selGb2Cntn
+             , A.FAC_GB1_CNTN AS facGb1Cntn
+             , A.FAC_GB2_CNTN AS facGb2Cntn
+             , A.DESIGN_CNTN AS designCntn
+             , A.ORDER_SEQ
+        FROM TB_PARTNER A
+        WHERE A.ID = #{id}
+    </select>
+
+
+    <select id="getOrgWorkYmd" parameterType="Integer" resultType="java.time.LocalDate">
+        SELECT (NOW() + (COALESCE(ADD_TIME, 6) || ' hour')::INTERVAL)::DATE
+          FROM TB_PARTNER
+         WHERE ID = #{partnerId}
+    </select>
+
+    <select id="getPartnerId" parameterType="String" resultType="java.lang.Integer">
+       SELECT ID
+         FROM TB_PARTNER
+        WHERE PARTNER_NM = #{partnerNm}
+          AND DEL_YN = 'N'
+    </select>
+
+    <insert id="insertPartner" parameterType="com.shop.core.entity.Partner" useGeneratedKeys="true" keyProperty="id">
+        /* com.shop.mapper.partner.insertPartner */
+        INSERT INTO TB_PARTNER
+        (
+        <if test="upperPartnerId != null">
+            UPPER_PARTNER_ID
+        </if>
+        <if test="fileId != null">
+            , FILE_ID
+        </if>
+        <if test="logisId != null">
+            , LOGIS_ID
+        </if>
+            , PARTNER_NM
+        <if test="shortNm != null">
+            , SHORT_NM
+        </if>
+            , PARTNER_TEL_NO
+            , REP_NM
+            , REP_TEL_NO
+            , COMP_NO
+        <if test="detailInfo != null">
+            , DETAIL_INFO
+        </if>
+        <if test="partnerEmail != null">
+            , PARTNER_EMAIL
+        </if>
+        <if test="creUser != null">
+            , CRE_USER
+        </if>
+        <if test="addTime != null">
+            , ADD_TIME
+        </if>
+        <if test="misongYn != null">
+            , MISONG_YN
+        </if>
+        <if test="sizeInfo != null">
+            , SIZE_INFO
+        </if>
+        <if test="orderShortNm != null">
+            , ORDER_SHORT_NM
+        </if>
+        )
+        VALUES
+        (
+        <if test="upperPartnerId != null">
+            #{upperPartnerId}
+        </if>
+        <if test="fileId != null">
+            , #{fileId}
+        </if>
+        <if test="logisId != null">
+            , #{logisId}
+        </if>
+            , #{partnerNm}
+        <if test="shortNm != null">
+            , #{shortNm}
+        </if>
+            , #{partnerTelNo}
+            , #{repNm}
+            , #{repTelNo}
+            , #{compNo}
+        <if test="detailInfo != null">
+            , #{detailInfo}
+        </if>
+        <if test="partnerEmail != null">
+            , #{partnerEmail}
+        </if>
+        <if test="creUser != null">
+            , #{creUser}
+        </if>
+        <if test="addTime != null">
+            , #{addTime}
+        </if>
+        <if test="misongYn != null">
+            , #{misongYn}
+        </if>
+        <if test="sizeInfo != null">
+            , #{sizeInfo}
+        </if>
+        <if test="orderShortNm != null">
+            , #{orderShortNm}
+        </if>
+        )
+    </insert>
+
+    <update id="updatePartner" parameterType="com.shop.core.entity.Partner">
+        /* com.shop.mapper.partner.updatePartner */
+        UPDATE TB_PARTNER
+        SET UPD_TM   = NOW(),
+            UPD_USER = #{updUser}
+        <if test="upperPartnerId != null">
+            , UPPER_PARTNER_ID = #{upperPartnerId}
+        </if>
+        <if test="logisId != null">
+            , LOGIS_ID = #{logisId}
+        </if>
+        <if test="fileId != null">
+            , FILE_ID = #{fileId}
+        </if>
+        <if test="partnerNm != null">
+            , PARTNER_NM = #{partnerNm}
+        </if>
+        <if test="partnerEngNm != null">
+            , PARTNER_ENG_NM = #{partnerEngNm}
+        </if>
+        <if test="shortNm != null">
+            , SHORT_NM = #{shortNm}
+        </if>
+        <if test="partnerTelNo != null">
+            , PARTNER_TEL_NO = #{partnerTelNo}
+        </if>
+        <if test="repNm != null">
+            , REP_NM = #{repNm}
+        </if>
+        <if test="repTelNo != null">
+            , REP_TEL_NO = #{repTelNo}
+        </if>
+        <if test="compNo != null">
+            , COMP_NO = #{compNo}
+        </if>
+        <if test="partnerEmail != null">
+            , PARTNER_EMAIL = #{partnerEmail}
+        </if>
+        <if test="addTime != null">
+            , ADD_TIME = #{addTime}
+        </if>
+        <if test="detailInfo != null">
+            , DETAIL_INFO = #{detailInfo}
+        </if>
+        <if test="misongYn != null">
+            , MISONG_YN = #{misongYn}
+        </if>
+        <if test="sizeInfo != null">
+            , SIZE_INFO = #{sizeInfo}
+        </if>
+        <if test="orderShortNm != null">
+            , ORDER_SHORT_NM = #{orderShortNm}
+        </if>
+        <if test="compPrnCd != null">
+            , COMP_PRN_CD = #{compPrnCd}
+        </if>
+        <if test="samplePrnYn != null">
+            , SAMPLE_PRN_YN = #{samplePrnYn}
+        </if>
+        <if test="facGb1Cntn != null">
+            , FAC_GB1_CNTN = #{facGb1Cntn}
+        </if>
+        <if test="facGb2Cntn != null">
+            , FAC_GB2_CNTN = #{facGb2Cntn}
+        </if>
+        <if test="selGb1Cntn != null">
+            , SEL_GB1_CNTN = #{selGb1Cntn}
+        </if>
+        <if test="selGb2Cntn != null">
+            , SEL_GB2_CNTN = #{selGb2Cntn}
+        </if>
+        <if test="gubunInfo != null">
+            , GUBUN_INFO = #{gubunInfo}
+        </if>
+        <if test="settlCd != null">
+            , SETTL_CD = #{settlCd}
+        </if>
+        <if test="compInfo != null">
+            , COMP_INFO = #{compInfo}
+        </if>
+        <if test="partnerAddr != null">
+            , PARTNER_ADDR = #{partnerAddr}
+        </if>
+        <if test="partnerAddrEtc != null">
+            , PARTNER_ADDR_ETC = #{partnerAddrEtc}
+        </if>
+        <if test="snsType != null">
+            , SNS_TYPE = #{snsType}
+        </if>
+        <if test="snsId != null">
+            , SNS_ID = #{snsId}
+        </if>
+        <if test="etcCntn != null">
+            , ETC_CNTN = #{etcCntn}
+        </if>
+        <if test="etcAccCntn != null">
+            , ETC_ACC_CNTN = #{etcAccCntn}
+        </if>
+        <if test="facsettleEtcCntn != null">
+            , FACSETTLE_ETC_CNTN = #{facsettleEtcCntn}
+        </if>
+        <if test="orderSeq != null">
+            , ORDER_SEQ = #{orderSeq}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deletePartner" parameterType="com.shop.core.entity.Partner">
+        /* com.shop.mapper.partner.deletePartner */
+        UPDATE TB_PARTNER
+            SET DEL_YN = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+</mapper>
