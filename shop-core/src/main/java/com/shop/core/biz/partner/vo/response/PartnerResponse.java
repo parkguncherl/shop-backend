@@ -17,11 +17,11 @@ public class PartnerResponse {
     @Schema(name = "PartnerResponsePaging", description = "화주계정 페이징 응답", type = "object")
     public static class Paging extends Partner {
 
-        @Schema(description = "상위_파트너_회사명")
-        private String upperPartnerNm;
+        @Schema(description = "creuserNm")
+        private String creUserNm;
 
-        @Schema(description = "센터명")
-        private String logisNm;
+        @Schema(description = "upduserNm")
+        private String updUserNm;
     }
 
 

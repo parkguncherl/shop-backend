@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
@@ -137,12 +136,6 @@ public class AuthController {
 
         authTokenService.createAuthToken(authToken);
 
-        Cookie rt = new Cookie("refresh_token", authToken.getRefreshToken());
-        rt.setMaxAge(7 * 24 * 60 * 60); // 7일
-        rt.setHttpOnly(true);
-        rt.setPath("/");
-        response.addCookie(rt);
-
         UserRequest.Update updateUser = new UserRequest.Update();
         updateUser.setId(userResponse.getId());
         updateUser.setLastLoginDateTime(LocalDateTime.now());
@@ -179,13 +172,6 @@ public class AuthController {
         if (!msg.equals("OK")) {
             return new ApiResponse<>(ApiResultCode.TOKEN_UNAVAILABLE);
         }
-
-        Cookie rt = new Cookie("refresh_token", token.getRefreshToken());
-
-        rt.setMaxAge(2 * 60 * 60); // 2시간 (7,200초)
-        rt.setHttpOnly(true);
-        rt.setPath("/");
-        response.addCookie(rt);
 
         return new ApiResponse<>(ApiResultCode.SUCCESS, token);
     }

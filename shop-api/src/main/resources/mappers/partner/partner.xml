@@ -30,59 +30,27 @@
     <select id="selectPartnerListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Paging">
         /* com.shop.mapper.partner.selectPartnerListPaging */
         SELECT
-              COUNT(1) OVER() AS totalRowCount,
-              ROW_NUMBER() OVER(ORDER BY TP.ID ASC) AS no,
-              TP.ID AS id,
-              TP.UPPER_PARTNER_ID AS upperPartnerId,
-              UPPER_TP.PARTNER_NM AS upperPartnerNm,  -- 셀프 조인을 통해 UPPER_PARTNER_ID의 PARTNER_NM을 가져옴
-              TP.FILE_ID AS fileId,
-              TP.LOGIS_ID AS logisId,
-              TP.PARTNER_NM AS partnerNm,
-              TP.SHORT_NM AS shortNm,
-              TP.PARTNER_TEL_NO AS partnerTelNo,
-              TP.REP_NM AS repNm,
-              TP.REP_TEL_NO AS repTelNo,
-              TP.COMP_NO AS compNo,
-              TP.DETAIL_INFO AS detailInfo,
-              TP.PARTNER_EMAIL AS partnerEmail,
-              TP.CRE_TM AS creTm,
-              TP.CRE_USER AS creUser,
-              FN_GET_USERNAME(TP.CRE_USER) as creuserNm,
-              TP.UPD_TM AS updTm,
-              TP.UPD_USER AS updUser,
-              FN_GET_USERNAME(TP.UPD_USER) as upduserNm,
-              TP.DEL_YN AS deleteYn,
-              TP.ADD_TIME AS addTime,
-              TP.MISONG_YN AS misongYn,
-              TP.SIZE_INFO AS sizeInfo,
-              TP.ORDER_SHORT_NM AS orderShortNm,
-              TP.PARTNER_ADDR AS partnerAddr,  -- 파트너 주소
-              TP.PARTNER_ADDR_ETC AS partneraddrEtc, -- 파트너 주소2
-              TP.SNS_ID AS snsId, -- SNS 정보
-              TP.ETC_CNTN AS etcCntn, -- 기타
-              TP.LOGIS_ID AS logisId,
-              TP.ORDER_SEQ ,
-              (SELECT X.LOGIS_NM FROM TB_LOGIS X WHERE X.ID = TP.LOGIS_ID) AS logisNm
-        FROM
-            TB_PARTNER AS TP
-        LEFT JOIN
-            TB_PARTNER AS UPPER_TP ON TP.UPPER_PARTNER_ID = UPPER_TP.ID
+            COUNT(1) OVER() AS totalRowCount,
+            ROW_NUMBER() OVER(ORDER BY TP.ID ASC) AS no,
+            TP.ID AS id,
+            TP.PARTNER_TICKER ,
+            TP.PARTNER_NM,
+            TP.PARTNER_SUB_NM,
+            TP.DOMAIN ,
+            TP.PHONE_NO,
+            TP.CRE_TM AS creTm,
+            TP.CRE_USER AS creUser,
+            FN_GET_USERNAME(TP.CRE_USER) as creuserNm,
+            TP.UPD_TM AS updTm,
+            TP.UPD_USER AS updUser,
+            FN_GET_USERNAME(TP.UPD_USER) as upduserNm
+        FROM TB_PARTNER AS TP
         WHERE TP.DEL_YN = 'N'
         <if test='filter.partnerNm != null and !filter.partnerNm.equals("")'>
             AND TP.PARTNER_NM LIKE '%' || #{filter.partnerNm} || '%'
         </if>
         <if test='filter.startDate != null and !filter.startDate.equals("") and filter.endDate != null and !filter.endDate.equals("")'>
             AND TP.CRE_TM BETWEEN #{filter.startDate} AND #{filter.endDate} + INTERVAL '1 day'
-        </if>
-        <if test='filter.upperPartnerId != null'>
-            <choose>
-                <when test='filter.upperPartnerId.equals("0")'>
-                    AND TP.UPPER_PARTNER_ID = 0
-                </when>
-                <when test='filter.upperPartnerId.equals("any")'>
-                    AND TP.UPPER_PARTNER_ID != 0
-                </when>
-            </choose>
         </if>
         ORDER BY
             TP.ID DESC

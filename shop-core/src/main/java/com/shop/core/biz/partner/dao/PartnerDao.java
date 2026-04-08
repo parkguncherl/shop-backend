@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PartnerDao {
 
-    private final String PRE_NS = "com.binblur.mappers.partner.";
+    private final String PRE_NS = "com.shop.mappers.partner.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

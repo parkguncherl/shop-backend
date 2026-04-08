@@ -23,9 +23,6 @@ public class GlobalProperties {
     @Value("${jwt.access.token.expiration.time}")
     private String jwtExpireTime;
 
-    @Value("${jwt.refresh.token.remained.day}")
-    private Integer jwtRefreshTokenRemainDays;
-
     @Value("TOP")
     private String  topMenu;
 

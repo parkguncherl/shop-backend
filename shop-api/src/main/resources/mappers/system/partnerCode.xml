@@ -261,7 +261,7 @@
 
 
     <select id="getAutoGenCodeCd" resultType="java.lang.Integer">
-        /* com.binblur.mapper.code.getAutoGenCodeCd */
+        /* com.shop.mapper.code.getAutoGenCodeCd */
         SELECT COALESCE(MAX(CODE_CD::INT4) + 1, 1000)
         FROM TB_PARTNER_CODE
         WHERE CODE_UPPER = #{codeUpper}
