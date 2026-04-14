@@ -173,3 +173,7 @@ buildNumber.properties
 /.idea/
 caches/
 
+# macOS / Windows junk
+.DS_Store
+Thumbs.db
+
