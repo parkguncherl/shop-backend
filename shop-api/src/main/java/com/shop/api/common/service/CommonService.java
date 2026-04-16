@@ -87,6 +87,9 @@ public class CommonService {
     @Value("${cloudflare.r2.bucketName.name}")
     private String BUKET_NAME;
 
+    @Value("${origin.allowed}")
+    private String ORIGIN_ALLOWED;
+
     /**
      * 파일_조회 (by Uk)
      *
@@ -289,6 +292,7 @@ public class CommonService {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(BUKET_NAME)
                 .key(fileName)
+                .overrideConfiguration(conf -> conf.putHeader("origin", ORIGIN_ALLOWED)) // origin 헤더를 서명에 추가토록 함(cors 정책 충족 차원)
                 .build();
 
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
