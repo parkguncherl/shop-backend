@@ -174,4 +174,27 @@
             AND SYS_FILE_NM = #{sysFileNm}
     </update>
 
+    <update id="updateFileDet" parameterType="com.shop.core.entity.FileDet">
+        /* com.shop.mapper.file.updateFileDet */
+        UPDATE TB_FILE_DET SET
+              UPD_USER = #{updUser}
+            , UPD_TM = NOW()
+        <if test="bucketName != null">
+            , BUCKET_NAME = #{bucketName}
+        </if>
+        <if test="sysFileNm != null">
+            , SYS_FILE_NM = #{sysFileNm}
+        </if>
+        <if test="fileDesc != null">
+            , FILE_DESC = #{fileDesc}
+        </if>
+        <if test="fileNm != null">
+            , FILE_NM = #{fileNm}
+        </if>
+        <if test="fileSize != null">
+            , FILE_SIZE = #{fileSize}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
 </mapper>

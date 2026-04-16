@@ -418,9 +418,19 @@ public class CommonService {
      * @param fileUpdate
      * @return fileDowns
      * */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void imageFileUpdate(CommonRequest.FileUpdate fileUpdate, User jwtUser) {
         try {
             FileDet fileDetOrg = fileDao.selectFileDetByKey(fileUpdate.getFileDetId());
+            deleteFile(fileUpdate.getFileId(), fileUpdate.getFileDetId(), jwtUser); // 기존 파일 삭제
+            // todo fileDet의 sysFileNm, fileExt, fileSize 조정하여야
+//            FileDet updateFileDet = new FileDet();
+//            updateFileDet.setId(fileUpdate.getFileDetId());
+//
+//            updateFileDet.setSysFileNm();
+//            updateFileDet.setFileExt();
+//            updateFileDet.setFileSize();
+//            fileDao.updateFileDet(updateFileDet);
             this.fileImageUploadComm(jwtUser, fileUpdate.getUploadFile(), fileDetOrg.getFileId(), fileDetOrg.getFileSeq());
         } catch (Exception e) {
             throw new CustomRuntimeException(ApiResultCode.FAIL, "이미지 업로드시 오류가 발생하였습니다.");
