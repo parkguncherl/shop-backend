@@ -143,9 +143,6 @@ public class CommonRequest {
     @Schema(name = "CommonRequestFileUpdate", description = "파일수정 요청 파라미터")
     public static class FileUpdate {
 
-        @Schema(description = "파일 id")
-        private Integer fileId;
-
         @Schema(description = "file det id")
         private Integer fileDetId;
 

@@ -114,25 +114,28 @@ public class CommonService {
     /* webpImageUpload */
     public FileDet webpImageUpload(MultipartFile file, String key, String fileType, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
 
-        if (file.getContentType() == null || !file.getContentType().startsWith("image")) {
-            throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
-        }
+//        if (file.getContentType() == null || !file.getContentType().startsWith("image")) {
+//            throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
+//        }
+//
+//        String originalFileName = file.getOriginalFilename();
+//        ConvertResult result = this.optimizeAndConvertToWebp(file);
+//
+//        //resizeImageKeepAspectRatio(file, Integer.parseInt(commonRequest.getImageFileWidth()), Integer.parseInt(commonRequest.getImageFileHeight()));
+//
+//
+//        String finalKey = key.replaceAll("\\.[^.]+$", "." + result.extension());
+//
+//        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+//                .bucket(BUKET_NAME)
+//                .key(finalKey)
+//                .contentType(result.contentType())
+//                .build();
+//
+//        s3Client.putObject(putObjectRequest,RequestBody.fromBytes(result.bytes()));
 
         String originalFileName = file.getOriginalFilename();
-        ConvertResult result = this.optimizeAndConvertToWebp(file);
-
-        //resizeImageKeepAspectRatio(file, Integer.parseInt(commonRequest.getImageFileWidth()), Integer.parseInt(commonRequest.getImageFileHeight()));
-
-
-        String finalKey = key.replaceAll("\\.[^.]+$", "." + result.extension());
-
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(BUKET_NAME)
-                .key(finalKey)
-                .contentType(result.contentType())
-                .build();
-
-        s3Client.putObject(putObjectRequest,RequestBody.fromBytes(result.bytes()));
+        String finalKey = this.webpImageUploadToBucket(file, key);
 
         // 파일정보가 있는경우는 생략한다.
         if(fileId == null || fileId.compareTo(0) == 0) {
@@ -159,6 +162,74 @@ public class CommonService {
         return fileDet;
 
     }
+
+    /* webpImageUpload 에서 버킷 저장 영역만 분리 */
+    public String webpImageUploadToBucket(MultipartFile file, String key) throws IOException {
+        if (file.getContentType() == null || !file.getContentType().startsWith("image")) {
+            throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
+        }
+
+        ConvertResult result = this.optimizeAndConvertToWebp(file);
+
+        String finalKey = key.replaceAll("\\.[^.]+$", "." + result.extension());
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(BUKET_NAME)
+                .key(finalKey)
+                .contentType(result.contentType())
+                .build();
+
+        s3Client.putObject(putObjectRequest,RequestBody.fromBytes(result.bytes()));
+
+        return finalKey;
+    }
+
+        /* webpImageMod */
+//    public FileDet webpImageMod(MultipartFile file, String key, String fileType, Integer fileDetId, Integer fileSeq, User jwtUser) throws IOException {
+//        if (file.getContentType() == null || !file.getContentType().startsWith("image")) {
+//            throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
+//        }
+//
+//        String originalFileName = file.getOriginalFilename();
+//        ConvertResult result = this.optimizeAndConvertToWebp(file);
+//
+//        //resizeImageKeepAspectRatio(file, Integer.parseInt(commonRequest.getImageFileWidth()), Integer.parseInt(commonRequest.getImageFileHeight()));
+//
+//
+//        String finalKey = key.replaceAll("\\.[^.]+$", "." + result.extension());
+//
+//        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+//                .bucket(BUKET_NAME)
+//                .key(finalKey)
+//                .contentType(result.contentType())
+//                .build();
+//
+//        s3Client.putObject(putObjectRequest,RequestBody.fromBytes(result.bytes()));
+//
+//        // 파일정보가 있는경우는 생략한다.
+//        if(fileId == null || fileId.compareTo(0) == 0) {
+//            FileMng fileMng = new FileMng();
+//            fileMng.setFileType(fileType);
+//            fileMng.setCreUser(jwtUser.getLoginId());
+//            fileMng.setUpdUser(jwtUser.getLoginId());
+//            fileDao.insertFile(fileMng);
+//            fileId = fileMng.getId();
+//        }
+//
+//        FileDet fileDet = new FileDet();
+//        fileDet.setFileId(fileId);
+//        fileDet.setFileSeq(fileSeq);
+//        fileDet.setBucketName(BUKET_NAME);
+//        fileDet.setFileNm(originalFileName);
+//        fileDet.setSysFileNm(finalKey);
+//        fileDet.setFileSize(new BigDecimal(file.getSize()).intValue());
+//        fileDet.setFileExt(CommUtil.getFileExtension(finalKey));
+//        fileDet.setCreUser(jwtUser.getLoginId());
+//        fileDet.setUpdUser(jwtUser.getLoginId());
+//        fileDao.insertFileDet(fileDet);
+//        //String url = this.getFileUrl(BUKET_NAME, key);
+//        return fileDet;
+//    }
 
     /* 일반 file upload */
     public FileDet uploadDocFile(MultipartFile file, String key, String originalFileName, String fileType, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
@@ -200,17 +271,28 @@ public class CommonService {
         CommonResponse.SelectFile selectFile = fileDao.selectFileDet(fileId, fileSeq, null);
         if(selectFile!= null && selectFile.getSysFileNm() != null) {
             try {
-                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                    .bucket(BUKET_NAME)
-                    .key(selectFile.getSysFileNm())
-                    .build();
-
-                s3Client.deleteObject(deleteObjectRequest);
+//                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+//                    .bucket(BUKET_NAME)
+//                    .key(selectFile.getSysFileNm())
+//                    .build();
+//
+//                s3Client.deleteObject(deleteObjectRequest);
+                this.deleteFileFromBucket(selectFile.getSysFileNm());
                 fileDao.deleteFileDetByUk(fileId, fileSeq, jwtUser);
             } catch (Exception e){
                 throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "s3 파일("+selectFile.getFileNm()+") 삭제 실패["+e.getMessage()+"]");
             }
         }
+    }
+
+    /* deleteFile 에서 버킷 수준 삭제 영역만 분리 */
+    public void deleteFileFromBucket(String sysFileNm) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(BUKET_NAME)
+                .key(sysFileNm)
+                .build();
+
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
     /* file 전체 삭제 */
@@ -422,18 +504,25 @@ public class CommonService {
     public void imageFileUpdate(CommonRequest.FileUpdate fileUpdate, User jwtUser) {
         try {
             FileDet fileDetOrg = fileDao.selectFileDetByKey(fileUpdate.getFileDetId());
-            deleteFile(fileUpdate.getFileId(), fileUpdate.getFileDetId(), jwtUser); // 기존 파일 삭제
-            // todo fileDet의 sysFileNm, fileExt, fileSize 조정하여야
-//            FileDet updateFileDet = new FileDet();
-//            updateFileDet.setId(fileUpdate.getFileDetId());
-//
-//            updateFileDet.setSysFileNm();
-//            updateFileDet.setFileExt();
-//            updateFileDet.setFileSize();
-//            fileDao.updateFileDet(updateFileDet);
-            this.fileImageUploadComm(jwtUser, fileUpdate.getUploadFile(), fileDetOrg.getFileId(), fileDetOrg.getFileSeq());
+            deleteFileFromBucket(fileDetOrg.getSysFileNm()); // 기존 파일 삭제(from bucket)
+
+            String originalFileName = fileUpdate.getUploadFile().getOriginalFilename();
+            String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+            String finalKey = webpImageUploadToBucket(fileUpdate.getUploadFile(), sysFileNm); // 버킷에 신규 업로드
+
+            FileDet updateFileDet = new FileDet();
+            updateFileDet.setId(fileUpdate.getFileDetId());
+            updateFileDet.setUpdUser(jwtUser.getLoginId());
+
+            // sysFileNm, fileSize, fileExt, fileNm 조정
+            updateFileDet.setSysFileNm(finalKey); // 버킷에 최종 전달된 식별자는 finalKey 에 할당되므로
+            updateFileDet.setFileSize(new BigDecimal(fileUpdate.getUploadFile().getSize()).intValue());
+            updateFileDet.setFileExt(CommUtil.getFileExtension(finalKey));
+            updateFileDet.setFileNm(originalFileName);
+
+            fileDao.updateFileDet(updateFileDet);
         } catch (Exception e) {
-            throw new CustomRuntimeException(ApiResultCode.FAIL, "이미지 업로드시 오류가 발생하였습니다.");
+            throw new CustomRuntimeException(ApiResultCode.FAIL, "이미지 수정 시점에 오류가 발생하였습니다.");
         }
     }
 

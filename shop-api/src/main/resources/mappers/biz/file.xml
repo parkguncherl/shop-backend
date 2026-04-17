@@ -185,11 +185,14 @@
         <if test="sysFileNm != null">
             , SYS_FILE_NM = #{sysFileNm}
         </if>
-        <if test="fileDesc != null">
-            , FILE_DESC = #{fileDesc}
+        <if test="fileExt != null">
+            , FILE_EXT = #{fileExt}
         </if>
         <if test="fileNm != null">
             , FILE_NM = #{fileNm}
+        </if>
+        <if test="fileDesc != null">
+            , FILE_DESC = #{fileDesc}
         </if>
         <if test="fileSize != null">
             , FILE_SIZE = #{fileSize}
