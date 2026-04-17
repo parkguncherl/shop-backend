@@ -140,13 +140,13 @@ public class CommonController {
 
 
     /**
-     * 개별_파일_조회
+     * 단일 이미지파일 수정
      */
-    @PostMapping(value = "/imgfile/update")
-    @Operation(summary = "개별 파일 조회")
+    @PatchMapping(value = "/imgfile/update")
+    @Operation(summary = "단일 이미지파일 수정")
     public ApiResponse<ApiResultCode> imageFileUpdate(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(name = "CommonRequestFileUploads", description = "파일 업로드 Request", in = ParameterIn.PATH) CommonRequest.FileUpdate fileUpdate
+            @Parameter(name = "CommonRequestFileUpdate", description = "단일 이미지파일 수정 Request", in = ParameterIn.PATH) CommonRequest.FileUpdate fileUpdate
     ) {
         // 필수값 체크
         if (fileUpdate.getFileDetId() == null || fileUpdate.getFileDetId() <= 0) {
