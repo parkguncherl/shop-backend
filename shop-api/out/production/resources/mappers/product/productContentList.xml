@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.product.productContentList">
+
+    <select id="selectProdContentList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ProductContent">
+        /* com.shop.mapper.product.productContentList.selectProdContentList */
+        SELECT
+              A.ID AS id
+            , A.NEWS_TITLE AS newsTitle
+            , A.NEWS_SUB_TITLE AS newsSubTitle
+            , A.NEWS_CONTENTS AS newsContents
+            , A.FILE_ID AS fileId
+            , (SELECT COUNT(1) FROM TB_FILE_DET X WHERE X.FILE_ID = A.FILE_ID AND X.DEL_YN = 'N') AS imageCnt
+            , (SELECT COUNT(1) FROM TB_CONTENTS_PRODUCT X WHERE X.CONTENTS_ID = A.ID AND DEL_YN = 'N') AS productCnt
+        FROM TB_CONTENTS A
+        <where>
+            AND A.DEL_YN = 'N'
+            AND A.NEWS_TYPE = #{filter.newsType}
+            AND A.PARTNER_ID = #{filter.partnerId}
+            <if test='filter.newsTitle != null and !filter.newsTitle.equals("")'>
+                AND A.NEWS_TITLE = #{filter.newsTitle}
+            </if>
+            <if test="filter.lastId != null">
+                AND (
+                A.ID > #{filter.lastId}
+                )
+            </if>
+        </where>
+        ORDER BY A.ID
+        LIMIT #{pageRowCount} + 1;
+    </select>
+
+    <insert id="insertProductContents" parameterType="com.shop.core.entity.Contents">
+        /* com.shop.mapper.product.productContentList.insertProductContents */
+        INSERT INTO TB_CONTENTS (
+        NEWS_TYPE ,
+        NEWS_TITLE ,
+        <if test='newsSubTitle != null'>
+            NEWS_SUB_TITLE,
+        </if>
+        <if test='newsContents != null'>
+            NEWS_CONTENTS,
+        </if>
+        <if test='fileId != null'>
+            FILE_ID,
+        </if>
+        PARTNER_ID,
+        CRE_USER,
+        UPD_USER
+        ) VALUES (
+        #{newsType} ,
+        #{newsTitle} ,
+        <if test='newsSubTitle != null'>
+            #{newsSubTitle} ,
+        </if>
+        <if test='newsContents != null'>
+            #{newsContents} ,
+        </if>
+        <if test='fileId != null'>
+            #{fileId} ,
+        </if>
+        #{partnerId} ,
+        #{creUser} ,
+        #{updUser}
+        )
+    </insert>
+
+    <update id="deleteProductContents" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$DeleteProductContents">
+        /* com.shop.mapper.product.productContentList.deleteProductContents */
+        UPDATE TB_CONTENTS
+        SET DEL_YN = 'Y'
+          , UPD_USER = #{updUser}
+          , UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <select id="selectProductInfoList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ProductInfo">
+        /* com.shop.mapper.product.productContentList.selectProductInfoList */
+        SELECT
+              TP.ID AS id
+            , TP.PROD_CD AS prodCd
+            , TP.PROD_TP AS prodTp
+            , TP.PROD_NM AS prodNm
+            , TP.ORG_AMT AS orgAmt
+            , TP.SELL_AMT AS sellAmt
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
+            , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
+            , TP.DISCOUNT_RATE AS discountRate
+            , (SELECT COUNT(1) FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N') AS contentsProductCnt
+        FROM TB_PRODUCT TP
+        <where>
+            AND TP.DEL_YN = 'N'
+            AND NOT EXISTS (SELECT 1 FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.CONTENTS_ID = #{filter.contentsId})
+            <if test='filter.prodNm != null and !filter.prodNm.equals("")'>
+                AND TP.PROD_NM LIKE CONCAT('%' ,#{filter.prodNm} ,'%')
+            </if>
+            <if test="filter.lastId != null">
+                AND (
+                TP.ID > #{filter.lastId}
+                )
+            </if>
+        </where>
+        ORDER BY TP.PROD_NM
+        LIMIT #{pageRowCount} + 1;
+    </select>
+
+    <select id="selectContentsProductInfoList" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$ContentsProductInfoListFilter" resultType="com.shop.core.product.vo.response.ProductContentListResponse$ContentProductInfo">
+        /* com.shop.mapper.product.productContentList.selectContentsProductInfoList */
+        SELECT
+              TP.ID AS id
+            , CP.ID AS contentsProductId
+            , CP.SEQ AS contentsProductSeq
+            , TP.PROD_NM AS prodNm
+            , TP.SELL_AMT AS sellAmt
+            , TP.REP_FILE_ID AS repFileId
+            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
+            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
+            , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
+            , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
+            , TP.DISCOUNT_RATE AS discountRate
+        FROM TB_PRODUCT TP
+        JOIN TB_CONTENTS_PRODUCT CP ON CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N'
+        <where>
+            AND TP.DEL_YN = 'N'
+            AND CP.CONTENTS_ID = #{contentsId}
+        </where>
+        GROUP BY TP.ID, CP.ID
+        ORDER BY CP.SEQ
+    </select>
+
+    <insert id="insertContentsProduct" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$InsertContentsProduct">
+        /* com.shop.mapper.product.productContentList.insertContentsProduct */
+        INSERT INTO TB_CONTENTS_PRODUCT (
+            SEQ ,
+            CONTENTS_ID ,
+            PRODUCT_ID,
+            CRE_USER,
+            UPD_USER
+        ) VALUES (
+            get_next_contents_product_seq(#{contentsId}) ,
+            #{contentsId} ,
+            #{productId} ,
+            #{creUser} ,
+            #{updUser}
+        )
+    </insert>
+
+    <update id="updateContentsProduct" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$UpdateContentsProduct">
+        /* com.shop.mapper.product.productContentList.updateContentsProduct */
+        UPDATE TB_CONTENTS_PRODUCT
+        SET
+        <if test='seq != null'>
+            SEQ = #{seq},
+        </if>
+        <if test='contentsId != null'>
+            CONTENTS_ID = #{contentsId},
+        </if>
+        <if test='productId != null'>
+            PRODUCT_ID =  #{productId},
+        </if>
+            UPD_USER = #{updUser},
+            UPD_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>

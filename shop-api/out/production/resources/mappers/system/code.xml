@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.code">
+
+    <sql id="codeColumns">
+          ID                    AS id
+        , CODE_UPPER            AS codeUpper
+        , CODE_CD               AS codeCd
+        , CODE_NM               AS codeNm
+        , CODE_DESC             AS codeDesc
+        , CODE_ETC_1            AS codeEtc1
+        , CODE_ETC_2            AS codeEtc2
+        , CODE_ORDER            AS codeOrder
+        , CRE_TM                AS creTm
+        , CRE_USER              AS creUser
+        , UPD_TM                AS updTm
+        , UPD_USER              AS updUser
+        , DEL_YN                AS delYn
+    </sql>
+
+    <select id="selectCodeListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.CodeResponse$LowerSelect">
+        /* com.shop.mapper.code.selectCodeListPaging */
+        SELECT ( COUNT(1) OVER() )                                                                              AS totalRowCount
+            , ROW_NUMBER() OVER(ORDER BY TC.ID ASC)                                                             AS no
+            , TC.ID                                                                                             AS id
+            , TC.CODE_UPPER                                                                                     AS codeUpper
+            , COALESCE((SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER)   AS codeUpperNm
+            , TC.CODE_CD                                                                                        AS codeCd
+            , TC.CODE_NM                                                                                        AS codeNm
+            , (SELECT COUNT(*) FROM TB_CODE X WHERE X.CODE_UPPER = TC.CODE_CD)                                  AS lowerCodeCnt
+            , CASE WHEN COALESCE(TC.CODE_DESC, '') = '' THEN '-' ELSE TC.CODE_DESC END                            AS codeDesc
+            , CASE WHEN COALESCE(TC.CODE_ETC_1, '') = '' THEN '-' ELSE TC.CODE_ETC_1 END                          AS codeEtc1
+            , CASE WHEN COALESCE(TC.CODE_ETC_2, '') = '' THEN '-' ELSE TC.CODE_ETC_2 END                          AS codeEtc2
+            , TC.CODE_ORDER                                                                                     AS codeOrder
+            , TC.CRE_TM                                                                                         AS creTm
+            , TC.CRE_USER                                                                                       AS creUser
+            , TC.UPD_TM                                                                                         AS updTm
+            , TC.UPD_USER                                                                                       AS updUser
+            , TC.DEL_YN                                                                                         AS deleteYn
+        FROM TB_CODE TC
+        WHERE 1 = 1
+--           AND TC.DEL_YN = 'N' // 삭제여부를 사용여부로 관리
+        <if test='filter.codeUpper != null and !filter.codeUpper.equals("")'>
+          AND TC.CODE_UPPER = #{filter.codeUpper}
+        </if>
+        <if test='filter.codeCd != null and !filter.codeCd.equals("")'>
+          AND TC.CODE_CD LIKE '%' + #{filter.codeCd} + '%'
+        </if>
+        <if test='filter.codeNm != null and !filter.codeNm.equals("")'>
+          AND TC.CODE_NM LIKE '%' + #{filter.codeNm} + '%'
+        </if>
+        ORDER BY TC.ID DESC
+        OFFSET (#{curPage}-1) * #{pageRowCount} ROWS
+        FETCH NEXT #{pageRowCount} ROWS ONLY
+    </select>
+
+    <select id="selectCodeList" resultType="com.shop.core.entity.Code">
+        /* com.shop.mapper.code.selectCodeList */
+        SELECT <include refid="codeColumns" />
+        FROM TB_CODE
+        WHERE 1 = 1
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectDropdownByCodeRequest" parameterType="com.shop.core.vo.request.CodeRequest" resultType="com.shop.core.entity.Code">
+        /* com.shop.mapper.code.selectDropdownByCodeRequest */
+        SELECT <include refid="codeColumns" />
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+        <if test='codeNm != null and !codeNm.equals("")'>
+          AND CODE_NM LIKE '%' + #{codeNm} + '%'
+        </if>
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectCodeById" parameterType="Integer" resultType="com.shop.core.biz.system.vo.response.CodeResponse$Select">
+        /* com.shop.mapper.code.selectCodeById */
+        SELECT ID                                                                           AS id
+             , CODE_UPPER                                                                   AS codeUpper
+             , CODE_CD                                                                      AS codeCd
+             , CODE_NM                                                                      AS codeNm
+             , CASE WHEN COALESCE(CODE_DESC, '') = '' THEN '-' ELSE CODE_DESC END             AS codeDesc
+             , CASE WHEN COALESCE(CODE_ETC_1, '') = '' THEN '-' ELSE CODE_ETC_1 END     AS codeEtc1
+             , CODE_ORDER                                                                   AS codeOrder
+             , CRE_TM                                                                       AS creTm
+             , CRE_USER                                                                     AS creUser
+             , UPD_TM                                                                       AS updTm
+             , UPD_USER                                                                     AS updUser
+             , DEL_YN                                                                       AS deleteYn
+        FROM TB_CODE
+        WHERE ID = #{codeId}
+--           AND DEL_YN = 'N' // 삭제여부를 사용여부로 관리
+    </select>
+
+    <select id="selectCodeByUk" parameterType="com.shop.core.entity.Code" resultType="com.shop.core.entity.Code">
+        /* com.shop.mapper.code.selectCodeByUk */
+        SELECT <include refid="codeColumns" />
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+          AND CODE_CD = #{codeCd}
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectLowerCodeByCodeUpper" parameterType="String" resultType="com.shop.core.biz.system.vo.response.CodeResponse$LowerSelect">
+        /* com.shop.mapper.code.selectLowerCodeByCodeUpper !!*/
+        SELECT ROW_NUMBER() OVER(ORDER BY ID ASC)                                           AS no
+            , ID                                                                            AS id
+            , CODE_UPPER                                                                    AS codeUpper
+            , CODE_CD                                                                       AS codeCd
+            , CODE_NM                                                                       AS codeNm
+            , COALESCE(CODE_DESC, '-')                                                      AS codeDesc
+            , COALESCE(CODE_ETC_1, '-')                                                     AS codeEtc1
+            , COALESCE(CODE_ETC_2, '-')                                                     AS codeEtc2
+            , CODE_ORDER                                                                    AS codeOrder
+            , CRE_TM                                                                        AS creTm
+            , CRE_USER                                                                      AS creUser
+            , UPD_TM                                                                        AS updTm
+            , UPD_USER                                                                      AS updUser
+            , DEL_YN                                                                        AS deleteYn
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+--           AND DEL_YN = 'N' // 삭제여부를 사용여부로 관리
+        ORDER BY ID ASC
+    </select>
+
+    <insert id="insertCode" parameterType="com.shop.core.entity.Code" useGeneratedKeys="true" keyProperty="id">
+        /* com.shop.mapper.code.insertCode */
+        INSERT INTO TB_CODE
+        (
+              CODE_UPPER
+            , CODE_CD
+            , CODE_NM
+        <if test="codeDesc != null">
+            , CODE_DESC
+        </if>
+        <if test="codeEtc1 != null">
+            , CODE_ETC_1
+        </if>
+            , CODE_ORDER
+            , CRE_USER
+            , UPD_USER
+        <if test="deleteYn != null">
+            , DEL_YN
+        </if>
+        )
+        VALUES
+        (
+              #{codeUpper}
+            , #{codeCd}
+            , #{codeNm}
+        <if test="codeDesc != null">
+            , #{codeDesc}
+        </if>
+        <if test="codeEtc1 != null">
+            , #{codeEtc1}
+        </if>
+            , #{codeOrder}
+            , #{creUser}
+            , #{creUser}
+        <if test="deleteYn != null">
+            , #{deleteYn}
+        </if>
+         )
+    </insert>
+
+    <update id="updateCode" parameterType="com.shop.core.entity.Code">
+        /* com.shop.mapper.code.updateCode */
+        UPDATE TB_CODE
+        SET UPD_TM   = NOW()
+          , UPD_USER = #{updUser}
+        <if test="codeUpper != null">
+          , CODE_UPPER = #{codeUpper}
+        </if>
+        <if test="codeCd != null">
+          , CODE_CD = #{codeCd}
+        </if>
+        <if test="codeNm != null">
+          , CODE_NM = #{codeNm}
+        </if>
+        <if test="codeDesc != null">
+          , CODE_DESC = #{codeDesc}
+        </if>
+        <if test="codeEtc1 != null">
+            , CODE_ETC_1 = #{codeEtc1}
+        </if>
+        <if test="codeEtc2 != null">
+            , CODE_ETC_2 = #{codeEtc2}
+        </if>
+        <if test="codeOrder != null">
+          , CODE_ORDER = #{codeOrder}
+        </if>
+        <if test="delYn != null">
+          , DEL_YN = #{delYn}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="deleteCode" parameterType="com.shop.core.entity.Code">
+        /* com.shop.mapper.code.deleteCode */
+        DELETE FROM TB_CODE
+        WHERE ID = #{id}
+    </delete>
+
+    <select id="selectDropdownByCodeUpper" parameterType="com.shop.core.biz.system.vo.request.CodeRequest$CodeDropDown" resultType="com.shop.core.biz.system.vo.response.CodeResponse$CodeDropDown">
+        /* com.shop.mapper.code.selectDropdownByCodeUpper */
+        SELECT
+          ID                    AS id
+        , CODE_UPPER            AS codeUpper
+        , CODE_CD               AS codeCd
+        , CODE_NM               AS codeNm
+        , CODE_DESC             AS codeDesc
+        , CODE_ETC_1            AS codeEtc1
+        , CODE_ETC_2            AS codeEtc2
+        , CODE_ORDER            AS codeOrder
+        FROM TB_CODE TC
+        WHERE TC.DEL_YN = 'N'
+        AND TC.CODE_UPPER = #{codeUpper}
+        <if test="codeNm != null and !codeNm.equals('')">
+            AND TC.CODE_NM LIKE '%' + #{codeNm} + '%'
+        </if>
+        <if test="etc1Val != null and !etc1Val.equals('')">
+            AND TC.CODE_ETC_1 IN ('ALL', #{etc1Val})
+        </if>
+        ORDER BY CODE_CD ${sortType}
+        /* ORDER BY ${sortColumn} ${sortType} */
+    </select>
+
+    <select id="selectCodePaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.CodeResponse$Paging">
+        /* com.shop.mapper.code.selectCodePaging */
+        SELECT
+        <include refid="codeColumns" />
+        , TC.CODE_NM                        AS codeNm
+        , ( COUNT(1) OVER() )                                                                                                       AS totalRowCount
+        , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC)                                                                             AS no
+        , COALESCE((SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER)                        AS codeUpperNm
+        , CASE WHEN #{filter.codeUpper} = 'TOP' THEN (SELECT COUNT(*) FROM TB_CODE X WHERE X.DEL_YN = 'N' AND X.CODE_UPPER = TC.CODE_CD) ELSE  0 END AS lowerCodeCnt
+        , CASE WHEN TC.CODE_UPPER = 'S0001' THEN LPAD('*', CHAR_LENGTH(TC.CODE_ETC_1)) ELSE TC.CODE_ETC_1 END                 AS codeEtc
+        , TC.DEL_YN                                                                                         AS deleteYn
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        <choose>
+            <when test='(filter.codeCd != null and !filter.codeCd.equals("")) or (filter.codeNm != null and !filter.codeNm.equals(""))'>
+                AND TC.CODE_UPPER != 'TOP'
+                <if test='filter.codeCd != null and !filter.codeCd.equals("")' >
+                    AND TC.CODE_CD LIKE CONCAT('%' ,#{filter.codeCd} ,'%')
+                </if>
+                <if test='filter.codeNm != null and !filter.codeNm.equals("")'>
+                    AND TC.CODE_NM LIKE CONCAT('%' ,#{filter.codeNm} ,'%')
+                </if>
+            </when>
+            <otherwise>
+                <if test='filter.codeUpper != null and !filter.codeUpper.equals("")'>
+                    AND TC.CODE_UPPER = #{filter.codeUpper}
+                </if>
+            </otherwise>
+        </choose>
+        ORDER BY TC.CODE_ORDER ASC
+        OFFSET ((#{curPage}-1) * #{pageRowCount}) ROWS FETCH NEXT #{pageRowCount} ROWS ONLY
+    </select>
+
+
+    <select id="selectLowerCodeByCodeUpperForCodeMng" parameterType="String" resultType="com.shop.core.biz.system.vo.response.CodeResponse$LowerSelect">
+        /* com.shop.mapper.code.selectLowerCodeByCodeUpperForCodeMng */
+        SELECT
+        <include refid="codeColumns" />
+        , TC.CODE_NM                        AS codeNm
+        , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC)        AS no
+        , COALESCE((SELECT X.CODE_NM FROM TB_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER) AS codeUpperNm
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        AND TC.DEL_YN = 'N'
+        AND TC.CODE_UPPER = #{codeUpper}
+        ORDER BY TC.CODE_ORDER ASC
+    </select>
+
+
+    <select id="selectCodeByUkIncludeDelete" parameterType="com.shop.core.entity.Code" resultType="com.shop.core.entity.Code">
+        /* com.shop.mapper.code.selectCodeByUkIncludeDelete */
+        SELECT
+        <include refid="codeColumns" />
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        AND TC.CODE_UPPER = #{codeUpper}
+        AND TC.CODE_CD = #{codeCd}
+    </select>
+
+    <select id="selectRelatedCodeList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.vo.response.CodeResponse">
+        /* com.shop.mapper.code.selectRelatedCodeList */
+        /* 사용하고자 하는 테이블의 구조가 기존 구문과 맞지 않은 관계로 새로 작성 */
+        SELECT
+          ID
+        , CODE_CD               AS codeCd
+        , CODE_NM               AS codeNm
+        , CODE_DESC             AS codeDesc
+        , CODE_ETC_1            AS codeEtc1
+        , CODE_ETC_2            AS codeEtc2
+        , CRE_TM                AS creTm
+        , CRE_USER              AS creUser
+        , UPD_TM                AS updTm
+        , UPD_USER              AS updUser
+        , DEL_YN                AS deleteYn
+        FROM TB_CODE TC
+        WHERE 1 = 1
+        <if test='filter.codeNm != null and !filter.codeNm.equals("")'>
+            AND TC.CODE_UPPER = (SELECT CODE_CD FROM TB_CODE TC WHERE TC.CODE_NM = #{filter.codeNm})
+        </if>
+    </select>
+
+    <select id="getFuncCdListByCodeUpper" parameterType="String" resultType="com.shop.core.biz.system.vo.response.CodeResponse$CodeDropDown">
+        SELECT CODE_CD
+             , CODE_NM
+        FROM TB_CODE
+        WHERE (CODE_UPPER LIKE #{codeUpper})
+           OR (CODE_CD LIKE #{codeUpper} || '%' AND LENGTH(CODE_CD) = 6)
+    </select>
+
+    <select id="getLiveProductCode" resultType="java.lang.String">
+        /* com.shop.mapper.code.getLiveProductCode */
+        SELECT  LPAD(COALESCE((
+                            SELECT CODE_CD::INT
+                            FROM TB_CODE
+                            WHERE CODE_UPPER = '80004'
+                              AND CODE_ETC_1 = #{sellerKey}
+                              AND CODE_NM = #{prodNm}
+                        ), 0)::TEXT, 3, '0')
+    </select>
+
+    <select id="createLiveProductCode" resultType="java.lang.String">
+        /* com.shop.mapper.code.createLiveProductCode */
+        SELECT  LPAD(COALESCE((
+                                  SELECT MAX(CODE_CD::INT) + 1
+                                  FROM TB_CODE
+                                  WHERE CODE_UPPER = '80004'
+                                    AND CODE_ETC_1 = #{sellerKey}
+                              ), 1)::TEXT, 3, '0')
+    </select>
+
+    <select id="selectCodeName" resultType="java.lang.String">
+        /* com.shop.mapper.code.selectCodeName */
+        SELECT CODE_NM
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+          AND CODE_CD = #{codeCd}
+          AND DEL_YN = 'N'
+    </select>
+</mapper>
