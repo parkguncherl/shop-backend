@@ -149,8 +149,8 @@ public class CommonController {
             @Parameter(name = "CommonRequestFileUpdate", description = "단일 이미지파일 수정 Request", in = ParameterIn.PATH) CommonRequest.FileUpdate fileUpdate
     ) {
         // 필수값 체크
-        if (fileUpdate.getFileDetId() == null || fileUpdate.getFileDetId() <= 0) {
-            return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE, "파일 상세id 가 입력되지 않았습니다.");
+        if (fileUpdate.getFileId() == null || fileUpdate.getFileSeq() <= 0) {
+            return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE, "파일 id 혹은 seq 의 입력 여부를 확인하십시요.");
         }
 
         commonService.imageFileUpdate(fileUpdate, jwtUser);

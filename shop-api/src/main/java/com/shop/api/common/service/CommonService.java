@@ -503,7 +503,7 @@ public class CommonService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void imageFileUpdate(CommonRequest.FileUpdate fileUpdate, User jwtUser) {
         try {
-            FileDet fileDetOrg = fileDao.selectFileDetByKey(fileUpdate.getFileDetId());
+            FileDet fileDetOrg = fileDao.selectFileDet(fileUpdate.getFileId(), fileUpdate.getFileSeq(), null);
             deleteFileFromBucket(fileDetOrg.getSysFileNm()); // 기존 파일 삭제(from bucket)
 
             String originalFileName = fileUpdate.getUploadFile().getOriginalFilename();
@@ -511,7 +511,7 @@ public class CommonService {
             String finalKey = webpImageUploadToBucket(fileUpdate.getUploadFile(), sysFileNm); // 버킷에 신규 업로드
 
             FileDet updateFileDet = new FileDet();
-            updateFileDet.setId(fileUpdate.getFileDetId());
+            updateFileDet.setId(fileDetOrg.getId());
             updateFileDet.setUpdUser(jwtUser.getLoginId());
 
             // sysFileNm, fileSize, fileExt, fileNm 조정
