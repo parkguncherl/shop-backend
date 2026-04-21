@@ -502,13 +502,16 @@ public class CommonService {
      * */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void imageFileUpdate(CommonRequest.FileUpdate fileUpdate, User jwtUser) {
+        String finalKey = null;
         try {
             FileDet fileDetOrg = fileDao.selectFileDet(fileUpdate.getFileId(), fileUpdate.getFileSeq(), null);
-            deleteFileFromBucket(fileDetOrg.getSysFileNm()); // 기존 파일 삭제(from bucket)
+            if (fileDetOrg == null) {
+                throw new CustomRuntimeException(ApiResultCode.FAIL, "수정할 file Det을 찾을 수 없습니다.");
+            }
 
             String originalFileName = fileUpdate.getUploadFile().getOriginalFilename();
             String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
-            String finalKey = webpImageUploadToBucket(fileUpdate.getUploadFile(), sysFileNm); // 버킷에 신규 업로드
+            finalKey = webpImageUploadToBucket(fileUpdate.getUploadFile(), sysFileNm); // 버킷에 신규 업로드
 
             FileDet updateFileDet = new FileDet();
             updateFileDet.setId(fileDetOrg.getId());
@@ -521,7 +524,12 @@ public class CommonService {
             updateFileDet.setFileNm(originalFileName);
 
             fileDao.updateFileDet(updateFileDet);
+
+            deleteFileFromBucket(fileDetOrg.getSysFileNm()); // 기존 파일 삭제(from bucket), 업로드 중 예외가 발생하지 아니한 경우 삭제가 이루어지도록 최하단 영역에 작성함
         } catch (Exception e) {
+            if (finalKey != null) {
+                deleteFileFromBucket(finalKey); // 신규 업로드 이후로 에러가 발생한 경우(finalKey 가 할당되어진 경우)
+            }
             throw new CustomRuntimeException(ApiResultCode.FAIL, "이미지 수정 시점에 오류가 발생하였습니다.");
         }
     }
