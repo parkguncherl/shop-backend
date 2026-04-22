@@ -24,6 +24,7 @@
     <select id="selectFileDet" resultType="com.shop.core.entity.FileDet">
         /* com.shop.mapper.file.selectFileDet */
         SELECT
+            ID          AS id,
             FILE_ID     AS fileId,
             FILE_SEQ    AS fileSeq,
             BUCKET_NAME AS bucketName,
@@ -191,13 +192,11 @@
         <if test="fileNm != null">
             , FILE_NM = #{fileNm}
         </if>
-        <if test="fileDesc != null">
-            , FILE_DESC = #{fileDesc}
-        </if>
         <if test="fileSize != null">
             , FILE_SIZE = #{fileSize}
         </if>
         WHERE ID = #{id}
+            AND DEL_YN = 'N'
     </update>
 
 </mapper>

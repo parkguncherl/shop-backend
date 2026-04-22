@@ -44,6 +44,7 @@ public class FileDao {
         params.put("fileSeq", fileSeq);
         params.put("key", key);
         FileDet fileDet = sqlSession.selectOne(PRE_NS.concat("selectFileDet"), params);
+        selectFile.setId(fileDet.getId());
         selectFile.setFileId(fileId);
         selectFile.setFileSeq(fileSeq);
         selectFile.setFileNm(fileDet.getFileNm());
