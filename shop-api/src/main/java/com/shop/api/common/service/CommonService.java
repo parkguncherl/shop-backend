@@ -90,6 +90,9 @@ public class CommonService {
     @Value("${origin.allowed}")
     private String ORIGIN_ALLOWED;
 
+    @Value("${webp.enabled}")
+    private Boolean WEBP_ENABLED;
+
     /**
      * 파일_조회 (by Uk)
      *
@@ -513,6 +516,10 @@ public class CommonService {
             String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
             finalKey = webpImageUploadToBucket(fileUpdate.getUploadFile(), sysFileNm); // 버킷에 신규 업로드
 
+            if (finalKey == null) {
+                throw new CustomRuntimeException(ApiResultCode.FAIL, "버킷으로의 신규 업로드 중 문제가 발생하였습니다.");
+            }
+
             FileDet updateFileDet = new FileDet();
             updateFileDet.setId(fileDetOrg.getId());
             updateFileDet.setUpdUser(jwtUser.getLoginId());
@@ -523,12 +530,16 @@ public class CommonService {
             updateFileDet.setFileExt(CommUtil.getFileExtension(finalKey));
             updateFileDet.setFileNm(originalFileName);
 
-            fileDao.updateFileDet(updateFileDet);
+            Integer updatedRowCnt = fileDao.updateFileDet(updateFileDet);
+
+            if (updatedRowCnt != 1) {
+                throw new CustomRuntimeException(ApiResultCode.FAIL, "file Det 수정 도중 문제가 발생하였습니다.");
+            }
 
             deleteFileFromBucket(fileDetOrg.getSysFileNm()); // 기존 파일 삭제(from bucket), 업로드 중 예외가 발생하지 아니한 경우 삭제가 이루어지도록 최하단 영역에 작성함
         } catch (Exception e) {
             if (finalKey != null) {
-                deleteFileFromBucket(finalKey); // 신규 업로드 이후로 에러가 발생한 경우(finalKey 가 할당되어진 경우)
+                deleteFileFromBucket(finalKey); // 신규 업로드 이후로 에러가 발생한 경우(finalKey 가 할당되어진 경우) 업로드된 신규 이미지 제거
             }
             throw new CustomRuntimeException(ApiResultCode.FAIL, "이미지 수정 시점에 오류가 발생하였습니다.");
         }
@@ -816,6 +827,14 @@ public class CommonService {
                 .size(targetWidth, targetHeight)
                 .outputQuality(0.85) // 🔥 0.75 → 0.85 추천
                 .asBufferedImage();
+
+        // webp 사용 가능 여부를 정의한 환경변수에 따라 fallBack
+        if (!WEBP_ENABLED) {
+            // fallback (JPG)
+            ByteArrayOutputStream fallback = new ByteArrayOutputStream();
+            ImageIO.write(resizedImage, "jpg", fallback);
+            return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
+        }
 
         // 3️⃣ WebP writer 확인
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/webp");
