@@ -507,14 +507,16 @@ public class CommonService {
     public void imageFileUpdate(CommonRequest.FileUpdate fileUpdate, User jwtUser) {
         String finalKey = null;
         try {
+            MultipartFile uploadFile = fileUpdate.getUploadFile();
+
             FileDet fileDetOrg = fileDao.selectFileDet(fileUpdate.getFileId(), fileUpdate.getFileSeq(), null);
             if (fileDetOrg == null) {
                 throw new CustomRuntimeException(ApiResultCode.FAIL, "수정할 file Det을 찾을 수 없습니다.");
             }
 
-            String originalFileName = fileUpdate.getUploadFile().getOriginalFilename();
+            String originalFileName = uploadFile.getOriginalFilename();
             String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
-            finalKey = webpImageUploadToBucket(fileUpdate.getUploadFile(), sysFileNm); // 버킷에 신규 업로드
+            finalKey = webpImageUploadToBucket(uploadFile, sysFileNm); // 버킷에 신규 업로드
 
             if (finalKey == null) {
                 throw new CustomRuntimeException(ApiResultCode.FAIL, "버킷으로의 신규 업로드 중 문제가 발생하였습니다.");
@@ -526,7 +528,7 @@ public class CommonService {
 
             // sysFileNm, fileSize, fileExt, fileNm 조정
             updateFileDet.setSysFileNm(finalKey); // 버킷에 최종 전달된 식별자는 finalKey 에 할당되므로
-            updateFileDet.setFileSize(new BigDecimal(fileUpdate.getUploadFile().getSize()).intValue());
+            updateFileDet.setFileSize(new BigDecimal(uploadFile.getSize()).intValue());
             updateFileDet.setFileExt(CommUtil.getFileExtension(finalKey));
             updateFileDet.setFileNm(originalFileName);
 
@@ -832,8 +834,15 @@ public class CommonService {
         if (!WEBP_ENABLED) {
             // fallback (JPG)
             ByteArrayOutputStream fallback = new ByteArrayOutputStream();
-            ImageIO.write(resizedImage, "jpg", fallback);
+            Thumbnails.of(resizedImage)
+                    .scale(1.0)
+                    .outputQuality(0.85)
+                    .outputFormat("jpg")
+                    .toOutputStream(fallback);  // 내부적으로 ARGB → RGB 처리
             return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
+//            ByteArrayOutputStream fallback = new ByteArrayOutputStream();
+//            ImageIO.write(resizedImage, "jpg", fallback);
+//            return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
         }
 
         // 3️⃣ WebP writer 확인
