@@ -59,7 +59,8 @@ dependencies {
 
     implementation 'org.springframework.security:spring-security-crypto'
 
-    implementation 'org.sejda.imageio:webp-imageio:0.1.6'
+    //implementation 'org.sejda.imageio:webp-imageio:0.1.7' 아키텍처 인식 문제로 인하여 주석처리
+    implementation 'com.github.gotson:webp-imageio:0.2.2'
 
     implementation 'net.coobird:thumbnailator:0.4.21'
 
