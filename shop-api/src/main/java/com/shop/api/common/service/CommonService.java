@@ -805,12 +805,18 @@ public class CommonService {
 
     private ConvertResult optimizeAndConvertToWebp(MultipartFile file) throws IOException {
 
-        // 1️⃣ 이미지 여부 체크
+        // 이미지 여부 체크
         if (file.getContentType() == null || !file.getContentType().startsWith("image")) {
             return new ConvertResult(file.getBytes(), file.getContentType(), getExtension(file.getOriginalFilename()));
         }
 
-        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+//        BufferedImage originalImage = ImageIO.read(file.getInputStream()); todo 오리지널
+
+        // 메타데이터 포함 방향 보정된 이미지를 먼저 읽기
+        BufferedImage originalImage = Thumbnails.of(file.getInputStream())
+                .scale(1.0)
+                .useExifOrientation(true)
+                .asBufferedImage();
 
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
@@ -818,16 +824,16 @@ public class CommonService {
         int targetWidth = width;
         int targetHeight = height;
 
-        // ✅ 가로 1000 초과일 때만 리사이즈
+        // 가로 1000 초과일 때만 리사이즈
         if (width > 1000) {
             targetWidth = 1000;
             targetHeight = (int) (((double) height / width) * 1000);
         }
 
-        // 2️⃣ 리사이즈 + 압축 (확대 방지)
+        // 리사이즈 + 압축 (확대 방지)
         BufferedImage resizedImage = Thumbnails.of(originalImage)
                 .size(targetWidth, targetHeight)
-                .outputQuality(0.85) // 🔥 0.75 → 0.85 추천
+                .outputQuality(0.85) // 0.75 → 0.85 추천
                 .asBufferedImage();
 
         // webp 사용 가능 여부를 정의한 환경변수에 따라 fallBack
@@ -845,17 +851,17 @@ public class CommonService {
 //            return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
         }
 
-        // 3️⃣ WebP writer 확인
+        // WebP writer 확인
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/webp");
 
         if (!writers.hasNext()) {
-            // 👉 fallback (JPG)
+            // fallback (JPG)
             ByteArrayOutputStream fallback = new ByteArrayOutputStream();
             ImageIO.write(resizedImage, "jpg", fallback);
             return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
         }
 
-        // 4️⃣ WebP 변환
+        // WebP 변환
         ImageWriter writer = writers.next();
         ByteArrayOutputStream webpStream = new ByteArrayOutputStream();
 
@@ -866,7 +872,7 @@ public class CommonService {
             if (param.canWriteCompressed()) {
                 param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 param.setCompressionType("Lossy");
-                param.setCompressionQuality(0.85f); // 🔥 통일
+                param.setCompressionQuality(0.85f); // 통일
             }
 
             writer.write(null, new IIOImage(resizedImage, null, null), param);
