@@ -836,11 +836,24 @@ public class CommonService {
                 .outputQuality(0.85) // 0.75 → 0.85 추천
                 .asBufferedImage();
 
+        // 여기서 한 번만 처리 - 이후 jpg/webp 분기 모두 커버
+        BufferedImage flatImage = new BufferedImage(
+                resizedImage.getWidth(),
+                resizedImage.getHeight(),
+                BufferedImage.TYPE_INT_RGB
+        );
+
+        Graphics2D g2d = flatImage.createGraphics();
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0, flatImage.getWidth(), flatImage.getHeight());
+        g2d.drawImage(resizedImage, 0, 0, null);
+        g2d.dispose();
+
         // webp 사용 가능 여부를 정의한 환경변수에 따라 fallBack
         if (!WEBP_ENABLED) {
             // fallback (JPG)
             ByteArrayOutputStream fallback = new ByteArrayOutputStream();
-            Thumbnails.of(resizedImage)
+            Thumbnails.of(flatImage)
                     .scale(1.0)
                     .outputQuality(0.85)
                     .outputFormat("jpg")
@@ -857,8 +870,15 @@ public class CommonService {
         if (!writers.hasNext()) {
             // fallback (JPG)
             ByteArrayOutputStream fallback = new ByteArrayOutputStream();
-            ImageIO.write(resizedImage, "jpg", fallback);
+            Thumbnails.of(flatImage)
+                    .scale(1.0)
+                    .outputQuality(0.85)
+                    .outputFormat("jpg")
+                    .toOutputStream(fallback);  // 내부적으로 ARGB → RGB 처리
             return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
+//            ByteArrayOutputStream fallback = new ByteArrayOutputStream();
+//            ImageIO.write(resizedImage, "jpg", fallback);
+//            return new ConvertResult(fallback.toByteArray(), "image/jpeg", "jpg");
         }
 
         // WebP 변환
@@ -875,7 +895,7 @@ public class CommonService {
                 param.setCompressionQuality(0.85f); // 통일
             }
 
-            writer.write(null, new IIOImage(resizedImage, null, null), param);
+            writer.write(null, new IIOImage(flatImage, null, null), param);
         } finally {
             writer.dispose();
         }
