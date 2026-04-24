@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.display">
+
+    <select id="selectProductInfoListForEnumPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.frontWeb.vo.response.DisplayResponse$ProductInfoForEnum">
+        /* com.shop.mapper.frontWeb.display.selectProductInfoListForEnumPaging */
+        SELECT
+              TPD.ID AS prodDetId
+            , TPD.PRODUCT_DET_COLOR AS prodDetColor
+            , TP.ID AS prodId
+            , TP.PROD_NM AS prodNm
+            , TP.SELL_AMT AS sellAmt
+        FROM TB_RPODUCT_DET TPD
+        JOIN TB_PRODUCT TP ON TP.ID = TPD.PRODUCT_ID AND TP.DEL_YN = 'N'
+        <where>
+            AND TPD.DEL_YN = 'N'
+            AND TPD.IS_REP = true
+            <if test='filter.lastProdDetId != null'>
+                AND (TPD.ID)
+                >= (#{filter.lastProdDetId})
+            </if>
+        </where>
+        ORDER BY TP.ID
+        LIMIT #{pageRowCount} + 1;
+    </select>
+
+</mapper>

@@ -1,8 +1,9 @@
 package com.shop.api.frontWeb.service;
 
-import com.shop.core.biz.system.dao.PartnerCodeDao;
-import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
-import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
+import com.shop.core.biz.common.vo.request.PageRequest;
+import com.shop.core.frontWeb.dao.DisplayDao;
+import com.shop.core.frontWeb.vo.request.DisplayRequest;
+import com.shop.core.frontWeb.vo.response.DisplayResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,14 +21,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DisplayService {
 
-    private final PartnerCodeDao partnerCodeDao;
+    private final DisplayDao displayDao;
+
+
     /**
-     * 상품관리-상품컨텐츠목록 조회
-     * @param partnerCodeRequest
-     * @return ProductInfo List
+     * frontWeb 메인 페이지 영역 상품정보 목록 조회 비즈니스 레이어
+     * @param pageRequest
+     * @return DisplayResponse.ProductInfoForEnum List
      */
-    public List<PartnerCodeResponse.PartnerCodeDropDown> selectLowerCodeByPartnerCodeUpper(PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest) {
-        return partnerCodeDao.selectLowerCodeByPartnerCodeUpper(partnerCodeRequest);
+    public List<DisplayResponse.ProductInfoForEnum> selectProductInfoListForEnumPaging(PageRequest<DisplayRequest.ProductInfoListFilter> pageRequest) {
+        return displayDao.selectProductInfoListForEnumPaging(pageRequest);
     }
 
 }
