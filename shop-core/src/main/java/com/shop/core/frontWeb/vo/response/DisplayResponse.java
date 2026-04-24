@@ -31,5 +31,8 @@ public class DisplayResponse {
         @Schema(description = "판매가")
         private BigDecimal sellAmt;
 
+        @Schema(description = "할인율")
+        private BigDecimal discountRate;
+
     }
 }

@@ -10,17 +10,17 @@
             , TP.ID AS prodId
             , TP.PROD_NM AS prodNm
             , TP.SELL_AMT AS sellAmt
-        FROM TB_RPODUCT_DET TPD
+            , TP.DISCOUNT_RATE AS discountRate
+        FROM TB_PRODUCT_DET TPD
         JOIN TB_PRODUCT TP ON TP.ID = TPD.PRODUCT_ID AND TP.DEL_YN = 'N'
         <where>
             AND TPD.DEL_YN = 'N'
             AND TPD.IS_REP = true
             <if test='filter.lastProdDetId != null'>
-                AND (TPD.ID)
-                >= (#{filter.lastProdDetId})
+                AND TPD.ID > #{filter.lastProdDetId}
             </if>
         </where>
-        ORDER BY TP.ID
+        ORDER BY TPD.ID
         LIMIT #{pageRowCount} + 1;
     </select>
 
