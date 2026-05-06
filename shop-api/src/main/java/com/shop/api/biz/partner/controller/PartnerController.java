@@ -48,22 +48,6 @@ public class PartnerController {
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 
-    
-    /**
-     * 화주관리_목록_조회 (리스트)
-     *
-     * @return
-     */
-    @AccessLog("화주관리 목록 조회")
-    @GetMapping(value = "/my-partners/{logisId}")
-    @Operation(summary = "화주관리 목록 조회 (리스트)")
-    public ApiResponse<List<PartnerResponse.Select>> selectPartnerList(@PathVariable Integer logisId){
-        // 화주 목록 조회
-        List<PartnerResponse.Select> partnerList = partnerService.selectPartnerList(logisId);
-        return new ApiResponse<>(ApiResultCode.SUCCESS, partnerList);
-    }
-
-
     /**
      * 화주관리_목록_조회 (페이징)
      *
