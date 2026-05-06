@@ -34,5 +34,8 @@ public class DisplayResponse {
         @Schema(description = "할인율")
         private BigDecimal discountRate;
 
+        @Schema(description = "sys fileNm")
+        private String sysFileNm;
+
     }
 }
