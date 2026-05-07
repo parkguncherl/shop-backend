@@ -86,6 +86,31 @@ public class ProductContentListController {
     }
 
     /**
+     * 기존 상품컨텐츠 수정
+     *
+     * @param updateProductContents
+     * @return
+     */
+    @Operation(summary = "기존 상품컨텐츠 수정", description = "기존 상품컨텐츠를 수정합니다.")
+    @PutMapping("/updateProductContents")
+    public ApiResponse<Void> updateProductContents(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestPart("main") ProductContentListRequest.UpdateProductContents updateProductContents,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
+    ) {
+        try {
+            if (updateProductContents.getCommonRequestFileUploads() != null) {
+                // 업로드 파일 할당
+                updateProductContents.getCommonRequestFileUploads().setUploadFiles(files);
+            }
+            productContentListService.updateProductContents(updateProductContents, jwtUser);
+            return new ApiResponse<>(ApiResultCode.SUCCESS);
+        } catch (IOException exception) {
+            return new ApiResponse<>(ApiResultCode.FAIL_UPDATE);
+        }
+    }
+
+    /**
      * 단일 Contents 데이터 및 연관된 상품정보를 삭제
      *
      * @param deleteProductContents

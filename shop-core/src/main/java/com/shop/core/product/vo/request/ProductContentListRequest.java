@@ -42,6 +42,15 @@ public class ProductContentListRequest {
 
     @Getter
     @Setter
+    @Schema(name = "ProductContentListRequestUpdateProductContents", description = "상품컨텐츠 수정 요청")
+    public static class UpdateProductContents extends Contents {
+
+        @Schema(description = "업로드 파일 목록")
+        private CommonRequest.FileUploads CommonRequestFileUploads; // 존재할 시 파일(이미지) 업로딩 요청도 포함된 걸로 간주
+    }
+
+    @Getter
+    @Setter
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductContentListRequestDeleteProductContents", description = "Contents 삭제 dto")
     public static class DeleteProductContents extends Contents {

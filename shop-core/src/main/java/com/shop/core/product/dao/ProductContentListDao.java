@@ -55,6 +55,15 @@ public class ProductContentListDao {
     }
 
     /**
+     * 신규 상품컨텐츠 데이터 추가
+     * @param contents
+     * @return 추가된 행의 수
+     */
+    public int updateProductContents(Contents contents) {
+        return sqlSession.update(NAMESPACE.concat("updateProductContents"), contents);
+    }
+
+    /**
      * (단일) Contents 데이터를 논리적으로 삭제
      * @param deleteProductContents
      * @return 영향받은(삭제된) 행의 수

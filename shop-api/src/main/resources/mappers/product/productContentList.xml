@@ -65,6 +65,32 @@
         )
     </insert>
 
+    <update id="updateProductContents" parameterType="com.shop.core.entity.Contents">
+        /* com.shop.mapper.product.productContentList.updateProductContents */
+        UPDATE TB_CONTENTS SET
+              UPD_TM   = NOW()
+            , UPD_USER = #{updUser}
+        <if test='newsType != null'>
+            , NEWS_TYPE = #{newsType}
+        </if>
+        <if test='newsTitle != null'>
+            , NEWS_TITLE = #{newsTitle}
+        </if>
+        <if test='newsSubTitle != null'>
+            , NEWS_SUB_TITLE = #{newsSubTitle}
+        </if>
+        <if test='newsContents != null'>
+            , NEWS_CONTENTS = #{newsContents}
+        </if>
+        <if test='fileId != null'>
+            , FILE_ID = #{fileId}
+        </if>
+        <if test='partnerId != null'>
+            , PARTNER_ID = #{partnerId}
+        </if>
+        WHERE ID = #{id}
+    </update>
+
     <update id="deleteProductContents" parameterType="com.shop.core.product.vo.request.ProductContentListRequest$DeleteProductContents">
         /* com.shop.mapper.product.productContentList.deleteProductContents */
         UPDATE TB_CONTENTS

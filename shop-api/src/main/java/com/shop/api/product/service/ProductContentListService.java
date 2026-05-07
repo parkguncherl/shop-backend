@@ -85,6 +85,48 @@ public class ProductContentListService {
     }
 
     /**
+     * 기존 상품컨텐츠 데이터 수정
+     * @param updateProductContents
+     * @return 추가된 행의 수
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void updateProductContents(ProductContentListRequest.UpdateProductContents updateProductContents, User jwtUser) throws IOException {
+        if (updateProductContents.getCommonRequestFileUploads() != null) {
+            // 파일 (신규)업로드 요청이 포함된 경우 이에 대응하는 로직(기존 파일은 해당 영역 하단에서 제거되며 주어진 파일들이 신규 업로드 되며 이에 따라 fileId 동기화)
+
+            CommonRequest.FileUploads fileUploads = updateProductContents.getCommonRequestFileUploads();
+            List<MultipartFile> fileList = fileUploads.getUploadFiles();
+            Integer fileId = 0;
+            Integer fileSeq = 0;
+            for (MultipartFile file : fileList) {
+                fileSeq++;
+                FileDet fileDet = commonService.fileImageUploadComm(jwtUser, file, fileId, fileSeq); // 상품컨텐츠에는 반드시 이미지만 들어간다.
+                if (fileId == 0) {
+                    fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
+                    updateProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의
+                }
+            }
+        }
+
+        updateProductContents.setUpdUser(jwtUser.getLoginId());
+        int updatedRowCnt = productContentListDao.updateProductContents(updateProductContents);
+        if (updatedRowCnt != 1) {
+            throw new CustomRuntimeException("상품컨텐츠 업데이트가 이루어지지 못함");
+        }
+
+        // 연관된 (이미지)파일 삭제 영역
+        List<FileDet> prevFileList = commonService.selectFileList(updateProductContents.getFileId());
+        Integer deletedFileCnt = commonService.deleteAllFiles(updateProductContents.getFileId(), jwtUser);
+        Integer deletedFileInfoCnt = commonService.deleteFile(updateProductContents.getFileId(), jwtUser); // file (데이터) 삭제
+        if (deletedFileCnt.compareTo(prevFileList.size()) != 0) {
+            // 불일치 시 예외
+            throw new IOException("삭제되어야 할 fileDet 과 실제로 그리 된 fileDet의 개수가 다름");
+        } else if (deletedFileInfoCnt != 1) {
+            throw new IOException("file 데이터가 삭제되지 않음");
+        }
+    }
+
+    /**
      * 단일 Contents 데이터 및 연관된 상품정보를 삭제
      *
      * @param deleteProductContents
