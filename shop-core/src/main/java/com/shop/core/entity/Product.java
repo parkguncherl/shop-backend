@@ -85,4 +85,7 @@ public class Product extends BaseEntity implements Serializable {
 
     @Schema(description = "동계 의상 여부")
     private String isWinter;
+
+    @Schema(description = "선호도 점수 인기정렬의 기준")
+    private Integer favoritePoint;
 }

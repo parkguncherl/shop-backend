@@ -16,9 +16,6 @@ public class DisplayResponse {
     @Schema(name = "DisplayResponseProductInfoForEnum", description = "frontWeb 메인 페이지 영역 상품정보", type = "object")
     public static class ProductInfoForEnum {
 
-        @Schema(description = "상품상세 id")
-        private Integer prodDetId;
-
         @Schema(description = "상품상세 컬러")
         private String prodDetColor;
 

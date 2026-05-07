@@ -5,22 +5,20 @@
     <select id="selectProductInfoListForEnumPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.frontWeb.vo.response.DisplayResponse$ProductInfoForEnum">
         /* com.shop.mapper.frontWeb.display.selectProductInfoListForEnumPaging */
         SELECT
-              TPD.ID AS prodDetId
-            , TPD.PRODUCT_DET_COLOR AS prodDetColor
-            , TP.ID AS prodId
+              TP.ID AS prodId
             , TP.PROD_NM AS prodNm
             , TP.SELL_AMT AS sellAmt
             , TP.DISCOUNT_RATE AS discountRate
-        FROM TB_PRODUCT_DET TPD
-        JOIN TB_PRODUCT TP ON TP.ID = TPD.PRODUCT_ID AND TP.DEL_YN = 'N'
+            , FD.SYS_FILE_NM AS sysFileNm
+        FROM TB_PRODUCT TP
+        JOIN TB_FILE_DET FD ON FD.FILE_ID = TP.REP_FILE_ID  AND FD.DEL_YN = 'N'
         <where>
-            AND TPD.DEL_YN = 'N'
-            AND TPD.IS_REP = true
-            <if test='filter.lastProdDetId != null'>
-                AND TPD.ID > #{filter.lastProdDetId}
+            AND TP.DEL_YN = 'N'
+            <if test='filter.lastProdId != null'>
+                AND TP.ID > #{filter.lastProdId}
             </if>
         </where>
-        ORDER BY TPD.ID
+        ORDER BY TP.ID
         LIMIT #{pageRowCount} + 1;
     </select>
 

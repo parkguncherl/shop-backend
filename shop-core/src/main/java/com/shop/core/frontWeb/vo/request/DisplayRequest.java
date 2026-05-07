@@ -14,6 +14,6 @@ public class DisplayRequest {
     public static class ProductInfoListFilter implements RequestFilter {
 
         @Schema(description = "last 상품상세 row's id")
-        private Integer lastProdDetId;
+        private Integer lastProdId;
     }
 }
