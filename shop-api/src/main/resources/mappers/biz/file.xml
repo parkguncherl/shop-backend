@@ -4,6 +4,7 @@
     <select id="selectFileList" resultType="com.shop.core.entity.FileDet">
         /* com.shop.mapper.file.selectFileList */
         SELECT
+            ID          AS id,
             FILE_ID     AS fileid,
             FILE_SEQ    AS fileseq,
             SYS_FILE_NM AS sysFileNm,
