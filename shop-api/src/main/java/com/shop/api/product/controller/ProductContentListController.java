@@ -99,9 +99,9 @@ public class ProductContentListController {
             @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) {
         try {
-            if (updateProductContents.getCommonRequestFileUploads() != null) {
+            if (updateProductContents.getUpdateProductContentsFileInfos() != null) {
                 // 업로드 파일 할당
-                updateProductContents.getCommonRequestFileUploads().setUploadFiles(files);
+                updateProductContents.getUpdateProductContentsFileInfos().setUploadFiles(files);
             }
             productContentListService.updateProductContents(updateProductContents, jwtUser);
             return new ApiResponse<>(ApiResultCode.SUCCESS);

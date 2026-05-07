@@ -21,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * <pre>
@@ -91,38 +89,50 @@ public class ProductContentListService {
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void updateProductContents(ProductContentListRequest.UpdateProductContents updateProductContents, User jwtUser) throws IOException {
-        if (updateProductContents.getCommonRequestFileUploads() != null) {
-            // 파일 (신규)업로드 요청이 포함된 경우 이에 대응하는 로직(기존 파일은 해당 영역 하단에서 제거되며 주어진 파일들이 신규 업로드 되며 이에 따라 fileId 동기화)
+        if (updateProductContents.getUpdateProductContentsFileInfos() != null) {
+            // 파일 (신규)업로드 요청이 포함된 경우 이외에는 파일 관련 동작을 일절 수행하지 아니함
 
-            CommonRequest.FileUploads fileUploads = updateProductContents.getCommonRequestFileUploads();
-            List<MultipartFile> fileList = fileUploads.getUploadFiles();
-            Integer fileId = 0;
+            ProductContentListRequest.UpdateProductContentsFileInfos updateProductContentsFileInfos = updateProductContents.getUpdateProductContentsFileInfos();
+            List<MultipartFile> fileList = updateProductContentsFileInfos.getUploadFiles();
+            Integer fileId = updateProductContentsFileInfos.getFileId() != null ? updateProductContentsFileInfos.getFileId() : 0; // 요청 시점에 fileId가 존재하는 경우 할당하며 이 경우 fileImageUploadComm 에서는 내부적으로 tb_file에 대한 insert 동작을 생략한다
             Integer fileSeq = 0;
+            List<FileDet> prevFileList = commonService.selectFileList(updateProductContentsFileInfos.getFileId());
+
+            for (FileDet prevFileDet : prevFileList) {
+                if (fileSeq < prevFileDet.getFileSeq()) {
+                    fileSeq = prevFileDet.getFileSeq(); // 이하 for 문에서 동작 이전 단항 연산자를 통해 증가하므로 여기서는 오리지널 seq 할당
+                }
+            }
+            // 구문 종료 시점에 fileSeq 는 기존에 조회된 fileDet의 최대 seq와 동일함이 보장
+
+            // 업로드 파일 목록에 존재하는 파일들을 업로딩
             for (MultipartFile file : fileList) {
                 fileSeq++;
                 FileDet fileDet = commonService.fileImageUploadComm(jwtUser, file, fileId, fileSeq); // 상품컨텐츠에는 반드시 이미지만 들어간다.
                 if (fileId == 0) {
+                    // 수정하고자 하는 글의 원본에 file 이 부재하였으나 요청 시점에는 추가하고자 하는 file 이 존재하는 경우
                     fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
                     updateProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의
                 }
             }
+
+            // 이하 삭제 동작 수행하는 영역
+            Set<Integer> preservedIds = new HashSet<>(updateProductContentsFileInfos.getPreservedFileDetIdList());
+            for (FileDet prevFileDet : prevFileList) {
+                if (preservedIds.contains(prevFileDet.getFileId())) {
+                    continue; // 보존 대상이면 건너뜀
+                }
+
+                // 이하는 보존 대상이 아닌(수정 요청에서는 지워진) fileDet에 대한 동작
+                commonService.deleteFile(fileId, prevFileDet.getFileSeq(), jwtUser); // 버킷, db 테이블에서 삭제
+            }
         }
 
+        // 기존 file이 존재하는 경우 fileDet은 이미 동기화된 상태, 또한 부재하는 경우는 역시 추가된 버킷 오브젝트에 맞추어 동기화된 상태
         updateProductContents.setUpdUser(jwtUser.getLoginId());
         int updatedRowCnt = productContentListDao.updateProductContents(updateProductContents);
         if (updatedRowCnt != 1) {
             throw new CustomRuntimeException("상품컨텐츠 업데이트가 이루어지지 못함");
-        }
-
-        // 연관된 (이미지)파일 삭제 영역
-        List<FileDet> prevFileList = commonService.selectFileList(updateProductContents.getFileId());
-        Integer deletedFileCnt = commonService.deleteAllFiles(updateProductContents.getFileId(), jwtUser);
-        Integer deletedFileInfoCnt = commonService.deleteFile(updateProductContents.getFileId(), jwtUser); // file (데이터) 삭제
-        if (deletedFileCnt.compareTo(prevFileList.size()) != 0) {
-            // 불일치 시 예외
-            throw new IOException("삭제되어야 할 fileDet 과 실제로 그리 된 fileDet의 개수가 다름");
-        } else if (deletedFileInfoCnt != 1) {
-            throw new IOException("file 데이터가 삭제되지 않음");
         }
     }
 

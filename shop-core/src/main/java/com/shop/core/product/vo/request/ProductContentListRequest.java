@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Schema(name = "ProductContentListRequest", description = "상품컨텐츠 목록 영역 요청")
 public class ProductContentListRequest {
 
@@ -46,7 +48,16 @@ public class ProductContentListRequest {
     public static class UpdateProductContents extends Contents {
 
         @Schema(description = "업로드 파일 목록")
-        private CommonRequest.FileUploads CommonRequestFileUploads; // 존재할 시 파일(이미지) 업로딩 요청도 포함된 걸로 간주
+        private UpdateProductContentsFileInfos updateProductContentsFileInfos; // 존재할 시 파일(이미지) 업로딩 요청도 포함된 걸로 간주
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductContentListRequestUpdateProductContentsFileInfos", description = "상품컨텐츠 파일 정보 수정 dto")
+    public static class UpdateProductContentsFileInfos extends CommonRequest.FileUploads {
+
+        @Schema(description = "수정 시점에 영속되어진 file det id 목록")
+        private List<Integer> preservedFileDetIdList;
     }
 
     @Getter
