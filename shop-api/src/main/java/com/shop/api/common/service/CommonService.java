@@ -270,7 +270,7 @@ public class CommonService {
     }
 
     /* file 개별삭제 */
-    public void deleteFile(Integer fileId, Integer fileSeq, User jwtUser) {
+    public void deleteFileDetByUkWithBuket(Integer fileId, Integer fileSeq, User jwtUser) {
         CommonResponse.SelectFile selectFile = fileDao.selectFileDet(fileId, fileSeq, null);
         if(selectFile!= null && selectFile.getSysFileNm() != null) {
             try {
@@ -303,7 +303,7 @@ public class CommonService {
         List<FileDet> files = fileDao.selectFileList(fileId);
         if(!files.isEmpty()) {
             for (FileDet fileDet : files) {
-                this.deleteFile(fileDet.getFileId(), fileDet.getFileSeq(), jwtUser);
+                this.deleteFileDetByUkWithBuket(fileDet.getFileId(), fileDet.getFileSeq(), jwtUser);
             }
         }
         return files.size(); // exception 없이 해당 코드까지 도달하였을 시 files.size() 에 해당하는 개수의 fileDet이 삭제되었으리라 여김이 마땅하므로 해당 값 반환하도록 함

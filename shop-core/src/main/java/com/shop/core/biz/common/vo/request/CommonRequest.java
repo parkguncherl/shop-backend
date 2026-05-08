@@ -65,22 +65,6 @@ public class CommonRequest {
 
     @Getter
     @Setter
-    @EqualsAndHashCode
-    @Schema(name = "CommonRequestFileDownload", description = "파일 다운로드 요청 파라미터")
-    public static class FileDownload {
-
-        @Schema(description = "파일_아이디")
-        private Integer id;
-
-        @Schema(description = "파일_시퀀스")
-        private Integer fileSeq;
-
-        @Schema(description = "파일_명")
-        private String fileNm;
-    }
-
-    @Getter
-    @Setter
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor

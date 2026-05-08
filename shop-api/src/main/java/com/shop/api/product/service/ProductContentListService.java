@@ -126,7 +126,7 @@ public class ProductContentListService {
                 }
 
                 // 이하는 보존 대상이 아닌(수정 요청에서는 지워진) fileDet에 대한 동작
-                commonService.deleteFile(fileId, prevFileDet.getFileSeq(), jwtUser); // 버킷, db 테이블에서 삭제
+                commonService.deleteFileDetByUk(fileId, prevFileDet.getFileSeq(), jwtUser); // 버킷, db 테이블에서 삭제
             }
         }
 

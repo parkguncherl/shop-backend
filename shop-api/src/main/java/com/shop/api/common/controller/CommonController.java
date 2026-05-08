@@ -167,18 +167,17 @@ public class CommonController {
      * @param fileSeq
      * @return
      */
-    @DeleteMapping(value = "/fileDeleteBySeq/{fileId}/{fileSeq}")
+    @DeleteMapping(value = "/fileDeleteBySeqWithBuket/{fileId}/{fileSeq}")
     @Operation(summary = "파일 삭제")
-    public ApiResponse fileDeleteBySeq(
+    public ApiResponse<ApiResultCode> deleteFileDetByUkWithBuket(
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @PathVariable Integer fileId, @PathVariable Integer fileSeq
     ) {
-        Integer result = fileDao.deleteFileDetByUk(fileId, fileSeq, jwtUser);
-        if(result == 0){
-            return new ApiResponse<>(ApiResultCode.FAIL, "["+fileId+ "/"+ fileSeq+"]파일삭제가 실패하였습니다.");
-        }
+        commonService.deleteFileDetByUkWithBuket(fileId, fileSeq, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
+
+
 
     /**
      * 파일_삭제 (개별)
