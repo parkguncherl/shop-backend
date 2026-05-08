@@ -274,22 +274,39 @@ public class CommonService {
         CommonResponse.SelectFile selectFile = fileDao.selectFileDet(fileId, fileSeq, null);
         if(selectFile!= null && selectFile.getSysFileNm() != null) {
             try {
-//                DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-//                    .bucket(BUKET_NAME)
-//                    .key(selectFile.getSysFileNm())
-//                    .build();
-//
-//                s3Client.deleteObject(deleteObjectRequest);
                 this.deleteFileFromBucket(selectFile.getSysFileNm());
-                fileDao.deleteFileDetByUk(fileId, fileSeq, jwtUser);
+                this.fileSeqArrangeDelete(fileId, fileSeq, jwtUser);
             } catch (Exception e){
                 throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "s3 파일("+selectFile.getFileNm()+") 삭제 실패["+e.getMessage()+"]");
             }
         }
     }
 
+    public void deleteFileDetByIdWithBuket(Integer fileDetId, User jwtUser) {
+        FileDet fileDet = fileDao.selectFileDetByKey(fileDetId);
+        if(fileDet != null && fileDet.getSysFileNm() != null) {
+            try {
+                this.fileSeqArrangeDelete(fileDet.getFileId(), fileDet.getFileSeq(), jwtUser);
+                this.deleteFileFromBucket(fileDet.getSysFileNm());
+            } catch (Exception e){
+                throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "s3 파일("+fileDet.getFileNm()+") 삭제 실패["+e.getMessage()+"]");
+            }
+        }
+    }
+
+    private void fileSeqArrangeDelete(Integer fileId,Integer fileSeq,User jwtUser){
+        if(fileSeq == 1){
+            List<FileDet> fileDetList = fileDao.selectFileList(fileId); // seq 로 정렬되어 온다.
+            if(fileDetList.size() > 1){ // 두번째 오는넘을 1로 변경해서 1의 자리를 채운다.
+                FileDet updateFileDet = fileDetList.get(1);
+                fileDao.updateFileDetSeqNoOne(updateFileDet.getId());
+            }
+        }
+        fileDao.deleteFileDetByUk(fileId, fileSeq, jwtUser);
+    }
+
     /* deleteFile 에서 버킷 수준 삭제 영역만 분리 */
-    public void deleteFileFromBucket(String sysFileNm) {
+    private void deleteFileFromBucket(String sysFileNm) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(BUKET_NAME)
                 .key(sysFileNm)
@@ -309,70 +326,6 @@ public class CommonService {
         return files.size(); // exception 없이 해당 코드까지 도달하였을 시 files.size() 에 해당하는 개수의 fileDet이 삭제되었으리라 여김이 마땅하므로 해당 값 반환하도록 함
     }
 
-    public File downloadFile(String bucketName, String key) throws IOException {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
-
-        // 다운로드할 파일의 임시 저장 경로를 설정합니다.
-        Path tempFilePath = Files.createTempFile("s3file-", ".tmp");
-        File tempFile = tempFilePath.toFile();
-
-        try (FileOutputStream fos = new FileOutputStream(tempFile);
-             InputStream s3ObjectStream = s3Client.getObject(getObjectRequest)) {
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = s3ObjectStream.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-        }
-
-        return tempFile;
-    }
-
-
-    /**
-     * 파일_삭제
-     *
-     * @param id
-     * @return
-     */
-    public Integer deleteFile(Integer id, User jwtUser) {
-        return fileDao.deleteFile(id, jwtUser);
-    }
-
-    /**
-     * 파일_삭제
-     *
-     * @param id
-     * @return
-     */
-    public Integer deleteFileDet(Integer id, User jwtUser) {
-        return fileDao.deleteFileDet(id, jwtUser);
-    }
-    /**
-     * 파일_삭제
-     *
-     * @param fileId
-     * @param fileSeq
-     * @return
-     */
-    public Integer deleteFileDetByUk(Integer fileId, Integer fileSeq, User jwtUser) {
-        return fileDao.deleteFileDetByUk(fileId, fileSeq, jwtUser);
-    }
-    /**
-     * 파일_삭제
-     *
-     * @param fileId
-     * @return
-     */
-    public Integer deleteFileDetAll(Integer fileId, User jwtUser) {
-        return fileDao.deleteFileDetAll(fileId, jwtUser);
-    }
-
-
     public String getFileUrl(String fileName) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(BUKET_NAME)
@@ -387,38 +340,6 @@ public class CommonService {
 
         return presigner.presignGetObject(presignRequest).url().toString();
     }
-
-//    public Integer setUpGridColumn(GridRequest request, User jwtUser) {
-//        User user = userService.selectUserById(jwtUser.getId());
-//        if (ObjectUtils.isEmpty(user) && StringUtils.isEmpty(request.getUri()) && StringUtils.isEmpty(request.getSetValue())) {
-//            throw new CustomRuntimeException(ApiResultCode.FAIL, "그리드 컬럼 저장에 필요한 입력값이 없습니다.");
-//        }
-//
-//        request.setUserId(user.getId());
-//        if(!StringUtils.equalsAny(request.getUri(),"/wms/info/ProductList")){ // 예외처리하는 컬럼들
-//            return gridDao.upsertGridColumn(request);
-//        } else {
-//            return 1;
-//        }
-//    }
-//
-//    public Integer deleteGridColum(GridRequest request, User jwtUser) {
-//        User user = userService.selectUserById(jwtUser.getId());
-//        request.setUserId(user.getId());
-//        return gridDao.deleteGridColum(request);
-//    }
-//
-//    public GridResponse getGridColumn(String uri, User jwtUser) {
-//        User user = userService.selectUserById(jwtUser.getId());
-//        if (ObjectUtils.isEmpty(user) && StringUtils.isEmpty(uri)) {
-//            throw new CustomRuntimeException(ApiResultCode.FAIL, "그리드 컬럼 조회 요청값이 없습니다.");
-//        }
-//
-//        GridRequest request = new GridRequest();
-//        request.setUserId(user.getId());
-//        request.setUri(uri);
-//        return gridDao.selectGridColum(request);
-//    }
 
     /**
      * 단건파일 업로드
@@ -600,26 +521,6 @@ public class CommonService {
         return this.uploadDocFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
     }
 
-
-    /**
-     * BufferedImage 리사이징 (고품질)
-     */
-    private BufferedImage resizeBufferedImage(BufferedImage originalImage, int width, int height) {
-        // 고품질 리사이징을 위한 설정
-        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = resizedImage.createGraphics();
-
-        // 고품질 렌더링 옵션 설정
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // 이미지 그리기
-        g2d.drawImage(originalImage, 0, 0, width, height, null);
-        g2d.dispose();
-
-        return resizedImage;
-    }
     /**
      * 비율 유지하면서 리사이징 (선택사항)
      */
@@ -712,7 +613,6 @@ public class CommonService {
         }
     }
 
-
     /**
      * 두 파일 간의 seq 교환(재정렬)
      *
@@ -721,16 +621,10 @@ public class CommonService {
      * @return updatedRowsCnt(정상인 경우 2)
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Integer rearrangeFilesByStepsToMove(CommonRequest.FileRearrangementRequest fileRearrangementRequest, User jwtUser) {
+    public void rearrangeFilesByStepsToMove(CommonRequest.FileRearrangementRequest fileRearrangementRequest, User jwtUser) {
         List<FileDet> selectFileDetList = fileDao.selectFileList(fileRearrangementRequest.getFileId());
         int selectFileDetListLen = selectFileDetList.size();
-
         int stepsCntToMove = fileRearrangementRequest.getStepsToMove();
-        if (stepsCntToMove == 0) {
-            // stepsCntToMove == 0 인 경우 동작이 무의미하므로 이 경우 즉시 반환처리
-            return 0;
-        }
-
         if (stepsCntToMove > 0) {
             // 아래쪽 방향 이동
             Integer updatedRowsCnt = 0;
@@ -764,7 +658,6 @@ public class CommonService {
             if (updatedRowsCnt != selectFileDetListLen) {
                 throw new CustomRuntimeException("일부 행의 fileSeq가 갱신되지 않음");
             }
-            return updatedRowsCnt;
         } else {
             // stepsCntToMove < 0
             // 위쪽 방향 이동
@@ -799,7 +692,6 @@ public class CommonService {
             if (updatedRowsCnt != selectFileDetListLen) {
                 throw new CustomRuntimeException("일부 행의 fileSeq가 갱신되지 않음");
             }
-            return updatedRowsCnt;
         }
     }
 

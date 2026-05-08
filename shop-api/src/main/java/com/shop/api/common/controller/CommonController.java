@@ -178,67 +178,22 @@ public class CommonController {
     }
 
 
-
     /**
      * 파일_삭제 (개별)
      *
      * @param jwtUser
-     * @param commonRequest
+     * @param fileDetId
      * @return
      */
-    @DeleteMapping(value = "/fileDeleteByKey")
+    @DeleteMapping(value = "/fileDeleteByKey/{fileDetId}")
     @Operation(summary = "파일 삭제")
     public ApiResponse fileDeleteByKey(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(name = "CommonRequestFileDeleteByKey", description = "파일 업로드 Request", in = ParameterIn.QUERY) CommonRequest.FileDelete commonRequest
+            @PathVariable Integer fileDetId
     ) {
-        if(commonRequest.getFileId() == null || commonRequest.getFileId() <= 0){
-            throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "파일id 가 입력되지 않았습니다.");
-        }
-
-        if(StringUtils.isEmpty(commonRequest.getKey())){
-            throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "파일 key 가 입력되지 않았습니다.");
-        }
-
-        CommonResponse.SelectFile selectFile = fileDao.selectFileDet(commonRequest.getFileId(), null, commonRequest.getKey());
-
-        if(selectFile == null){
-            throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "삭제할 파일정보가 존재하지 않습니다.");
-        }
-
-        Integer result = fileDao.deleteFileDetByKey(commonRequest.getFileId(), selectFile.getSysFileNm(), jwtUser);
-        if(result == 0){
-            return new ApiResponse<>(ApiResultCode.FAIL, "["+commonRequest.getFileId()+ "/"+ selectFile.getFileSeq()+"]파일삭제가 실패하였습니다.");
-        }
+        commonService.deleteFileDetByIdWithBuket(fileDetId, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
-
-//    @PostMapping("/grid-column/update")
-//    @Operation(summary = "그리드 컬럼 설정 변경")
-//    public ApiResponse<Integer> setUpGridColumn(
-//            @Parameter(hidden = true) @JwtUser User jwtUser,
-//            @RequestBody GridRequest request
-//    ) {
-//        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.setUpGridColumn(request, jwtUser));
-//    }
-//
-//    @PostMapping("/grid-column/init")
-//    @Operation(summary = "그리드 컬럼 설정 초기화(삭제)")
-//    public ApiResponse<Integer> deleteUpGridColumn(
-//            @Parameter(hidden = true) @JwtUser User jwtUser,
-//            @RequestBody GridRequest request
-//    ) {
-//        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.deleteGridColum(request, jwtUser));
-//    }
-//
-//    @GetMapping("/grid-column")
-//    @Operation(summary = "그리드 컬럼 설정 변경")
-//    public ApiResponse<GridResponse> setUpGridColumn(
-//            @Parameter(hidden = true) @JwtUser User jwtUser,
-//            @RequestParam("uri") String uri
-//    ) {
-//        return new ApiResponse<>(ApiResultCode.SUCCESS, commonService.getGridColumn(uri, jwtUser));
-//    }
 
     /**
      * s3(cloudFlare) 파일정보

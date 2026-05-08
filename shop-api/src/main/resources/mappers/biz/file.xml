@@ -200,4 +200,14 @@
             AND DEL_YN = 'N'
     </update>
 
+    <update id="updateFileDetSeqNoOne" parameterType="java.lang.Integer">
+        /* com.shop.mapper.file.updateFileDet */
+        UPDATE TB_FILE_DET SET
+          UPD_USER = #{updUser}
+        , FILE_SEQ = 1
+        , UPD_TM = NOW()
+        WHERE ID = #{id}
+        AND DEL_YN = 'N'
+    </update>
+
 </mapper>

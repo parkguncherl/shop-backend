@@ -125,6 +125,18 @@ public class FileDao {
         return sqlSession.update(PRE_NS.concat("updateFileDet"), request);
     }
 
+
+    /**
+     * 파일 수정(By (fileDet)Id) 무조건 seq 를 1 로
+     * @param fileDetId
+     * @return
+     */
+    public Integer updateFileDetSeqNoOne(Integer fileDetId) {
+        return sqlSession.update(PRE_NS.concat("updateFileDetSeqNoOne"), fileDetId);
+    }
+
+
+
     /**
      * 파일_삭제 (개별)
      *

@@ -2,6 +2,7 @@ package com.shop.api.product.service;
 
 import com.shop.api.biz.system.service.UserService;
 import com.shop.api.common.service.CommonService;
+import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
@@ -38,6 +39,7 @@ public class ProductContentListService {
     private final UserService userService;
     private final ProductContentListDao productContentListDao;
     private final CommonService commonService;
+    private final FileDao fileDao;
 
     /**
      * 상품관리-상품컨텐츠목록 조회
@@ -126,7 +128,7 @@ public class ProductContentListService {
                 }
 
                 // 이하는 보존 대상이 아닌(수정 요청에서는 지워진) fileDet에 대한 동작
-                commonService.deleteFileDetByUk(fileId, prevFileDet.getFileSeq(), jwtUser); // 버킷, db 테이블에서 삭제
+                commonService.deleteFileDetByUkWithBuket(fileId, prevFileDet.getFileSeq(), jwtUser); // 버킷, db 테이블에서 삭제
             }
         }
 
@@ -150,7 +152,7 @@ public class ProductContentListService {
             // 연관된 (이미지)파일 삭제 영역
             List<FileDet> fileList = commonService.selectFileList(deleteProductContents.getFileId());
             Integer deletedFileCnt = commonService.deleteAllFiles(deleteProductContents.getFileId(), jwtUser);
-            Integer deletedFileInfoCnt = commonService.deleteFile(deleteProductContents.getFileId(), jwtUser); // file (데이터) 삭제
+            Integer deletedFileInfoCnt = fileDao.deleteFile(deleteProductContents.getFileId(), jwtUser); // file (데이터) 삭제
             if (deletedFileCnt.compareTo(fileList.size()) != 0) {
                 // 불일치 시 예외
                 throw new IOException("삭제되어야 할 fileDet 과 실제로 그리 된 fileDet의 개수가 다름");
