@@ -96,7 +96,7 @@ public class ProductContentListService {
             List<MultipartFile> fileList = updateProductContentsFileInfos.getUploadFiles();
             Integer fileId = updateProductContentsFileInfos.getFileId() != null ? updateProductContentsFileInfos.getFileId() : 0; // 요청 시점에 fileId가 존재하는 경우 할당하며 이 경우 fileImageUploadComm 에서는 내부적으로 tb_file에 대한 insert 동작을 생략한다
             Integer fileSeq = 0;
-            List<FileDet> prevFileList = commonService.selectFileList(updateProductContentsFileInfos.getFileId());
+            List<FileDet> prevFileList = commonService.selectFileList(updateProductContentsFileInfos.getFileId()); // 반드시 업로드 이전 조회할 것
 
             for (FileDet prevFileDet : prevFileList) {
                 if (fileSeq < prevFileDet.getFileSeq()) {
@@ -106,20 +106,22 @@ public class ProductContentListService {
             // 구문 종료 시점에 fileSeq 는 기존에 조회된 fileDet의 최대 seq와 동일함이 보장
 
             // 업로드 파일 목록에 존재하는 파일들을 업로딩
-            for (MultipartFile file : fileList) {
-                fileSeq++;
-                FileDet fileDet = commonService.fileImageUploadComm(jwtUser, file, fileId, fileSeq); // 상품컨텐츠에는 반드시 이미지만 들어간다.
-                if (fileId == 0) {
-                    // 수정하고자 하는 글의 원본에 file 이 부재하였으나 요청 시점에는 추가하고자 하는 file 이 존재하는 경우
-                    fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
-                    updateProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의
+            if (fileList != null) {
+                for (MultipartFile file : fileList) {
+                    fileSeq++;
+                    FileDet fileDet = commonService.fileImageUploadComm(jwtUser, file, fileId, fileSeq); // 상품컨텐츠에는 반드시 이미지만 들어간다.
+                    if (fileId == 0) {
+                        // 수정하고자 하는 글의 원본에 file 이 부재하였으나 요청 시점에는 추가하고자 하는 file 이 존재하는 경우
+                        fileId = fileDet.getFileId(); // 최초 한정으로 업로딩 결과 반환된 id를 할당하여 이후 반복 구문에서 사용 가능하도록 함
+                        updateProductContents.setFileId(fileDet.getFileId()); // 파일 id 할당하여 해당 상품 컨텐츠와의 관계 정의
+                    }
                 }
             }
 
             // 이하 삭제 동작 수행하는 영역
             Set<Integer> preservedIds = new HashSet<>(updateProductContentsFileInfos.getPreservedFileDetIdList());
             for (FileDet prevFileDet : prevFileList) {
-                if (preservedIds.contains(prevFileDet.getFileId())) {
+                if (preservedIds.contains(prevFileDet.getId())) { // file 'det' id 기준 포함 여부 확인
                     continue; // 보존 대상이면 건너뜀
                 }
 
