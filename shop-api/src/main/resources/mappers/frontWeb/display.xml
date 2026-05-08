@@ -11,7 +11,7 @@
             , TP.DISCOUNT_RATE AS discountRate
             , FD.SYS_FILE_NM AS sysFileNm
         FROM TB_PRODUCT TP
-        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = TP.REP_FILE_ID  AND FD.DEL_YN = 'N'
+        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = TP.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ  = 1
         <where>
             AND TP.DEL_YN = 'N'
             <if test='filter.lastProdId != null'>
