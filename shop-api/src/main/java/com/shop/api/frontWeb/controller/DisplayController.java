@@ -5,6 +5,7 @@ import com.shop.api.biz.system.service.PartnerCodeService;
 import com.shop.api.frontWeb.service.DisplayService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.common.vo.request.PageRequest;
+import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
@@ -68,12 +69,12 @@ public class DisplayController {
     @GetMapping(value = "/productInfoListForEnum")
     @Operation(summary = "frontWeb 메인 페이지 영역 상품정보 목록 조회")
     @NotAuthRequired
-    public ApiResponse<List<DisplayResponse.ProductInfoForEnum>> selectProductInfoListForEnumPaging(
+    public ApiResponse<PageResponse<DisplayResponse.ProductInfoForEnum>> selectProductInfoListForEnumPaging(
             @Parameter(name = "DisplayRequestProductInfoListFilter", description = "메인페이지 상품정보 목록 필터", in = ParameterIn.QUERY) DisplayRequest.ProductInfoListFilter productInfoListFilter,
             @Parameter(name = "PageRequest", description = "상품정보 목록 조회 페이징") PageRequest<DisplayRequest.ProductInfoListFilter> pageRequest
     ) {
         pageRequest.setFilter(productInfoListFilter);
-        List<DisplayResponse.ProductInfoForEnum> response = displayService.selectProductInfoListForEnumPaging(pageRequest);
+        PageResponse<DisplayResponse.ProductInfoForEnum> response = displayService.selectProductInfoListForEnumPaging(pageRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 }

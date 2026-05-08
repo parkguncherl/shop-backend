@@ -1,13 +1,13 @@
 package com.shop.api.frontWeb.service;
 
 import com.shop.core.biz.common.vo.request.PageRequest;
+import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.frontWeb.dao.DisplayDao;
 import com.shop.core.frontWeb.vo.request.DisplayRequest;
 import com.shop.core.frontWeb.vo.response.DisplayResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 /**
  * <pre>
@@ -29,7 +29,7 @@ public class DisplayService {
      * @param pageRequest
      * @return DisplayResponse.ProductInfoForEnum List
      */
-    public List<DisplayResponse.ProductInfoForEnum> selectProductInfoListForEnumPaging(PageRequest<DisplayRequest.ProductInfoListFilter> pageRequest) {
+    public PageResponse<DisplayResponse.ProductInfoForEnum> selectProductInfoListForEnumPaging(PageRequest<DisplayRequest.ProductInfoListFilter> pageRequest) {
         return displayDao.selectProductInfoListForEnumPaging(pageRequest);
     }
 

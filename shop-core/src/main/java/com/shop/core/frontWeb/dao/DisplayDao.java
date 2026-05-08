@@ -1,6 +1,7 @@
 package com.shop.core.frontWeb.dao;
 
 import com.shop.core.biz.common.vo.request.PageRequest;
+import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.frontWeb.vo.request.DisplayRequest;
 import com.shop.core.frontWeb.vo.response.DisplayResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,13 @@ public class DisplayDao {
      * @param pageRequest
      * @return ProductInfo List
      */
-    public List<DisplayResponse.ProductInfoForEnum> selectProductInfoListForEnumPaging(PageRequest<DisplayRequest.ProductInfoListFilter> pageRequest) {
-        return sqlSession.selectList(NAMESPACE + "selectProductInfoListForEnumPaging", pageRequest);
+    public PageResponse<DisplayResponse.ProductInfoForEnum> selectProductInfoListForEnumPaging(PageRequest<DisplayRequest.ProductInfoListFilter> pageRequest) {
+        List<DisplayResponse.ProductInfoForEnum> prodInfoListForEnum = sqlSession.selectList(NAMESPACE + "selectProductInfoListForEnumPaging", pageRequest);
+        if (prodInfoListForEnum != null && !prodInfoListForEnum.isEmpty()) {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount(), prodInfoListForEnum, prodInfoListForEnum.size());
+        } else {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
+        }
     }
 
 }
