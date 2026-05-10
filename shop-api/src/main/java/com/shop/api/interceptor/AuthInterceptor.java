@@ -2,6 +2,8 @@ package com.shop.api.interceptor;
 
 import com.shop.api.biz.system.service.AuthTokenService;
 import com.shop.api.biz.system.service.JwtService;
+import com.shop.api.config.JwtTokenProvider;
+import com.shop.api.frontWeb.service.GuestTokenService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.entity.AuthToken;
 import com.shop.core.entity.User;
@@ -20,88 +22,69 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-/**
- * <pre>
- * Description: 인증 Interceptor
- * Date: 2023/01/26 12:35 PM
- * Company: smart
- * Author: luckeey
- * </pre>
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
 
     private final JwtService jwtService;
-
+    private final JwtTokenProvider  jwtTokenProvider;
     private final AuthTokenService authTokenService;
+    private final GuestTokenService guestTokenService;  // ← 추가
 
 
     @Override
-    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
-        // CORS Preflight 요청(OPTIONS) 허용
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            return true;
-        }
+    public boolean preHandle(HttpServletRequest request,
+                             @NotNull HttpServletResponse response,
+                             @NotNull Object handler) throws Exception {
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
 
         String uri = request.getRequestURI();
-        //log.debug(">>>>>> request uri = {}", request.getRequestURI());
+        if (uri.equals("/error")) return true;
 
-        // BAD URI 요청의 경우 인증체크 하지 않도록 처리
-        if(uri.equals("/error")) {
-            return true;
-        }
+        if (handler instanceof HandlerMethod method) {  // Java 21 패턴매칭
 
-        if (handler instanceof HandlerMethod)
-        {
-            HandlerMethod method = (HandlerMethod) handler;
-
-            // 호출대상 핸들러가 로그인이 필요한 경우(AccessToken 필요)
-            if (!method.hasMethodAnnotation(NotAuthRequired.class))
-            {
+            if (!method.hasMethodAnnotation(NotAuthRequired.class)) {
+                // ─── 기존 회원 인증 로직 그대로 ──────────────────
                 String accessToken = request.getHeader("Authorization");
 
-                // 인증토큰이 없으면 에러처리
-                if(!StringUtils.hasLength(accessToken)) {
+                if (!StringUtils.hasLength(accessToken)) {
                     log.warn(">>>>>> {}", ApiResultCode.NOT_FOUND_TOKEN.getResultMessage());
                     response.getWriter().write(new ApiResponse<>(ApiResultCode.NOT_FOUND_TOKEN).toString());
                     return false;
                 }
 
-                // 앞에 Bearer 붙어서 오면 제거
                 accessToken = accessToken.replace("Bearer ", "");
-
-                //log.debug(">>>>> Request AccessToken = [{}]", accessToken);
 
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                if(!StringUtils.hasLength(accessToken)) {                  // 토큰이 없는 경우 에러
+
+                if (!StringUtils.hasLength(accessToken)) {
                     response.getWriter().write(new ApiResponse<>(ApiResultCode.NOT_FOUND_TOKEN).toString());
                     return false;
-                } else if (!jwtService.isValidToken(accessToken)) {     // 토큰 유효성 체크
+                } else if (!jwtService.isValidToken(accessToken)) {
                     response.getWriter().write(new ApiResponse<>(ApiResultCode.TOKEN_UNAVAILABLE).toString());
                     return false;
                 }
 
                 User user = jwtService.getUser(accessToken);
 
-                //log.debug(">>>>>>>> Interceptor::User = {}", user);
-
-                // 필요한 정보를 세팅
                 request.setAttribute(JwtSessionAttribute.ACCESS_TOKEN.name(), accessToken);
                 request.setAttribute(JwtSessionAttribute.USER_ID.name(), user.getId());
                 request.setAttribute(JwtSessionAttribute.USER_LOGIN_ID.name(), user.getLoginId());
                 request.setAttribute(JwtSessionAttribute.USER.name(), user);
 
-                // 토큰의 위/변조 및 ExpireTime 체크
                 int resultCode = checkTokenAndLifeExpire(user.getId(), accessToken);
-                if(resultCode < 0) {
-                    if(resultCode == -1) {
+                if (resultCode < 0) {
+                    if (resultCode == -1) {
                         response.getWriter().write(new ApiResponse<>(ApiResultCode.ACCESS_TOKEN_EXPIRED).toString());
                         return false;
                     } else if (resultCode == -2) {
@@ -112,43 +95,69 @@ public class AuthInterceptor implements HandlerInterceptor {
                         return false;
                     }
                 }
+
+            }  else {
+                // FO API Guest Token 검증
+                if (uri.startsWith("/frontWeb")) {
+                    String guestToken = request.getHeader("X-Guest-Token");
+
+                    if (!StringUtils.hasLength(guestToken)) {
+                        writeError(response, ApiResultCode.NOT_FOUND_TOKEN);
+                        return false;
+                    }
+
+                    if (!jwtTokenProvider.validateGuestToken(guestToken)) {
+                        writeError(response, ApiResultCode.TOKEN_UNAVAILABLE);
+                        return false;
+                    }
+
+                    String guestId = jwtTokenProvider.getGuestId(guestToken);
+
+                    // PostgreSQL Rate Limiting
+                    if (!guestTokenService.checkRateLimit(guestId)) {
+                        log.warn(">>>>>> Rate Limit 초과 : {}", guestId);
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        response.setStatus(429);
+                        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                        response.getWriter().write(
+                                """
+                                {"resultCode":429,"resultMessage":"요청 횟수를 초과했습니다."}
+                                """
+                        );
+                        return false;
+                    }
+
+                    request.setAttribute("GUEST_ID", guestId);
+                }
             }
         }
 
         return true;
     }
 
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-        // TODO
-    }
-
-    /**
-     * 토큰의 위/변조 및 ExpireTime 체크
-     * @param userId
-     * @param accessToken
-     * @return
-     */
+    // ─── 기존 토큰 만료 체크 그대로 ───────────────────────────
     private int checkTokenAndLifeExpire(Integer userId, String accessToken) {
-
         LocalDateTime now = LocalDateTime.now();
-
-        // 회원의 인증정보 조회
         AuthToken authToken = authTokenService.selectAuthTokenByUserId(userId);
-
-        // AccessToken 위/변조 체크
-        if(authToken == null || !accessToken.equals(authToken.getAccessToken())) {
-            //return -3;
+        if (authToken == null || !accessToken.equals(authToken.getAccessToken())) {
             return 0;
         }
-
-        // AccessToken Expire 체크
-        if( now.isAfter(authToken.getAccessTokenExpireDateTime()) ) {
+        if (now.isAfter(authToken.getAccessTokenExpireDateTime())) {
             return -1;
-        } else if ( now.isAfter(authToken.getRefreshTokenExpireDateTime()) ) {
+        } else if (now.isAfter(authToken.getRefreshTokenExpireDateTime())) {
             return -2;
         }
-
         return 0;
+    }
+
+    private void writeError(
+            HttpServletResponse response,
+            ApiResultCode resultCode) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.getWriter().write(
+                new ApiResponse<>(resultCode).toString()
+        );
     }
 }

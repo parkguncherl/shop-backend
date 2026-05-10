@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.GuestRateLimitMapper">
+    <select id="selectRateLimit" parameterType="com.shop.core.entity.GuestRateLimit" resultType="com.shop.core.entity.GuestRateLimit">
+        /* GuestRateLimitMapper.selectRateLimit */
+        SELECT
+            ID,
+            GUEST_ID,
+            MINUTE_KEY,
+            COUNT,
+            CREATED_AT
+        FROM TB_GUEST_RATE_LIMIT
+        WHERE GUEST_ID   = #{guestId}
+          AND MINUTE_KEY = #{minuteKey}
+    </select>
+
+    <insert id="insertRateLimit" parameterType="com.shop.core.entity.GuestRateLimit">
+        /* GuestRateLimitMapper.insertRateLimit */
+        INSERT INTO TB_GUEST_RATE_LIMIT (
+            GUEST_ID,
+            MINUTE_KEY,
+            COUNT,
+            CREATED_AT
+        ) VALUES (
+                     #{guestId},
+                     #{minuteKey},
+                     1,
+                     NOW()
+                 )
+    </insert>
+
+    <update id="incrementRateLimit" parameterType="com.shop.core.entity.GuestRateLimit">
+        /* GuestRateLimitMapper.incrementRateLimit */
+        UPDATE TB_GUEST_RATE_LIMIT
+        SET COUNT = COUNT + 1
+        WHERE GUEST_ID   = #{guestId}
+          AND MINUTE_KEY = #{minuteKey}
+    </update>
+
+    <delete id="deleteOldRateLimits">
+        /* GuestRateLimitMapper.deleteOldRateLimits */
+        DELETE FROM TB_GUEST_RATE_LIMIT
+        WHERE CREATED_AT <![CDATA[ < ]]> NOW() - INTERVAL '1 hour'
+    </delete>
+</mapper>

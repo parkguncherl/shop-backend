@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.GuestTokenMapper">
+
+    <insert id="insertGuestToken" parameterType="com.shop.core.entity.GuestToken">
+        /* GuestTokenMapper.insertGuestToken */
+        INSERT INTO TB_GUEST_TOKEN (
+            GUEST_ID,
+            GUEST_TOKEN,
+            CLIENT_IP,
+            USER_AGENT,
+            EXPIRE_DATE,
+            CRE_TM
+        ) VALUES (
+                     #{guestId},
+                     #{guestToken},
+                     #{clientIp},
+                     #{userAgent},
+                     #{expireDate},
+                     NOW()
+                 )
+    </insert>
+
+    <select id="selectGuestTokenByGuestId" parameterType="String" resultType="com.shop.core.entity.GuestToken">
+        /* GuestTokenMapper.selectGuestTokenByGuestId */
+        SELECT
+            ID,
+            GUEST_ID,
+            GUEST_TOKEN,
+            CLIENT_IP,
+            USER_AGENT,
+            EXPIRE_DATE,
+            CREATED_AT
+        FROM TB_GUEST_TOKEN
+        WHERE GUEST_ID = #{guestId}
+    </select>
+
+    <delete id="deleteExpiredGuestToken">
+        /* GuestTokenMapper.deleteExpiredGuestToken */
+        DELETE FROM TB_GUEST_TOKEN
+        WHERE EXPIRE_DATE <![CDATA[ < ]]> NOW()
+    </delete>
+</mapper>
