@@ -7,9 +7,6 @@ import com.shop.core.interfaces.BaseEntity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -24,10 +21,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class Auth extends BaseEntity implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 3056713212258954521L;
+public class Auth extends BaseEntity {
 
     /** 아이디(PK) */
     private Integer id;

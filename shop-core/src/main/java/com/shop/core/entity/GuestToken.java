@@ -1,7 +1,12 @@
 package com.shop.core.entity;
 
+import com.shop.core.interfaces.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -9,27 +14,28 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(name = "GuestToken", description = "Guest Token Entity")
 public class GuestToken {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "아이디(PK)")
     private Long id;
 
-    @Column(name = "guest_id", nullable = false, unique = true)
+    @Schema(description = "Guest ID")
     private String guestId;
 
-    @Column(name = "guest_token", nullable = false)
+    @Schema(description = "Guest Token")
     private String guestToken;
 
-    @Column(name = "client_ip")
+    @Schema(description = "클라이언트 IP")
     private String clientIp;
 
-    @Column(name = "user_agent")
+    @Schema(description = "User Agent")
     private String userAgent;
 
-    @Column(name = "expire_date", nullable = false)
+    @Schema(description = "만료일시")
     private LocalDateTime expireDate;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Schema(description = "생성일")
+    private LocalDateTime creTm;
+
 }

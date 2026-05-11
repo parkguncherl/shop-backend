@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -25,10 +23,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class AuthToken implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1787282049186484025L;
+public class AuthToken {
 
     /** 아이디 */
     private Integer id;

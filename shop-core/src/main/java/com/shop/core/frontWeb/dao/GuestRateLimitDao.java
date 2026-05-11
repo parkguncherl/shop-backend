@@ -1,5 +1,6 @@
 package com.shop.core.frontWeb.dao;
 
+import com.shop.core.entity.GuestRateLimit;
 import com.shop.core.entity.GuestToken;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -7,21 +8,24 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class GuestTokenDao {
+public class GuestRateLimitDao {
 
     private final SqlSessionTemplate sqlSession;
-    private static final String NAMESPACE = "com.shop.mapper.frontWeb.GuestTokenMapper.";
+    private static final String NAMESPACE = "..";
 
-
-    public int insertGuestToken(GuestToken guestToken) {
-        return sqlSession.insert(NAMESPACE + "insertGuestToken", guestToken);
+    public GuestRateLimit selectRateLimit(GuestRateLimit guestRateLimit) {
+        return sqlSession.selectOne(NAMESPACE + "selectRateLimit", guestRateLimit);
     }
 
-    public GuestToken selectGuestTokenByGuestId(String guestId) {
-        return sqlSession.selectOne(NAMESPACE + "selectGuestTokenByGuestId", guestId);
+    public int insertRateLimit(GuestRateLimit guestRateLimit) {
+        return sqlSession.insert(NAMESPACE + "insertRateLimit", guestRateLimit);
     }
 
-    public int deleteExpiredGuestToken() {
-        return sqlSession.delete(NAMESPACE + "deleteExpiredGuestToken");
+    public int incrementRateLimit(GuestRateLimit guestRateLimit) {
+        return sqlSession.update(NAMESPACE + "incrementRateLimit", guestRateLimit);
+    }
+
+    public int deleteOldRateLimits() {
+        return sqlSession.delete(NAMESPACE + "deleteOldRateLimits");
     }
 }

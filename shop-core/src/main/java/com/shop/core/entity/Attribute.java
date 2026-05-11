@@ -29,10 +29,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(name = "Attribute", description = "속성 Entity")
-public class Attribute extends BaseEntity implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 3012713244958954521L;
+public class Attribute extends BaseEntity {
 
     /** 아이디(PK) */
     private Integer id;
