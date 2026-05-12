@@ -3,7 +3,9 @@ package com.shop.api.frontWeb.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.biz.system.service.CodeService;
 import com.shop.api.biz.system.service.PartnerCodeService;
+import com.shop.api.common.service.CommonService;
 import com.shop.core.annotations.NotAuthRequired;
+import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.system.vo.request.CodeRequest;
 import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
@@ -38,6 +40,7 @@ import java.util.List;
 public class WebCommonController {
     private final CodeService codeService;
     private final PartnerCodeService partnerCodeService;
+    private final CommonService commonService;
 
     /**
      * 하위_코드_조회 (by codeUpper)
@@ -123,6 +126,21 @@ public class WebCommonController {
 
         PartnerCode response = partnerCodeService.selectPartnerCodeByUk(partnerCodeByUkFilter.getPartnerId(), partnerCodeByUkFilter.getCodeUpper(), partnerCodeByUkFilter.getCodeCd());
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
+     * s3(cloudFlare) 파일정보
+     *
+     * @param fileKey
+     * @return String
+     */
+    @AccessLog("파일url 적용")
+    @GetMapping("/getFileUrl")
+    @NotAuthRequired  // ← 추가
+    @Operation(summary = "혼용율, 샘플전표 스큐정보 조회")
+    public ApiResponse<String> getFileUrl(CommonRequest.FileKey fileKey) {
+        String resultUrl = commonService.getFileUrl(fileKey.getFileKey());
+        return new ApiResponse<>(resultUrl);
     }
 
 }
