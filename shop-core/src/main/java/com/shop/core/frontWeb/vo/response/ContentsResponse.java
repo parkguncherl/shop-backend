@@ -13,6 +13,10 @@ public class ContentsResponse {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ContentsResponseContentsInfo", description = "frontWeb 이하 컨텐츠 응답 dto", type = "object")
     public static class ContentsInfo extends Contents {
+
+        @Schema(description = "sys fileNm")
+        private String sysFileNm;
+
     }
 
 }

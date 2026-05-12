@@ -149,7 +149,6 @@ public class WebCommonController {
     /**
      * 파일_목록_조회 (by ID)
      *
-     * @param jwtUser
      * @param fileId
      * @return
      */
@@ -157,7 +156,6 @@ public class WebCommonController {
     @NotAuthRequired  // ← 추가
     @Operation(summary = "파일 목록 조회")
     public ApiResponse<List<FileDet>> selectFileList(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
             @PathVariable Integer fileId
     ) {
         // 파일_목록_조회 (by ID)

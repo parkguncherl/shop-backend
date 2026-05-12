@@ -12,7 +12,9 @@
             , CN.NEWS_CONTENTS      AS newsContents
             , CN.FILE_ID            AS fileId
             , CN.PARTNER_ID         AS partnerId
+            , FD.SYS_FILE_NM        AS sysFileNm
         FROM TB_CONTENTS CN
+        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = CN.FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         <where>
             AND CN.DEL_YN = 'N'
             <if test='filter.lastId != null'>
