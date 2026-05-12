@@ -32,7 +32,7 @@ public class ContentsDao {
     /**
      * frontWeb 이하 컨텐츠 목록 조회(when code etc of partner_code is 'M')
      * @param pageRequest
-     * @return ContentsInfo List
+     * @return ContentsInfo PageResponse
      */
     public PageResponse<ContentsResponse.ContentsInfo> selectContentsInfoListPaging(PageRequest<ContentsRequest.ContentsInfoListFilter> pageRequest) {
         List<ContentsResponse.ContentsInfo> contentsInfoList = sqlSession.selectList(NAMESPACE + "selectContentsInfoListPaging", pageRequest);
