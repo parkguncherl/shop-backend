@@ -48,7 +48,7 @@ public class PartnerCodeRequest {
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "PartnerCodeDropDown", description = "코드 드롭다운 파라미터")
+    @Schema(name = "PartnerCodeDropDownRequest", description = "코드 드롭다운 파라미터")
     @ParameterObject
     public static class PartnerCodeDropDown {
 
@@ -74,6 +74,10 @@ public class PartnerCodeRequest {
         @Schema(description = "검색조건키워드")
         @Parameter(description = "검색조건키워드")
         private String searchKeyword;
+
+        @Schema(description = "검색조건키워드 etc val")
+        @Parameter(description = "검색조건키워드 etc val")
+        private String codeEtc;
     }
 
     @Getter

@@ -115,6 +115,9 @@
         <if test="codeCd != null">
             AND TC.CODE_CD = #{codeCd}
         </if>
+        <if test="codeEtc != null">
+            AND TC.CODE_ETC = #{codeEtc}
+        </if>
         <if test='searchKeyword != null and !searchKeyword.equals("")'>
             AND (
             TC.CODE_CD LIKE CONCAT('%', #{searchKeyword}, '%')
