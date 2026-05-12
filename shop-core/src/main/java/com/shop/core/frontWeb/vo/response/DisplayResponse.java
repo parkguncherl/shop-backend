@@ -1,6 +1,5 @@
 package com.shop.core.frontWeb.vo.response;
 
-import com.shop.core.entity.ProductDet;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
