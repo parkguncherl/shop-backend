@@ -13,7 +13,7 @@ public class ContentsRequest {
     @Schema(name = "ContentsRequestContentsInfoListFilter", description = "컨텐츠 목록 필터")
     public static class ContentsInfoListFilter implements RequestFilter {
 
-//        @Schema(description = "last 상품상세 row's id")
-//        private Integer lastProdId;
+        @Schema(description = "last id")
+        private Integer lastId;
     }
 }

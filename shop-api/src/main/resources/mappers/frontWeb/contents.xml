@@ -12,10 +12,12 @@
             , CN.NEWS_CONTENTS      AS newsContents
             , CN.FILE_ID            AS fileId
             , CN.PARTNER_ID         AS partnerId
-            , CN.DISPLAYSEQ         AS displaySeq
         FROM TB_CONTENTS CN
         <where>
             AND CN.DEL_YN = 'N'
+            <if test='filter.lastId != null'>
+                AND CN.ID > #{filter.lastId}
+            </if>
         </where>
         ORDER BY CN.ID
         LIMIT #{pageRowCount} + 1;
