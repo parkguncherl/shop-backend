@@ -1,6 +1,7 @@
 package com.shop.api.frontWeb.controller;
 
 import com.shop.api.annotation.AccessLog;
+import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.system.service.CodeService;
 import com.shop.api.biz.system.service.PartnerCodeService;
 import com.shop.api.common.service.CommonService;
@@ -11,7 +12,9 @@ import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.CodeResponse;
 import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
+import com.shop.core.entity.FileDet;
 import com.shop.core.entity.PartnerCode;
+import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.WebCommonRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -137,10 +140,30 @@ public class WebCommonController {
     @AccessLog("파일url 적용")
     @GetMapping("/getFileUrl")
     @NotAuthRequired  // ← 추가
-    @Operation(summary = "혼용율, 샘플전표 스큐정보 조회")
+    @Operation(summary = "파일의 실 url 조회")
     public ApiResponse<String> getFileUrl(CommonRequest.FileKey fileKey) {
         String resultUrl = commonService.getFileUrl(fileKey.getFileKey());
         return new ApiResponse<>(resultUrl);
+    }
+
+    /**
+     * 파일_목록_조회 (by ID)
+     *
+     * @param jwtUser
+     * @param fileId
+     * @return
+     */
+    @GetMapping(value = "/fileList/{fileId}")
+    @NotAuthRequired  // ← 추가
+    @Operation(summary = "파일 목록 조회")
+    public ApiResponse<List<FileDet>> selectFileList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @PathVariable Integer fileId
+    ) {
+        // 파일_목록_조회 (by ID)
+        List<FileDet> fileList = commonService.selectFileList(fileId);
+
+        return new ApiResponse<>(ApiResultCode.SUCCESS, fileList);
     }
 
 }
