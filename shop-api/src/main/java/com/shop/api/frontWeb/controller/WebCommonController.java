@@ -9,7 +9,9 @@ import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.CodeResponse;
 import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
+import com.shop.core.entity.PartnerCode;
 import com.shop.core.enums.ApiResultCode;
+import com.shop.core.frontWeb.vo.request.WebCommonRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -82,20 +84,44 @@ public class WebCommonController {
 
 
     /**
-     * 상품목록 조회 비인증
+     * partnerCode 목록 조회
      *
      * @param partnerUpperCode
      * @return 조회된 ProductInfoList
      */
-    @AccessLog("web-카테고리목록 조회")
+    @AccessLog("web-partnerCode 목록 조회")
     @GetMapping(value = "/partnerCode/{partnerUpperCode}")
-    @Operation(summary = "web-partnerCode 조회")
+    @Operation(summary = "web-partnerCode 목록 조회")
     @NotAuthRequired
-    public ApiResponse<List<PartnerCodeResponse.PartnerCodeDropDown>> partnerCodeList(@PathVariable String partnerUpperCode) {
+    public ApiResponse<List<PartnerCodeResponse.LowerSelect>> partnerCodeList(@PathVariable String partnerUpperCode) {
         PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest = new PartnerCodeRequest.PartnerCodeDropDown();
         partnerCodeRequest.setCodeUpper(partnerUpperCode);
         partnerCodeRequest.setPartnerId(1);
-        List<PartnerCodeResponse.PartnerCodeDropDown> response = partnerCodeService.selectLowerCodeByPartnerCodeUpper(partnerCodeRequest);
+        List<PartnerCodeResponse.LowerSelect> response = partnerCodeService.selectLowerCodeByCodeUpperForPartnerCodeMng(partnerCodeRequest);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
+     * web-partnerCode 조회
+     *
+     * @param partnerCodeByUkFilter
+     * @return 조회된 PartnerCode
+     */
+    @AccessLog("web-partnerCode 조회")
+    @GetMapping(value = "/partnerCodeByUk")
+    @Operation(summary = "web-partnerCode 조회")
+    @NotAuthRequired
+    public ApiResponse<PartnerCode> partnerCodeByUk(
+            @Parameter(description = "partnerCode 고유 키 조합 조회 필터") WebCommonRequest.partnerCodeByUkFilter partnerCodeByUkFilter
+    ) {
+        // 필수값 체크
+        if (StringUtils.isEmpty(partnerCodeByUkFilter.getCodeUpper()) || StringUtils.isEmpty(partnerCodeByUkFilter.getCodeCd())) {
+            return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE);
+        }
+
+        partnerCodeByUkFilter.setPartnerId(1);
+
+        PartnerCode response = partnerCodeService.selectPartnerCodeByUk(partnerCodeByUkFilter.getPartnerId(), partnerCodeByUkFilter.getCodeUpper(), partnerCodeByUkFilter.getCodeCd());
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 
