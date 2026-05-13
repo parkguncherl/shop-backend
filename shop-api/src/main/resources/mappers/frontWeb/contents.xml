@@ -22,7 +22,7 @@
             </if>
         </where>
         ORDER BY CN.ID
-        LIMIT #{pageRowCount} + 1;
+        LIMIT #{pageRowCount};
     </select>
 
 </mapper>
