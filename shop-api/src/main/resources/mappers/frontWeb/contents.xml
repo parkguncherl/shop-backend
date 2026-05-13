@@ -3,7 +3,7 @@
 <mapper namespace="com.shop.mapper.frontWeb.contents">
 
     <select id="selectContentsInfoListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.frontWeb.vo.response.ContentsResponse$ContentsInfo">
-        /* com.shop.mapper.frontWeb.display.selectContentsInfoListPaging */
+        /* com.shop.mapper.frontWeb.contents.selectContentsInfoListPaging */
         SELECT
               CN.ID                 AS id
             , CN.NEWS_TYPE          AS newsType

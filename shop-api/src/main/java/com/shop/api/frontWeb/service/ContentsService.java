@@ -24,7 +24,7 @@ public class ContentsService {
     private final ContentsDao contentsDao;
 
     /**
-     * frontWeb 이하 컨텐츠 목록 조회(when code etc of partner_code is 'M') 비즈니스 레이어
+     * frontWeb 이하 컨텐츠 목록 조회(when code etc of partner_code is 'CONTENT') 비즈니스 레이어
      * @param pageRequest
      * @return ContentsInfo PageResponse
      */

@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * <pre>
- * Description: Display Dao
+ * Description: Contents Dao
  * Date: 2026/05/12
  * Author: park junsung
  * </pre>
@@ -30,7 +30,7 @@ public class ContentsDao {
     private static final String NAMESPACE = "com.shop.mapper.frontWeb.contents.";
 
     /**
-     * frontWeb 이하 컨텐츠 목록 조회(when code etc of partner_code is 'M')
+     * frontWeb 이하 컨텐츠 목록 조회(when code etc of partner_code is 'CONTENT')
      * @param pageRequest
      * @return ContentsInfo PageResponse
      */

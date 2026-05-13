@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <pre>
- * Description: 컨텐츠 Controller
+ * Description: frontWeb 이하 컨텐츠 Controller
  * Date: 2026/05/12
  * Author: park junsung
  * </pre>
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/frontWeb/contents")
-@Tag(name = "ContentsController", description = "컨텐츠 관련 API")
+@Tag(name = "ContentsController", description = "frontWeb 이하 컨텐츠 관련 API")
 public class ContentsController {
 
     private final ContentsService contentsService;
