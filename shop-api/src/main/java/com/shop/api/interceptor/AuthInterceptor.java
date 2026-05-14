@@ -8,8 +8,10 @@ import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.entity.AuthToken;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
+import com.shop.core.enums.GlobalConst;
 import com.shop.core.enums.JwtSessionAttribute;
 import com.shop.core.vo.response.ApiResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,7 +101,19 @@ public class AuthInterceptor implements HandlerInterceptor {
             }  else {
                 // FO API Guest Token 검증
                 if (uri.startsWith("/frontWeb")) {
+                    // X-Guest-Token 헤더 대신 쿠키에서 읽기
                     String guestToken = request.getHeader("X-Guest-Token");
+                    if (guestToken == null) {
+                        Cookie[] cookies = request.getCookies();
+                        if (cookies != null) {
+                            for (Cookie cookie : cookies) {
+                                if (GlobalConst.GUEST_TOKEN.getCode().equals(cookie.getName())) {
+                                    guestToken = cookie.getValue();
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
                     if (!StringUtils.hasLength(guestToken)) {
                         writeError(response, ApiResultCode.NOT_FOUND_TOKEN);
