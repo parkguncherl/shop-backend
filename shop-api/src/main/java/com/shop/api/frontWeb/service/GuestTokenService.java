@@ -6,6 +6,7 @@ import com.shop.core.entity.GuestRateLimit;
 import com.shop.core.entity.GuestToken;
 import com.shop.core.frontWeb.dao.GuestRateLimitDao;
 import com.shop.core.frontWeb.dao.GuestTokenDao;
+import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
 import com.shop.core.frontWeb.vo.response.GuestTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,24 +29,30 @@ public class GuestTokenService {
     /**
      * Guest Token 발급
      */
-    public GuestToken issueGuestToken(String clientIp, String userAgent) {
+    public GuestTokenResponse.GuestTokenInfo issueGuestToken(GuestTokenRequest.Issue request) {
 
-        String guestId = "GUEST_" + UUID.randomUUID().toString().replace("-", "");
+        String guestId    = "GUEST_" + UUID.randomUUID().toString().replace("-", "");
         String guestToken = jwtTokenProvider.createGuestToken(guestId);
         LocalDateTime expireDate = LocalDateTime.now().plusDays(30);
 
-        GuestToken guestTokenInsert = GuestToken.builder()
-                .guestId(guestId)
-                .guestToken(guestToken)
-                .clientIp(clientIp)
-                .userAgent(userAgent)
-                .expireDate(expireDate)
-                .build();
-        guestTokenDao.insertGuestToken(guestTokenInsert);
+        GuestTokenResponse.GuestTokenInfo guestTokenInfo = new GuestTokenResponse.GuestTokenInfo();
+        guestTokenInfo.setGuestId(guestId);
+        guestTokenInfo.setGuestToken(guestToken);
+        guestTokenInfo.setClientIp(request.getClientIp());
+        guestTokenInfo.setUserAgent(request.getUserAgent());
+        guestTokenInfo.setDeviceType(request.getDeviceType());
+        guestTokenInfo.setOs(request.getOs());
+        guestTokenInfo.setBrowser(request.getBrowser());
+        guestTokenInfo.setRefererUrl(request.getRefererUrl());
+        guestTokenInfo.setUtmSource(request.getUtmSource());
+        guestTokenInfo.setUtmMedium(request.getUtmMedium());
+        guestTokenInfo.setUtmCampaign(request.getUtmCampaign());
+        guestTokenInfo.setExpireDate(expireDate);
 
-        return guestTokenInsert;
+        guestTokenDao.insertGuestToken(guestTokenInfo);
+
+        return guestTokenInfo;
     }
-
     /**
      * Rate Limiting 체크
      */

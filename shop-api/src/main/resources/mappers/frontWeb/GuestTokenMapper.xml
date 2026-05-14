@@ -9,6 +9,14 @@
             GUEST_TOKEN,
             CLIENT_IP,
             USER_AGENT,
+            DEVICE_TYPE,
+            OS,
+            BROWSER,
+            REFERER_URL,
+            UTM_SOURCE,
+            UTM_MEDIUM,
+            UTM_CAMPAIGN,
+            MEMBER_ID,
             EXPIRE_DATE,
             CRE_TM
         ) VALUES (
@@ -16,6 +24,14 @@
                      #{guestToken},
                      #{clientIp},
                      #{userAgent},
+                     #{deviceType},
+                     #{os},
+                     #{browser},
+                     #{refererUrl},
+                     #{utmSource},
+                     #{utmMedium},
+                     #{utmCampaign},
+                     #{memberId},
                      #{expireDate},
                      NOW()
                  )
@@ -29,8 +45,16 @@
             GUEST_TOKEN,
             CLIENT_IP,
             USER_AGENT,
+            DEVICE_TYPE,
+            OS,
+            BROWSER,
+            REFERER_URL,
+            UTM_SOURCE,
+            UTM_MEDIUM,
+            UTM_CAMPAIGN,
+            MEMBER_ID,
             EXPIRE_DATE,
-            CREATED_AT
+            CRE_TM
         FROM TB_GUEST_TOKEN
         WHERE GUEST_ID = #{guestId}
     </select>
