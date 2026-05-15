@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -93,7 +92,7 @@ public class AttributeController {
         if (updateCount == 0 && insertCount == 0) {
             return new ApiResponse<>(ApiResultCode.FAIL_UPDATE);
         }
-        //log.debug("=====> 메뉴 수정 성공");
+        log.debug("=====> 메뉴 수정 성공");
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 

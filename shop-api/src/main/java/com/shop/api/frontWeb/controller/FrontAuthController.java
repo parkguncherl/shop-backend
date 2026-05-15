@@ -10,12 +10,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static io.swagger.v3.core.util.AnnotationsUtils.getHeader;
 
+@Slf4j
 @RestController
 @RequestMapping("/frontWeb-auth")
 @Tag(name = "FrontAuthController", description = "FO 인증 관련 API")
