@@ -32,10 +32,30 @@ public class GuestToken {
     @Schema(description = "User Agent")
     private String userAgent;
 
+    @Schema(description = "디바이스 타입")
+    private String deviceType;
+
+    @Schema(description = "OS")
+    private String os;
+
+    @Schema(description = "브라우저")
+    private String browser;
+
+    @Schema(description = "유입 URL")
+    private String refererUrl;
+
+    @Schema(description = "UTM Source")
+    private String utmSource;
+
+    @Schema(description = "UTM Medium")
+    private String utmMedium;
+
+    @Schema(description = "UTM Campaign")
+    private String utmCampaign;
+
+    @Schema(description = "연결된 회원 ID")
+    private Integer memberId;
+
     @Schema(description = "만료일시")
     private LocalDateTime expireDate;
-
-    @Schema(description = "생성일")
-    private LocalDateTime creTm;
-
 }

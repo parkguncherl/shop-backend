@@ -29,6 +29,7 @@ public enum GlobalConst implements CodeEnum {
     PRODUCT_CONTENTS_SHORT_NM    ("gguanggu","축약이름"),
 
     PRODUCT_CONTENTS_NEWS_TYPE    ("100","상품컨텐츠 news type"),
+    GUEST_TOKEN ("gguanggu_guest_token", "게스트 토큰");
 
     ;
 
