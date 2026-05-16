@@ -110,7 +110,7 @@ public class PartnerCodeController {
     @Operation(summary = "코드 콤보 조회")
     public ApiResponse<List<PartnerCodeResponse.LowerSelect>> selectLowerCodeByCodeUpperForPartnerCodeMng(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "코드 DropDown Request") PartnerCodeRequest.PartnerCodeDropDown codeRequest
+            @ModelAttribute @Parameter(description = "코드 DropDown Request") PartnerCodeRequest.PartnerCodeDropDown codeRequest
     ) {
         // 필수값 체크
         if (StringUtils.isEmpty(codeRequest.getCodeUpper())) {

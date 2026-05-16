@@ -22,11 +22,22 @@ import org.springframework.http.HttpHeaders;
  */
 @Configuration
 public class SwaggerConfigure {
+    // ─── 기존 전체 API 그룹 (frontWeb 제외) ──────────────
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
-                .group("smart")
+                .group("backOffice")
                 .pathsToMatch("/**")
+                .pathsToExclude("/frontWeb/**")  // ← frontWeb 제외
+                .build();
+    }
+
+    // ─── FO 전용 그룹 추가 ────────────────────────────
+    @Bean
+    public GroupedOpenApi frontWebApi() {
+        return GroupedOpenApi.builder()
+                .group("frontWeb")
+                .pathsToMatch("/frontWeb/**")  // ← frontWeb 으로 시작하는 URI만
                 .build();
     }
 
@@ -44,7 +55,7 @@ public class SwaggerConfigure {
                         .name(HttpHeaders.AUTHORIZATION)))
                 .addSecurityItem(addSecurityItem)
                 .info(new io.swagger.v3.oas.models.info.Info()
-                        .title("Smart API") // 타이틀
+                        .title("smart-shop-api") // 타이틀
                         .version(appVersion) // 문서 버전
                         .description("") // 문서 설명
                         .contact(new Contact() // 연락처
