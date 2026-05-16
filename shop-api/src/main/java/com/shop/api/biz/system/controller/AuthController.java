@@ -3,7 +3,7 @@ package com.shop.api.biz.system.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.system.service.*;
-import com.shop.api.common.service.CommonService;
+import com.shop.api.biz.common.service.CommonService;
 import com.shop.api.utils.PasswordHashing;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.request.LoginRequest;

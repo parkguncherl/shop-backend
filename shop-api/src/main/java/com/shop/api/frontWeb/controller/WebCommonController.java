@@ -1,10 +1,9 @@
 package com.shop.api.frontWeb.controller;
 
 import com.shop.api.annotation.AccessLog;
-import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.system.service.CodeService;
 import com.shop.api.biz.system.service.PartnerCodeService;
-import com.shop.api.common.service.CommonService;
+import com.shop.api.biz.common.service.CommonService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.system.vo.request.CodeRequest;
@@ -14,7 +13,6 @@ import com.shop.core.biz.system.vo.response.CodeResponse;
 import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
 import com.shop.core.entity.FileDet;
 import com.shop.core.entity.PartnerCode;
-import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.WebCommonRequest;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,7 +1,7 @@
-package com.shop.api.product.controller;
+package com.shop.api.biz.product.controller;
 
 import com.shop.api.annotation.JwtUser;
-import com.shop.api.product.service.ProductContentsService;
+import com.shop.api.biz.product.service.ProductContentsService;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.product.vo.request.ProductContentsRequest;

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/frontWeb-auth")
+@RequestMapping("/frontWebAuth")
 @Tag(name = "FrontAuthController", description = "FO 인증 관련 API")
 @RequiredArgsConstructor
 public class FrontAuthController {

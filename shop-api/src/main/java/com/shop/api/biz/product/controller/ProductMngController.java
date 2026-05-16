@@ -1,8 +1,8 @@
-package com.shop.api.product.controller;
+package com.shop.api.biz.product.controller;
 
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
-import com.shop.api.product.service.ProductMngService;
+import com.shop.api.biz.product.service.ProductMngService;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;

@@ -1,4 +1,4 @@
-package com.shop.api.common.service;
+package com.shop.api.biz.common.service;
 
 import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.entity.FileDet;

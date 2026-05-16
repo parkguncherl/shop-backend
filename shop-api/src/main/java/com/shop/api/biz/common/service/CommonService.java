@@ -1,4 +1,4 @@
-package com.shop.api.common.service;
+package com.shop.api.biz.common.service;
 
 import com.shop.api.biz.system.service.UserService;
 import com.shop.api.utils.ByteArrayMultipartFile;
@@ -37,8 +37,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.List;

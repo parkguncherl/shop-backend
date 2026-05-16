@@ -1,10 +1,10 @@
-package com.shop.api.common.controller;
+package com.shop.api.biz.common.controller;
 
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.system.service.UserService;
-import com.shop.api.common.service.CommonService;
-import com.shop.api.common.service.FileService;
+import com.shop.api.biz.common.service.CommonService;
+import com.shop.api.biz.common.service.FileService;
 import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.response.CommonResponse;
@@ -12,12 +12,10 @@ import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.FileDet;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
-import com.shop.core.exception.CustomRuntimeException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

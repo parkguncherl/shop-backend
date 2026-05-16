@@ -1,4 +1,4 @@
-package com.shop.api.product.service;
+package com.shop.api.biz.product.service;
 
 import com.shop.api.biz.system.service.UserService;
 import com.shop.core.biz.common.dao.FileDao;
