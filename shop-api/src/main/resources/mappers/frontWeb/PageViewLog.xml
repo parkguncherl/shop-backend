@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.PageViewLog">
+
+    <insert id="insertPageViewLog" parameterType="com.shop.core.entity.PageViewLog">
+        /* PageViewLogMapper.insertPageViewLog */
+        INSERT INTO TB_PAGE_VIEW_LOG (
+            GUEST_ID,
+            MEMBER_ID,
+            PAGE_TYPE,
+            PAGE_URL,
+            PRODUCT_ID,
+            CATEGORY_CD,
+            STAY_SECONDS,
+            SCROLL_DEPTH,
+            SCROLL_MAX,
+            IS_BOUNCE,
+            DEVICE_TYPE,
+            CRE_TM
+        ) VALUES (
+                     #{guestId},
+                     #{memberId},
+                     #{pageType},
+                     #{pageUrl},
+                     #{productId},
+                     #{categoryCd},
+                     #{staySeconds},
+                     #{scrollDepth},
+                     #{scrollMax},
+                     #{isBounce},
+                     #{deviceType},
+                     NOW()
+                 )
+    </insert>
+
+    <update id="updatePageViewLog" parameterType="com.shop.core.entity.PageViewLog">
+        /* PageViewLogMapper.updatePageViewLog */
+        UPDATE TB_PAGE_VIEW_LOG
+        SET
+            STAY_SECONDS = #{staySeconds},
+            SCROLL_DEPTH = #{scrollDepth},
+            SCROLL_MAX   = #{scrollMax},
+            IS_BOUNCE    = #{isBounce}
+        WHERE ID = #{id}
+    </update>
+
+    <select id="selectPageViewLogById" parameterType="Long" resultType="com.shop.core.entity.PageViewLog">
+        /* PageViewLogMapper.selectPageViewLogById */
+        SELECT
+            ID,
+            GUEST_ID,
+            MEMBER_ID,
+            PAGE_TYPE,
+            PAGE_URL,
+            PRODUCT_ID,
+            CATEGORY_CD,
+            STAY_SECONDS,
+            SCROLL_DEPTH,
+            SCROLL_MAX,
+            IS_BOUNCE,
+            DEVICE_TYPE,
+            CRE_TM
+        FROM TB_PAGE_VIEW_LOG
+        WHERE ID = #{id}
+    </select>
+
+</mapper>
