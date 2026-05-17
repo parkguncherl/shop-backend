@@ -1,21 +1,18 @@
 package com.shop.api.frontWeb.service;
 
-import com.shop.api.biz.system.service.JwtService;
 import com.shop.api.config.JwtTokenProvider;
 import com.shop.core.entity.GuestRateLimit;
-import com.shop.core.entity.GuestToken;
 import com.shop.core.frontWeb.dao.GuestRateLimitDao;
 import com.shop.core.frontWeb.dao.GuestTokenDao;
 import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
 import com.shop.core.frontWeb.vo.response.GuestTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class GuestTokenService {
@@ -47,6 +44,9 @@ public class GuestTokenService {
         guestTokenInfo.setUtmSource(request.getUtmSource());
         guestTokenInfo.setUtmMedium(request.getUtmMedium());
         guestTokenInfo.setUtmCampaign(request.getUtmCampaign());
+        guestTokenInfo.setFbclid(request.getFbclid());
+        guestTokenInfo.setUtmContent(request.getUtmContent());  // ← 추가
+        guestTokenInfo.setCurrentUrl(request.getCurrentUrl());
         guestTokenInfo.setExpireDate(expireDate);
 
         guestTokenDao.insertGuestToken(guestTokenInfo);

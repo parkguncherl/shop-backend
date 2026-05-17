@@ -13,28 +13,34 @@
             OS,
             BROWSER,
             REFERER_URL,
+            CURRENT_URL,
             UTM_SOURCE,
             UTM_MEDIUM,
             UTM_CAMPAIGN,
+            UTM_CONTENT,
+            FBCLID,
             MEMBER_ID,
             EXPIRE_DATE,
             CRE_TM
         ) VALUES (
-                     #{guestId},
-                     #{guestToken},
-                     #{clientIp},
-                     #{userAgent},
-                     #{deviceType},
-                     #{os},
-                     #{browser},
-                     #{refererUrl},
-                     #{utmSource},
-                     #{utmMedium},
-                     #{utmCampaign},
-                     #{memberId},
-                     #{expireDate},
-                     NOW()
-                 )
+             #{guestId},
+             #{guestToken},
+             #{clientIp},
+             #{userAgent},
+             #{deviceType},
+             #{os},
+             #{browser},
+             #{refererUrl},
+             #{currentUrl},
+             #{utmSource},
+             #{utmMedium},
+             #{utmCampaign},
+             #{utmContent},
+             #{fbclid},
+             #{memberId},
+             #{expireDate},
+             NOW()
+         )
     </insert>
 
     <select id="selectGuestTokenByGuestId" parameterType="String" resultType="com.shop.core.entity.GuestToken">

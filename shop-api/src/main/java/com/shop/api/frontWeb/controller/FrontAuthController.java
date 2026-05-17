@@ -32,10 +32,13 @@ public class FrontAuthController {
 
         String clientIp    = getClientIp(request);
         String userAgent   = request.getHeader("User-Agent");
-        String refererUrl  = request.getHeader("Referer");
-        String utmSource   = request.getParameter("utm_source");
-        String utmMedium   = request.getParameter("utm_medium");
-        String utmCampaign = request.getParameter("utm_campaign");
+        String refererUrl  = request.getHeader("X-Referer-URL");   // ← 변경
+        String currentUrl  = request.getHeader("X-Current-URL");   // ← 추가
+        String utmSource   = request.getHeader("X-UTM-Source");    // ← 변경
+        String utmMedium   = request.getHeader("X-UTM-Medium");    // ← 변경
+        String utmCampaign = request.getHeader("X-UTM-Campaign");  // ← 변경
+        String utmContent  = request.getHeader("X-UTM-Content");   // ← 변경
+        String fbclid      = request.getHeader("X-Fbclid");        // ← 추가
         String deviceType  = parseDeviceType(userAgent);
         String os          = parseOs(userAgent);
         String browser     = parseBrowser(userAgent);
@@ -47,9 +50,12 @@ public class FrontAuthController {
                 .os(os)
                 .browser(browser)
                 .refererUrl(refererUrl)
+                .currentUrl(currentUrl)
                 .utmSource(utmSource)
                 .utmMedium(utmMedium)
                 .utmCampaign(utmCampaign)
+                .utmContent(utmContent)
+                .fbclid(fbclid)
                 .build();
 
         return new ApiResponse<>(ApiResultCode.SUCCESS,guestTokenService.issueGuestToken(issueRequest));
