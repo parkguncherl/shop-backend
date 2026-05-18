@@ -57,15 +57,34 @@ public class WebConfigure implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        String[] patterns = corsUrls.split("\\s*,\\s*"); // cors.endpoint.url=https://*.lotte.com
+        String[] patterns = corsUrls.split("\\s*,\\s*");
         registry.addMapping("/**")
                 .allowedOriginPatterns(patterns)
                 .allowCredentials(true)
-                .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
-                .allowedHeaders("*")
-                .exposedHeaders("*");
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                .allowedHeaders(
+                        "Origin",
+                        "X-Requested-With",
+                        "Content-Type",
+                        "Accept",
+                        "Authorization",
+                        "token",
+                        "Content-Disposition",
+                        "X-Guest-Token",
+                        "Cookie"            // ← 추가
+                )
+                .exposedHeaders(
+                        "Origin",
+                        "X-Requested-With",
+                        "Content-Type",
+                        "Accept",
+                        "Authorization",
+                        "token",
+                        "Content-Disposition",
+                        "X-Guest-Token",
+                        "Set-Cookie"        // ← 추가
+                );
     }
-
     /**
      * 메시지 번들이 Loading 하는 폴더위치 및 파일명 지정
      *

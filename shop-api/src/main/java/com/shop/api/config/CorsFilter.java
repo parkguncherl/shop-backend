@@ -53,10 +53,9 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers",
-                "Origin, X-Requested-With, Content-Type, Accept, Authorization, token, Content-Disposition, X-Guest-Token");  // ← 추가
+                "Origin, X-Requested-With, Content-Type, Accept, Authorization, token, Content-Disposition, X-Guest-Token, Cookie");
         response.setHeader("Access-Control-Expose-Headers",
-                "Origin, X-Requested-With, Content-Type, Accept, Authorization, token, Content-Disposition, X-Guest-Token");  // ← 추가
-
+                "Origin, X-Requested-With, Content-Type, Accept, Authorization, token, Content-Disposition, X-Guest-Token, Set-Cookie");
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
         } else {

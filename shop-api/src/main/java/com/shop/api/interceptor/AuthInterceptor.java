@@ -100,13 +100,16 @@ public class AuthInterceptor implements HandlerInterceptor {
 
             }  else {
                 // FO API Guest Token 검증
-                if (uri.startsWith("/frontWeb")) {
-                    // X-Guest-Token 헤더 대신 쿠키에서 읽기
+                if (uri.startsWith("/shop-ap/frontWeb")) {
                     String guestToken = request.getHeader("X-Guest-Token");
+                    log.debug(">>>>>> X-Guest-Token 헤더: {}", guestToken);
+
                     if (guestToken == null) {
                         Cookie[] cookies = request.getCookies();
+                        log.debug(">>>>>> 쿠키 개수: {}", cookies != null ? cookies.length : 0);
                         if (cookies != null) {
                             for (Cookie cookie : cookies) {
+                                log.debug(">>>>>> 쿠키: {} = {}", cookie.getName(), cookie.getValue());
                                 if (GlobalConst.GUEST_TOKEN.getCode().equals(cookie.getName())) {
                                     guestToken = cookie.getValue();
                                     break;
@@ -114,6 +117,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                             }
                         }
                     }
+                    log.debug(">>>>>> 최종 guestToken: {}", guestToken);
 
                     if (!StringUtils.hasLength(guestToken)) {
                         writeError(response, ApiResultCode.NOT_FOUND_TOKEN);
