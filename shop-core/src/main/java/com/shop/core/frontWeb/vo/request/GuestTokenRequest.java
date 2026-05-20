@@ -17,6 +17,6 @@ public class GuestTokenRequest {
     @SuperBuilder
     @Schema(name = "GuestTokenRequestGuestTokenInfo", description = "Guest Token 정보", type = "object")
     public static class Issue extends GuestToken {
-
+        String subDomain;
     }
 }

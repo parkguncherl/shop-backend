@@ -23,10 +23,11 @@ public class JwtTokenProvider {
     }
 
     // Guest Token 생성
-    public String createGuestToken(String guestId) {
+    public String createGuestToken(String guestId, String subDomain) {
         return Jwts.builder()
                 .subject(guestId)
                 .claim("type", "GUEST")
+                .claim("shopId", subDomain)
                 .issuedAt(new Date())
                 .expiration(Date.from(
                         LocalDateTime.now()

@@ -29,7 +29,7 @@ public class GuestTokenService {
     public GuestTokenResponse.GuestTokenInfo issueGuestToken(GuestTokenRequest.Issue request) {
 
         String guestId    = "GUEST_" + UUID.randomUUID().toString().replace("-", "");
-        String guestToken = jwtTokenProvider.createGuestToken(guestId);
+        String guestToken = jwtTokenProvider.createGuestToken(guestId, request.getSubDomain());
         LocalDateTime expireDate = LocalDateTime.now().plusDays(30);
 
         GuestTokenResponse.GuestTokenInfo guestTokenInfo = new GuestTokenResponse.GuestTokenInfo();

@@ -6,6 +6,7 @@ import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
+import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,6 +43,7 @@ public class FrontAuthController {
         String deviceType  = parseDeviceType(userAgent);
         String os          = parseOs(userAgent);
         String browser     = parseBrowser(userAgent);
+        String origin = request.getHeader("Origin");  // https://www.gguanggu.com
 
         GuestTokenRequest.Issue issueRequest = GuestTokenRequest.Issue.builder()
                 .clientIp(clientIp)
@@ -56,6 +58,7 @@ public class FrontAuthController {
                 .utmCampaign(utmCampaign)
                 .utmContent(utmContent)
                 .fbclid(fbclid)
+                .subDomain(parseSubDomain(origin))
                 .build();
 
         return new ApiResponse<>(ApiResultCode.SUCCESS,guestTokenService.issueGuestToken(issueRequest));
@@ -96,5 +99,21 @@ public class FrontAuthController {
         if (ua.contains("safari"))  return "Safari";
         if (ua.contains("firefox")) return "Firefox";
         return "unknown";
+    }
+
+    private String parseSubDomain(String origin) {
+        if (origin == null) return "";
+        // https://www.gguanggu.com → www
+        // https://admin.gguanggu.com → admin
+        // http://localhost:3000 → localhost
+        String host = origin
+                .replaceAll("https?://", "")  // http://, https:// 제거
+                .replaceAll(":\\d+$", "");    // 포트 제거
+
+        String[] parts = host.split("\\.");
+        if (parts.length >= 3) { add
+            return StringUtils.isBlank(parts[0]) ? "www" : parts[0] ;  // www, admin, shop 등
+        }
+        return "www";  // localhost
     }
 }
