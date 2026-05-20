@@ -8,7 +8,7 @@
             GUEST_ID,
             MINUTE_KEY,
             COUNT,
-            CREATED_AT
+            CRE_TM
         FROM TB_GUEST_RATE_LIMIT
         WHERE GUEST_ID   = #{guestId}
           AND MINUTE_KEY = #{minuteKey}
@@ -20,7 +20,7 @@
             GUEST_ID,
             MINUTE_KEY,
             COUNT,
-            CREATED_AT
+            CRE_TM
         ) VALUES (
                      #{guestId},
                      #{minuteKey},

@@ -44,6 +44,9 @@ public class GuestToken {
     @Schema(description = "유입 URL")
     private String refererUrl;
 
+    @Schema(description = "착륙 URL")
+    private String currentUrl;
+
     @Schema(description = "UTM Source")
     private String utmSource;
 
@@ -53,8 +56,14 @@ public class GuestToken {
     @Schema(description = "UTM Campaign")
     private String utmCampaign;
 
+    @Schema(description = "UTM content") // 어떻게 클릭했는지 link_in_bio, story_ad. feed_ad 인스타에서
+    private String utmContent;
+
     @Schema(description = "연결된 회원 ID")
     private Integer memberId;
+
+    @Schema(description = "페이스북연결id")
+    private String fbclid;
 
     @Schema(description = "만료일시")
     private LocalDateTime expireDate;

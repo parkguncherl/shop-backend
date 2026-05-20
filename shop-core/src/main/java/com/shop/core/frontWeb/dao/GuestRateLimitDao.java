@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public class GuestRateLimitDao {
 
     private final SqlSessionTemplate sqlSession;
-    private static final String NAMESPACE = "..";
+    private static final String NAMESPACE = "com.shop.mapper.frontWeb.GuestRateLimitMapper.";
 
     public GuestRateLimit selectRateLimit(GuestRateLimit guestRateLimit) {
         return sqlSession.selectOne(NAMESPACE + "selectRateLimit", guestRateLimit);
