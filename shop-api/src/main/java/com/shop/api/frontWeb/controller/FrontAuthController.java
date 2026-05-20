@@ -111,7 +111,7 @@ public class FrontAuthController {
                 .replaceAll(":\\d+$", "");    // 포트 제거
 
         String[] parts = host.split("\\.");
-        if (parts.length >= 3) { add
+        if (parts.length >= 3) {
             return StringUtils.isBlank(parts[0]) ? "www" : parts[0] ;  // www, admin, shop 등
         }
         return "www";  // localhost
