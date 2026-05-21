@@ -26,6 +26,9 @@ public class Partner extends BaseEntity implements Serializable {
     @Schema(description = "아이디")
     private Integer id;
 
+    @Schema(description = "타입 셀러, 도매")
+    private String partnerType;
+
     @Schema(description = "셀러명")
     private String partnerNm;
 
