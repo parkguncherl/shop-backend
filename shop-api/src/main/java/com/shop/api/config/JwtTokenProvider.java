@@ -61,4 +61,9 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
+    public String getShopId(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("shopId", String.class);
+    }
 }

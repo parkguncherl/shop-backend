@@ -102,6 +102,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                 // FO API Guest Token 검증
                 if (uri.startsWith("/shop-ap/frontWeb")) {
                     String guestToken = request.getHeader("X-Guest-Token");
+                    String shopId     = jwtTokenProvider.getShopId(guestToken);  // ← 추가
                     log.debug(">>>>>> X-Guest-Token 헤더: {}", guestToken);
 
                     if (guestToken == null) {
@@ -146,6 +147,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                     }
 
                     request.setAttribute("GUEST_ID", guestId);
+                    request.setAttribute("SHOP_ID",  shopId);
                 }
             }
         }
