@@ -47,7 +47,8 @@ public class WebConfigure implements WebMvcConfigurer {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/cw/**", "/v3/api-docs/**", "/v3/api-docs.yaml", "/swagger-ui.html")
-                .excludePathPatterns("/assets/**", "/css/**", "/js/**", "/images/**", "/fonts/**", "/components/**", "/webjars/**");
+                .excludePathPatterns("/assets/**", "/css/**", "/js/**", "/images/**", "/fonts/**", "/components/**", "/webjars/**")
+                .excludePathPatterns("/frontWebAuth/guest");  // ← 추가
     }
 
     @Override

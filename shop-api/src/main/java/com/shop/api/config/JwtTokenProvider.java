@@ -54,6 +54,12 @@ public class JwtTokenProvider {
         return parseClaims(token).getSubject();
     }
 
+
+    public String getShopId(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("shopId", String.class);
+    }
+
     private Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -62,8 +68,4 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    public String getShopId(String token) {
-        Claims claims = parseClaims(token);
-        return claims.get("shopId", String.class);
-    }
 }
