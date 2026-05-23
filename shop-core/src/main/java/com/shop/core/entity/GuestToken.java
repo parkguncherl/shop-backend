@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Schema(name = "GuestToken", description = "Guest Token Entity")
 public class GuestToken {
 
@@ -23,8 +24,14 @@ public class GuestToken {
     @Schema(description = "Guest ID")
     private String guestId;
 
+    @Schema(description = "partner ID")
+    private Integer partnerId;
+
     @Schema(description = "Guest Token")
     private String guestToken;
+
+    @Schema(description = "subDomain")
+    private String subDomain;
 
     @Schema(description = "클라이언트 IP")
     private String clientIp;

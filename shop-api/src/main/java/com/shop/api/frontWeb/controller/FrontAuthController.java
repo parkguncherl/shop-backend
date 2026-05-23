@@ -6,7 +6,7 @@ import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
-import io.micrometer.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 
 @Slf4j
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FrontAuthController {
 
     private final GuestTokenService guestTokenService;
+    private static final String DEFAULT_SUB_DOMAIN = "www";
 
     @NotAuthRequired
     @PostMapping("/guest")
@@ -44,22 +47,22 @@ public class FrontAuthController {
         String os          = parseOs(userAgent);
         String browser     = parseBrowser(userAgent);
         String origin = request.getHeader("Origin");  // https://www.gguanggu.com
+        String subDomain = parseSubDomain(origin);
 
-        GuestTokenRequest.Issue issueRequest = GuestTokenRequest.Issue.builder()
-                .clientIp(clientIp)
-                .userAgent(userAgent)
-                .deviceType(deviceType)
-                .os(os)
-                .browser(browser)
-                .refererUrl(refererUrl)
-                .currentUrl(currentUrl)
-                .utmSource(utmSource)
-                .utmMedium(utmMedium)
-                .utmCampaign(utmCampaign)
-                .utmContent(utmContent)
-                .fbclid(fbclid)
-                .subDomain(parseSubDomain(origin))
-                .build();
+        GuestTokenRequest.Issue issueRequest = new GuestTokenRequest.Issue();
+        issueRequest.setClientIp(clientIp);
+        issueRequest.setUserAgent(userAgent);
+        issueRequest.setDeviceType(deviceType);
+        issueRequest.setOs(os);
+        issueRequest.setBrowser(browser);
+        issueRequest.setRefererUrl(refererUrl);
+        issueRequest.setCurrentUrl(currentUrl);
+        issueRequest.setUtmSource(utmSource);
+        issueRequest.setUtmMedium(utmMedium);
+        issueRequest.setUtmCampaign(utmCampaign);
+        issueRequest.setUtmContent(utmContent);
+        issueRequest.setFbclid(fbclid);
+        issueRequest.setSubDomain(subDomain);
 
         return new ApiResponse<>(ApiResultCode.SUCCESS,guestTokenService.issueGuestToken(issueRequest));
     }
@@ -102,18 +105,39 @@ public class FrontAuthController {
     }
 
     private String parseSubDomain(String origin) {
-        if (origin == null) return "";
-        // https://www.gguanggu.com → www
-        // https://admin.gguanggu.com → admin
-        // http://localhost:3000 → localhost
-        String host = origin
-                .replaceAll("https?://", "")  // http://, https:// 제거
-                .replaceAll(":\\d+$", "");    // 포트 제거
-
-        String[] parts = host.split("\\.");
-        if (parts.length >= 3) {
-            return StringUtils.isBlank(parts[0]) ? "www" : parts[0] ;  // www, admin, shop 등
+        if (StringUtils.isBlank(origin)) {
+            return DEFAULT_SUB_DOMAIN;
         }
-        return "www";  // localhost
+
+        try {
+            String normalized = origin.startsWith("http")
+                    ? origin
+                    : "https://" + origin;
+
+            URI uri = URI.create(normalized);
+            String host = uri.getHost();
+
+            if (StringUtils.isBlank(host)) {
+                return DEFAULT_SUB_DOMAIN;
+            }
+
+            // localhost 또는 IP
+            if ("localhost".equals(host) || host.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+$")) {
+                return host;
+            }
+
+            String[] parts = host.split("\\.");
+
+            // admin.gguanggu.com → admin
+            // www.gguanggu.com → www
+            if (parts.length >= 3) {
+                return StringUtils.defaultIfBlank(parts[0], DEFAULT_SUB_DOMAIN);
+            }
+
+            return DEFAULT_SUB_DOMAIN;
+
+        } catch (Exception e) {
+            return DEFAULT_SUB_DOMAIN;
+        }
     }
 }

@@ -6,6 +6,8 @@
         /* GuestTokenMapper.insertGuestToken */
         INSERT INTO TB_GUEST_TOKEN (
             GUEST_ID,
+            PARTNER_ID,
+            SUB_DOMAIN,
             GUEST_TOKEN,
             CLIENT_IP,
             USER_AGENT,
@@ -24,6 +26,8 @@
             CRE_TM
         ) VALUES (
              #{guestId},
+             #{partnerId},
+             #{subDomain},
              #{guestToken},
              #{clientIp},
              #{userAgent},
@@ -48,6 +52,7 @@
         SELECT
             ID,
             GUEST_ID,
+            PARTNER_ID,
             GUEST_TOKEN,
             CLIENT_IP,
             USER_AGENT,

@@ -35,6 +35,8 @@ public class GuestTokenService {
         GuestTokenResponse.GuestTokenInfo guestTokenInfo = new GuestTokenResponse.GuestTokenInfo();
         guestTokenInfo.setGuestId(guestId);
         guestTokenInfo.setGuestToken(guestToken);
+        guestTokenInfo.setPartnerId(1); // 일단 1
+        guestTokenInfo.setSubDomain(request.getSubDomain());
         guestTokenInfo.setClientIp(request.getClientIp());
         guestTokenInfo.setUserAgent(request.getUserAgent());
         guestTokenInfo.setDeviceType(request.getDeviceType());
