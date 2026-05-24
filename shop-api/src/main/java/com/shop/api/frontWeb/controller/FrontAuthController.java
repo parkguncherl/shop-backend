@@ -6,6 +6,7 @@ import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
+import com.shop.core.frontWeb.vo.response.GuestTokenResponse;
 import org.apache.commons.lang3.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +35,7 @@ public class FrontAuthController {
     @Operation(summary = "web-Guest Token 발급")
     public ApiResponse<GuestToken> issueGuestToken(HttpServletRequest request) {
 
+        log.debug("issueGuestToken  start ==>");
         String clientIp    = getClientIp(request);
         String userAgent   = request.getHeader("User-Agent");
         String refererUrl  = request.getHeader("X-Referer-URL");   // ← 변경
@@ -64,7 +66,10 @@ public class FrontAuthController {
         issueRequest.setFbclid(fbclid);
         issueRequest.setSubDomain(subDomain);
 
-        return new ApiResponse<>(ApiResultCode.SUCCESS,guestTokenService.issueGuestToken(issueRequest));
+        GuestTokenResponse.GuestTokenInfo result = guestTokenService.issueGuestToken(issueRequest);
+        log.debug("issueGuestToken  end ==>", result);
+
+        return new ApiResponse<>(ApiResultCode.SUCCESS,result);
     }
 
     private String getClientIp(HttpServletRequest request) {
