@@ -21,6 +21,13 @@ public class GuestTokenDao {
         return sqlSession.selectOne(NAMESPACE + "selectGuestTokenByGuestId", guestId);
     }
 
+
+    public GuestToken selectGuestTokenByClientIpAndRecent(String clientIp) {
+        return sqlSession.selectOne(NAMESPACE + "selectGuestTokenByClientIpAndRecent", clientIp);
+    }
+
+
+
     public int deleteExpiredGuestToken() {
         return sqlSession.delete(NAMESPACE + "deleteExpiredGuestToken");
     }
