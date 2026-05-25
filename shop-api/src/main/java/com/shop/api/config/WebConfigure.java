@@ -1,5 +1,6 @@
 package com.shop.api.config;
 
+import com.shop.api.config.resolver.GuestUserResolver;
 import com.shop.api.config.resolver.JwtUserResolver;
 import com.shop.api.interceptor.AuthInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -115,6 +116,7 @@ public class WebConfigure implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new JwtUserResolver());
+        resolvers.add(new GuestUserResolver());  // ← 추가
     }
 
     @Bean

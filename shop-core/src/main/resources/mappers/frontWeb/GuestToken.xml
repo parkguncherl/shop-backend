@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.frontWeb.GuestTokenMapper">
+<mapper namespace="com.shop.mapper.frontWeb.GuestToken">
 
     <insert id="insertGuestToken" parameterType="com.shop.core.entity.GuestToken">
-        /* GuestTokenMapper.insertGuestToken */
+        /* GuestToken.insertGuestToken */
         INSERT INTO TB_GUEST_TOKEN (
             GUEST_ID,
             PARTNER_ID,
@@ -48,7 +48,7 @@
     </insert>
 
     <select id="selectGuestTokenByGuestId" parameterType="String" resultType="com.shop.core.entity.GuestToken">
-        /* GuestTokenMapper.selectGuestTokenByGuestId */
+        /* GuestToken.selectGuestTokenByGuestId */
         SELECT
             ID,
             GUEST_ID,
@@ -71,7 +71,7 @@
     </select>
 
     <select id="selectGuestTokenByClientIpAndRecent" parameterType="String" resultType="com.shop.core.entity.GuestToken">
-        /* GuestTokenMapper.selectGuestTokenByClientIpAndRecent */
+        /* GuestToken.selectGuestTokenByClientIpAndRecent */
         SELECT
             ID,
             GUEST_ID,
@@ -85,9 +85,17 @@
         LIMIT 1
     </select>
 
+    <update id="updateMemberIdByGuestId" parameterType="com.shop.core.entity.GuestToken">
+        /* GuestToken.updateMemberIdByGuestId */
+        UPDATE TB_GUEST_TOKEN
+        SET MEMBER_ID = #{memberId}
+        WHERE GUEST_ID = #{guestId}
+    </update>
+
     <delete id="deleteExpiredGuestToken">
-        /* GuestTokenMapper.deleteExpiredGuestToken */
+        /* GuestToken.deleteExpiredGuestToken */
         DELETE FROM TB_GUEST_TOKEN
         WHERE EXPIRE_DATE <![CDATA[ < ]]> NOW()
+          AND MEMBER_ID IS NULL  -- ← 회원 연결 안 된 것만 삭제
     </delete>
 </mapper>

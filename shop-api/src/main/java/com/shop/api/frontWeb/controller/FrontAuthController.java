@@ -7,7 +7,7 @@ import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
 import com.shop.core.frontWeb.vo.response.GuestTokenResponse;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,18 +65,16 @@ public class FrontAuthController {
         issueRequest.setUtmContent(utmContent);
         issueRequest.setFbclid(fbclid);
         issueRequest.setSubDomain(subDomain);
-
         GuestTokenResponse.GuestTokenInfo result = guestTokenService.issueGuestToken(issueRequest);
-        log.debug("issueGuestToken  end ==>", result);
-
         return new ApiResponse<>(ApiResultCode.SUCCESS,result);
     }
 
     private String getClientIp(HttpServletRequest request) {
+        String realIp    = request.getHeader("X-Real-IP");
+        log.debug("getClientIp  start =============>["+ realIp + "]");
+        if (StringUtils.hasLength(realIp)) return realIp;
         String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null) return forwarded.split(",")[0].trim();
-        String realIp = request.getHeader("X-Real-IP");
-        if (realIp != null) return realIp;
+        if (StringUtils.hasLength(forwarded)) return forwarded.split(",")[0].trim();
         return request.getRemoteAddr();
     }
 
@@ -110,7 +108,7 @@ public class FrontAuthController {
     }
 
     private String parseSubDomain(String origin) {
-        if (StringUtils.isBlank(origin)) {
+        if (!StringUtils.hasText(origin)) {
             return DEFAULT_SUB_DOMAIN;
         }
 
@@ -122,7 +120,7 @@ public class FrontAuthController {
             URI uri = URI.create(normalized);
             String host = uri.getHost();
 
-            if (StringUtils.isBlank(host)) {
+            if (!StringUtils.hasText(host)) {
                 return DEFAULT_SUB_DOMAIN;
             }
 
@@ -136,7 +134,7 @@ public class FrontAuthController {
             // admin.gguanggu.com → admin
             // www.gguanggu.com → www
             if (parts.length >= 3) {
-                return StringUtils.defaultIfBlank(parts[0], DEFAULT_SUB_DOMAIN);
+                return StringUtils.hasText(parts[0]) ? parts[0] : DEFAULT_SUB_DOMAIN;
             }
 
             return DEFAULT_SUB_DOMAIN;

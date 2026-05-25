@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public class GuestTokenDao {
 
     private final SqlSessionTemplate sqlSession;
-    private static final String NAMESPACE = "com.shop.mapper.frontWeb.GuestTokenMapper.";
+    private static final String NAMESPACE = "com.shop.mapper.frontWeb.GuestToken.";
 
 
     public int insertGuestToken(GuestToken guestToken) {
@@ -31,4 +31,15 @@ public class GuestTokenDao {
     public int deleteExpiredGuestToken() {
         return sqlSession.delete(NAMESPACE + "deleteExpiredGuestToken");
     }
+
+
+
+    public int updateMemberIdByGuestId(String memberId, String guestId) {
+        GuestToken guestToken =  new GuestToken();
+        guestToken.setGuestId(memberId);
+        guestToken.setGuestId(guestId);
+        return sqlSession.delete(NAMESPACE + "updateMemberIdByGuestId",  guestToken);
+    }
+
+
 }
