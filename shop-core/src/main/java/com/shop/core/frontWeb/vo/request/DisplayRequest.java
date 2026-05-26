@@ -15,5 +15,8 @@ public class DisplayRequest {
 
         @Schema(description = "last 상품상세 row's id")
         private Integer lastProdId;
+
+        @Schema(description = "쇼핑몰 파트너 id")
+        private Integer partnerId;
     }
 }

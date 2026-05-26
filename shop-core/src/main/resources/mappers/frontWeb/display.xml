@@ -5,20 +5,27 @@
     <select id="selectProductInfoListForEnumPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.frontWeb.vo.response.DisplayResponse$ProductInfoForEnum">
         /* com.shop.mapper.frontWeb.display.selectProductInfoListForEnumPaging */
         SELECT
-              TP.ID AS prodId
-            , TP.PROD_NM AS prodNm
-            , TP.SELL_AMT AS sellAmt
-            , TP.DISCOUNT_RATE AS discountRate
+              PR.ID AS prodId
+            , PR.PROD_NM AS prodNm
+            , PR.SELL_AMT AS sellAmt
+            , PR.DISCOUNT_RATE AS discountRate
             , FD.SYS_FILE_NM AS sysFileNm
-        FROM TB_PRODUCT TP
-        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = TP.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
+        FROM TB_PRODUCT PR
+        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = PR.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         <where>
-            AND TP.DEL_YN = 'N'
+            /* 관리자가 카테고리와 연결한 상품만 조회 */
+            AND EXISTS (
+                SELECT CP.ID
+                FROM TB_CATEGORY_PRODUCT CP
+                JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N'
+                WHERE CP.PRODUCT_ID = PR.ID
+            )
+            AND PR.DEL_YN = 'N'
             <if test='filter.lastProdId != null'>
-                AND TP.ID > #{filter.lastProdId}
+                AND PR.ID > #{filter.lastProdId}
             </if>
         </where>
-        ORDER BY TP.ID
+        ORDER BY PR.ID
         LIMIT #{pageRowCount} + 1;
     </select>
 

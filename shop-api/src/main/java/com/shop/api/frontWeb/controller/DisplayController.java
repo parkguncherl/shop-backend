@@ -54,6 +54,7 @@ public class DisplayController {
             @Parameter(name = "DisplayRequestProductInfoListFilter", description = "메인페이지 상품정보 목록 필터", in = ParameterIn.QUERY) DisplayRequest.ProductInfoListFilter productInfoListFilter,
             @Parameter(name = "PageRequest", description = "상품정보 목록 조회 페이징") PageRequest<DisplayRequest.ProductInfoListFilter> pageRequest
     ) {
+        productInfoListFilter.setPartnerId(guestUser.getPartnerId() == null ? 1 : guestUser.getPartnerId());
         pageRequest.setFilter(productInfoListFilter);
         PageResponse<DisplayResponse.ProductInfoForEnum> response = displayService.selectProductInfoListForEnumPaging(pageRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);

@@ -55,28 +55,22 @@ public class PartnerCodeRequest {
         @Schema(description = "파트너아이디")
         private Integer partnerId;
 
-        @Schema(description = "상위_코드", required = true)
-        @Parameter(description = "상위_코드")
+        @Schema(description = "상위_코드")
         private String codeUpper;
 
         @Schema(description = "코드_명")
-        @Parameter(description = "코드_명")
         private String codeNm;
 
         @Schema(description = "코드")
-        @Parameter(description = "코드")
         private String codeCd;
 
         @Schema(description = "정렬타입")
-        @Parameter(description = "정렬타입")
         private String orderType;
 
         @Schema(description = "검색조건키워드")
-        @Parameter(description = "검색조건키워드")
         private String searchKeyword;
 
         @Schema(description = "검색조건키워드 etc val")
-        @Parameter(description = "검색조건키워드 etc val")
         private String codeEtc;
     }
 
