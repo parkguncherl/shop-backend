@@ -13,14 +13,17 @@
         FROM TB_PRODUCT PR
         LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = PR.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         <where>
+            AND PR.DEL_YN = 'N'
             /* 관리자가 카테고리와 연결한 상품만 조회 */
             AND EXISTS (
                 SELECT CP.ID
                 FROM TB_CATEGORY_PRODUCT CP
-                JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N'
+                JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N' AND PC.ID = CP.CATEGORY_ID
                 WHERE CP.PRODUCT_ID = PR.ID
+                <if test='filter.categoryCd != null'>
+                    AND PC.CODE_CD = #{filter.categoryCd}
+                </if>
             )
-            AND PR.DEL_YN = 'N'
             <if test='filter.lastProdId != null'>
                 AND PR.ID > #{filter.lastProdId}
             </if>

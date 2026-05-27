@@ -18,5 +18,8 @@ public class DisplayRequest {
 
         @Schema(description = "쇼핑몰 파트너 id")
         private Integer partnerId;
+
+        @Schema(description = "카테고리 코드 partner_code 의 code_cd 값 메뉴상단의 셔츠 (10020) 팬츠 등...")
+        private String categoryCd;
     }
 }

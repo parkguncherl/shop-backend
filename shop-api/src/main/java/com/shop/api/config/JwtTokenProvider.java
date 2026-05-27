@@ -27,7 +27,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(guestId)
                 .claim("type", "GUEST")
-                .claim("shopId", subDomain)
+                .claim("partnerId", subDomain)
                 .issuedAt(new Date())
                 .expiration(Date.from(
                         LocalDateTime.now()
@@ -57,7 +57,7 @@ public class JwtTokenProvider {
 
     public String getShopId(String token) {
         Claims claims = parseClaims(token);
-        return claims.get("shopId", String.class);
+        return claims.get("partnerId", String.class);
     }
 
     private Claims parseClaims(String token) {

@@ -26,10 +26,10 @@ public class batchController {
             guestRateLimitDao.deleteOldRateLimits();
         }
 
-        // 매일 새벽 2시 만료 토큰 삭제
+        // 매일 새벽 2시 만료 토큰 삭제 취소  통계데이터 사용
         @Scheduled(cron = "0 0 2 * * *")
         public void cleanupGuestToken() {
-            guestTokenDao.deleteExpiredGuestToken();
+            //guestTokenDao.deleteExpiredGuestToken();
         }
     }
 }
