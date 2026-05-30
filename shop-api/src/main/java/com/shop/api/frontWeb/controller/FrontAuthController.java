@@ -7,6 +7,7 @@ import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
 import com.shop.core.frontWeb.vo.response.GuestTokenResponse;
+import jakarta.servlet.http.Cookie;
 import org.springframework.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Optional;
 
 
 @Slf4j
@@ -65,6 +68,15 @@ public class FrontAuthController {
         issueRequest.setUtmContent(utmContent);
         issueRequest.setFbclid(fbclid);
         issueRequest.setSubDomain(subDomain);
+
+        String existingGuestToken = Arrays.stream(
+                        Optional.ofNullable(request.getCookies()).orElse(new Cookie[0])
+                )
+                .filter(c -> "guest_token".equals(c.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+        issueRequest.setExistingGuestToken(existingGuestToken); // ← VO에 필드 추가
         GuestTokenResponse.GuestTokenInfo result = guestTokenService.issueGuestToken(issueRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS,result);
     }

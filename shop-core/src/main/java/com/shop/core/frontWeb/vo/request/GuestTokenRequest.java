@@ -12,5 +12,7 @@ public class GuestTokenRequest {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "GuestTokenRequestIssue", description = "Guest Token 발급 요청", type = "object")
     public static class Issue extends GuestToken {
+        @Schema(description = "기 발급토큰 (있으면 이중발급 방지용)")
+        private String existingGuestToken;
     }
 }

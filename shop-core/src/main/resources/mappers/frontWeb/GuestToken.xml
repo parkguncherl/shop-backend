@@ -70,21 +70,6 @@
         WHERE GUEST_ID = #{guestId}
     </select>
 
-    <select id="selectGuestTokenByClientIpAndRecent" parameterType="String" resultType="com.shop.core.entity.GuestToken">
-        /* GuestToken.selectGuestTokenByClientIpAndRecent */
-        SELECT
-            ID,
-            GUEST_ID,
-            GUEST_TOKEN,
-            CLIENT_IP,
-            CRE_TM
-        FROM TB_GUEST_TOKEN
-        WHERE CLIENT_IP = #{clientIp}
-          AND CRE_TM > NOW() - INTERVAL '3 seconds'
-        ORDER BY CRE_TM DESC
-        LIMIT 1
-    </select>
-
     <update id="updateMemberIdByGuestId" parameterType="com.shop.core.entity.GuestToken">
         /* GuestToken.updateMemberIdByGuestId */
         UPDATE TB_GUEST_TOKEN

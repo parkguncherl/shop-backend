@@ -29,18 +29,6 @@ public class GuestTokenService {
      */
     public GuestTokenResponse.GuestTokenInfo issueGuestToken(GuestTokenRequest.Issue request) {
 
-        // 1. 먼저 SELECT (3초 이내 동일 IP)
-        GuestToken existing = guestTokenDao.selectGuestTokenByClientIpAndRecent(request.getClientIp());
-
-        // 2. 있으면 기존 토큰 반환
-        if (existing != null) {
-            GuestTokenResponse.GuestTokenInfo result =
-                    new GuestTokenResponse.GuestTokenInfo();
-            result.setGuestToken(existing.getGuestToken());
-            result.setGuestId(existing.getGuestId());
-            return result;
-        }
-        // 3. 토큰 생성
         String guestId    = "GUEST_" + UUID.randomUUID().toString().replace("-", "");
         String guestToken = jwtTokenProvider.createGuestToken(guestId, request.getSubDomain());
         LocalDateTime expireDate = LocalDateTime.now().plusDays(30);
