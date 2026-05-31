@@ -22,11 +22,11 @@
             COUNT,
             CRE_TM
         ) VALUES (
-                     #{guestId},
-                     #{minuteKey},
-                     1,
-                     NOW()
-                 )
+            #{guestId},
+            #{minuteKey},
+            1,
+            NOW()
+        )
     </insert>
 
     <update id="incrementRateLimit" parameterType="com.shop.core.entity.GuestRateLimit">
@@ -40,6 +40,6 @@
     <delete id="deleteOldRateLimits">
         /* GuestRateLimitMapper.deleteOldRateLimits */
         DELETE FROM TB_GUEST_RATE_LIMIT
-        WHERE CREATED_AT <![CDATA[ < ]]> NOW() - INTERVAL '1 hour'
+        WHERE CRE_TM <![CDATA[ < ]]> NOW() - INTERVAL '1 hour'
     </delete>
 </mapper>

@@ -34,8 +34,8 @@ public class PartnerDao {
     /**
      * 내파트너만 조회하기
      */
-    public PartnerResponse.Select selectMyPartnerByLoginId(String loginId) {
-        return sqlSession.selectOne("selectMyPartnerByLoginId", loginId);
+    public PartnerResponse.Select selectMyPartnerBySubDomain(String subDomain) {
+        return sqlSession.selectOne("selectMyPartnerBySubDomain", subDomain);
     }
 /**
      * 화주관리_목록_조회 (페이징)

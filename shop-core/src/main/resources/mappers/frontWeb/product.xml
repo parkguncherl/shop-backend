@@ -33,6 +33,15 @@
             <if test='filter.lastId != null'>
                 AND P.ID > #{filter.lastId}
             </if>
+            AND EXISTS (
+            SELECT CP.ID
+            FROM TB_CATEGORY_PRODUCT CP
+            JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N' AND PC.ID = CP.CATEGORY_ID
+            WHERE CP.PRODUCT_ID = P.ID
+            <if test='filter.categoryCd != null'>
+                AND PC.CODE_CD = #{filter.categoryCd}
+            </if>
+            )
         </where>
         ORDER BY P.ID
         LIMIT #{pageRowCount} + 1;

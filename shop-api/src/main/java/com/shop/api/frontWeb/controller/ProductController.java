@@ -1,11 +1,13 @@
 package com.shop.api.frontWeb.controller;
 
 import com.shop.api.annotation.AccessLog;
+import com.shop.api.annotation.GuestUser;
 import com.shop.api.frontWeb.service.ProductService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.response.ApiResponse;
+import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.ProductRequest;
 import com.shop.core.frontWeb.vo.response.ProductResponse;
@@ -46,9 +48,11 @@ public class ProductController {
     @Operation(summary = "frontWeb 이하 상품 목록 조회(페이징)")
     @NotAuthRequired
     public ApiResponse<PageResponse<ProductResponse.ProductInfo>> selectProductInfoListPaging(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
             @Parameter(name = "ProductRequestProductInfoListFilter", description = "상품 목록 필터", in = ParameterIn.QUERY) ProductRequest.ProductInfoListFilter productInfoListFilter,
             @Parameter(name = "PageRequest", description = "상품 목록 조회 페이징") PageRequest<ProductRequest.ProductInfoListFilter> pageRequest
     ) {
+        productInfoListFilter.setPartnerId(guestUser.getPartnerId());
         pageRequest.setFilter(productInfoListFilter);
         PageResponse<ProductResponse.ProductInfo> response = productService.selectProductInfoListPaging(pageRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);

@@ -15,5 +15,11 @@ public class ProductRequest {
 
         @Schema(description = "last id")
         private Integer lastId;
+
+        @Schema(description = "partner id")
+        private Integer partnerId;
+
+        @Schema(description = "카테고리 id")
+        private String categoryId;
     }
 }

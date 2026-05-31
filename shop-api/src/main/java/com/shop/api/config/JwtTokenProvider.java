@@ -1,8 +1,11 @@
 package com.shop.api.config;
 
+import com.shop.core.biz.partner.dao.PartnerDao;
+import com.shop.core.biz.partner.vo.response.PartnerResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +18,13 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
+    private final PartnerDao partnerDao;
     @Value("${jwt.access.token.secret.key}")  // ← 기존 키 이름으로 변경
     private String secretKey;
+
+    public JwtTokenProvider(PartnerDao partnerDao) {
+        this.partnerDao = partnerDao;
+    }
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -24,6 +32,12 @@ public class JwtTokenProvider {
 
     // Guest Token 생성
     public String createGuestToken(String guestId, String subDomain) {
+        Integer partnerId = 1;
+        if(!StringUtils.isEmpty(subDomain) && !StringUtils.equalsAny(subDomain, "www")){
+            PartnerResponse.Select partner = partnerDao.selectMyPartnerBySubDomain(subDomain);
+            partnerId = partner.getId();
+        }
+
         return Jwts.builder()
                 .subject(guestId)
                 .claim("type", "GUEST")

@@ -41,6 +41,9 @@ public class Partner extends BaseEntity implements Serializable {
     @Schema(description = "주소(도메인)")
     private String domain;
 
+    @Schema(description = "서브도메인 www")
+    private String subDomain;
+
     @Schema(description = "전화번호")
     private String phoneNo;
 }
