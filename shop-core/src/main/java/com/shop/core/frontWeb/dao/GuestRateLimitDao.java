@@ -21,10 +21,6 @@ public class GuestRateLimitDao {
         return sqlSession.insert(NAMESPACE + "insertRateLimit", guestRateLimit);
     }
 
-    public int incrementRateLimit(GuestRateLimit guestRateLimit) {
-        return sqlSession.update(NAMESPACE + "incrementRateLimit", guestRateLimit);
-    }
-
     public int deleteOldRateLimits() {
         return sqlSession.delete(NAMESPACE + "deleteOldRateLimits");
     }

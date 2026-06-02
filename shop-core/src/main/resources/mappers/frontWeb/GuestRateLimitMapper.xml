@@ -27,15 +27,9 @@
             1,
             NOW()
         )
+        ON CONFLICT (GUEST_ID, MINUTE_KEY)
+        DO UPDATE SET COUNT = TB_GUEST_RATE_LIMIT.COUNT + 1
     </insert>
-
-    <update id="incrementRateLimit" parameterType="com.shop.core.entity.GuestRateLimit">
-        /* GuestRateLimitMapper.incrementRateLimit */
-        UPDATE TB_GUEST_RATE_LIMIT
-        SET COUNT = COUNT + 1
-        WHERE GUEST_ID   = #{guestId}
-          AND MINUTE_KEY = #{minuteKey}
-    </update>
 
     <delete id="deleteOldRateLimits">
         /* GuestRateLimitMapper.deleteOldRateLimits */

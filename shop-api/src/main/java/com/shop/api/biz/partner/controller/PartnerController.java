@@ -37,18 +37,6 @@ public class PartnerController {
     private final UserService userService;
 
     /**
-     * 내파트너만 조회하기 지우지 말것 2025-03-12
-     */
-
-    @AccessLog("자기 파트너 정보 조회")
-    @GetMapping(value = "/my-partner")
-    @Operation(summary = "자기 파트너 정보 조회")
-    public ApiResponse<PartnerResponse.Select> selectMyPartner(@Parameter(hidden = true) @JwtUser User jwtUser) {
-        PartnerResponse.Select response = partnerService.selectMyPartnerByLoginId(jwtUser.getLoginId());
-        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
-    }
-
-    /**
      * 화주관리_목록_조회 (페이징)
      *
      * @param filter

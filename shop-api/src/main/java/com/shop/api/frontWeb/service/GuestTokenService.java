@@ -68,18 +68,10 @@ public class GuestTokenService {
                 .minuteKey(minuteKey)
                 .build();
 
-        GuestRateLimit existing = guestRateLimitDao.selectRateLimit(param);
+        // 동시 요청 레이스 컨디션 방지: 원자적 upsert 후 카운트 확인
+        guestRateLimitDao.insertRateLimit(param);
 
-        if (existing == null) {
-            guestRateLimitDao.insertRateLimit(param);
-            return true;
-        }
-
-        if (existing.getCount() >= RATE_LIMIT_COUNT) {
-            return false;
-        }
-
-        guestRateLimitDao.incrementRateLimit(param);
-        return true;
+        GuestRateLimit current = guestRateLimitDao.selectRateLimit(param);
+        return current.getCount() <= RATE_LIMIT_COUNT;
     }
 }

@@ -137,17 +137,15 @@ public class AuthInterceptor implements HandlerInterceptor {
                         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                         response.setStatus(429);
                         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                        response.getWriter().write(
-                                """
+                        response.getWriter().write("""
                                 {"resultCode":429,"resultMessage":"요청 횟수를 초과했습니다."}
-                                """
-                        );
+                                """);
                         return false;
                     }
 
-                    String shopId     = jwtTokenProvider.getShopId(guestToken);  // ← 추가
+                    Integer partnerId     = jwtTokenProvider.getPartnerId(guestToken);  // ← 추가
                     request.setAttribute("GUEST_ID", guestId);
-                    request.setAttribute("SHOP_ID",  shopId);
+                    request.setAttribute("PARTNER_ID",  partnerId);
                 }
             }
         }
