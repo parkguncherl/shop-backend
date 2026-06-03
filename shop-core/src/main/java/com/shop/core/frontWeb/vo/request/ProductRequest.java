@@ -22,4 +22,16 @@ public class ProductRequest {
         @Schema(description = "카테고리 id")
         private String categoryId;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductRequestProductDetailParam", description = "상품 상세 조회 파라미터")
+    public static class ProductDetailParam {
+
+        @Schema(description = "상품 id")
+        private Integer productId;
+
+        @Schema(description = "partner id")
+        private Integer partnerId;
+    }
 }

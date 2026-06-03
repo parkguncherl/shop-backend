@@ -31,4 +31,18 @@ public class ProductService {
     public PageResponse<ProductResponse.ProductInfo> selectProductInfoListPaging(PageRequest<ProductRequest.ProductInfoListFilter> pageRequest) {
         return productDao.selectProductInfoListPaging(pageRequest);
     }
+
+    /**
+     * 상품 상세 조회 비즈니스 레이어
+     * @param param productId, partnerId
+     * @return ProductDetail (상품정보 + SKU목록 + 연관상품목록)
+     */
+    public ProductResponse.ProductDetail selectProductDetail(ProductRequest.ProductDetailParam param) {
+        ProductResponse.ProductDetail detail = productDao.selectProductDetail(param);
+        if (detail == null) return null;
+
+        detail.setDetList(productDao.selectProductDetList(param));
+        detail.setRelatedList(productDao.selectRelatedProductList(param));
+        return detail;
+    }
 }

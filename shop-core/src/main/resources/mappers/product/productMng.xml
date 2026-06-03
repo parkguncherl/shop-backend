@@ -366,6 +366,7 @@
         /* com.shop.mapper.product.productMng.insertCategoryProduct */
         INSERT INTO TB_CATEGORY_PRODUCT (
             SEQ ,
+            PARTNER_ID,
             CATEGORY_ID ,
             PRODUCT_ID,
             CRE_USER,
@@ -373,6 +374,7 @@
         ) VALUES (
             get_next_category_product_seq(#{categoryId}) ,
             #{categoryId} ,
+            #{partnerId} ,
             #{productId} ,
             #{creUser} ,
             #{updUser}

@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * <pre>
@@ -56,5 +57,30 @@ public class ProductController {
         pageRequest.setFilter(productInfoListFilter);
         PageResponse<ProductResponse.ProductInfo> response = productService.selectProductInfoListPaging(pageRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
+     * 상품 상세 조회
+     *
+     * @param productId 상품 id
+     * @return ProductDetail (상품정보 + SKU목록 + 연관상품목록)
+     */
+    @AccessLog("frontWeb 이하 상품 상세 조회")
+    @GetMapping(value = "/productDetail")
+    @Operation(summary = "frontWeb 이하 상품 상세 조회")
+    @NotAuthRequired
+    public ApiResponse<ProductResponse.ProductDetail> selectProductDetail(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
+            @Parameter(name = "productId", description = "상품 id", in = ParameterIn.QUERY) @RequestParam Integer productId
+    ) {
+        ProductRequest.ProductDetailParam param = new ProductRequest.ProductDetailParam();
+        param.setProductId(productId);
+        param.setPartnerId(guestUser.getPartnerId());
+
+        ProductResponse.ProductDetail detail = productService.selectProductDetail(param);
+        if (detail == null) {
+            return new ApiResponse<>(ApiResultCode.DATA_NOT_FOUND);
+        }
+        return new ApiResponse<>(ApiResultCode.SUCCESS, detail);
     }
 }

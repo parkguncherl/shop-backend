@@ -16,14 +16,14 @@ import java.io.Serializable;
 @Schema(description = "카테고리 연결상품 Entity")
 public class CategoryProduct extends BaseEntity implements Serializable {
 
-    //    @Serial
-//    private static final long serialVersionUID = -7404284196980959337L;
-
     @Schema(description = "아이디(PK)")
     private Integer id;
 
     @Schema(description = "순서")
     private Integer seq;
+
+    @Schema(description = "partnerId")
+    private Integer partnerId;
 
     @Schema(description = "카테고리 id")
     private Integer categoryId;

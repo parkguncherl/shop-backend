@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,5 +42,28 @@ public class ProductDao {
         } else {
             return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
         }
+    }
+
+    /**
+     * 상품 상세 조회 (TB_PRODUCT + 이미지)
+     */
+    public ProductResponse.ProductDetail selectProductDetail(ProductRequest.ProductDetailParam param) {
+        return sqlSession.selectOne(NAMESPACE + "selectProductDetail", param);
+    }
+
+    /**
+     * 상품 상세(SKU) 목록 조회 (TB_PRODUCT_DET)
+     */
+    public List<ProductResponse.ProductDetInfo> selectProductDetList(ProductRequest.ProductDetailParam param) {
+        List<ProductResponse.ProductDetInfo> list = sqlSession.selectList(NAMESPACE + "selectProductDetList", param);
+        return list != null ? list : Collections.emptyList();
+    }
+
+    /**
+     * 연관 상품 목록 조회 (같은 카테고리, 현재 상품 제외)
+     */
+    public List<ProductResponse.RelatedProductInfo> selectRelatedProductList(ProductRequest.ProductDetailParam param) {
+        List<ProductResponse.RelatedProductInfo> list = sqlSession.selectList(NAMESPACE + "selectRelatedProductList", param);
+        return list != null ? list : Collections.emptyList();
     }
 }

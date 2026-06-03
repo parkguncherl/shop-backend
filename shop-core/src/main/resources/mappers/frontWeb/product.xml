@@ -33,18 +33,111 @@
             <if test='filter.lastId != null'>
                 AND P.ID > #{filter.lastId}
             </if>
+            <if test='filter.categoryId == null or filter.categoryId != "all"'>
             AND EXISTS (
                 SELECT CP.ID
                   FROM TB_CATEGORY_PRODUCT CP
                   JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N' AND PC.ID = CP.CATEGORY_ID
                  WHERE CP.PRODUCT_ID = P.ID
-                <if test='filter.categoryId != null'>
+                <if test='filter.categoryId != null and filter.categoryId != "all"'>
                    AND PC.CODE_CD = #{filter.categoryId}
                 </if>
                 )
+            </if>
+            <if test='filter.categoryId == "all"'>
+            AND P.PARTNER_ID = #{filter.partnerId}
+            </if>
         </where>
         ORDER BY P.ID
         LIMIT #{pageRowCount} + 1;
+    </select>
+
+
+    <!-- 상품 상세 조회 -->
+    <select id="selectProductDetail" parameterType="com.shop.core.frontWeb.vo.request.ProductRequest$ProductDetailParam"
+            resultType="com.shop.core.frontWeb.vo.response.ProductResponse$ProductDetail">
+        /* com.shop.mapper.frontWeb.product.selectProductDetail */
+        SELECT
+              P.ID                  AS id
+            , P.PARTNER_ID          AS partnerId
+            , P.PROD_CD             AS prodCd
+            , P.PROD_NM             AS prodNm
+            , P.PROD_TP             AS prodTp
+            , P.PROD_DET_TP         AS prodDetTp
+            , P.COMPOSITION         AS composition
+            , P.REP_FILE_ID         AS repFileId
+            , P.DETAIL_FILE_ID      AS detailFileId
+            , P.SIZE_FILE_ID        AS sizeFileId
+            , P.ETC_FILE_ID         AS etcFileId
+            , P.MAKE_YMD            AS makeYmd
+            , P.ORG_AMT             AS orgAmt
+            , P.SELL_AMT            AS sellAmt
+            , P.DISCOUNT_RATE       AS discountRate
+            , P.IS_SPRING           AS isSpring
+            , P.IS_SUMMER           AS isSummer
+            , P.IS_AUTUMN           AS isAutumn
+            , P.IS_WINTER           AS isWinter
+            , P.FAVORITE_POINT      AS favoritePoint
+            , FD_REP.SYS_FILE_NM    AS repSysFileNm
+            , FD_DET.SYS_FILE_NM    AS detailSysFileNm
+            , FD_SZ.SYS_FILE_NM     AS sizeSysFileNm
+            , FD_ETC.SYS_FILE_NM    AS etcSysFileNm
+        FROM TB_PRODUCT P
+        LEFT JOIN TB_FILE_DET FD_REP    ON FD_REP.FILE_ID    = P.REP_FILE_ID    AND FD_REP.FILE_SEQ  = 1 AND FD_REP.DEL_YN  = 'N'
+        LEFT JOIN TB_FILE_DET FD_DET    ON FD_DET.FILE_ID    = P.DETAIL_FILE_ID AND FD_DET.FILE_SEQ  = 1 AND FD_DET.DEL_YN  = 'N'
+        LEFT JOIN TB_FILE_DET FD_SZ     ON FD_SZ.FILE_ID     = P.SIZE_FILE_ID   AND FD_SZ.FILE_SEQ   = 1 AND FD_SZ.DEL_YN   = 'N'
+        LEFT JOIN TB_FILE_DET FD_ETC    ON FD_ETC.FILE_ID    = P.ETC_FILE_ID    AND FD_ETC.FILE_SEQ  = 1 AND FD_ETC.DEL_YN  = 'N'
+        WHERE P.ID       = #{productId}
+          AND P.DEL_YN   = 'N'
+    </select>
+
+    <!-- 상품 상세(SKU) 목록 조회 -->
+    <select id="selectProductDetList" parameterType="com.shop.core.frontWeb.vo.request.ProductRequest$ProductDetailParam"
+            resultType="com.shop.core.frontWeb.vo.response.ProductResponse$ProductDetInfo">
+        /* com.shop.mapper.frontWeb.product.selectProductDetList */
+        SELECT
+              PD.ID                  AS id
+            , PD.PRODUCT_ID          AS productId
+            , PD.PRODUCT_DET_SEQ     AS productDetSeq
+            , PD.PRODUCT_DET_SIZE    AS productDetSize
+            , PD.PRODUCT_DET_COLOR   AS productDetColor
+            , PD.SKU_DISCOUNT_RATE   AS skuDiscountRate
+            , PD.PRODUCT_DET_CNTN    AS productDetCntn
+            , FD.SYS_FILE_NM         AS sysFileNm
+        FROM TB_PRODUCT_DET PD
+        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = PD.FILE_ID AND FD.FILE_SEQ = 1 AND FD.DEL_YN = 'N'
+        WHERE PD.PRODUCT_ID = #{productId}
+          AND PD.SLEEP_YN   = 'N'
+        ORDER BY PD.PRODUCT_DET_SEQ
+    </select>
+
+    <!-- 연관 상품 목록 조회 (같은 카테고리, 현재 상품 제외, 최대 10개) -->
+    <select id="selectRelatedProductList" parameterType="com.shop.core.frontWeb.vo.request.ProductRequest$ProductDetailParam"
+            resultType="com.shop.core.frontWeb.vo.response.ProductResponse$RelatedProductInfo">
+        /* com.shop.mapper.frontWeb.product.selectRelatedProductList */
+        SELECT
+              P.ID             AS id
+            , P.PROD_NM        AS prodNm
+            , P.SELL_AMT       AS sellAmt
+            , P.DISCOUNT_RATE  AS discountRate
+            , FD.SYS_FILE_NM   AS sysFileNm
+        FROM TB_PRODUCT P
+        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID AND FD.FILE_SEQ = 1 AND FD.DEL_YN = 'N'
+        WHERE P.DEL_YN = 'N'
+          AND P.ID != #{productId}
+          AND EXISTS (
+              SELECT 1
+                FROM TB_CATEGORY_PRODUCT CP
+               WHERE CP.PARTNER_ID = P.PARTNER_ID
+                 AND CP.PRODUCT_ID = P.ID
+                 AND CP.CATEGORY_ID IN (
+                     SELECT CATEGORY_ID
+                       FROM TB_CATEGORY_PRODUCT
+                      WHERE PRODUCT_ID = #{productId}
+                 )
+          )
+        ORDER BY P.FAVORITE_POINT DESC
+        LIMIT 10
     </select>
 
 </mapper>

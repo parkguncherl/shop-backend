@@ -233,18 +233,6 @@ public class CodeController {
         CommUtil.charValidate(EsseType.ESS, LangType.DIG, codeRequest.getCodeOrder() + "", 4, "순서");
         CommUtil.charValidate(EsseType.NUL, LangType.ENG, codeRequest.getCodeEtc2(), 0, "기타정보영문");
 
-        // 국가 코드는 2자리만
-        if (StringUtils.equals("S0001", codeRequest.getCodeUpper())) {
-            // 자리수확인
-            if (codeRequest.getCodeCd().length() != 2) {
-                return new ApiResponse<>(ApiResultCode.COUNTRY_CODE_VALID);
-            }
-            // 대문자인지 확인
-            if (!CommUtil.isStringUpperCase(codeRequest.getCodeCd())) {
-                return new ApiResponse<>(ApiResultCode.COUNTRY_CODE_VALID);
-            }
-        }
-
         Code code = new Code();
         code.setCodeUpper(codeRequest.getCodeUpper());
         code.setCodeCd(codeRequest.getCodeCd());
@@ -413,26 +401,6 @@ public class CodeController {
             @Parameter(description = "상위_코드") @PathVariable String codeUpper,
             @Parameter(description = "하위 코드 저장 Request (복수)") @RequestBody List<CodeRequest.Create> codeRequestList
     ) {
-        // 필수값 체크
-        /*if (codeRequestList.isEmpty()) {
-            return new ApiResponse<>(ApiResultCode.NOT_FOUND_CODE);
-        }*/
-
-        // validation 체크
-        for (CodeRequest.Create code : codeRequestList) {
-            // 국가 코드는 2자리만
-            if (StringUtils.equals("S0001", code.getCodeUpper())) {
-                // 자리수확인
-                if (code.getCodeCd().length() != 2) {
-                    return new ApiResponse<>(ApiResultCode.COUNTRY_CODE_VALID);
-                }
-                // 대문자인지 확인
-                if (!CommUtil.isStringUpperCase(code.getCodeCd())) {
-                    return new ApiResponse<>(ApiResultCode.COUNTRY_CODE_VALID);
-                }
-            }
-        }
-
         try {
             // 하위_코드_저장 (복수)
             List<CodeResponse.LowerSelect> nowCodes = codeService.selectLowerCodeByCodeUpper(codeUpper);

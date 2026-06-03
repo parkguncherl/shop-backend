@@ -236,6 +236,7 @@ public class ProductMngService {
      * @return 추가된 행의 수
      */
     public Integer insertCategoryProduct(ProductMngRequest.InsertCategoryProduct insertCategoryProduct, User jwtUser) {
+        insertCategoryProduct.setPartnerId(jwtUser.getPartnerId());
         insertCategoryProduct.setCreUser(jwtUser.getLoginId());
         insertCategoryProduct.setUpdUser(jwtUser.getLoginId());
         return productMngDao.insertCategoryProduct(insertCategoryProduct);
