@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.GuestReferrerLog">
+
+    <!-- 유입 경로 이력 적재 -->
+    <insert id="insertReferrerLog" parameterType="com.shop.core.entity.GuestReferrerLog">
+        /* GuestReferrerLog.insertReferrerLog */
+        INSERT INTO TB_GUEST_REFERRER_LOG (
+            GUEST_TOKEN_ID,
+            UTM_SOURCE,
+            UTM_MEDIUM,
+            UTM_CAMPAIGN,
+            UTM_CONTENT,
+            REFERER_URL,
+            LANDING_URL,
+            VISITED_AT
+        ) VALUES (
+            #{guestTokenId},
+            #{utmSource},
+            #{utmMedium},
+            #{utmCampaign},
+            #{utmContent},
+            #{refererUrl},
+            #{landingUrl},
+            NOW()
+        )
+    </insert>
+
+    <!-- 게스트 토큰 ID 로 이력 조회 -->
+    <select id="selectLogsByGuestTokenId"
+            parameterType="Long"
+            resultType="com.shop.core.entity.GuestReferrerLog">
+        /* GuestReferrerLog.selectLogsByGuestTokenId */
+        SELECT
+            ID              AS id,
+            GUEST_TOKEN_ID  AS guestTokenId,
+            UTM_SOURCE      AS utmSource,
+            UTM_MEDIUM      AS utmMedium,
+            UTM_CAMPAIGN    AS utmCampaign,
+            UTM_CONTENT     AS utmContent,
+            REFERER_URL     AS refererUrl,
+            LANDING_URL     AS landingUrl,
+            VISITED_AT      AS visitedAt
+        FROM TB_GUEST_REFERRER_LOG
+        WHERE GUEST_TOKEN_ID = #{guestTokenId}
+        ORDER BY VISITED_AT DESC
+    </select>
+
+</mapper>

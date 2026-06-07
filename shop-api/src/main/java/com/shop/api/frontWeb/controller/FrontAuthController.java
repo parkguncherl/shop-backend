@@ -3,8 +3,11 @@ package com.shop.api.frontWeb.controller;
 import com.shop.api.frontWeb.service.GuestTokenService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.response.ApiResponse;
+import com.shop.core.entity.GuestReferrerLog;
 import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
+import com.shop.core.frontWeb.dao.GuestReferrerLogDao;
+import com.shop.core.frontWeb.dao.GuestTokenDao;
 import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
 import com.shop.core.frontWeb.vo.response.GuestTokenResponse;
 import jakarta.servlet.http.Cookie;
@@ -14,9 +17,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -31,6 +34,8 @@ import java.util.Optional;
 public class FrontAuthController {
 
     private final GuestTokenService guestTokenService;
+    private final GuestTokenDao guestTokenDao;
+    private final GuestReferrerLogDao guestReferrerLogDao;
     private static final String DEFAULT_SUB_DOMAIN = "www";
 
     @NotAuthRequired
@@ -154,5 +159,67 @@ public class FrontAuthController {
         } catch (Exception e) {
             return DEFAULT_SUB_DOMAIN;
         }
+    }
+
+    /**
+     * 유입 경로 이력 적재
+     * - 게스트 첫 방문 이후 유입 경로(utm)가 변경될 때마다 호출
+     * - TB_GUEST_TOKEN 의 현재값은 프론트에서 별도로 업데이트,
+     *   이 API 는 변경 이력만 TB_GUEST_REFERRER_LOG 에 쌓음
+     */
+    @NotAuthRequired
+    @PostMapping("/referrer-log")
+    @Operation(summary = "유입 경로 이력 적재",
+               description = "UTM/Referrer 변경 시 이력 테이블(TB_GUEST_REFERRER_LOG)에 적재")
+    public ApiResponse<Void> saveReferrerLog(HttpServletRequest request) {
+
+        String guestId     = request.getHeader("X-Guest-Id");
+        String utmSource   = request.getHeader("X-UTM-Source");
+        String utmMedium   = request.getHeader("X-UTM-Medium");
+        String utmCampaign = request.getHeader("X-UTM-Campaign");
+        String utmContent  = request.getHeader("X-UTM-Content");
+        String refererUrl  = request.getHeader("X-Referer-URL");
+        String landingUrl  = request.getHeader("X-Current-URL");
+
+        if (!StringUtils.hasText(guestId)) {
+            return new ApiResponse<>(ApiResultCode.FAIL, "X-Guest-Id 헤더가 필요합니다.");
+        }
+
+        GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(guestId);
+        if (guestToken == null) {
+            return new ApiResponse<>(ApiResultCode.FAIL, "유효하지 않은 게스트 ID입니다.");
+        }
+
+        GuestReferrerLog log = new GuestReferrerLog();
+        log.setGuestTokenId(guestToken.getId());
+        log.setUtmSource(utmSource);
+        log.setUtmMedium(utmMedium);
+        log.setUtmCampaign(utmCampaign);
+        log.setUtmContent(utmContent);
+        log.setRefererUrl(refererUrl);
+        log.setLandingUrl(landingUrl);
+        guestReferrerLogDao.insertReferrerLog(log);
+
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
+     * 유입 경로 이력 조회
+     * - guestId 로 해당 게스트의 전체 유입 이력 반환
+     */
+    @NotAuthRequired
+    @GetMapping("/referrer-log/{guestId}")
+    @Operation(summary = "유입 경로 이력 조회",
+               description = "게스트 ID로 유입 경로 변경 이력 전체 조회")
+    public ApiResponse<List<GuestReferrerLog>> getReferrerLogs(
+            @PathVariable String guestId) {
+
+        GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(guestId);
+        if (guestToken == null) {
+            return new ApiResponse<>(ApiResultCode.FAIL, "유효하지 않은 게스트 ID입니다.");
+        }
+
+        List<GuestReferrerLog> logs = guestReferrerLogDao.selectLogsByGuestTokenId(guestToken.getId());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, logs);
     }
 }

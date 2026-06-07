@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.SocialAccount">
+
+    <!-- provider + providerId 로 소셜 계정 조회 -->
+    <select id="selectByProviderAndProviderId"
+            parameterType="com.shop.core.entity.SocialAccount"
+            resultType="com.shop.core.entity.SocialAccount">
+        /* SocialAccount.selectByProviderAndProviderId */
+        SELECT
+            ID              AS id,
+            PROVIDER        AS provider,
+            PROVIDER_ID     AS providerId,
+            EMAIL           AS email,
+            NICKNAME        AS nickname,
+            PROFILE_IMAGE   AS profileImage,
+            STATUS          AS status,
+            PARTNER_ID      AS partnerId,
+            LAST_LOGIN_TM   AS lastLoginTm,
+            CRE_TM          AS creTm,
+            UPT_TM          AS uptTm
+        FROM TB_SOCIAL_ACCOUNT
+        WHERE PROVIDER    = #{provider}
+          AND PROVIDER_ID = #{providerId}
+          AND STATUS      = 'active'
+    </select>
+
+    <!-- PK 로 소셜 계정 조회 -->
+    <select id="selectById"
+            parameterType="Long"
+            resultType="com.shop.core.entity.SocialAccount">
+        /* SocialAccount.selectById */
+        SELECT
+            ID              AS id,
+            PROVIDER        AS provider,
+            PROVIDER_ID     AS providerId,
+            EMAIL           AS email,
+            NICKNAME        AS nickname,
+            PROFILE_IMAGE   AS profileImage,
+            STATUS          AS status,
+            PARTNER_ID      AS partnerId,
+            LAST_LOGIN_TM   AS lastLoginTm,
+            CRE_TM          AS creTm,
+            UPT_TM          AS uptTm
+        FROM TB_SOCIAL_ACCOUNT
+        WHERE ID = #{id}
+    </select>
+
+    <!-- 소셜 계정 신규 등록 -->
+    <insert id="insertSocialAccount"
+            parameterType="com.shop.core.entity.SocialAccount"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        /* SocialAccount.insertSocialAccount */
+        INSERT INTO TB_SOCIAL_ACCOUNT (
+            PROVIDER,
+            PROVIDER_ID,
+            EMAIL,
+            NICKNAME,
+            PROFILE_IMAGE,
+            STATUS,
+            PARTNER_ID,
+            CRE_TM,
+            UPT_TM
+        ) VALUES (
+            #{provider},
+            #{providerId},
+            #{email},
+            #{nickname},
+            #{profileImage},
+            'active',
+            COALESCE(#{partnerId}, 1),
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 프로필 정보 갱신 -->
+    <update id="updateSocialAccount"
+            parameterType="com.shop.core.entity.SocialAccount">
+        /* SocialAccount.updateSocialAccount */
+        UPDATE TB_SOCIAL_ACCOUNT
+        SET NICKNAME      = #{nickname},
+            PROFILE_IMAGE = #{profileImage},
+            EMAIL         = #{email},
+            UPT_TM        = NOW()
+        WHERE PROVIDER    = #{provider}
+          AND PROVIDER_ID = #{providerId}
+    </update>
+
+    <!-- 최종 로그인 일시 갱신 -->
+    <update id="updateLastLoginTm" parameterType="Long">
+        /* SocialAccount.updateLastLoginTm */
+        UPDATE TB_SOCIAL_ACCOUNT
+        SET LAST_LOGIN_TM = NOW(),
+            UPT_TM        = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>
