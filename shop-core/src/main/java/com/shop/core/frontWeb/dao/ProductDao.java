@@ -28,7 +28,7 @@ public class ProductDao {
     private final SqlSession sqlSession;
 
     // MyBatis 매퍼 XML 파일의 네임스페이스를 정의합니다.
-    private static final String NAMESPACE = "com.shop.mapper.frontWeb.product.";
+    private static final String NAMESPACE = "com.shop.mapper.frontWeb.Product.";
 
     /**
      * frontWeb 이하 상품 목록 조회(when code etc of partner_code is 'PROD')

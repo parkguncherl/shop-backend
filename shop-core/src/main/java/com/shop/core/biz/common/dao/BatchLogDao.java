@@ -3,7 +3,6 @@ package com.shop.core.biz.common.dao;
 import com.shop.core.entity.BatchLog;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BatchLogDao {
 
-    private final String PRE_NS = "com.shop.mapper.batchLog.";
+    private final String PRE_NS = "com.shop.mapper.batch.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

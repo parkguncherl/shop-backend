@@ -27,7 +27,7 @@ public class DisplayDao {
     private final SqlSession sqlSession;
 
     // MyBatis 매퍼 XML 파일의 네임스페이스를 정의합니다.
-    private static final String NAMESPACE = "com.shop.mapper.frontWeb.display.";
+    private static final String NAMESPACE = "com.shop.mapper.frontWeb.Display.";
 
     /**
      * frontWeb 메인 페이지 영역 상품정보 목록 조회
