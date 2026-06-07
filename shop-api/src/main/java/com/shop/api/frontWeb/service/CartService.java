@@ -61,7 +61,6 @@ public class CartService {
 
         CartItem item = new CartItem();
         item.setCartId(cart.getId());
-        item.setProductId(request.getProductId());
         item.setProductDetId(request.getProductDetId());
         item.setQuantity(request.getQuantity());
         item.setUnitPrice(request.getUnitPrice());
@@ -160,10 +159,10 @@ public class CartService {
         for (CartItem ci : items) {
             CartResponse.ItemInfo info = new CartResponse.ItemInfo();
             info.setCartItemId(ci.getId());
-            info.setProductId(ci.getProductId());
+            info.setProductDetId(ci.getProductDetId());
+            info.setProductId(ci.getProductId());        // JOIN 으로 가져온 상품 ID
             info.setProductName(ci.getProductName());
             info.setProductImage(ci.getProductImage());
-            info.setProductDetId(ci.getProductDetId());
             info.setProductDetSize(ci.getProductDetSize());
             info.setProductDetColor(ci.getProductDetColor());
             info.setSkuDiscountRate(ci.getSkuDiscountRate());

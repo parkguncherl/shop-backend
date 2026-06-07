@@ -16,10 +16,7 @@ public class CartRequest {
         @Schema(description = "게스트 ID", required = true)
         private String guestId;
 
-        @Schema(description = "상품 ID (tb_product.id)", required = true)
-        private Long productId;
-
-        @Schema(description = "상품 상세 ID (tb_product_det.id)")
+        @Schema(description = "상품 상세 ID (tb_product_det.id)", required = true)
         private Long productDetId;
 
         @Schema(description = "수량", required = true)

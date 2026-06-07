@@ -44,32 +44,32 @@
 
     <!--
         장바구니 아이템 목록 조회
-        - TB_PRODUCT      : 상품명, 대표이미지
-        - TB_PRODUCT_DET  : 사이즈, 색상, 할인율
+        - TB_PRODUCT_DET → TB_PRODUCT JOIN 으로 상품 정보 조회
+        - product_id 컬럼 없이 product_det_id 만으로 상품 조회
     -->
     <select id="selectCartItems"
             parameterType="Long"
             resultType="com.shop.core.entity.CartItem">
         /* Cart.selectCartItems */
         SELECT
-            CI.ID               AS id,
-            CI.CART_ID          AS cartId,
-            CI.PRODUCT_ID       AS productId,
-            CI.PRODUCT_DET_ID   AS productDetId,
-            CI.QUANTITY         AS quantity,
-            CI.UNIT_PRICE       AS unitPrice,
-            CI.CURRENCY         AS currency,
-            CI.OPTIONS_SNAPSHOT AS optionsSnapshot,
-            CI.CRE_TM           AS creTm,
-            CI.UPT_TM           AS uptTm,
-            P.PROD_NM           AS productName,
-            P.REP_FILE_ID       AS productImage,
+            CI.ID                AS id,
+            CI.CART_ID           AS cartId,
+            CI.PRODUCT_DET_ID    AS productDetId,
+            CI.QUANTITY          AS quantity,
+            CI.UNIT_PRICE        AS unitPrice,
+            CI.CURRENCY          AS currency,
+            CI.OPTIONS_SNAPSHOT  AS optionsSnapshot,
+            CI.CRE_TM            AS creTm,
+            CI.UPT_TM            AS uptTm,
+            P.ID                 AS productId,
+            P.PROD_NM            AS productName,
+            P.REP_FILE_ID        AS productImage,
             PD.PRODUCT_DET_SIZE  AS productDetSize,
             PD.PRODUCT_DET_COLOR AS productDetColor,
             PD.SKU_DISCOUNT_RATE AS skuDiscountRate
         FROM TB_CART_ITEM CI
-        LEFT JOIN TB_PRODUCT     P  ON P.ID  = CI.PRODUCT_ID
-        LEFT JOIN TB_PRODUCT_DET PD ON PD.ID = CI.PRODUCT_DET_ID
+        JOIN  TB_PRODUCT_DET PD ON PD.ID         = CI.PRODUCT_DET_ID
+        JOIN  TB_PRODUCT     P  ON P.ID           = PD.PRODUCT_ID
         WHERE CI.CART_ID = #{cartId}
         ORDER BY CI.CRE_TM ASC
     </select>
@@ -101,7 +101,8 @@
 
     <!--
         장바구니 아이템 추가
-        - 동일 PRODUCT_ID + PRODUCT_DET_ID 이미 존재 → 수량 합산 (ON CONFLICT)
+        - product_det_id 만 저장 (product_id 제거)
+        - 동일 product_det_id 이미 존재 → 수량 합산 (ON CONFLICT)
     -->
     <insert id="insertCartItem"
             parameterType="com.shop.core.entity.CartItem"
@@ -110,7 +111,6 @@
         /* Cart.insertCartItem */
         INSERT INTO TB_CART_ITEM (
             CART_ID,
-            PRODUCT_ID,
             PRODUCT_DET_ID,
             QUANTITY,
             UNIT_PRICE,
@@ -120,7 +120,6 @@
             UPT_TM
         ) VALUES (
             #{cartId},
-            #{productId},
             #{productDetId},
             #{quantity},
             #{unitPrice},
@@ -129,13 +128,13 @@
             NOW(),
             NOW()
         )
-        ON CONFLICT (CART_ID, PRODUCT_ID, PRODUCT_DET_ID)
+        ON CONFLICT (CART_ID, PRODUCT_DET_ID)
         DO UPDATE SET
             QUANTITY = TB_CART_ITEM.QUANTITY + EXCLUDED.QUANTITY,
             UPT_TM   = NOW()
     </insert>
 
-    <!-- 수량 수정 (quantity ≤ 0 이면 서비스 레이어에서 삭제 처리) -->
+    <!-- 수량 수정 -->
     <update id="updateCartItemQuantity"
             parameterType="com.shop.core.frontWeb.vo.request.CartRequest$UpdateItem">
         /* Cart.updateCartItemQuantity */
@@ -157,7 +156,7 @@
         DELETE FROM TB_CART_ITEM WHERE CART_ID = #{cartId}
     </delete>
 
-    <!-- 회원 ID 업데이트 (게스트 → 회원 전환) -->
+    <!-- 회원 ID 업데이트 -->
     <update id="updateCartMemberId" parameterType="com.shop.core.entity.Cart">
         /* Cart.updateCartMemberId */
         UPDATE TB_CART
@@ -166,7 +165,7 @@
         WHERE ID = #{id}
     </update>
 
-    <!-- 상태 변경 (merged / ordered / abandoned) -->
+    <!-- 상태 변경 -->
     <update id="updateCartStatus" parameterType="com.shop.core.entity.Cart">
         /* Cart.updateCartStatus */
         UPDATE TB_CART

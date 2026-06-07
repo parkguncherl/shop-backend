@@ -20,10 +20,7 @@ public class CartItem {
     @Schema(description = "장바구니 ID")
     private Long cartId;
 
-    @Schema(description = "상품 ID (tb_product.id)")
-    private Long productId;
-
-    @Schema(description = "상품 상세 ID (tb_product_det.id)")
+    @Schema(description = "상품 상세 ID (tb_product_det.id) — product_id 없이 JOIN으로 상품 조회")
     private Long productDetId;
 
     @Schema(description = "수량")
@@ -44,19 +41,22 @@ public class CartItem {
     @Schema(description = "수정 일시")
     private LocalDateTime uptTm;
 
-    // ── JOIN 조회 시 추가 정보 ─────────────────────────────────────
+    // ── JOIN 조회 시 추가 정보 (tb_product_det → tb_product) ──────────
+    @Schema(description = "상품 ID (tb_product.id)")
+    private Long productId;
+
     @Schema(description = "상품명")
     private String productName;
 
     @Schema(description = "상품 대표 이미지")
     private String productImage;
 
-    @Schema(description = "사이즈 (tb_product_det.product_det_size)")
+    @Schema(description = "사이즈")
     private String productDetSize;
 
-    @Schema(description = "색상 (tb_product_det.product_det_color)")
+    @Schema(description = "색상")
     private String productDetColor;
 
-    @Schema(description = "할인율 (tb_product_det.sku_discount_rate)")
+    @Schema(description = "할인율")
     private Integer skuDiscountRate;
 }
