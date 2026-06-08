@@ -64,6 +64,12 @@ public class CartDao {
         return sqlSession.update(NAMESPACE + "updateCartSocialAccountId", param);
     }
 
+    /** 로그인 시 게스트 카트 → 회원 귀속 (guestId 로 social_account_id 일괄 업데이트) */
+    public int updateCartSocialAccountIdByGuestId(Long socialAccountId, String guestId) {
+        return sqlSession.update(NAMESPACE + "updateCartSocialAccountIdByGuestId",
+                java.util.Map.of("socialAccountId", socialAccountId, "guestId", guestId));
+    }
+
     /** 장바구니 상태 변경 (merged, ordered 등) */
     public int updateCartStatus(Long cartId, String status) {
         Cart param = new Cart();

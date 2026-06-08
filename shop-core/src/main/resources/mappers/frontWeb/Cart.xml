@@ -166,6 +166,20 @@
         WHERE ID = #{id}
     </update>
 
+    <!-- 게스트 ID 로 카트의 소셜 계정 ID 업데이트 (로그인 시 카트 귀속) -->
+    <update id="updateCartSocialAccountIdByGuestId" parameterType="map">
+        /* Cart.updateCartSocialAccountIdByGuestId */
+        UPDATE TB_CART
+        SET SOCIAL_ACCOUNT_ID = #{socialAccountId},
+            UPT_TM            = NOW()
+        WHERE GUEST_TOKEN_ID = (
+            SELECT ID FROM TB_GUEST_TOKEN
+            WHERE GUEST_ID = #{guestId}
+            LIMIT 1
+        )
+        AND STATUS = 'active'
+    </update>
+
     <!-- 상태 변경 -->
     <update id="updateCartStatus" parameterType="com.shop.core.entity.Cart">
         /* Cart.updateCartStatus */

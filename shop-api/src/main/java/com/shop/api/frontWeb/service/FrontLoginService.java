@@ -2,6 +2,7 @@ package com.shop.api.frontWeb.service;
 
 import com.shop.core.entity.MemberToken;
 import com.shop.core.entity.SocialAccount;
+import com.shop.core.frontWeb.dao.CartDao;
 import com.shop.core.frontWeb.dao.GuestTokenDao;
 import com.shop.core.frontWeb.dao.SocialAccountDao;
 import com.shop.core.frontWeb.vo.request.SocialLoginRequest;
@@ -19,6 +20,7 @@ public class FrontLoginService {
 
     private final SocialAccountDao socialAccountDao;
     private final GuestTokenDao    guestTokenDao;
+    private final CartDao          cartDao;
     private final MemberJwtService memberJwtService;
 
     /**
@@ -74,7 +76,12 @@ public class FrontLoginService {
 
         // ── Step 6: 게스트 → 회원 연결 ──
         if (StringUtils.isNotBlank(request.getGuestId())) {
+            // guest_token.social_account_id 업데이트
             guestTokenDao.updateSocialAccountIdByGuestId(
+                    account.getId(), request.getGuestId()
+            );
+            // tb_cart.social_account_id 업데이트 → 이후 회원 카트로 직접 조회 가능
+            cartDao.updateCartSocialAccountIdByGuestId(
                     account.getId(), request.getGuestId()
             );
         }
