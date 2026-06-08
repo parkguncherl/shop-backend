@@ -49,7 +49,8 @@ public class WebConfigure implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/cw/**", "/v3/api-docs/**", "/v3/api-docs.yaml", "/swagger-ui.html")
                 .excludePathPatterns("/assets/**", "/css/**", "/js/**", "/images/**", "/fonts/**", "/components/**", "/webjars/**")
-                .excludePathPatterns("/frontWebAuth/**");  // ← 추가
+                .excludePathPatterns("/frontWebAuth/**")
+                .excludePathPatterns("/frontWeb/login/social/callback"); // 카카오 로그인관련
     }
 
     @Override
