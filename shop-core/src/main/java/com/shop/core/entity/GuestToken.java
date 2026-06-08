@@ -66,8 +66,8 @@ public class GuestToken {
     @Schema(description = "UTM content") // 어떻게 클릭했는지 link_in_bio, story_ad. feed_ad 인스타에서
     private String utmContent;
 
-    @Schema(description = "연결된 회원 ID")
-    private Integer memberId;
+    @Schema(description = "연결된 소셜 계정 ID")
+    private Long socialAccountId;
 
     @Schema(description = "페이스북연결id")
     private String fbclid;

@@ -54,7 +54,7 @@ public class CartService {
         if (cart == null) {
             cart = new Cart();
             cart.setGuestTokenId(guestToken.getId());
-            cart.setMemberId(guestToken.getMemberId());
+            cart.setSocialAccountId(guestToken.getSocialAccountId());
             cart.setStatus("active");
             cartDao.insertCart(cart);
         }
@@ -112,18 +112,18 @@ public class CartService {
      * 회원 전환 시 게스트 장바구니 → 회원 장바구니 병합
      */
     @Transactional
-    public void mergeGuestCartToMember(String guestId, Integer memberId) {
+    public void mergeGuestCartToMember(String guestId, Long socialAccountId) {
         GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(guestId);
         if (guestToken == null) return;
 
         Cart guestCart = cartDao.selectActiveCartByGuestTokenId(guestToken.getId());
         if (guestCart == null) return;
 
-        Cart memberCart = cartDao.selectActiveCartByMemberId(memberId);
+        Cart memberCart = cartDao.selectActiveCartBySocialAccountId(socialAccountId);
 
         if (memberCart == null) {
             // 회원 카트 없음 → 게스트 카트를 회원 카트로 전환
-            cartDao.updateCartMemberId(guestCart.getId(), memberId);
+            cartDao.updateCartSocialAccountId(guestCart.getId(), socialAccountId);
         } else {
             // 회원 카트 존재 → 게스트 아이템을 회원 카트로 이관
             List<CartItem> guestItems = cartDao.selectCartItems(guestCart.getId());
@@ -139,8 +139,8 @@ public class CartService {
     // ── private 헬퍼 ──────────────────────────────────
 
     private Cart findOrNullCart(CartRequest.GetCart request) {
-        if (request.getMemberId() != null) {
-            return cartDao.selectActiveCartByMemberId(request.getMemberId());
+        if (request.getSocialAccountId() != null) {
+            return cartDao.selectActiveCartBySocialAccountId(request.getSocialAccountId());
         }
         if (request.getGuestId() != null) {
             GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(request.getGuestId());

@@ -10,7 +10,7 @@
         SELECT
             ID              AS id,
             GUEST_TOKEN_ID  AS guestTokenId,
-            MEMBER_ID       AS memberId,
+            SOCIAL_ACCOUNT_ID AS socialAccountId,
             STATUS          AS status,
             COUPON_CODE     AS couponCode,
             EXPIRES_AT      AS expiresAt,
@@ -22,22 +22,22 @@
         LIMIT 1
     </select>
 
-    <!-- 회원 ID 로 활성 장바구니 조회 -->
-    <select id="selectActiveCartByMemberId"
-            parameterType="Integer"
+    <!-- 소셜 계정 ID 로 활성 장바구니 조회 -->
+    <select id="selectActiveCartBySocialAccountId"
+            parameterType="Long"
             resultType="com.shop.core.entity.Cart">
-        /* Cart.selectActiveCartByMemberId */
+        /* Cart.selectActiveCartBySocialAccountId */
         SELECT
-            ID              AS id,
-            GUEST_TOKEN_ID  AS guestTokenId,
-            MEMBER_ID       AS memberId,
-            STATUS          AS status,
-            COUPON_CODE     AS couponCode,
-            EXPIRES_AT      AS expiresAt,
-            CRE_TM          AS creTm,
-            UPT_TM          AS uptTm
+            ID                AS id,
+            GUEST_TOKEN_ID    AS guestTokenId,
+            SOCIAL_ACCOUNT_ID AS socialAccountId,
+            STATUS            AS status,
+            COUPON_CODE       AS couponCode,
+            EXPIRES_AT        AS expiresAt,
+            CRE_TM            AS creTm,
+            UPT_TM            AS uptTm
         FROM TB_CART
-        WHERE MEMBER_ID = #{memberId}
+        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
           AND STATUS = 'active'
         LIMIT 1
     </select>
@@ -82,7 +82,7 @@
         /* Cart.insertCart */
         INSERT INTO TB_CART (
             GUEST_TOKEN_ID,
-            MEMBER_ID,
+            SOCIAL_ACCOUNT_ID,
             STATUS,
             COUPON_CODE,
             EXPIRES_AT,
@@ -90,7 +90,7 @@
             UPT_TM
         ) VALUES (
             #{guestTokenId},
-            #{memberId},
+            #{socialAccountId},
             'active',
             #{couponCode},
             #{expiresAt},
@@ -156,12 +156,12 @@
         DELETE FROM TB_CART_ITEM WHERE CART_ID = #{cartId}
     </delete>
 
-    <!-- 회원 ID 업데이트 -->
-    <update id="updateCartMemberId" parameterType="com.shop.core.entity.Cart">
-        /* Cart.updateCartMemberId */
+    <!-- 소셜 계정 ID 업데이트 -->
+    <update id="updateCartSocialAccountId" parameterType="com.shop.core.entity.Cart">
+        /* Cart.updateCartSocialAccountId */
         UPDATE TB_CART
-        SET MEMBER_ID = #{memberId},
-            UPT_TM    = NOW()
+        SET SOCIAL_ACCOUNT_ID = #{socialAccountId},
+            UPT_TM            = NOW()
         WHERE ID = #{id}
     </update>
 

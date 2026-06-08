@@ -74,8 +74,8 @@ public class FrontLoginService {
 
         // ── Step 6: 게스트 → 회원 연결 ──
         if (StringUtils.isNotBlank(request.getGuestId())) {
-            guestTokenDao.updateMemberIdByGuestId(
-                    String.valueOf(account.getId()), request.getGuestId()
+            guestTokenDao.updateSocialAccountIdByGuestId(
+                    account.getId(), request.getGuestId()
             );
         }
 

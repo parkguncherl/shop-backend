@@ -20,8 +20,8 @@ public class Cart {
     @Schema(description = "게스트 토큰 ID (tb_guest_token.id)")
     private Long guestTokenId;
 
-    @Schema(description = "회원 ID (회원 전환 시)")
-    private Integer memberId;
+    @Schema(description = "소셜 계정 ID (회원 전환 시)")
+    private Long socialAccountId;
 
     @Schema(description = "상태 (active | ordered | abandoned | merged)")
     private String status;

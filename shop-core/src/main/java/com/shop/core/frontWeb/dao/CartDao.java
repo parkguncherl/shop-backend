@@ -21,9 +21,9 @@ public class CartDao {
         return sqlSession.selectOne(NAMESPACE + "selectActiveCartByGuestTokenId", guestTokenId);
     }
 
-    /** 회원 ID로 활성 장바구니 조회 */
-    public Cart selectActiveCartByMemberId(Integer memberId) {
-        return sqlSession.selectOne(NAMESPACE + "selectActiveCartByMemberId", memberId);
+    /** 소셜 계정 ID로 활성 장바구니 조회 */
+    public Cart selectActiveCartBySocialAccountId(Long socialAccountId) {
+        return sqlSession.selectOne(NAMESPACE + "selectActiveCartBySocialAccountId", socialAccountId);
     }
 
     /** 장바구니 아이템 목록 조회 */
@@ -56,12 +56,12 @@ public class CartDao {
         return sqlSession.delete(NAMESPACE + "deleteAllCartItems", cartId);
     }
 
-    /** 회원 전환 시 장바구니 member_id 업데이트 */
-    public int updateCartMemberId(Long cartId, Integer memberId) {
+    /** 회원 전환 시 장바구니 social_account_id 업데이트 */
+    public int updateCartSocialAccountId(Long cartId, Long socialAccountId) {
         Cart param = new Cart();
         param.setId(cartId);
-        param.setMemberId(memberId);
-        return sqlSession.update(NAMESPACE + "updateCartMemberId", param);
+        param.setSocialAccountId(socialAccountId);
+        return sqlSession.update(NAMESPACE + "updateCartSocialAccountId", param);
     }
 
     /** 장바구니 상태 변경 (merged, ordered 등) */

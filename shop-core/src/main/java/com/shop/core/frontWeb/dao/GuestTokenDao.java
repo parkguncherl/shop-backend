@@ -27,11 +27,11 @@ public class GuestTokenDao {
 
 
 
-    public int updateMemberIdByGuestId(String memberId, String guestId) {
-        GuestToken guestToken =  new GuestToken();
-        guestToken.setGuestId(memberId);
+    public int updateSocialAccountIdByGuestId(Long socialAccountId, String guestId) {
+        GuestToken guestToken = new GuestToken();
+        guestToken.setSocialAccountId(socialAccountId);
         guestToken.setGuestId(guestId);
-        return sqlSession.delete(NAMESPACE + "updateMemberIdByGuestId",  guestToken);
+        return sqlSession.update(NAMESPACE + "updateSocialAccountIdByGuestId", guestToken);
     }
 
 

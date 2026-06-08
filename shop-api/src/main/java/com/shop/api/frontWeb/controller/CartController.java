@@ -31,12 +31,12 @@ public class CartController {
     @Operation(summary = "장바구니 조회",
                description = "guestId(게스트) 또는 memberId(회원) 로 장바구니 조회")
     public ApiResponse<CartResponse.CartInfo> getCart(
-            @Parameter(description = "게스트 ID") @RequestParam(required = false) String guestId,
-            @Parameter(description = "회원 ID")   @RequestParam(required = false) Integer memberId) {
+            @Parameter(description = "게스트 ID")      @RequestParam(required = false) String guestId,
+            @Parameter(description = "소셜 계정 ID")   @RequestParam(required = false) Long socialAccountId) {
 
         CartRequest.GetCart request = new CartRequest.GetCart();
         request.setGuestId(guestId);
-        request.setMemberId(memberId);
+        request.setSocialAccountId(socialAccountId);
 
         CartResponse.CartInfo result = cartService.getCart(request);
         return new ApiResponse<>(ApiResultCode.SUCCESS, result);
@@ -105,9 +105,9 @@ public class CartController {
     @Operation(summary = "게스트 → 회원 장바구니 병합",
                description = "소셜 로그인 완료 후 게스트 장바구니를 회원 장바구니에 병합")
     public ApiResponse<Void> mergeCart(
-            @Parameter(description = "게스트 ID") @RequestParam String guestId,
-            @Parameter(description = "회원 ID")   @RequestParam Integer memberId) {
-        cartService.mergeGuestCartToMember(guestId, memberId);
+            @Parameter(description = "게스트 ID")    @RequestParam String guestId,
+            @Parameter(description = "소셜 계정 ID") @RequestParam Long socialAccountId) {
+        cartService.mergeGuestCartToMember(guestId, socialAccountId);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 }

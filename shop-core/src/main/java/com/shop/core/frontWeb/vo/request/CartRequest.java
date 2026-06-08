@@ -49,7 +49,7 @@ public class CartRequest {
         @Schema(description = "게스트 ID")
         private String guestId;
 
-        @Schema(description = "회원 ID (로그인 시)")
-        private Integer memberId;
+        @Schema(description = "소셜 계정 ID (로그인 시)")
+        private Long socialAccountId;
     }
 }

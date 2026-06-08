@@ -21,7 +21,7 @@
             UTM_CAMPAIGN,
             UTM_CONTENT,
             FBCLID,
-            MEMBER_ID,
+            SOCIAL_ACCOUNT_ID,
             EXPIRE_DATE,
             CRE_TM
         ) VALUES (
@@ -41,7 +41,7 @@
              #{utmCampaign},
              #{utmContent},
              #{fbclid},
-             #{memberId},
+             #{socialAccountId},
              #{expireDate},
              NOW()
          )
@@ -63,17 +63,17 @@
             UTM_SOURCE,
             UTM_MEDIUM,
             UTM_CAMPAIGN,
-            MEMBER_ID,
+            SOCIAL_ACCOUNT_ID,
             EXPIRE_DATE,
             CRE_TM
         FROM TB_GUEST_TOKEN
         WHERE GUEST_ID = #{guestId}
     </select>
 
-    <update id="updateMemberIdByGuestId" parameterType="com.shop.core.entity.GuestToken">
-        /* GuestToken.updateMemberIdByGuestId */
+    <update id="updateSocialAccountIdByGuestId" parameterType="com.shop.core.entity.GuestToken">
+        /* GuestToken.updateSocialAccountIdByGuestId */
         UPDATE TB_GUEST_TOKEN
-        SET MEMBER_ID = #{memberId}
+        SET SOCIAL_ACCOUNT_ID = #{socialAccountId}
         WHERE GUEST_ID = #{guestId}
     </update>
 
@@ -81,6 +81,6 @@
         /* GuestToken.deleteExpiredGuestToken */
         DELETE FROM TB_GUEST_TOKEN
         WHERE EXPIRE_DATE <![CDATA[ < ]]> NOW()
-          AND MEMBER_ID IS NULL  -- ← 회원 연결 안 된 것만 삭제
+          AND SOCIAL_ACCOUNT_ID IS NULL  -- ← 회원 연결 안 된 것만 삭제
     </delete>
 </mapper>
