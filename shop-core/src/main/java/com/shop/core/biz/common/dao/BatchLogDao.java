@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BatchLogDao {
 
-    private final String PRE_NS = "com.shop.mapper.batch.";
+    private final String PRE_NS = "com.shop.mapper.Batch.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

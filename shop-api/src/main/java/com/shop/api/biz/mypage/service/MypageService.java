@@ -1,6 +1,5 @@
 package com.shop.api.biz.mypage.service;
 
-import com.shop.core.biz.mypage.dao.FavoritesDao;
 import com.shop.core.biz.mypage.dao.MypageDao;
 import com.shop.core.biz.mypage.vo.request.FavoritesRequest;
 import com.shop.core.biz.mypage.vo.response.FavoritesResponse;
@@ -24,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MypageService {
 
-    private final FavoritesDao favoritesDao;
     private final MypageDao mypageDao;
 
     /**
@@ -35,7 +33,7 @@ public class MypageService {
         FavoritesRequest.FavoritesListRequest favoritesListRequest = new FavoritesRequest.FavoritesListRequest();
         favoritesListRequest.setId(id);
         favoritesListRequest.setAuthCd(authCd);
-        return favoritesDao.selectFavorites(favoritesListRequest);
+        return mypageDao.selectFavorites(favoritesListRequest);
     }
 
     /**
@@ -43,7 +41,7 @@ public class MypageService {
      * @param favorites
      */
     public Integer insertFavorites(Favorites favorites) {
-        return favoritesDao.insertFavorites(favorites);
+        return mypageDao.insertFavorites(favorites);
     }
 
 
@@ -53,7 +51,7 @@ public class MypageService {
      * @param favorites
      */
     public void deleteFavorites(Favorites favorites) {
-        favoritesDao.deleteFavorites(favorites);
+        mypageDao.deleteFavorites(favorites);
     }
 
 
@@ -62,7 +60,7 @@ public class MypageService {
      * @param favorites
      */
     public void deleteFavoritesAll(Favorites favorites) {
-        favoritesDao.deleteFavoritesAll(favorites);
+        mypageDao.deleteFavoritesAll(favorites);
     }
 
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.file">
+<mapper namespace="com.shop.mapper.File">
     <select id="selectFileList" resultType="com.shop.core.entity.FileDet">
-        /* com.shop.mapper.file.selectFileList */
+        /* com.shop.mapper.File.selectFileList */
         SELECT
             ID          AS id,
             FILE_ID     AS fileid,
@@ -23,7 +23,7 @@
 
     <!-- 파일 상세 조회 -->
     <select id="selectFileDet" resultType="com.shop.core.entity.FileDet">
-        /* com.shop.mapper.file.selectFileDet */
+        /* com.shop.mapper.File.selectFileDet */
         SELECT
             ID          AS id,
             FILE_ID     AS fileId,
@@ -48,7 +48,7 @@
 
     <!-- 파일 상세 조회 -->
     <select id="selectFileDetByKey" resultType="com.shop.core.entity.FileDet">
-        /* com.shop.mapper.file.selectFileDetByKey */
+        /* com.shop.mapper.File.selectFileDetByKey */
         SELECT
             FILE_ID     AS fileId,
             FILE_SEQ    AS fileSeq,
@@ -63,7 +63,7 @@
 
     <!-- 파일 등록 -->
     <insert id="insertFile" parameterType="com.shop.core.entity.FileMng" useGeneratedKeys="true" keyProperty="id">
-        /* com.shop.mapper.file.insertFile */
+        /* com.shop.mapper.File.insertFile */
         INSERT INTO TB_FILE (
                  FILE_TYPE
                , CRE_USER
@@ -80,13 +80,13 @@
     </insert>
 
     <select id="selectMaxFileSeq" parameterType="Integer" resultType="Integer">
-        /* com.shop.mapper.file.selectMaxFileSeq */
+        /* com.shop.mapper.File.selectMaxFileSeq */
         SELECT COALESCE(MAX(FILE_SEQ), 0) + 1 FROM TB_FILE_DET WHERE FILE_ID =  #{fileId}
     </select>
 
     <!-- 파일 상세등록 -->
     <insert id="insertFileDet" parameterType="com.shop.core.entity.FileDet">
-        /* com.shop.mapper.file.insertFileDet */
+        /* com.shop.mapper.File.insertFileDet */
         INSERT INTO TB_FILE_DET (
               FILE_ID
             , FILE_SEQ
@@ -116,7 +116,7 @@
 
     <!-- 공지사항 삭제 -->
     <update id="deleteFile">
-        /* com.shop.mapper.file.deleteFile */
+        /* com.shop.mapper.File.deleteFile */
         UPDATE TB_FILE
            SET DEL_YN = 'Y'
              , UPD_USER = #{updUser}
@@ -124,7 +124,7 @@
     </update>
 
     <update id="deleteFileDet">
-        /* com.shop.mapper.file.deleteFileDet */
+        /* com.shop.mapper.File.deleteFileDet */
          UPDATE TB_FILE_DET
             SET DEL_YN='Y'
                 , UPD_USER = #{updUser}
@@ -133,7 +133,7 @@
     </update>
 
     <update id="deleteFileDetByUk">
-        /* com.shop.mapper.file.deleteFileDetByUk */
+        /* com.shop.mapper.File.deleteFileDetByUk */
         UPDATE TB_FILE_DET
            SET DEL_YN = 'Y'
              , UPD_USER = #{updUser}
@@ -142,7 +142,7 @@
     </update>
 
     <update id="deleteFileDetByKey">
-        /* com.shop.mapper.file.deleteFileDetByKey */
+        /* com.shop.mapper.File.deleteFileDetByKey */
         UPDATE TB_FILE_DET
         SET DEL_YN = 'Y'
           , UPD_USER = #{updUser}
@@ -151,7 +151,7 @@
     </update>
 
     <update id="deleteFileDetAll" parameterType="integer">
-        /* com.shop.mapper.file.deleteFileDet */
+        /* com.shop.mapper.File.deleteFileDet */
         UPDATE TB_FILE_DET
            SET DEL_YN='Y'
              , UPD_USER = #{updUser}
@@ -159,7 +159,7 @@
     </update>
 
     <update id="updateFileDetBySysFileNm" parameterType="com.shop.core.entity.FileDet">
-        /* com.shop.mapper.file.updateFileDetBySysFileNm */
+        /* com.shop.mapper.File.updateFileDetBySysFileNm */
         UPDATE TB_FILE_DET
             SET UPD_USER = #{updUser}
                 , UPD_TM = NOW()
@@ -177,7 +177,7 @@
     </update>
 
     <update id="updateFileDet" parameterType="com.shop.core.entity.FileDet">
-        /* com.shop.mapper.file.updateFileDet */
+        /* com.shop.mapper.File.updateFileDet */
         UPDATE TB_FILE_DET SET
               UPD_USER = #{updUser}
             , UPD_TM = NOW()
@@ -201,7 +201,7 @@
     </update>
 
     <update id="updateFileDetSeqNoOne" parameterType="java.lang.Integer">
-        /* com.shop.mapper.file.updateFileDet */
+        /* com.shop.mapper.File.updateFileDet */
         UPDATE TB_FILE_DET SET
           UPD_USER = #{updUser}
         , FILE_SEQ = 1

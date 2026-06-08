@@ -25,7 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FileDao {
 
-    private final String PRE_NS = "com.shop.mapper.file.";
+    private final String PRE_NS = "com.shop.mapper.File.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

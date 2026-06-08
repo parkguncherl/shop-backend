@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.mypage">
+<mapper namespace="com.shop.mapper.Mypage">
 
     <select id="selectFavorites" parameterType="com.shop.core.biz.mypage.vo.request.FavoritesRequest$FavoritesListRequest" resultType="com.shop.core.biz.mypage.vo.response.FavoritesResponse$SelectFavorites">
-        /* com.shop.mapper.mypage.selectFavorites */
+        /* com.shop.mapper.Mypage.selectFavorites */
         SELECT
               A.MENU_URI AS menuUri
             , B.MENU_NM AS menuNm
@@ -20,7 +20,7 @@
     </select>
 
     <insert id="insertFavorites" parameterType="com.shop.core.entity.Favorites" >
-    /* com.shop.mapper.mypage.insertFavorites */
+    /* com.shop.mapper.Mypage.insertFavorites */
         INSERT INTO TB_FAVORITES (
              USER_ID
            , MENU_URI
@@ -45,20 +45,20 @@
     </insert>
 
     <delete id="deleteFavorites" parameterType="com.shop.core.entity.Favorites" >
-        /* com.shop.mapper.mypage.deleteFavorites */
+        /* com.shop.mapper.Mypage.deleteFavorites */
         DELETE FROM TB_FAVORITES
          WHERE USER_ID = #{userId}
            AND MENU_URI = #{menuUri}
     </delete>
 
     <delete id="deleteFavoritesAll" parameterType="com.shop.core.entity.Favorites" >
-        /* com.shop.mapper.mypage.deleteFavoritesAll */
+        /* com.shop.mapper.Mypage.deleteFavoritesAll */
         DELETE FROM TB_FAVORITES
         WHERE USER_ID = #{userId}
     </delete>
 
     <update id="deletePartnerPrint" parameterType="Integer">
-        /* com.shop.mapper.mypage.deletePartnerPrint */
+        /* com.shop.mapper.Mypage.deletePartnerPrint */
         UPDATE TB_PARTNER_PRINT
         SET DEL_YN = 'Y'
         WHERE PARTNER_ID = #{partnerId}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.partnerCode">
+<mapper namespace="com.shop.mapper.PartnerCode">
 
     <sql id="codeColumns">
         ID                    AS id
@@ -23,7 +23,7 @@
     </sql>
 
     <select id="selectPartnerCodeListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
-        /* com.shop.mapper.code.selectPartnerCodeListPaging */
+        /* com.shop.mapper.PartnerCode.selectPartnerCodeListPaging */
         SELECT
         ( COUNT(1) OVER() )                                                                              AS totalRowCount
         , ROW_NUMBER() OVER(ORDER BY TC.ID ASC)                                                             AS no
@@ -62,7 +62,7 @@
     </select>
 
     <select id="selectLowerCodeByPartnerCodeUpper" parameterType="com.shop.core.biz.system.vo.request.PartnerCodeRequest$PartnerCodeDropDown" resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
-        /* com.shop.mapper.code.selectLowerCodeByPartnerCodeUpper */
+        /* com.shop.mapper.PartnerCode.selectLowerCodeByPartnerCodeUpper */
         SELECT ROW_NUMBER() OVER(ORDER BY ID ASC)  AS no
              , ID
              , CODE_UPPER
@@ -77,7 +77,7 @@
     </select>
 
     <select id="selectPartnerCodeByUk" resultType="com.shop.core.entity.PartnerCode">
-        /* com.shop.mapper.code.selectPartnerCodeByUk */
+        /* com.shop.mapper.PartnerCode.selectPartnerCodeByUk */
         SELECT <include refid="codeColumns" />
         FROM TB_PARTNER_CODE
         WHERE CODE_UPPER = #{codeUpper}
@@ -87,7 +87,7 @@
     </select>
 
     <select id="getDupCodeInfo" resultType="java.lang.String">
-        /* com.shop.mapper.code.getDupCodeInfo */
+        /* com.shop.mapper.PartnerCode.getDupCodeInfo */
         SELECT CONCAT(${column},' ',COUNT(*),' 건')
         FROM TB_PARTNER_CODE
         WHERE CODE_UPPER = #{codeUpper}
@@ -98,7 +98,7 @@
     </select>
 
     <select id="selectLowerCodeByCodeUpperForPartnerCodeMng" parameterType="com.shop.core.biz.system.vo.request.PartnerCodeRequest$PartnerCodeDropDown"  resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
-        /* com.shop.mapper.code.selectLowerCodeByCodeUpperForPartnerCodeMng */
+        /* com.shop.mapper.PartnerCode.selectLowerCodeByCodeUpperForPartnerCodeMng */
         SELECT
         <include refid="codeColumns" />
         , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC) AS no
@@ -137,7 +137,7 @@
     </select>
 
     <insert id="insertPartnerCode" parameterType="com.shop.core.entity.PartnerCode" useGeneratedKeys="true" keyProperty="id">
-        /* com.shop.mapper.code.insertPartnerCode */
+        /* com.shop.mapper.PartnerCode.insertPartnerCode */
         INSERT INTO TB_PARTNER_CODE
         (
         CODE_UPPER
@@ -213,7 +213,7 @@
     </insert>
 
     <update id="updatePartnerCode" parameterType="com.shop.core.entity.PartnerCode">
-        /* com.shop.mapper.code.updatePartnerCode */
+        /* com.shop.mapper.PartnerCode.updatePartnerCode */
         UPDATE TB_PARTNER_CODE
         SET UPD_TM   = NOW()
         , UPD_USER = #{updUser}
@@ -254,7 +254,7 @@
     </update>
 
     <update id="deletePartnerCode" parameterType="com.shop.core.entity.PartnerCode">
-        /* com.shop.mapper.code.deletePartnerCode */
+        /* com.shop.mapper.PartnerCode.deletePartnerCode */
         UPDATE TB_PARTNER_CODE
         SET DEL_YN = 'Y'
         , UPD_USER = #{updUser}
@@ -264,7 +264,7 @@
 
 
     <select id="getAutoGenCodeCd" resultType="java.lang.Integer">
-        /* com.shop.mapper.code.getAutoGenCodeCd */
+        /* com.shop.mapper.PartnerCode.getAutoGenCodeCd */
         SELECT COALESCE(MAX(CODE_CD::INT4) + 1, 1000)
         FROM TB_PARTNER_CODE
         WHERE CODE_UPPER = #{codeUpper}

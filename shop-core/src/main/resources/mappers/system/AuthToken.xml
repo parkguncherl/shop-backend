@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.authToken">
+<mapper namespace="com.shop.mapper.AuthToken">
 
     <sql id="authColumns">
           ID                        AS id
@@ -13,7 +13,7 @@
     </sql>
 
     <select id="selectAuthTokenByUserId" parameterType="Integer" resultType="com.shop.core.entity.AuthToken">
-        /* com.shop.mapper.authToken.selectAuthTokenByUserId */
+        /* com.shop.mapper.AuthToken.selectAuthTokenByUserId */
         SELECT
                 <include refid="authColumns" />
         FROM TB_API_AUTH_TOKEN
@@ -23,7 +23,7 @@
     </select>
 
     <select id="selectAuthTokenByAccessToken" parameterType="String" resultType="com.shop.core.entity.AuthToken">
-        /* com.shop.mapper.authToken.selectAuthTokenByAccessToken */
+        /* com.shop.mapper.AuthToken.selectAuthTokenByAccessToken */
         SELECT
                 <include refid="authColumns" />
         FROM TB_API_AUTH_TOKEN
@@ -33,7 +33,7 @@
     </select>
 
     <insert id="createAuthToken" useGeneratedKeys="true" keyProperty="id" parameterType="com.shop.core.entity.AuthToken">
-        /* com.shop.mapper.authToken.createAuthToken */
+        /* com.shop.mapper.AuthToken.createAuthToken */
         INSERT INTO TB_API_AUTH_TOKEN
         (
               USER_ID
@@ -57,7 +57,7 @@
     </insert>
 
     <update id="updateTokenByLogout" parameterType="hashMap">
-        /* com.shop.mapper.authToken.updateTokenByLogout */
+        /* com.shop.mapper.AuthToken.updateTokenByLogout */
         UPDATE TB_API_AUTH_TOKEN SET
             ACC_TOKEN_EXPIRE = CURRENT_TIMESTAMP
            , REF_TOKEN_EXPIRE = CURRENT_TIMESTAMP
@@ -66,7 +66,7 @@
     </update>
 
     <delete id="deleteAuthTokenByAccessToken" parameterType="Integer" >
-        /* com.shop.mapper.authToken.deleteAuthTokenByAccessToken */
+        /* com.shop.mapper.AuthToken.deleteAuthTokenByAccessToken */
         DELETE FROM TB_API_AUTH_TOKEN
          WHERE USER_ID = #{userId}
     </delete>

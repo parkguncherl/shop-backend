@@ -29,7 +29,7 @@ public class ProductContentListDao {
     private final SqlSession sqlSession;
 
     // MyBatis 매퍼 XML 파일의 네임스페이스를 정의합니다.
-    private static final String NAMESPACE = "com.shop.mapper.product.productContentList.";
+    private static final String NAMESPACE = "com.shop.mapper.product.ProductContentList.";
 
     /**
      * 상품관리-상품컨텐츠목록 조회

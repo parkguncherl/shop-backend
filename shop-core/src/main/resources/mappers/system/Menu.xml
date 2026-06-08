@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.menu">
+<mapper namespace="com.shop.mapper.Menu">
 
     <sql id="menuColumns">
           TM.ID                                      AS id
@@ -38,7 +38,7 @@
     </sql>
 
     <select id="selectMenuByUK" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
-        /* com.shop.mapper.menu.selectMenuByUK */
+        /* com.shop.mapper.Menu.selectMenuByUK */
         SELECT
         <include refid="menuColumns" />
         FROM TB_MENU TM
@@ -60,7 +60,7 @@
     </select>
 
     <select id="selectMenuListPaging" parameterType="com.shop.core.biz.system.vo.request.MenuRequest$PagingFilter" resultType="com.shop.core.biz.system.vo.response.MenuResponse$Paging">
-        /* com.shop.mapper.menu.selectMenuListPaging */
+        /* com.shop.mapper.Menu.selectMenuListPaging */
         SELECT
             <include refid="menuColumns" />
             , COUNT(1) OVER()                                                          AS totalRowCount
@@ -84,7 +84,7 @@
     </select>
 
     <select id="selectMenuList" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
-        /* com.shop.mapper.menu.selectMenuList */
+        /* com.shop.mapper.Menu.selectMenuList */
         SELECT
             <include refid="menuColumns" />
          FROM TB_MENU TM
@@ -113,7 +113,7 @@
     </select>
 
     <select id="selectMenuListForUser" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.entity.Menu">
-        /* com.shop.mapper.menu.selectMenuListForUser */
+        /* com.shop.mapper.Menu.selectMenuListForUser */
         SELECT
         <include refid="menuColumns" />
         FROM TB_MENU TM
@@ -140,7 +140,7 @@
     </select>
 
     <select id="selectMenuListWithAuth" parameterType="com.shop.core.entity.Menu" resultType="com.shop.core.biz.system.vo.response.MenuResponse$WithAuthSub">
-        /* com.shop.mapper.menu.selectMenuListForUserWithAuth */
+        /* com.shop.mapper.Menu.selectMenuListForUserWithAuth */
         SELECT
               TM.UP_MENU_CD AS upMenuCd
             , TM.MENU_CD AS menuCd
@@ -164,7 +164,7 @@
     </select>
 
     <select id="selectMenuAuthList" parameterType="String" resultType="com.shop.core.entity.Auth">
-        /* com.shop.mapper.menu.selectMenuAuthList */
+        /* com.shop.mapper.Menu.selectMenuAuthList */
         SELECT
               A.CODE_CD                   AS authCd
             , A.CODE_NM                   AS authNm
@@ -188,7 +188,7 @@
     </select>
 
     <insert id="insertMenu" parameterType="com.shop.core.vo.request.MenuRequest" useGeneratedKeys="true" keyProperty="id">
-        /* com.shop.mapper.menu.insertMenu */
+        /* com.shop.mapper.Menu.insertMenu */
         INSERT INTO TB_MENU
         (
               UP_MENU_CD
@@ -214,7 +214,7 @@
     </insert>
 
     <update id="updateMenu" parameterType="com.shop.core.vo.request.MenuRequest">
-        /* com.shop.mapper.menu.updateMenu */
+        /* com.shop.mapper.Menu.updateMenu */
         UPDATE TB_MENU
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -240,7 +240,7 @@
     </update>
 
     <update id="deleteMenu" parameterType="com.shop.core.vo.request.MenuRequest">
-        /* com.shop.mapper.menu.deleteMenu */
+        /* com.shop.mapper.Menu.deleteMenu */
         UPDATE TB_MENU
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -249,7 +249,7 @@
     </update>
 
     <select id="selectMenuAuth" parameterType="String" resultType="com.shop.core.entity.Auth">
-        /* com.shop.mapper.menu.selectMenuAuth */
+        /* com.shop.mapper.Menu.selectMenuAuth */
         SELECT
         <include refid="authColumns" />
           FROM TB_MENU_AUTH
@@ -267,7 +267,7 @@
     </select>
 
     <select id="selectMenuAuthByUk" parameterType="String" resultType="com.shop.core.entity.Auth">
-        /* com.shop.mapper.menu.selectMenuAuthByUk */
+        /* com.shop.mapper.Menu.selectMenuAuthByUk */
         SELECT
         <include refid="authColumns" />
         FROM TB_MENU_AUTH
@@ -276,7 +276,7 @@
     </select>
 
     <insert id="insertMenuAuth" parameterType="com.shop.core.entity.Auth" useGeneratedKeys="true" keyProperty="id">
-        /* com.shop.mapper.menu.insertMenuAuth */
+        /* com.shop.mapper.Menu.insertMenuAuth */
         INSERT INTO TB_MENU_AUTH
         (
               AUTH_CD
@@ -300,7 +300,7 @@
     </insert>
 
     <update id="updateMenuAuth" parameterType="com.shop.core.entity.Auth">
-        /* com.shop.mapper.menu.updateMenuAuth */
+        /* com.shop.mapper.Menu.updateMenuAuth */
         UPDATE TB_MENU_AUTH
         SET UPD_TM   = NOW()
           , UPD_USER = #{updUser}
@@ -313,20 +313,20 @@
 
 
     <delete id="deleteMenuAuth" parameterType="String">
-        /* com.shop.mapper.menu.deleteMenuAuth */
+        /* com.shop.mapper.Menu.deleteMenuAuth */
         DELETE FROM TB_MENU_AUTH
         WHERE MENU_CD = #{menuCd}
     </delete>
 
     <select id="selectCheckMenuCount" parameterType="String" resultType="Integer">
-        /* com.shop.mapper.menu.selectCheckMenuCount */
+        /* com.shop.mapper.Menu.selectCheckMenuCount */
         SELECT COUNT(*)
         FROM TB_MENU
         WHERE MENU_URI = CASE WHEN POSITION('_' IN #{menuUri}) > 0 THEN SUBSTRING( #{menuUri}, 0, POSITION('_' IN #{menuUri})) ELSE #{menuUri} END
     </select>
 
     <select id="selectMenuAuthYn" parameterType="com.shop.core.biz.system.vo.request.AuthRequest$MenuAuth" resultType="com.shop.core.biz.system.vo.response.AuthResponse$MenuAuth">
-        /* com.shop.mapper.menu.selectMenuAuthYn */
+        /* com.shop.mapper.Menu.selectMenuAuthYn */
         SELECT  (SELECT X.MENU_NM FROM TB_MENU X WHERE X.DEL_YN = 'N' AND X.MENU_CD = B.UP_MENU_CD) AS upMenuNm
              , B.MENU_NM AS menuNm
              , COALESCE(A.MENU_READ_YN, 'N')                                                         AS menuReadYn
@@ -343,7 +343,7 @@
     </select>
 
     <select id="selectTopMenuList" resultType="com.shop.core.entity.Menu">
-        /* com.shop.mapper.menu.selectTopMenuList */
+        /* com.shop.mapper.Menu.selectTopMenuList */
         SELECT
         <include refid="menuColumns" />
         FROM TB_MENU TM
@@ -354,7 +354,7 @@
     </select>
 
     <select id="countMenuByNm" parameterType="com.shop.core.entity.Menu" resultType="Integer">
-        /* com.shop.mapper.menu.selectMenuByNm */
+        /* com.shop.mapper.Menu.selectMenuByNm */
         SELECT COUNT(*)
         FROM TB_MENU TM
         WHERE 1 = 1

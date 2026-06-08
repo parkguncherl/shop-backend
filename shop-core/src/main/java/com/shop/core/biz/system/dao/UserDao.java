@@ -31,7 +31,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserDao {
 
-    private final String PRE_NS = "com.shop.mapper.user.";
+    private final String PRE_NS = "com.shop.mapper.User.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

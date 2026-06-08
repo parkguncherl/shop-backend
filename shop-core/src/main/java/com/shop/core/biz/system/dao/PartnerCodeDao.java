@@ -26,7 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PartnerCodeDao {
 
-    private final String PRE_NS = "com.shop.mapper.partnerCode.";
+    private final String PRE_NS = "com.shop.mapper.PartnerCode.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;

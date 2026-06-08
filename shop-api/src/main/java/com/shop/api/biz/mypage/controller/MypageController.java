@@ -46,20 +46,6 @@ public class MypageController {
 
 
     /**
-     * 즐겨찾기 조회
-     * @param jwtUser
-     * @return
-     */
-    @GetMapping(value = "/favorites")
-    @Operation(summary = "즐겨찾기 조회")
-    public ApiResponse<List<FavoritesResponse.SelectFavorites>> selectFavorites(
-            @Parameter(hidden = true) @JwtUser User jwtUser) {
-        User user = userService.selectUserById(jwtUser.getId());
-        List<FavoritesResponse.SelectFavorites> list = mypageService.selectFavorites(jwtUser.getId(), user.getAuthCd());
-        return new ApiResponse<>(ApiResultCode.SUCCESS, list);
-    }
-
-    /**
      * 즐겨찾기 등록
      *
      * @param jwtUser

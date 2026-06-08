@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.product.productMng">
+<mapper namespace="com.shop.mapper.product.ProductMng">
 
     <select id="selectProdInfoList" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfo">
-        /* com.shop.mapper.product.productMng.selectProdInfoList */
+        /* com.shop.mapper.product.ProductMng.selectProdInfoList */
         SELECT
               TP.ID AS id
             , TP.PARTNER_ID AS partnerId
@@ -50,7 +50,7 @@
     </select>
 
     <select id="selectProdDetInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductDetInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductDetInfo">
-        /* com.shop.mapper.product.productMng.selectProdDetInfo */
+        /* com.shop.mapper.product.ProductMng.selectProdDetInfo */
         SELECT
               TPD.ID AS id
             , TPD.PRODUCT_ID AS productId
@@ -75,7 +75,7 @@
     </select>
 
     <select id="selectCategoryProductInfoList" parameterType="com.shop.core.product.vo.request.ProductMngRequest$CategoryProductInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$CategoryProductInfo">
-        /* com.shop.mapper.product.productMng.selectCategoryProductInfoList */
+        /* com.shop.mapper.product.ProductMng.selectCategoryProductInfoList */
         SELECT
               TP.ID AS id
             , TP.PARTNER_ID AS partnerId
@@ -118,7 +118,7 @@
     </select>
 
     <insert id="insertProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertProduct" useGeneratedKeys="true" keyProperty="id">
-        /* com.shop.mapper.product.productMng.insertProduct */
+        /* com.shop.mapper.product.ProductMng.insertProduct */
         INSERT INTO TB_PRODUCT (
               PARTNER_ID
             , PROD_CD
@@ -209,7 +209,7 @@
     </insert>
 
     <insert id="insertProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertProductDet">
-        /* com.shop.mapper.product.productMng.insertProductDet */
+        /* com.shop.mapper.product.ProductMng.insertProductDet */
         INSERT INTO TB_PRODUCT_DET (
               PRODUCT_ID
             , PRODUCT_DET_SEQ
@@ -244,7 +244,7 @@
     </insert>
 
     <update id="updateProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateProduct">
-        /* com.shop.mapper.product.productMng.updateProduct */
+        /* com.shop.mapper.product.ProductMng.updateProduct */
         UPDATE TB_PRODUCT SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -280,7 +280,7 @@
     </update>
 
     <update id="updateProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateProductDet">
-        /* com.shop.mapper.product.productMng.updateProductDet */
+        /* com.shop.mapper.product.ProductMng.updateProductDet */
         UPDATE TB_PRODUCT_DET SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -312,7 +312,7 @@
     </update>
 
     <update id="deleteProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProduct">
-        /* com.shop.mapper.product.productMng.deleteProduct */
+        /* com.shop.mapper.product.ProductMng.deleteProduct */
         UPDATE TB_PRODUCT SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -321,7 +321,7 @@
     </update>
 
     <update id="deleteProductDet" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProductDet">
-        /* com.shop.mapper.product.productMng.deleteProductDet */
+        /* com.shop.mapper.product.ProductMng.deleteProductDet */
         UPDATE TB_PRODUCT_DET SET
               UPD_TM   = NOW()
             , UPD_USER = #{updUser}
@@ -330,7 +330,7 @@
     </update>
 
     <select id="selectProdInfoListWithExclusion" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoWithExclusionFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfoByExclusion">
-        /* com.shop.mapper.product.productMng.selectProdInfoListWithExclusion */
+        /* com.shop.mapper.product.ProductMng.selectProdInfoListWithExclusion */
         SELECT
               TP.ID AS id
             , TP.PARTNER_ID AS partnerId
@@ -363,7 +363,7 @@
     </select>
 
     <insert id="insertCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertCategoryProduct">
-        /* com.shop.mapper.product.productMng.insertCategoryProduct */
+        /* com.shop.mapper.product.ProductMng.insertCategoryProduct */
         INSERT INTO TB_CATEGORY_PRODUCT (
             SEQ ,
             PARTNER_ID,
@@ -382,7 +382,7 @@
     </insert>
 
     <update id="updateCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateCategoryProduct">
-        /* com.shop.mapper.product.productMng.updateCategoryProduct */
+        /* com.shop.mapper.product.ProductMng.updateCategoryProduct */
         UPDATE TB_CATEGORY_PRODUCT
         SET
         <if test='seq != null'>
@@ -400,7 +400,7 @@
     </update>
 
     <update id="deleteCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteCategoryProduct">
-        /* com.shop.mapper.product.productMng.deleteCategoryProduct */
+        /* com.shop.mapper.product.ProductMng.deleteCategoryProduct */
         UPDATE TB_CATEGORY_PRODUCT SET
               UPD_TM = NOW()
             , UPD_USER = #{updUser}

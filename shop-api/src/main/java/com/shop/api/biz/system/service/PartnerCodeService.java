@@ -2,7 +2,6 @@ package com.shop.api.biz.system.service;
 
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
-import com.shop.core.biz.system.dao.HistoryDao;
 import com.shop.core.entity.PartnerCode;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
@@ -34,7 +33,6 @@ public class PartnerCodeService {
 
     private final PartnerCodeDao partnerCodeDao;
     private final UserService userService;
-    private final HistoryDao historyDao;
 
 
     /**

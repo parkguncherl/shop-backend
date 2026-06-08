@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.batch">
+<mapper namespace="com.shop.mapper.Batch">
 
     <insert id="insertBatchLog" parameterType="com.shop.core.entity.Batch">
-        /* [배치로그생성] com.shop.mapper.batch.insertBatchLog */
+        /* [배치로그생성] com.shop.mapper.Batch.insertBatchLog */
         INSERT INTO TB_BATCH
         (
           BATCH_TP

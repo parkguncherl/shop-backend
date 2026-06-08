@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ContactDao {
 
-    private final String PRE_NS = "com.shop.mapper.contact.";
+    private final String PRE_NS = "com.shop.mapper.Contact.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;
