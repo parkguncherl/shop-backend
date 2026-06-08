@@ -63,13 +63,14 @@
             CI.UPT_TM            AS uptTm,
             P.ID                 AS productId,
             P.PROD_NM            AS productName,
-            P.REP_FILE_ID        AS productImage,
+            FD.SYS_FILE_NM       AS productImage,
             PD.PRODUCT_DET_SIZE  AS productDetSize,
             PD.PRODUCT_DET_COLOR AS productDetColor,
             PD.SKU_DISCOUNT_RATE AS skuDiscountRate
         FROM TB_CART_ITEM CI
-        JOIN  TB_PRODUCT_DET PD ON PD.ID         = CI.PRODUCT_DET_ID
-        JOIN  TB_PRODUCT     P  ON P.ID           = PD.PRODUCT_ID
+        JOIN TB_PRODUCT_DET PD ON PD.ID         = CI.PRODUCT_DET_ID
+        JOIN TB_PRODUCT     P  ON P.ID           = PD.PRODUCT_ID
+        JOIN TB_FILE_DET    FD ON FD.FILE_ID = P.REP_FILE_ID AND FD.FILE_SEQ = 1
         WHERE CI.CART_ID = #{cartId}
         ORDER BY CI.CRE_TM ASC
     </select>
