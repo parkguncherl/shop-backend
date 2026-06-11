@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.Payment">
+
+    <sql id="paymentColumns">
+        ID             AS id,
+        ORDER_ID       AS orderId,
+        ORDER_NO       AS orderNo,
+        PAYMENT_ID     AS paymentId,
+        PAYMENT_STATUS AS paymentStatus,
+        TOTAL_AMOUNT   AS totalAmount,
+        CURRENCY       AS currency,
+        PAID_TM        AS paidTm,
+        CANCELLED_TM   AS cancelledTm,
+        CANCEL_AMOUNT  AS cancelAmount,
+        FAIL_REASON    AS failReason,
+        CRE_TM         AS creTm,
+        UPT_TM         AS uptTm
+    </sql>
+
+    <sql id="paymentDetColumns">
+        ID                 AS id,
+        PAYMENT_ID         AS paymentId,
+        PAYMENT_NO         AS paymentNo,
+        ORDER_ID           AS orderId,
+        ORDER_NO           AS orderNo,
+        PAY_TYPE           AS payType,
+        PAY_METHOD         AS payMethod,
+        PAYMENT_STATUS     AS paymentStatus,
+        AMOUNT             AS amount,
+        PG_PROVIDER        AS pgProvider,
+        PG_TID             AS pgTid,
+        PORTONE_PAYMENT_ID AS portonePaymentId,
+        APPROVED_TM        AS approvedTm,
+        CANCELLED_TM       AS cancelledTm,
+        CANCEL_AMOUNT      AS cancelAmount,
+        FAIL_REASON        AS failReason,
+        RAW_RESPONSE       AS rawResponse,
+        CRE_TM             AS creTm,
+        UPT_TM             AS uptTm
+    </sql>
+
+    <insert id="insertPayment"
+            parameterType="com.shop.core.entity.Payment"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        /* Payment.insertPayment */
+        INSERT INTO TB_PAYMENT (
+            ORDER_ID,
+            ORDER_NO,
+            PAYMENT_ID,
+            PAYMENT_STATUS,
+            TOTAL_AMOUNT,
+            CURRENCY,
+            CANCEL_AMOUNT,
+            CRE_TM,
+            UPT_TM
+        ) VALUES (
+            #{orderId},
+            #{orderNo},
+            #{paymentId},
+            COALESCE(#{paymentStatus}, 'R'),
+            COALESCE(#{totalAmount}, 0),
+            COALESCE(#{currency}, 'KRW'),
+            COALESCE(#{cancelAmount}, 0),
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <insert id="insertPaymentDet"
+            parameterType="com.shop.core.entity.PaymentDet"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        /* Payment.insertPaymentDet */
+        INSERT INTO TB_PAYMENT_DET (
+            PAYMENT_ID,
+            PAYMENT_NO,
+            ORDER_ID,
+            ORDER_NO,
+            PAY_TYPE,
+            PAY_METHOD,
+            PAYMENT_STATUS,
+            AMOUNT,
+            PG_PROVIDER,
+            PG_TID,
+            PORTONE_PAYMENT_ID,
+            RAW_RESPONSE,
+            CANCEL_AMOUNT,
+            CRE_TM,
+            UPT_TM
+        ) VALUES (
+            #{paymentId},
+            #{paymentNo},
+            #{orderId},
+            #{orderNo},
+            #{payType},
+            #{payMethod},
+            COALESCE(#{paymentStatus}, 'R'),
+            COALESCE(#{amount}, 0),
+            #{pgProvider},
+            #{pgTid},
+            #{portonePaymentId},
+            #{rawResponse}::jsonb,
+            COALESCE(#{cancelAmount}, 0),
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <select id="selectPaymentById"
+            parameterType="Long"
+            resultType="com.shop.core.entity.Payment">
+        /* Payment.selectPaymentById */
+        SELECT
+            <include refid="paymentColumns" />
+        FROM TB_PAYMENT
+        WHERE ID = #{id}
+    </select>
+
+    <select id="selectPaymentByPaymentId"
+            parameterType="String"
+            resultType="com.shop.core.entity.Payment">
+        /* Payment.selectPaymentByPaymentId */
+        SELECT
+            <include refid="paymentColumns" />
+        FROM TB_PAYMENT
+        WHERE PAYMENT_ID = #{paymentId}
+    </select>
+
+    <select id="selectPaymentByOrderNo"
+            parameterType="String"
+            resultType="com.shop.core.entity.Payment">
+        /* Payment.selectPaymentByOrderNo */
+        SELECT
+            <include refid="paymentColumns" />
+        FROM TB_PAYMENT
+        WHERE ORDER_NO = #{orderNo}
+        ORDER BY ID DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectPaymentDets"
+            parameterType="Long"
+            resultType="com.shop.core.entity.PaymentDet">
+        /* Payment.selectPaymentDets */
+        SELECT
+            <include refid="paymentDetColumns" />
+        FROM TB_PAYMENT_DET
+        WHERE PAYMENT_ID = #{paymentId}
+        ORDER BY ID ASC
+    </select>
+
+    <update id="updatePaymentStatus"
+            parameterType="com.shop.core.entity.Payment">
+        /* Payment.updatePaymentStatus */
+        UPDATE TB_PAYMENT
+        SET PAYMENT_STATUS = #{paymentStatus},
+            FAIL_REASON    = #{failReason},
+            PAID_TM        = CASE WHEN #{paymentStatus} = 'P' THEN NOW() ELSE PAID_TM END,
+            UPT_TM         = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <update id="updatePaymentDetStatus"
+            parameterType="com.shop.core.entity.PaymentDet">
+        /* Payment.updatePaymentDetStatus */
+        UPDATE TB_PAYMENT_DET
+        SET PAYMENT_STATUS     = #{paymentStatus},
+            PG_TID             = #{pgTid},
+            PORTONE_PAYMENT_ID = #{portonePaymentId},
+            FAIL_REASON        = #{failReason},
+            RAW_RESPONSE       = #{rawResponse}::jsonb,
+            APPROVED_TM        = CASE WHEN #{paymentStatus} = 'P' THEN NOW() ELSE APPROVED_TM END,
+            UPT_TM             = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <update id="updatePaymentCancel"
+            parameterType="com.shop.core.entity.Payment">
+        /* Payment.updatePaymentCancel */
+        UPDATE TB_PAYMENT
+        SET PAYMENT_STATUS = 'C',
+            CANCEL_AMOUNT  = COALESCE(#{cancelAmount}, CANCEL_AMOUNT),
+            CANCELLED_TM   = NOW(),
+            UPT_TM         = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <update id="updatePaymentDetCancel"
+            parameterType="com.shop.core.entity.PaymentDet">
+        /* Payment.updatePaymentDetCancel */
+        UPDATE TB_PAYMENT_DET
+        SET PAYMENT_STATUS = 'C',
+            CANCEL_AMOUNT  = COALESCE(#{cancelAmount}, CANCEL_AMOUNT),
+            CANCELLED_TM   = NOW(),
+            UPT_TM         = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>

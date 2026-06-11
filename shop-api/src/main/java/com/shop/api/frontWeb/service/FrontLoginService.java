@@ -13,10 +13,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
+import java.util.Set;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FrontLoginService {
+
+    private static final Set<String> SUPPORTED_PROVIDERS = Set.of("kakao");
 
     private final SocialAccountDao socialAccountDao;
     private final GuestTokenDao    guestTokenDao;
@@ -37,10 +42,13 @@ public class FrontLoginService {
     @Transactional
     public FrontMemberResponse.Token socialLogin(SocialLoginRequest.Callback request) {
         boolean isNewMember = false;
+        String provider = normalizeProvider(request.getProvider());
+        validateCallbackRequest(provider, request);
+        request.setProvider(provider);
 
         // ── Step 1: 기존 소셜 계정 조회 ──
         SocialAccount account = socialAccountDao.selectByProviderAndProviderId(
-                request.getProvider(), request.getProviderId()
+                provider, request.getProviderId()
         );
 
         if (account == null) {
@@ -97,5 +105,22 @@ public class FrontLoginService {
         response.setRefreshToken(token.getRefreshToken());
         response.setNewMember(isNewMember);
         return response;
+    }
+
+    private String normalizeProvider(String provider) {
+        if (StringUtils.isBlank(provider)) {
+            return null;
+        }
+        return provider.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private void validateCallbackRequest(String provider, SocialLoginRequest.Callback request) {
+        if (StringUtils.isBlank(provider) || !SUPPORTED_PROVIDERS.contains(provider)) {
+            throw new IllegalArgumentException("Unsupported social provider.");
+        }
+
+        if (StringUtils.isBlank(request.getProviderId())) {
+            throw new IllegalArgumentException("Provider id is required.");
+        }
     }
 }

@@ -16,7 +16,7 @@ public class SocialAccount {
     @Schema(description = "PK (회원 ID로 사용)")
     private Long id;
 
-    @Schema(description = "소셜 제공자 (kakao | naver | google)")
+    @Schema(description = "소셜 제공자 (kakao)")
     private String provider;
 
     @Schema(description = "소셜 제공자 고유 ID")

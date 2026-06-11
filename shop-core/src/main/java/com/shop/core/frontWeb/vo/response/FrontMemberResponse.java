@@ -14,7 +14,7 @@ public class FrontMemberResponse {
         @Schema(description = "회원 ID (tb_social_account.id)")
         private Long memberId;
 
-        @Schema(description = "소셜 제공자 (kakao | naver | google)")
+        @Schema(description = "소셜 제공자 (kakao)")
         private String provider;
 
         @Schema(description = "이메일")

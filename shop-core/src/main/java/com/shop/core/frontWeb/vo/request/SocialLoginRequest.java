@@ -11,7 +11,7 @@ public class SocialLoginRequest {
     @Schema(name = "SocialLoginRequestCallback", description = "소셜 로그인 콜백 요청", type = "object")
     public static class Callback {
 
-        @Schema(description = "소셜 제공자 (kakao | naver | google)", required = true)
+        @Schema(description = "소셜 제공자 (kakao)", required = true)
         private String provider;
 
         @Schema(description = "소셜 제공자 고유 ID", required = true)

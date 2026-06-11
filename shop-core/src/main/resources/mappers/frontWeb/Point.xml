@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.Point">
+
+    <select id="selectPointBalance"
+            parameterType="Long"
+            resultType="java.lang.Long">
+        /* Point.selectPointBalance */
+        SELECT COALESCE(SUM(POINT_AMOUNT), 0)
+        FROM TB_POINT_HISTORY
+        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
+    </select>
+
+    <insert id="insertPointHistory"
+            parameterType="com.shop.core.entity.PointHistory"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        /* Point.insertPointHistory */
+        INSERT INTO TB_POINT_HISTORY (
+            SOCIAL_ACCOUNT_ID,
+            ORDER_ID,
+            PAYMENT_ID,
+            POINT_TYPE,
+            POINT_AMOUNT,
+            BALANCE_AFTER,
+            DESCRIPTION,
+            CRE_TM
+        ) VALUES (
+            #{socialAccountId},
+            #{orderId},
+            #{paymentId},
+            #{pointType},
+            #{pointAmount},
+            #{balanceAfter},
+            #{description},
+            NOW()
+        )
+    </insert>
+
+    <select id="selectPointHistories"
+            parameterType="Long"
+            resultType="com.shop.core.entity.PointHistory">
+        /* Point.selectPointHistories */
+        SELECT
+            ID                AS id,
+            SOCIAL_ACCOUNT_ID AS socialAccountId,
+            ORDER_ID          AS orderId,
+            PAYMENT_ID        AS paymentId,
+            POINT_TYPE        AS pointType,
+            POINT_AMOUNT      AS pointAmount,
+            BALANCE_AFTER     AS balanceAfter,
+            DESCRIPTION       AS description,
+            CRE_TM            AS creTm
+        FROM TB_POINT_HISTORY
+        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
+        ORDER BY ID DESC
+    </select>
+
+</mapper>
