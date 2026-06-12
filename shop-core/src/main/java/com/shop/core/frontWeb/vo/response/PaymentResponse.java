@@ -50,8 +50,10 @@ public class PaymentResponse {
         private String orderNo;
         private Long socialAccountId;
         private String orderStatus;
+        private String orderStatusNm;
         private String paymentId;
         private String paymentStatus;
+        private String paymentStatusNm;
         private Long totalAmount;
         private Long usedPoint;
         private Long paymentAmount;
@@ -65,6 +67,7 @@ public class PaymentResponse {
         private String address;
         private String addressDetail;
         private String deliveryStatus;
+        private String deliveryStatusNm;
         private String deliveryCompany;
         private String invoiceNo;
     }

@@ -174,8 +174,10 @@
             O.ORDER_NO           AS orderNo,
             O.SOCIAL_ACCOUNT_ID  AS socialAccountId,
             O.ORDER_STATUS       AS orderStatus,
+            FN_GET_CODE('10070', O.ORDER_STATUS) AS orderStatusNm,
             P.PAYMENT_ID         AS paymentId,
             P.PAYMENT_STATUS     AS paymentStatus,
+            FN_GET_CODE('10070', P.PAYMENT_STATUS) AS paymentStatusNm,
             P.TOTAL_AMOUNT       AS totalAmount,
             O.USED_POINT         AS usedPoint,
             O.PAYMENT_AMOUNT     AS paymentAmount,
@@ -189,6 +191,7 @@
             OD.ADDRESS          AS address,
             OD.ADDRESS_DETAIL   AS addressDetail,
             OD.DELIVERY_STATUS  AS deliveryStatus,
+            FN_GET_CODE('10100', OD.DELIVERY_STATUS) AS deliveryStatusNm,
             OD.DELIVERY_COMPANY AS deliveryCompany,
             OD.INVOICE_NO       AS invoiceNo
         FROM TB_PAYMENT P
