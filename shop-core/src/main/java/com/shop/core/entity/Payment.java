@@ -24,6 +24,7 @@ public class Payment {
     private LocalDateTime cancelledTm;
     private Long cancelAmount;
     private String failReason;
+    private String delYn;
     private LocalDateTime creTm;
     private LocalDateTime uptTm;
 }

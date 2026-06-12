@@ -2,6 +2,7 @@ package com.shop.core.frontWeb.dao;
 
 import com.shop.core.entity.Payment;
 import com.shop.core.entity.PaymentDet;
+import com.shop.core.frontWeb.vo.response.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
@@ -37,6 +38,10 @@ public class PaymentDao {
 
     public List<PaymentDet> selectPaymentDets(Long paymentId) {
         return sqlSession.selectList(NAMESPACE + "selectPaymentDets", paymentId);
+    }
+
+    public List<PaymentResponse.ListItem> selectPaymentListBySocialAccountId(Long socialAccountId) {
+        return sqlSession.selectList(NAMESPACE + "selectPaymentListBySocialAccountId", socialAccountId);
     }
 
     public int updatePaymentStatus(Payment payment) {

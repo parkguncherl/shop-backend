@@ -38,6 +38,27 @@
         UPT_TM          AS uptTm
     </sql>
 
+    <sql id="orderDeliveryColumns">
+        ID                AS id,
+        ORDER_ID          AS orderId,
+        ORDER_NO          AS orderNo,
+        SOCIAL_ACCOUNT_ID AS socialAccountId,
+        RECEIVER_NAME     AS receiverName,
+        RECEIVER_PHONE    AS receiverPhone,
+        ZIP_CODE          AS zipCode,
+        ADDRESS           AS address,
+        ADDRESS_DETAIL    AS addressDetail,
+        MEMO              AS memo,
+        DELIVERY_STATUS   AS deliveryStatus,
+        DELIVERY_COMPANY  AS deliveryCompany,
+        INVOICE_NO        AS invoiceNo,
+        SHIPPED_TM        AS shippedTm,
+        DELIVERED_TM      AS deliveredTm,
+        DEL_YN            AS delYn,
+        CRE_TM            AS creTm,
+        UPT_TM            AS uptTm
+    </sql>
+
     <insert id="insertOrder"
             parameterType="com.shop.core.entity.Order"
             useGeneratedKeys="true"
@@ -75,6 +96,42 @@
             #{address},
             #{addressDetail},
             #{memo},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <insert id="insertOrderDelivery"
+            parameterType="com.shop.core.entity.OrderDelivery"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        /* Order.insertOrderDelivery */
+        INSERT INTO TB_ORDER_DELIVERY (
+            ORDER_ID,
+            ORDER_NO,
+            SOCIAL_ACCOUNT_ID,
+            RECEIVER_NAME,
+            RECEIVER_PHONE,
+            ZIP_CODE,
+            ADDRESS,
+            ADDRESS_DETAIL,
+            MEMO,
+            DELIVERY_STATUS,
+            DEL_YN,
+            CRE_TM,
+            UPT_TM
+        ) VALUES (
+            #{orderId},
+            #{orderNo},
+            #{socialAccountId},
+            #{receiverName},
+            #{receiverPhone},
+            #{zipCode},
+            #{address},
+            #{addressDetail},
+            #{memo},
+            COALESCE(#{deliveryStatus}, 'READY'),
+            COALESCE(#{delYn}, 'N'),
             NOW(),
             NOW()
         )
@@ -143,6 +200,19 @@
         FROM TB_ORDER_ITEM
         WHERE ORDER_ID = #{orderId}
         ORDER BY ID ASC
+    </select>
+
+    <select id="selectOrderDelivery"
+            parameterType="Long"
+            resultType="com.shop.core.entity.OrderDelivery">
+        /* Order.selectOrderDelivery */
+        SELECT
+            <include refid="orderDeliveryColumns" />
+        FROM TB_ORDER_DELIVERY
+        WHERE ORDER_ID = #{orderId}
+          AND DEL_YN = 'N'
+        ORDER BY ID DESC
+        LIMIT 1
     </select>
 
     <select id="selectOrdersBySocialAccountId"

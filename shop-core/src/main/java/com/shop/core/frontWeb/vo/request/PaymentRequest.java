@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 public class PaymentRequest {
 
     @Getter
@@ -15,6 +17,7 @@ public class PaymentRequest {
         private String paymentId;
         private Long totalAmount;
         private String currency;
+        private List<CreateDet> details;
     }
 
     @Getter

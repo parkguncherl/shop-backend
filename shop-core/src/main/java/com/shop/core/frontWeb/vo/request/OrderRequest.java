@@ -25,7 +25,20 @@ public class OrderRequest {
         private String address;
         private String addressDetail;
         private String memo;
+        private Delivery delivery;
         private List<Item> items;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "OrderRequestDelivery", description = "Order delivery request", type = "object")
+    public static class Delivery {
+        private String receiverName;
+        private String receiverPhone;
+        private String zipCode;
+        private String address;
+        private String addressDetail;
+        private String memo;
     }
 
     @Getter

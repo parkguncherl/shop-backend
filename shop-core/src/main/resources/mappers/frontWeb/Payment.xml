@@ -14,6 +14,7 @@
         CANCELLED_TM   AS cancelledTm,
         CANCEL_AMOUNT  AS cancelAmount,
         FAIL_REASON    AS failReason,
+        DEL_YN         AS delYn,
         CRE_TM         AS creTm,
         UPT_TM         AS uptTm
     </sql>
@@ -36,6 +37,7 @@
         CANCEL_AMOUNT      AS cancelAmount,
         FAIL_REASON        AS failReason,
         RAW_RESPONSE       AS rawResponse,
+        DEL_YN             AS delYn,
         CRE_TM             AS creTm,
         UPT_TM             AS uptTm
     </sql>
@@ -52,7 +54,9 @@
             PAYMENT_STATUS,
             TOTAL_AMOUNT,
             CURRENCY,
+            PAID_TM,
             CANCEL_AMOUNT,
+            DEL_YN,
             CRE_TM,
             UPT_TM
         ) VALUES (
@@ -62,7 +66,9 @@
             COALESCE(#{paymentStatus}, 'R'),
             COALESCE(#{totalAmount}, 0),
             COALESCE(#{currency}, 'KRW'),
+            CASE WHEN COALESCE(#{paymentStatus}, 'R') = 'P' THEN NOW() ELSE NULL END,
             COALESCE(#{cancelAmount}, 0),
+            COALESCE(#{delYn}, 'N'),
             NOW(),
             NOW()
         )
@@ -85,8 +91,10 @@
             PG_PROVIDER,
             PG_TID,
             PORTONE_PAYMENT_ID,
+            APPROVED_TM,
             RAW_RESPONSE,
             CANCEL_AMOUNT,
+            DEL_YN,
             CRE_TM,
             UPT_TM
         ) VALUES (
@@ -101,8 +109,10 @@
             #{pgProvider},
             #{pgTid},
             #{portonePaymentId},
+            CASE WHEN COALESCE(#{paymentStatus}, 'R') = 'P' THEN NOW() ELSE NULL END,
             #{rawResponse}::jsonb,
             COALESCE(#{cancelAmount}, 0),
+            COALESCE(#{delYn}, 'N'),
             NOW(),
             NOW()
         )
@@ -116,6 +126,7 @@
             <include refid="paymentColumns" />
         FROM TB_PAYMENT
         WHERE ID = #{id}
+          AND DEL_YN = 'N'
     </select>
 
     <select id="selectPaymentByPaymentId"
@@ -126,6 +137,7 @@
             <include refid="paymentColumns" />
         FROM TB_PAYMENT
         WHERE PAYMENT_ID = #{paymentId}
+          AND DEL_YN = 'N'
     </select>
 
     <select id="selectPaymentByOrderNo"
@@ -136,6 +148,7 @@
             <include refid="paymentColumns" />
         FROM TB_PAYMENT
         WHERE ORDER_NO = #{orderNo}
+          AND DEL_YN = 'N'
         ORDER BY ID DESC
         LIMIT 1
     </select>
@@ -148,7 +161,43 @@
             <include refid="paymentDetColumns" />
         FROM TB_PAYMENT_DET
         WHERE PAYMENT_ID = #{paymentId}
+          AND DEL_YN = 'N'
         ORDER BY ID ASC
+    </select>
+
+    <select id="selectPaymentListBySocialAccountId"
+            parameterType="Long"
+            resultType="com.shop.core.frontWeb.vo.response.PaymentResponse$ListItem">
+        /* Payment.selectPaymentListBySocialAccountId */
+        SELECT
+            P.ID                 AS paymentSeq,
+            O.ID                 AS orderId,
+            O.ORDER_NO           AS orderNo,
+            O.SOCIAL_ACCOUNT_ID  AS socialAccountId,
+            O.ORDER_STATUS       AS orderStatus,
+            P.PAYMENT_ID         AS paymentId,
+            P.PAYMENT_STATUS     AS paymentStatus,
+            P.TOTAL_AMOUNT       AS totalAmount,
+            O.USED_POINT         AS usedPoint,
+            O.PAYMENT_AMOUNT     AS paymentAmount,
+            O.EARNED_POINT       AS earnedPoint,
+            P.CURRENCY           AS currency,
+            P.PAID_TM            AS paidTm,
+            P.CRE_TM             AS creTm,
+            COALESCE(OD.RECEIVER_NAME, O.RECEIVER_NAME)       AS receiverName,
+            COALESCE(OD.RECEIVER_PHONE, O.RECEIVER_PHONE)     AS receiverPhone,
+            COALESCE(OD.ZIP_CODE, O.ZIP_CODE)                 AS zipCode,
+            COALESCE(OD.ADDRESS, O.ADDRESS)                   AS address,
+            COALESCE(OD.ADDRESS_DETAIL, O.ADDRESS_DETAIL)     AS addressDetail,
+            OD.DELIVERY_STATUS  AS deliveryStatus,
+            OD.DELIVERY_COMPANY AS deliveryCompany,
+            OD.INVOICE_NO       AS invoiceNo
+        FROM TB_PAYMENT P
+        JOIN TB_ORDER O ON O.ID = P.ORDER_ID
+        LEFT JOIN TB_ORDER_DELIVERY OD ON OD.ORDER_ID = O.ID AND OD.DEL_YN = 'N'
+        WHERE O.SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND P.DEL_YN = 'N'
+        ORDER BY P.ID DESC
     </select>
 
     <update id="updatePaymentStatus"
@@ -160,6 +209,7 @@
             PAID_TM        = CASE WHEN #{paymentStatus} = 'P' THEN NOW() ELSE PAID_TM END,
             UPT_TM         = NOW()
         WHERE ID = #{id}
+          AND DEL_YN = 'N'
     </update>
 
     <update id="updatePaymentDetStatus"
@@ -174,6 +224,7 @@
             APPROVED_TM        = CASE WHEN #{paymentStatus} = 'P' THEN NOW() ELSE APPROVED_TM END,
             UPT_TM             = NOW()
         WHERE ID = #{id}
+          AND DEL_YN = 'N'
     </update>
 
     <update id="updatePaymentCancel"
@@ -185,6 +236,7 @@
             CANCELLED_TM   = NOW(),
             UPT_TM         = NOW()
         WHERE ID = #{id}
+          AND DEL_YN = 'N'
     </update>
 
     <update id="updatePaymentDetCancel"
@@ -196,6 +248,7 @@
             CANCELLED_TM   = NOW(),
             UPT_TM         = NOW()
         WHERE ID = #{id}
+          AND DEL_YN = 'N'
     </update>
 
 </mapper>

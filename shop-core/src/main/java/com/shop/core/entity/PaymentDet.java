@@ -30,6 +30,7 @@ public class PaymentDet {
     private Long cancelAmount;
     private String failReason;
     private String rawResponse;
+    private String delYn;
     private LocalDateTime creTm;
     private LocalDateTime uptTm;
 }

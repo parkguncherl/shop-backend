@@ -22,8 +22,27 @@ public class OrderResponse {
         private Long usedPoint;
         private Long paymentAmount;
         private Long earnedPoint;
+        private Delivery delivery;
         private LocalDateTime creTm;
         private List<Item> items;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "OrderResponseDelivery", description = "Order delivery response", type = "object")
+    public static class Delivery {
+        private Long deliveryId;
+        private String receiverName;
+        private String receiverPhone;
+        private String zipCode;
+        private String address;
+        private String addressDetail;
+        private String memo;
+        private String deliveryStatus;
+        private String deliveryCompany;
+        private String invoiceNo;
+        private LocalDateTime shippedTm;
+        private LocalDateTime deliveredTm;
     }
 
     @Getter

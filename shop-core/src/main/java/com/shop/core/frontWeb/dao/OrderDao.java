@@ -1,6 +1,7 @@
 package com.shop.core.frontWeb.dao;
 
 import com.shop.core.entity.Order;
+import com.shop.core.entity.OrderDelivery;
 import com.shop.core.entity.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -23,6 +24,10 @@ public class OrderDao {
         return sqlSession.insert(NAMESPACE + "insertOrderItem", orderItem);
     }
 
+    public int insertOrderDelivery(OrderDelivery orderDelivery) {
+        return sqlSession.insert(NAMESPACE + "insertOrderDelivery", orderDelivery);
+    }
+
     public Order selectOrderById(Long orderId) {
         return sqlSession.selectOne(NAMESPACE + "selectOrderById", orderId);
     }
@@ -33,6 +38,10 @@ public class OrderDao {
 
     public List<OrderItem> selectOrderItems(Long orderId) {
         return sqlSession.selectList(NAMESPACE + "selectOrderItems", orderId);
+    }
+
+    public OrderDelivery selectOrderDelivery(Long orderId) {
+        return sqlSession.selectOne(NAMESPACE + "selectOrderDelivery", orderId);
     }
 
     public List<Order> selectOrdersBySocialAccountId(Long socialAccountId) {

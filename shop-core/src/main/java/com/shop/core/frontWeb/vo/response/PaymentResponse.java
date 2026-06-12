@@ -40,4 +40,32 @@ public class PaymentResponse {
         private String portonePaymentId;
         private LocalDateTime approvedTm;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "PaymentResponseListItem", description = "Payment list item response", type = "object")
+    public static class ListItem {
+        private Long paymentSeq;
+        private Long orderId;
+        private String orderNo;
+        private Long socialAccountId;
+        private String orderStatus;
+        private String paymentId;
+        private String paymentStatus;
+        private Long totalAmount;
+        private Long usedPoint;
+        private Long paymentAmount;
+        private Long earnedPoint;
+        private String currency;
+        private LocalDateTime paidTm;
+        private LocalDateTime creTm;
+        private String receiverName;
+        private String receiverPhone;
+        private String zipCode;
+        private String address;
+        private String addressDetail;
+        private String deliveryStatus;
+        private String deliveryCompany;
+        private String invoiceNo;
+    }
 }
