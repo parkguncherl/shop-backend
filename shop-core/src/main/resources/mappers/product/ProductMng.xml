@@ -113,7 +113,7 @@
                 AND CPD.CATEGORY_ID = #{categoryId}
             </if>
         </where>
-        GROUP BY TP.ID, CPD.ID
+        GROUP BY TP.ID, CPD.ID, CPD.SEQ
         ORDER BY CPD.SEQ;
     </select>
 
