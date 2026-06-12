@@ -14,6 +14,7 @@ public class PaymentRequest {
     public static class Create {
         private Long orderId;
         private String orderNo;
+        private Long cartId;
         private String paymentId;
         private Long totalAmount;
         private String currency;
@@ -56,5 +57,13 @@ public class PaymentRequest {
         private String portonePaymentId;
         private String failReason;
         private String rawResponse;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "PaymentRequestCancel", description = "Payment cancel request", type = "object")
+    public static class Cancel {
+        private Long socialAccountId;
+        private String reason;
     }
 }

@@ -23,6 +23,7 @@ public class OrderService {
     public OrderResponse.Info createOrder(OrderRequest.Create request) {
         Order order = Order.builder()
                 .orderNo(request.getOrderNo())
+                .cartId(request.getCartId())
                 .socialAccountId(request.getSocialAccountId())
                 .orderStatus("R")
                 .productAmount(request.getProductAmount())
@@ -93,6 +94,7 @@ public class OrderService {
         OrderResponse.Info info = new OrderResponse.Info();
         info.setOrderId(order.getId());
         info.setOrderNo(order.getOrderNo());
+        info.setCartId(order.getCartId());
         info.setSocialAccountId(order.getSocialAccountId());
         info.setOrderStatus(order.getOrderStatus());
         info.setProductAmount(order.getProductAmount());

@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,8 +43,12 @@ public class PaymentDao {
         return sqlSession.selectList(NAMESPACE + "selectPaymentDets", paymentId);
     }
 
-    public List<PaymentResponse.ListItem> selectPaymentListBySocialAccountId(Long socialAccountId) {
-        return sqlSession.selectList(NAMESPACE + "selectPaymentListBySocialAccountId", socialAccountId);
+    public List<PaymentResponse.ListItem> selectPaymentListBySocialAccountId(Long socialAccountId, LocalDateTime fromDateTime, LocalDateTime toDateTime) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("socialAccountId", socialAccountId);
+        param.put("fromDateTime", fromDateTime);
+        param.put("toDateTime", toDateTime);
+        return sqlSession.selectList(NAMESPACE + "selectPaymentListBySocialAccountId", param);
     }
 
     public int updatePaymentStatus(Payment payment) {

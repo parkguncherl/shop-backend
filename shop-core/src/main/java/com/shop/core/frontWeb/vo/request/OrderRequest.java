@@ -13,6 +13,7 @@ public class OrderRequest {
     @Schema(name = "OrderRequestCreate", description = "Order create request", type = "object")
     public static class Create {
         private String orderNo;
+        private Long cartId;
         private Long socialAccountId;
         private Long productAmount;
         private Long discountAmount;

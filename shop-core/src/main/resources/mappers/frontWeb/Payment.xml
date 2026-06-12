@@ -166,7 +166,6 @@
     </select>
 
     <select id="selectPaymentListBySocialAccountId"
-            parameterType="Long"
             resultType="com.shop.core.frontWeb.vo.response.PaymentResponse$ListItem">
         /* Payment.selectPaymentListBySocialAccountId */
         SELECT
@@ -184,19 +183,21 @@
             P.CURRENCY           AS currency,
             P.PAID_TM            AS paidTm,
             P.CRE_TM             AS creTm,
-            COALESCE(OD.RECEIVER_NAME, O.RECEIVER_NAME)       AS receiverName,
-            COALESCE(OD.RECEIVER_PHONE, O.RECEIVER_PHONE)     AS receiverPhone,
-            COALESCE(OD.ZIP_CODE, O.ZIP_CODE)                 AS zipCode,
-            COALESCE(OD.ADDRESS, O.ADDRESS)                   AS address,
-            COALESCE(OD.ADDRESS_DETAIL, O.ADDRESS_DETAIL)     AS addressDetail,
+            OD.RECEIVER_NAME    AS receiverName,
+            OD.RECEIVER_PHONE   AS receiverPhone,
+            OD.ZIP_CODE         AS zipCode,
+            OD.ADDRESS          AS address,
+            OD.ADDRESS_DETAIL   AS addressDetail,
             OD.DELIVERY_STATUS  AS deliveryStatus,
             OD.DELIVERY_COMPANY AS deliveryCompany,
             OD.INVOICE_NO       AS invoiceNo
         FROM TB_PAYMENT P
         JOIN TB_ORDER O ON O.ID = P.ORDER_ID
-        LEFT JOIN TB_ORDER_DELIVERY OD ON OD.ORDER_ID = O.ID AND OD.DEL_YN = 'N'
+        JOIN TB_ORDER_DELIVERY OD ON OD.ORDER_ID = O.ID AND OD.DEL_YN = 'N'
         WHERE O.SOCIAL_ACCOUNT_ID = #{socialAccountId}
           AND P.DEL_YN = 'N'
+          AND COALESCE(P.PAID_TM, P.CRE_TM) &gt;= #{fromDateTime}
+          AND COALESCE(P.PAID_TM, P.CRE_TM) &lt; #{toDateTime}
         ORDER BY P.ID DESC
     </select>
 

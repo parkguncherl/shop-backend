@@ -5,6 +5,7 @@
     <sql id="orderColumns">
         ID                AS id,
         ORDER_NO          AS orderNo,
+        CART_ID           AS cartId,
         SOCIAL_ACCOUNT_ID AS socialAccountId,
         ORDER_STATUS      AS orderStatus,
         PRODUCT_AMOUNT    AS productAmount,
@@ -66,6 +67,7 @@
         /* Order.insertOrder */
         INSERT INTO TB_ORDER (
             ORDER_NO,
+            CART_ID,
             SOCIAL_ACCOUNT_ID,
             ORDER_STATUS,
             PRODUCT_AMOUNT,
@@ -83,6 +85,7 @@
             UPT_TM
         ) VALUES (
             #{orderNo},
+            #{cartId},
             #{socialAccountId},
             COALESCE(#{orderStatus}, 'R'),
             COALESCE(#{productAmount}, 0),

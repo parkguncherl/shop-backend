@@ -15,6 +15,7 @@ public class Order {
 
     private Long id;
     private String orderNo;
+    private Long cartId;
     private Long socialAccountId;
     private String orderStatus;
     private Long productAmount;
