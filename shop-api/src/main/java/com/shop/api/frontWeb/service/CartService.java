@@ -76,10 +76,11 @@ public class CartService {
      */
     @Transactional
     public CartResponse.CartInfo updateItem(CartRequest.UpdateItem request) {
-        cartDao.updateCartItemQuantity(request);
         // 수량 0이면 삭제
         if (request.getQuantity() <= 0) {
             cartDao.deleteCartItem(request.getCartItemId());
+        } else {
+            cartDao.updateCartItemQuantity(request);
         }
         // 변경된 cart 반환 (cartItemId로 cartId를 알 수 없으므로 간단히 null 반환 후 재조회 패턴)
         // 실제로는 cartItemId → cartId를 조회해야 하지만 여기서는 간략화

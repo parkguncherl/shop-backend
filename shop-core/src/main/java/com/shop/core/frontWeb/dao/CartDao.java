@@ -48,12 +48,12 @@ public class CartDao {
 
     /** 장바구니 아이템 삭제 */
     public int deleteCartItem(Long cartItemId) {
-        return sqlSession.delete(NAMESPACE + "deleteCartItem", cartItemId);
+        return sqlSession.update(NAMESPACE + "deleteCartItem", cartItemId);
     }
 
     /** 장바구니 전체 비우기 */
     public int deleteAllCartItems(Long cartId) {
-        return sqlSession.delete(NAMESPACE + "deleteAllCartItems", cartId);
+        return sqlSession.update(NAMESPACE + "deleteAllCartItems", cartId);
     }
 
     /** 회원 전환 시 장바구니 social_account_id 업데이트 */

@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.util.PatternMatchUtils;
 
 /**
  * <pre>
@@ -42,9 +43,12 @@ public class CorsFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
 
         String origin = request.getHeader("Origin");
-        List<String> allowedOrigins = Arrays.asList(corsUrls.split(","));
+        List<String> allowedOrigins = Arrays.stream(corsUrls.split(","))
+                .map(String::trim)
+                .filter(url -> !url.isEmpty())
+                .toList();
 
-        if (origin != null && allowedOrigins.contains(origin)) {
+        if (origin != null && isAllowedOrigin(origin, allowedOrigins)) {
             response.setHeader("Access-Control-Allow-Origin", origin);
         }
 
@@ -66,5 +70,26 @@ public class CorsFilter implements Filter {
     @Override
     public void destroy() {
 
+    }
+
+    private boolean isAllowedOrigin(String origin, List<String> allowedOrigins) {
+        for (String allowedOrigin : allowedOrigins) {
+            if (origin.equals(allowedOrigin)) {
+                return true;
+            }
+
+            if (allowedOrigin.startsWith("*.")) {
+                String domain = allowedOrigin.substring(1);
+                if (origin.endsWith(domain)) {
+                    return true;
+                }
+            }
+
+            if (PatternMatchUtils.simpleMatch(allowedOrigin, origin)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

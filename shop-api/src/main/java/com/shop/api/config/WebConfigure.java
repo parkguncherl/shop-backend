@@ -62,12 +62,6 @@ public class WebConfigure implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         String[] patterns = corsUrls.split("\\s*,\\s*");
 
-        // 💡 프로토콜이 붙은 와일드카드(https://*.도메인)에서 프로토콜 부분을 날려주는 안전장치 추가
-        for (int i = 0; i < patterns.length; i++) {
-            if (patterns[i].contains("*.")) {
-                patterns[i] = patterns[i].replaceAll("https?://", "");
-            }
-        }
 
         registry.addMapping("/**")
                 .allowedOriginPatterns(patterns)
@@ -82,7 +76,7 @@ public class WebConfigure implements WebMvcConfigurer {
                         "token",
                         "Content-Disposition",
                         "X-Guest-Token",
-                        "Cookie"            // ← 추가
+                        "Cookie"            // 추가
                 )
                 .exposedHeaders(
                         "Origin",
@@ -93,7 +87,7 @@ public class WebConfigure implements WebMvcConfigurer {
                         "token",
                         "Content-Disposition",
                         "X-Guest-Token",
-                        "Set-Cookie"        // ← 추가
+                        "Set-Cookie"        // 추가
                 );
     }
     /**
@@ -117,7 +111,7 @@ public class WebConfigure implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new JwtUserResolver());
-        resolvers.add(new GuestUserResolver());  // ← 추가
+        resolvers.add(new GuestUserResolver());  // 추가
     }
 
     @Bean

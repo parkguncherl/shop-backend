@@ -59,9 +59,6 @@ public class AuthController {
 
     private final CommonService commonService;
 
-    @Value("${cors.endpoint.url}")
-    private String corsUrls;
-
     @NotAuthRequired
     @PostMapping(value = "/verification")
     @Operation(summary = "계정 확인")

@@ -72,6 +72,7 @@
         JOIN TB_PRODUCT     P  ON P.ID           = PD.PRODUCT_ID
         JOIN TB_FILE_DET    FD ON FD.FILE_ID = P.REP_FILE_ID AND FD.FILE_SEQ = 1
         WHERE CI.CART_ID = #{cartId}
+          AND COALESCE(CI.DEL_YN, 'N') = 'N'
         ORDER BY CI.CRE_TM ASC
     </select>
 
@@ -117,6 +118,7 @@
             UNIT_PRICE,
             CURRENCY,
             OPTIONS_SNAPSHOT,
+            DEL_YN,
             CRE_TM,
             UPT_TM
         ) VALUES (
@@ -126,13 +128,21 @@
             #{unitPrice},
             COALESCE(#{currency}, 'KRW'),
             #{optionsSnapshot}::jsonb,
+            'N',
             NOW(),
             NOW()
         )
         ON CONFLICT (CART_ID, PRODUCT_DET_ID)
         DO UPDATE SET
-            QUANTITY = TB_CART_ITEM.QUANTITY + EXCLUDED.QUANTITY,
-            UPT_TM   = NOW()
+            QUANTITY = CASE
+                WHEN COALESCE(TB_CART_ITEM.DEL_YN, 'N') = 'Y' THEN EXCLUDED.QUANTITY
+                ELSE TB_CART_ITEM.QUANTITY + EXCLUDED.QUANTITY
+            END,
+            UNIT_PRICE = EXCLUDED.UNIT_PRICE,
+            CURRENCY = EXCLUDED.CURRENCY,
+            OPTIONS_SNAPSHOT = EXCLUDED.OPTIONS_SNAPSHOT,
+            DEL_YN = 'N',
+            UPT_TM = NOW()
     </insert>
 
     <!-- 수량 수정 -->
@@ -143,19 +153,28 @@
         SET QUANTITY = #{quantity},
             UPT_TM   = NOW()
         WHERE ID = #{cartItemId}
+          AND COALESCE(DEL_YN, 'N') = 'N'
     </update>
 
     <!-- 아이템 단건 삭제 -->
-    <delete id="deleteCartItem" parameterType="Long">
+    <update id="deleteCartItem" parameterType="Long">
         /* Cart.deleteCartItem */
-        DELETE FROM TB_CART_ITEM WHERE ID = #{cartItemId}
-    </delete>
+        UPDATE TB_CART_ITEM
+        SET DEL_YN = 'Y',
+            UPT_TM = NOW()
+        WHERE ID = #{cartItemId}
+          AND COALESCE(DEL_YN, 'N') = 'N'
+    </update>
 
     <!-- 장바구니 전체 비우기 -->
-    <delete id="deleteAllCartItems" parameterType="Long">
+    <update id="deleteAllCartItems" parameterType="Long">
         /* Cart.deleteAllCartItems */
-        DELETE FROM TB_CART_ITEM WHERE CART_ID = #{cartId}
-    </delete>
+        UPDATE TB_CART_ITEM
+        SET DEL_YN = 'Y',
+            UPT_TM = NOW()
+        WHERE CART_ID = #{cartId}
+          AND COALESCE(DEL_YN, 'N') = 'N'
+    </update>
 
     <!-- 소셜 계정 ID 업데이트 -->
     <update id="updateCartSocialAccountId" parameterType="com.shop.core.entity.Cart">
