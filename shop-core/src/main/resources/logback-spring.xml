@@ -32,6 +32,12 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/${LOG_FILE}</file>
 
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="com.shop.api.config.MyEventEvaluator"/>
+            <OnMatch>DENY</OnMatch>
+            <OnMismatch>NEUTRAL</OnMismatch>
+        </filter>
+
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <charset>UTF-8</charset>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%line] [%thread] %-5level %logger{36} - %msg%n</pattern>

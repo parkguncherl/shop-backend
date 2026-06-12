@@ -19,6 +19,9 @@ public class MyEventEvaluator extends EventEvaluatorBase<ILoggingEvent> {
                 || message.contains("selectMenuListForUser")
                 || message.contains("selectMenuList")
                 || message.contains("selectGridColum")
-                || message.contains("selectPartnerById");
+                || message.contains("selectPartnerById")
+                || message.contains("GuestRateLimitMapper.insertRateLimit")
+                || message.contains("GuestRateLimitMapper.selectRateLimit")
+                || message.contains("PageViewLogMapper.insertPageViewLog");
     }
 }
