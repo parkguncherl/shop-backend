@@ -15,7 +15,6 @@ public class PointRequest {
         private String paymentId;
         private String pointType;
         private Long pointAmount;
-        private Long balanceAfter;
         private String description;
     }
 }

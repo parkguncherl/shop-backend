@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.DeliveryAddress">
+
+    <sql id="columns">
+        ID                AS id,
+        SOCIAL_ACCOUNT_ID AS socialAccountId,
+        ALIAS             AS alias,
+        RECEIVER_NAME     AS receiverName,
+        RECEIVER_PHONE    AS receiverPhone,
+        ZIP_CODE          AS zipCode,
+        ADDRESS           AS address,
+        ADDRESS_DETAIL    AS addressDetail,
+        MEMO              AS memo,
+        IS_DEFAULT        AS isDefault,
+        CRE_TM            AS creTm,
+        UPT_TM            AS uptTm
+    </sql>
+
+    <select id="selectList" parameterType="Long" resultType="com.shop.core.entity.DeliveryAddress">
+        /* DeliveryAddress.selectList */
+        SELECT <include refid="columns" />
+        FROM TB_DELIVERY_ADDRESS
+        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND DEL_YN = 'N'
+        ORDER BY IS_DEFAULT DESC, ID DESC
+    </select>
+
+    <select id="selectById" parameterType="Long" resultType="com.shop.core.entity.DeliveryAddress">
+        /* DeliveryAddress.selectById */
+        SELECT <include refid="columns" />
+        FROM TB_DELIVERY_ADDRESS
+        WHERE ID = #{id}
+          AND DEL_YN = 'N'
+    </select>
+
+    <insert id="insert" parameterType="com.shop.core.entity.DeliveryAddress"
+            useGeneratedKeys="true" keyProperty="id">
+        /* DeliveryAddress.insert */
+        INSERT INTO TB_DELIVERY_ADDRESS (
+            SOCIAL_ACCOUNT_ID,
+            ALIAS,
+            RECEIVER_NAME,
+            RECEIVER_PHONE,
+            ZIP_CODE,
+            ADDRESS,
+            ADDRESS_DETAIL,
+            MEMO,
+            IS_DEFAULT
+        ) VALUES (
+            #{socialAccountId},
+            #{alias},
+            #{receiverName},
+            #{receiverPhone},
+            #{zipCode},
+            #{address},
+            #{addressDetail},
+            #{memo},
+            #{isDefault}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.shop.core.entity.DeliveryAddress">
+        /* DeliveryAddress.update */
+        UPDATE TB_DELIVERY_ADDRESS
+        SET ALIAS          = #{alias},
+            RECEIVER_NAME  = #{receiverName},
+            RECEIVER_PHONE = #{receiverPhone},
+            ZIP_CODE       = #{zipCode},
+            ADDRESS        = #{address},
+            ADDRESS_DETAIL = #{addressDetail},
+            MEMO           = #{memo},
+            IS_DEFAULT     = #{isDefault},
+            UPT_TM         = NOW()
+        WHERE ID = #{id}
+          AND SOCIAL_ACCOUNT_ID = #{socialAccountId}
+    </update>
+
+    <!-- 기본 배송지 설정 전 기존 기본 배송지 해제 -->
+    <update id="clearDefault" parameterType="Long">
+        /* DeliveryAddress.clearDefault */
+        UPDATE TB_DELIVERY_ADDRESS
+        SET IS_DEFAULT = 'N',
+            UPT_TM     = NOW()
+        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND IS_DEFAULT = 'Y'
+          AND DEL_YN = 'N'
+    </update>
+
+    <!-- 물리 삭제 대신 논리 삭제 -->
+    <update id="delete" parameterType="Long">
+        /* DeliveryAddress.delete */
+        UPDATE TB_DELIVERY_ADDRESS
+        SET DEL_YN = 'Y',
+            UPT_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>

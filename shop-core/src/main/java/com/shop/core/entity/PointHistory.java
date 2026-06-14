@@ -1,5 +1,6 @@
 package com.shop.core.entity;
 
+import com.shop.core.enums.PointType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -17,9 +18,8 @@ public class PointHistory {
     private Long socialAccountId;
     private Long orderId;
     private String paymentId;
-    private String pointType;
-    private Long pointAmount;
-    private Long balanceAfter;
+    private PointType pointType;
+    private Long pointAmount;    // 양수=적립, 음수=사용
     private String description;
     private LocalDateTime creTm;
 }

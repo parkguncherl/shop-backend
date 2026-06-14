@@ -3,7 +3,10 @@ package com.shop.api.frontWeb.service;
 import com.shop.core.entity.Order;
 import com.shop.core.entity.OrderDelivery;
 import com.shop.core.entity.OrderItem;
+import com.shop.core.entity.PointHistory;
+import com.shop.core.enums.PointType;
 import com.shop.core.frontWeb.dao.OrderDao;
+import com.shop.core.frontWeb.dao.PointDao;
 import com.shop.core.frontWeb.vo.request.OrderRequest;
 import com.shop.core.frontWeb.vo.response.OrderResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import java.util.List;
 public class OrderService {
 
     private final OrderDao orderDao;
+    private final PointDao pointDao;
 
     @Transactional
     public OrderResponse.Info createOrder(OrderRequest.Create request) {
@@ -72,6 +76,28 @@ public class OrderService {
                 .delYn("N")
                 .build();
         orderDao.insertOrderDelivery(delivery);
+
+        // 포인트 사용 이력 (usedPoint > 0 일 때만)
+        if (order.getUsedPoint() != null && order.getUsedPoint() > 0) {
+            pointDao.insertPointHistory(PointHistory.builder()
+                    .socialAccountId(order.getSocialAccountId())
+                    .orderId(order.getId())
+                    .pointType(PointType.USE)
+                    .pointAmount(-order.getUsedPoint())
+                    .description("주문 " + order.getOrderNo() + " 포인트 사용")
+                    .build());
+        }
+
+        // 포인트 적립 이력 (earnedPoint > 0 일 때만)
+        if (order.getEarnedPoint() != null && order.getEarnedPoint() > 0) {
+            pointDao.insertPointHistory(PointHistory.builder()
+                    .socialAccountId(order.getSocialAccountId())
+                    .orderId(order.getId())
+                    .pointType(PointType.EARN)
+                    .pointAmount(order.getEarnedPoint())
+                    .description("주문 " + order.getOrderNo() + " 구매 적립")
+                    .build());
+        }
 
         return getOrder(order.getId());
     }

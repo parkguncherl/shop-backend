@@ -1,6 +1,7 @@
 package com.shop.api.config;
 
 import com.shop.core.enums.BooleanValueCode;
+import com.shop.core.enums.PointType;
 import com.shop.core.enums.SortTypeCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +45,9 @@ public class MybatisConfigure {
             new LocalDateTypeHandler(),
             new BooleanValueCode.TypeHandler(),
             new SortTypeCode.TypeHandler(),
-            new JsonbTypeHandler(),  // 새로 추가
-            new StringListTypeHandler() // 새로추가
+            new JsonbTypeHandler(),
+            new StringListTypeHandler(),
+            new PointType.TypeHandler()
     };
 
     @Bean

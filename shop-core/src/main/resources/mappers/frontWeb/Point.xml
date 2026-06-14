@@ -22,7 +22,6 @@
             PAYMENT_ID,
             POINT_TYPE,
             POINT_AMOUNT,
-            BALANCE_AFTER,
             DESCRIPTION,
             CRE_TM
         ) VALUES (
@@ -31,7 +30,6 @@
             #{paymentId},
             #{pointType},
             #{pointAmount},
-            #{balanceAfter},
             #{description},
             NOW()
         )
@@ -48,7 +46,6 @@
             PAYMENT_ID        AS paymentId,
             POINT_TYPE        AS pointType,
             POINT_AMOUNT      AS pointAmount,
-            BALANCE_AFTER     AS balanceAfter,
             DESCRIPTION       AS description,
             CRE_TM            AS creTm
         FROM TB_POINT_HISTORY

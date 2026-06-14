@@ -25,4 +25,12 @@ public class PointController {
             @Parameter(description = "Social account ID") @RequestParam Long socialAccountId) {
         return new ApiResponse<>(pointService.getBalance(socialAccountId));
     }
+
+    @NotAuthRequired
+    @GetMapping("/histories")
+    @Operation(summary = "Get point histories")
+    public ApiResponse<PointResponse.HistoryList> getHistories(
+            @Parameter(description = "Social account ID") @RequestParam Long socialAccountId) {
+        return new ApiResponse<>(pointService.getHistories(socialAccountId));
+    }
 }
