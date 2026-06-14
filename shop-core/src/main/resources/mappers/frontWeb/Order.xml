@@ -5,7 +5,6 @@
     <sql id="orderColumns">
         ID                AS id,
         ORDER_NO          AS orderNo,
-        CART_ID           AS cartId,
         SOCIAL_ACCOUNT_ID AS socialAccountId,
         ORDER_STATUS      AS orderStatus,
         PRODUCT_AMOUNT    AS productAmount,
@@ -26,6 +25,7 @@
     <sql id="orderItemColumns">
         ID              AS id,
         ORDER_ID        AS orderId,
+        CART_ID         AS cartId,
         PRODUCT_ID      AS productId,
         PRODUCT_DET_ID  AS productDetId,
         PRODUCT_NAME    AS productName,
@@ -63,11 +63,11 @@
     <insert id="insertOrder"
             parameterType="com.shop.core.entity.Order"
             useGeneratedKeys="true"
-            keyProperty="id">
+            keyProperty="id"
+            keyColumn="id">
         /* Order.insertOrder */
         INSERT INTO TB_ORDER (
             ORDER_NO,
-            CART_ID,
             SOCIAL_ACCOUNT_ID,
             ORDER_STATUS,
             PRODUCT_AMOUNT,
@@ -85,7 +85,6 @@
             UPT_TM
         ) VALUES (
             #{orderNo},
-            #{cartId},
             #{socialAccountId},
             COALESCE(#{orderStatus}, 'R'),
             COALESCE(#{productAmount}, 0),
@@ -147,6 +146,7 @@
         /* Order.insertOrderItem */
         INSERT INTO TB_ORDER_ITEM (
             ORDER_ID,
+            CART_ID,
             PRODUCT_ID,
             PRODUCT_DET_ID,
             PRODUCT_NAME,
@@ -160,6 +160,7 @@
             UPT_TM
         ) VALUES (
             #{orderId},
+            #{cartId},
             #{productId},
             #{productDetId},
             #{productName},

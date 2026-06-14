@@ -2,190 +2,177 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shop.mapper.frontWeb.Cart">
 
-    <!-- 게스트 토큰 ID 로 활성 장바구니 조회 -->
-    <select id="selectActiveCartByGuestTokenId"
+    <!-- 공통 아이템 조회 컬럼 (JOIN 포함) -->
+    <sql id="cartItemColumns">
+        C.ID                 AS id,
+        C.SOCIAL_ACCOUNT_ID  AS socialAccountId,
+        C.GUEST_TOKEN_ID     AS guestTokenId,
+        C.PRODUCT_DET_ID     AS productDetId,
+        C.QUANTITY           AS quantity,
+        C.UNIT_PRICE         AS unitPrice,
+        C.CURRENCY           AS currency,
+        C.STATUS             AS status,
+        C.DEL_YN             AS delYn,
+        C.CRE_TM             AS creTm,
+        C.UPT_TM             AS uptTm,
+        P.ID                 AS productId,
+        P.PROD_NM            AS productName,
+        FD.SYS_FILE_NM       AS productImage,
+        PD.PRODUCT_DET_SIZE  AS productDetSize,
+        PD.PRODUCT_DET_COLOR AS productDetColor,
+        PD.SKU_DISCOUNT_RATE AS skuDiscountRate
+    </sql>
+
+    <sql id="cartItemJoin">
+        FROM TB_CART C
+        JOIN TB_PRODUCT_DET PD ON PD.ID       = C.PRODUCT_DET_ID
+        JOIN TB_PRODUCT     P  ON P.ID         = PD.PRODUCT_ID
+        JOIN TB_FILE_DET    FD ON FD.FILE_ID   = P.REP_FILE_ID AND FD.FILE_SEQ = 1
+    </sql>
+
+    <!-- 소셜 계정 ID로 활성 아이템 목록 조회 -->
+    <select id="selectActiveCartsBySocialAccountId"
             parameterType="Long"
             resultType="com.shop.core.entity.Cart">
-        /* Cart.selectActiveCartByGuestTokenId */
+        /* Cart.selectActiveCartsBySocialAccountId */
         SELECT
-            ID              AS id,
-            GUEST_TOKEN_ID  AS guestTokenId,
-            SOCIAL_ACCOUNT_ID AS socialAccountId,
-            STATUS          AS status,
-            COUPON_CODE     AS couponCode,
-            EXPIRES_AT      AS expiresAt,
-            CRE_TM          AS creTm,
-            UPT_TM          AS uptTm
-        FROM TB_CART
-        WHERE GUEST_TOKEN_ID = #{guestTokenId}
-          AND STATUS = 'active'
+            <include refid="cartItemColumns" />
+        <include refid="cartItemJoin" />
+        WHERE C.SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND C.DEL_YN = 'N'
+          AND C.STATUS = 'A'
+        ORDER BY C.CRE_TM ASC
+    </select>
+
+    <!-- 게스트 토큰 ID로 활성 아이템 목록 조회 -->
+    <select id="selectActiveCartsByGuestTokenId"
+            parameterType="Long"
+            resultType="com.shop.core.entity.Cart">
+        /* Cart.selectActiveCartsByGuestTokenId */
+        SELECT
+            <include refid="cartItemColumns" />
+        <include refid="cartItemJoin" />
+        WHERE C.GUEST_TOKEN_ID = #{guestTokenId}
+          AND C.DEL_YN = 'N'
+          AND C.STATUS = 'A'
+        ORDER BY C.CRE_TM ASC
+    </select>
+
+    <!-- 소셜 계정 기준 특정 상품 존재 확인 -->
+    <select id="selectActiveCartItemBySocialAccountId"
+            parameterType="map"
+            resultType="com.shop.core.entity.Cart">
+        /* Cart.selectActiveCartItemBySocialAccountId */
+        SELECT
+            <include refid="cartItemColumns" />
+        <include refid="cartItemJoin" />
+        WHERE C.SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND C.PRODUCT_DET_ID    = #{productDetId}
+          AND C.DEL_YN = 'N'
+          AND C.STATUS = 'A'
         LIMIT 1
     </select>
 
-    <!-- 소셜 계정 ID 로 활성 장바구니 조회 -->
-    <select id="selectActiveCartBySocialAccountId"
-            parameterType="Long"
+    <!-- 게스트 기준 특정 상품 존재 확인 -->
+    <select id="selectActiveCartItemByGuestTokenId"
+            parameterType="map"
             resultType="com.shop.core.entity.Cart">
-        /* Cart.selectActiveCartBySocialAccountId */
+        /* Cart.selectActiveCartItemByGuestTokenId */
         SELECT
-            ID                AS id,
-            GUEST_TOKEN_ID    AS guestTokenId,
-            SOCIAL_ACCOUNT_ID AS socialAccountId,
-            STATUS            AS status,
-            COUPON_CODE       AS couponCode,
-            EXPIRES_AT        AS expiresAt,
-            CRE_TM            AS creTm,
-            UPT_TM            AS uptTm
-        FROM TB_CART
-        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
-          AND STATUS = 'active'
+            <include refid="cartItemColumns" />
+        <include refid="cartItemJoin" />
+        WHERE C.GUEST_TOKEN_ID = #{guestTokenId}
+          AND C.PRODUCT_DET_ID = #{productDetId}
+          AND C.DEL_YN = 'N'
+          AND C.STATUS = 'A'
         LIMIT 1
     </select>
 
-    <!--
-        장바구니 아이템 목록 조회
-        - TB_PRODUCT_DET → TB_PRODUCT JOIN 으로 상품 정보 조회
-        - product_id 컬럼 없이 product_det_id 만으로 상품 조회
-    -->
-    <select id="selectCartItems"
-            parameterType="Long"
-            resultType="com.shop.core.entity.CartItem">
-        /* Cart.selectCartItems */
-        SELECT
-            CI.ID                AS id,
-            CI.CART_ID           AS cartId,
-            CI.PRODUCT_DET_ID    AS productDetId,
-            CI.QUANTITY          AS quantity,
-            CI.UNIT_PRICE        AS unitPrice,
-            CI.CURRENCY          AS currency,
-            CI.OPTIONS_SNAPSHOT  AS optionsSnapshot,
-            CI.CRE_TM            AS creTm,
-            CI.UPT_TM            AS uptTm,
-            P.ID                 AS productId,
-            P.PROD_NM            AS productName,
-            FD.SYS_FILE_NM       AS productImage,
-            PD.PRODUCT_DET_SIZE  AS productDetSize,
-            PD.PRODUCT_DET_COLOR AS productDetColor,
-            PD.SKU_DISCOUNT_RATE AS skuDiscountRate
-        FROM TB_CART_ITEM CI
-        JOIN TB_PRODUCT_DET PD ON PD.ID         = CI.PRODUCT_DET_ID
-        JOIN TB_PRODUCT     P  ON P.ID           = PD.PRODUCT_ID
-        JOIN TB_FILE_DET    FD ON FD.FILE_ID = P.REP_FILE_ID AND FD.FILE_SEQ = 1
-        WHERE CI.CART_ID = #{cartId}
-          AND CI.DEL_YN = 'N'
-        ORDER BY CI.CRE_TM ASC
-    </select>
-
-    <!-- 장바구니 생성 -->
+    <!-- 장바구니 아이템 추가 -->
     <insert id="insertCart"
             parameterType="com.shop.core.entity.Cart"
             useGeneratedKeys="true"
             keyProperty="id">
         /* Cart.insertCart */
         INSERT INTO TB_CART (
-            GUEST_TOKEN_ID,
             SOCIAL_ACCOUNT_ID,
-            STATUS,
-            COUPON_CODE,
-            EXPIRES_AT,
-            CRE_TM,
-            UPT_TM
-        ) VALUES (
-            #{guestTokenId},
-            #{socialAccountId},
-            'active',
-            #{couponCode},
-            #{expiresAt},
-            NOW(),
-            NOW()
-        )
-    </insert>
-
-    <!--
-        장바구니 아이템 추가
-        - product_det_id 만 저장 (product_id 제거)
-        - 동일 product_det_id 이미 존재 → 수량 합산 (ON CONFLICT)
-    -->
-    <insert id="insertCartItem"
-            parameterType="com.shop.core.entity.CartItem"
-            useGeneratedKeys="true"
-            keyProperty="id">
-        /* Cart.insertCartItem */
-        INSERT INTO TB_CART_ITEM (
-            CART_ID,
+            GUEST_TOKEN_ID,
             PRODUCT_DET_ID,
             QUANTITY,
             UNIT_PRICE,
             CURRENCY,
-            OPTIONS_SNAPSHOT,
+            STATUS,
             DEL_YN,
             CRE_TM,
             UPT_TM
         ) VALUES (
-            #{cartId},
+            #{socialAccountId},
+            #{guestTokenId},
             #{productDetId},
             #{quantity},
             #{unitPrice},
             COALESCE(#{currency}, 'KRW'),
-            #{optionsSnapshot}::jsonb,
+            'A',
             'N',
             NOW(),
             NOW()
         )
-        ON CONFLICT (CART_ID, PRODUCT_DET_ID)
-        DO UPDATE SET
-            QUANTITY = CASE
-                WHEN COALESCE(TB_CART_ITEM.DEL_YN, 'N') = 'Y' THEN EXCLUDED.QUANTITY
-                ELSE TB_CART_ITEM.QUANTITY + EXCLUDED.QUANTITY
-            END,
-            UNIT_PRICE = EXCLUDED.UNIT_PRICE,
-            CURRENCY = EXCLUDED.CURRENCY,
-            OPTIONS_SNAPSHOT = EXCLUDED.OPTIONS_SNAPSHOT,
-            DEL_YN = 'N',
-            UPT_TM = NOW()
     </insert>
 
-    <!-- 수량 수정 -->
+    <!-- 수량 수정 (UpdateItem 요청) -->
     <update id="updateCartItemQuantity"
             parameterType="com.shop.core.frontWeb.vo.request.CartRequest$UpdateItem">
         /* Cart.updateCartItemQuantity */
-        UPDATE TB_CART_ITEM
+        UPDATE TB_CART
         SET QUANTITY = #{quantity},
-            UPT_TM   = NOW()
-        WHERE ID = #{cartItemId}
-          AND COALESCE(DEL_YN, 'N') = 'N'
+            UPT_TM  = NOW()
+        WHERE ID     = #{cartId}
+          AND DEL_YN = 'N'
     </update>
 
-    <!-- 아이템 단건 삭제 -->
+    <!-- 수량 직접 설정 (병합 시 사용) -->
+    <update id="updateCartItemQuantityById" parameterType="map">
+        /* Cart.updateCartItemQuantityById */
+        UPDATE TB_CART
+        SET QUANTITY = #{quantity},
+            UPT_TM  = NOW()
+        WHERE ID     = #{cartId}
+          AND DEL_YN = 'N'
+    </update>
+
+    <!-- 단건 삭제 -->
     <update id="deleteCartItem" parameterType="Long">
         /* Cart.deleteCartItem */
-        UPDATE TB_CART_ITEM
-        SET DEL_YN = 'Y',
-            UPT_TM = NOW()
-        WHERE ID = #{cartItemId}
-          AND COALESCE(DEL_YN, 'N') = 'N'
-    </update>
-
-    <!-- 장바구니 전체 비우기 -->
-    <update id="deleteAllCartItems" parameterType="Long">
-        /* Cart.deleteAllCartItems */
-        UPDATE TB_CART_ITEM
-        SET DEL_YN = 'Y',
-            UPT_TM = NOW()
-        WHERE CART_ID = #{cartId}
-          AND COALESCE(DEL_YN, 'N') = 'N'
-    </update>
-
-    <!-- 소셜 계정 ID 업데이트 -->
-    <update id="updateCartSocialAccountId" parameterType="com.shop.core.entity.Cart">
-        /* Cart.updateCartSocialAccountId */
         UPDATE TB_CART
-        SET SOCIAL_ACCOUNT_ID = #{socialAccountId},
-            UPT_TM            = NOW()
-        WHERE ID = #{id}
+        SET DEL_YN = 'Y',
+            UPT_TM = NOW()
+        WHERE ID     = #{cartId}
+          AND DEL_YN = 'N'
     </update>
 
-    <!-- 게스트 ID 로 카트의 소셜 계정 ID 업데이트 (로그인 시 카트 귀속) -->
+    <!-- 소셜 계정 활성 아이템 전체 주문완료 처리 -->
+    <update id="markOrderedBySocialAccountId" parameterType="Long">
+        /* Cart.markOrderedBySocialAccountId */
+        UPDATE TB_CART
+        SET STATUS = 'O',
+            DEL_YN = 'Y',
+            UPT_TM = NOW()
+        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND DEL_YN = 'N'
+          AND STATUS = 'A'
+    </update>
+
+    <!-- 게스트 토큰 활성 아이템 전체 삭제 처리 -->
+    <update id="markDeletedByGuestTokenId" parameterType="Long">
+        /* Cart.markDeletedByGuestTokenId */
+        UPDATE TB_CART
+        SET DEL_YN = 'Y',
+            UPT_TM = NOW()
+        WHERE GUEST_TOKEN_ID = #{guestTokenId}
+          AND DEL_YN = 'N'
+    </update>
+
+    <!-- 게스트 ID 기준 social_account_id 일괄 업데이트 (로그인 시 카트 귀속) -->
     <update id="updateCartSocialAccountIdByGuestId" parameterType="map">
         /* Cart.updateCartSocialAccountIdByGuestId */
         UPDATE TB_CART
@@ -196,11 +183,20 @@
             WHERE GUEST_ID = #{guestId}
             LIMIT 1
         )
-        AND STATUS = 'active'
+        AND DEL_YN = 'N'
     </update>
 
-    <!-- 상태 변경 -->
-    <update id="updateCartStatus" parameterType="com.shop.core.entity.Cart">
+    <!-- 단건 social_account_id 업데이트 -->
+    <update id="updateCartSocialAccountId" parameterType="map">
+        /* Cart.updateCartSocialAccountId */
+        UPDATE TB_CART
+        SET SOCIAL_ACCOUNT_ID = #{socialAccountId},
+            UPT_TM            = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 상태 변경 (id 기준) -->
+    <update id="updateCartStatus" parameterType="map">
         /* Cart.updateCartStatus */
         UPDATE TB_CART
         SET STATUS = #{status},

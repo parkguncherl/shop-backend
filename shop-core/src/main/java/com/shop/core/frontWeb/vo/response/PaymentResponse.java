@@ -30,10 +30,8 @@ public class PaymentResponse {
     public static class Det {
         private Long paymentDetId;
         private Long paymentId;
-        private String paymentNo;
         private String payType;
         private String payMethod;
-        private String paymentStatus;
         private Long amount;
         private String pgProvider;
         private String pgTid;

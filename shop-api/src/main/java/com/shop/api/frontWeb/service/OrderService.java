@@ -27,7 +27,6 @@ public class OrderService {
     public OrderResponse.Info createOrder(OrderRequest.Create request) {
         Order order = Order.builder()
                 .orderNo(request.getOrderNo())
-                .cartId(request.getCartId())
                 .socialAccountId(request.getSocialAccountId())
                 .orderStatus("R")
                 .productAmount(request.getProductAmount())
@@ -48,6 +47,7 @@ public class OrderService {
             for (OrderRequest.Item requestItem : request.getItems()) {
                 OrderItem item = OrderItem.builder()
                         .orderId(order.getId())
+                        .cartId(requestItem.getCartId())
                         .productId(requestItem.getProductId())
                         .productDetId(requestItem.getProductDetId())
                         .productName(requestItem.getProductName())
@@ -99,7 +99,12 @@ public class OrderService {
                     .build());
         }
 
-        return getOrder(order.getId());
+        // getId()가 null인 경우(useGeneratedKeys 미설정 환경) orderNo로 폴백 조회
+        if (order.getId() != null) {
+            return getOrder(order.getId());
+        }
+        Order created = orderDao.selectOrderByOrderNo(order.getOrderNo());
+        return created != null ? toInfo(created) : null;
     }
 
     public OrderResponse.Info getOrder(Long orderId) {
@@ -120,7 +125,6 @@ public class OrderService {
         OrderResponse.Info info = new OrderResponse.Info();
         info.setOrderId(order.getId());
         info.setOrderNo(order.getOrderNo());
-        info.setCartId(order.getCartId());
         info.setSocialAccountId(order.getSocialAccountId());
         info.setOrderStatus(order.getOrderStatus());
         info.setProductAmount(order.getProductAmount());

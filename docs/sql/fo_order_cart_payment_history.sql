@@ -25,8 +25,7 @@ CREATE INDEX IF NOT EXISTS ix_tb_payment_paid_tm
 --   AND del_yn = 'N';
 --
 -- UPDATE public.tb_payment_det
--- SET payment_status = 'P',
---     approved_tm = COALESCE(approved_tm, NOW()),
+-- SET approved_tm = COALESCE(approved_tm, NOW()),
 --     upt_tm = NOW()
 -- WHERE order_no = 'ORD-XXXXXXXXXXXXX'
 --   AND del_yn = 'N';

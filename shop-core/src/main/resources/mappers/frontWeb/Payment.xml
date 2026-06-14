@@ -22,12 +22,8 @@
     <sql id="paymentDetColumns">
         ID                 AS id,
         PAYMENT_ID         AS paymentId,
-        PAYMENT_NO         AS paymentNo,
-        ORDER_ID           AS orderId,
-        ORDER_NO           AS orderNo,
         PAY_TYPE           AS payType,
         PAY_METHOD         AS payMethod,
-        PAYMENT_STATUS     AS paymentStatus,
         AMOUNT             AS amount,
         PG_PROVIDER        AS pgProvider,
         PG_TID             AS pgTid,
@@ -81,12 +77,8 @@
         /* Payment.insertPaymentDet */
         INSERT INTO TB_PAYMENT_DET (
             PAYMENT_ID,
-            PAYMENT_NO,
-            ORDER_ID,
-            ORDER_NO,
             PAY_TYPE,
             PAY_METHOD,
-            PAYMENT_STATUS,
             AMOUNT,
             PG_PROVIDER,
             PG_TID,
@@ -99,17 +91,13 @@
             UPT_TM
         ) VALUES (
             #{paymentId},
-            #{paymentNo},
-            #{orderId},
-            #{orderNo},
             #{payType},
             #{payMethod},
-            COALESCE(#{paymentStatus}, 'R'),
             COALESCE(#{amount}, 0),
             #{pgProvider},
             #{pgTid},
             #{portonePaymentId},
-            CASE WHEN COALESCE(#{paymentStatus}, 'R') = 'P' THEN NOW() ELSE NULL END,
+            NOW(),
             #{rawResponse}::jsonb,
             COALESCE(#{cancelAmount}, 0),
             COALESCE(#{delYn}, 'N'),
@@ -220,12 +208,11 @@
             parameterType="com.shop.core.entity.PaymentDet">
         /* Payment.updatePaymentDetStatus */
         UPDATE TB_PAYMENT_DET
-        SET PAYMENT_STATUS     = #{paymentStatus},
-            PG_TID             = #{pgTid},
+        SET PG_TID             = #{pgTid},
             PORTONE_PAYMENT_ID = #{portonePaymentId},
             FAIL_REASON        = #{failReason},
             RAW_RESPONSE       = #{rawResponse}::jsonb,
-            APPROVED_TM        = CASE WHEN #{paymentStatus} = 'P' THEN NOW() ELSE APPROVED_TM END,
+            APPROVED_TM        = COALESCE(APPROVED_TM, NOW()),
             UPT_TM             = NOW()
         WHERE ID = #{id}
           AND DEL_YN = 'N'
@@ -247,8 +234,7 @@
             parameterType="com.shop.core.entity.PaymentDet">
         /* Payment.updatePaymentDetCancel */
         UPDATE TB_PAYMENT_DET
-        SET PAYMENT_STATUS = 'C',
-            CANCEL_AMOUNT  = COALESCE(#{cancelAmount}, CANCEL_AMOUNT),
+        SET CANCEL_AMOUNT  = COALESCE(#{cancelAmount}, CANCEL_AMOUNT),
             CANCELLED_TM   = NOW(),
             UPT_TM         = NOW()
         WHERE ID = #{id}

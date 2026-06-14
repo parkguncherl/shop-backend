@@ -24,9 +24,6 @@ public class CartRequest {
 
         @Schema(description = "단가 (담을 당시 가격)")
         private BigDecimal unitPrice;
-
-        @Schema(description = "옵션 스냅샷 JSON 문자열")
-        private String optionsSnapshot;
     }
 
     @Getter
@@ -34,8 +31,8 @@ public class CartRequest {
     @Schema(name = "CartRequestUpdateItem", description = "장바구니 수량 수정 요청", type = "object")
     public static class UpdateItem {
 
-        @Schema(description = "장바구니 아이템 ID", required = true)
-        private Long cartItemId;
+        @Schema(description = "장바구니 ID (TB_CART.id)", required = true)
+        private Long cartId;
 
         @Schema(description = "수량", required = true)
         private Integer quantity;

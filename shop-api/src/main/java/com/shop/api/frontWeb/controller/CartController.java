@@ -76,11 +76,11 @@ public class CartController {
      * 장바구니 아이템 단건 삭제
      */
     @NotAuthRequired
-    @DeleteMapping("/item/{cartItemId}")
+    @DeleteMapping("/item/{cartId}")
     @Operation(summary = "장바구니 아이템 삭제")
     public ApiResponse<Void> deleteItem(
-            @Parameter(description = "장바구니 아이템 ID") @PathVariable Long cartItemId) {
-        cartService.deleteItem(cartItemId);
+            @Parameter(description = "장바구니 ID (TB_CART.id)") @PathVariable Long cartId) {
+        cartService.deleteItem(cartId);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 

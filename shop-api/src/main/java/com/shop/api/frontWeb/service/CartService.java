@@ -1,7 +1,6 @@
 package com.shop.api.frontWeb.service;
 
 import com.shop.core.entity.Cart;
-import com.shop.core.entity.CartItem;
 import com.shop.core.entity.GuestToken;
 import com.shop.core.frontWeb.dao.CartDao;
 import com.shop.core.frontWeb.dao.GuestTokenDao;
@@ -28,85 +27,83 @@ public class CartService {
      * 장바구니 조회
      */
     public CartResponse.CartInfo getCart(CartRequest.GetCart request) {
-        Cart cart = findOrNullCart(request);
-        if (cart == null) {
-            CartResponse.CartInfo empty = new CartResponse.CartInfo();
-            empty.setItems(new ArrayList<>());
-            empty.setTotalCount(0);
-            empty.setTotalPrice(BigDecimal.ZERO);
-            return empty;
-        }
-        return buildCartInfo(cart);
+        List<Cart> items = findActiveItems(request);
+        return buildCartInfo(items);
     }
 
     /**
      * 장바구니 상품 추가
+     * - 이미 담긴 상품이면 수량 합산
      */
     @Transactional
     public CartResponse.CartInfo addItem(CartRequest.AddItem request) {
-        // 게스트 토큰으로 cart 조회 또는 생성
         GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(request.getGuestId());
         if (guestToken == null) {
             throw new IllegalArgumentException("유효하지 않은 게스트 ID: " + request.getGuestId());
         }
 
-        Cart cart = cartDao.selectActiveCartByGuestTokenId(guestToken.getId());
-        if (cart == null) {
-            cart = new Cart();
-            cart.setGuestTokenId(guestToken.getId());
-            cart.setSocialAccountId(guestToken.getSocialAccountId());
-            cart.setStatus("active");
-            cartDao.insertCart(cart);
+        Long socialAccountId = guestToken.getSocialAccountId();
+        Long guestTokenId    = guestToken.getId();
+
+        // 이미 담긴 상품 확인
+        Cart existing = (socialAccountId != null)
+                ? cartDao.selectActiveCartItemBySocialAccountId(socialAccountId, request.getProductDetId())
+                : cartDao.selectActiveCartItemByGuestTokenId(guestTokenId, request.getProductDetId());
+
+        if (existing != null) {
+            // 수량 합산
+            CartRequest.UpdateItem updateRequest = new CartRequest.UpdateItem();
+            updateRequest.setCartId(existing.getId());
+            updateRequest.setQuantity(existing.getQuantity() + request.getQuantity());
+            cartDao.updateCartItemQuantity(updateRequest);
+        } else {
+            // 신규 추가
+            Cart item = Cart.builder()
+                    .socialAccountId(socialAccountId)
+                    .guestTokenId(guestTokenId)
+                    .productDetId(request.getProductDetId())
+                    .quantity(request.getQuantity())
+                    .unitPrice(request.getUnitPrice())
+                    .currency("KRW")
+                    .build();
+            cartDao.insertCart(item);
         }
 
-        CartItem item = new CartItem();
-        item.setCartId(cart.getId());
-        item.setProductDetId(request.getProductDetId());
-        item.setQuantity(request.getQuantity());
-        item.setUnitPrice(request.getUnitPrice());
-        item.setCurrency("KRW");
-        item.setOptionsSnapshot(request.getOptionsSnapshot());
-        cartDao.insertCartItem(item);  // ON CONFLICT → 수량 합산 (mapper에서 처리)
-
-        return buildCartInfo(cart);
+        // 최신 장바구니 반환
+        List<Cart> items = (socialAccountId != null)
+                ? cartDao.selectActiveCartsBySocialAccountId(socialAccountId)
+                : cartDao.selectActiveCartsByGuestTokenId(guestTokenId);
+        return buildCartInfo(items);
     }
 
     /**
-     * 장바구니 수량 수정
+     * 수량 수정 (quantity=0 → 삭제)
      */
     @Transactional
-    public CartResponse.CartInfo updateItem(CartRequest.UpdateItem request) {
-        // 수량 0이면 삭제
+    public void updateItem(CartRequest.UpdateItem request) {
         if (request.getQuantity() <= 0) {
-            cartDao.deleteCartItem(request.getCartItemId());
+            cartDao.deleteCartItem(request.getCartId());
         } else {
             cartDao.updateCartItemQuantity(request);
         }
-        // 변경된 cart 반환 (cartItemId로 cartId를 알 수 없으므로 간단히 null 반환 후 재조회 패턴)
-        // 실제로는 cartItemId → cartId를 조회해야 하지만 여기서는 간략화
-        return new CartResponse.CartInfo();
     }
 
     /**
-     * 장바구니 아이템 삭제
+     * 장바구니 아이템 단건 삭제
      */
     @Transactional
-    public void deleteItem(Long cartItemId) {
-        cartDao.deleteCartItem(cartItemId);
+    public void deleteItem(Long cartId) {
+        cartDao.deleteCartItem(cartId);
     }
 
     /**
-     * 장바구니 전체 비우기
+     * 게스트 장바구니 전체 비우기
      */
     @Transactional
     public void clearCart(String guestId) {
         GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(guestId);
         if (guestToken == null) return;
-
-        Cart cart = cartDao.selectActiveCartByGuestTokenId(guestToken.getId());
-        if (cart != null) {
-            cartDao.deleteAllCartItems(cart.getId());
-        }
+        cartDao.markDeletedByGuestTokenId(guestToken.getId());
     }
 
     /**
@@ -117,62 +114,69 @@ public class CartService {
         GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(guestId);
         if (guestToken == null) return;
 
-        Cart guestCart = cartDao.selectActiveCartByGuestTokenId(guestToken.getId());
-        if (guestCart == null) return;
+        List<Cart> guestItems = cartDao.selectActiveCartsByGuestTokenId(guestToken.getId());
+        if (guestItems.isEmpty()) return;
 
-        Cart memberCart = cartDao.selectActiveCartBySocialAccountId(socialAccountId);
+        for (Cart guestItem : guestItems) {
+            // 회원 장바구니에 이미 같은 상품이 있는지 확인
+            Cart memberItem = cartDao.selectActiveCartItemBySocialAccountId(
+                    socialAccountId, guestItem.getProductDetId());
 
-        if (memberCart == null) {
-            // 회원 카트 없음 → 게스트 카트를 회원 카트로 전환
-            cartDao.updateCartSocialAccountId(guestCart.getId(), socialAccountId);
-        } else {
-            // 회원 카트 존재 → 게스트 아이템을 회원 카트로 이관
-            List<CartItem> guestItems = cartDao.selectCartItems(guestCart.getId());
-            for (CartItem item : guestItems) {
-                item.setCartId(memberCart.getId());
-                cartDao.insertCartItem(item);  // ON CONFLICT → 수량 합산
+            if (memberItem != null) {
+                // 수량 합산
+                cartDao.updateCartItemQuantityById(
+                        memberItem.getId(), memberItem.getQuantity() + guestItem.getQuantity());
+            } else {
+                // 회원 카트로 이관
+                Cart newItem = Cart.builder()
+                        .socialAccountId(socialAccountId)
+                        .productDetId(guestItem.getProductDetId())
+                        .quantity(guestItem.getQuantity())
+                        .unitPrice(guestItem.getUnitPrice())
+                        .currency(guestItem.getCurrency())
+                        .build();
+                cartDao.insertCart(newItem);
             }
-            // 게스트 카트 merged 처리
-            cartDao.updateCartStatus(guestCart.getId(), "merged");
         }
+
+        // 게스트 아이템 삭제 처리
+        cartDao.markDeletedByGuestTokenId(guestToken.getId());
     }
 
-    // ── private 헬퍼 ──────────────────────────────────
+    // ── private 헬퍼 ───────────────────────────────────────
 
-    private Cart findOrNullCart(CartRequest.GetCart request) {
+    private List<Cart> findActiveItems(CartRequest.GetCart request) {
         if (request.getSocialAccountId() != null) {
-            return cartDao.selectActiveCartBySocialAccountId(request.getSocialAccountId());
+            return cartDao.selectActiveCartsBySocialAccountId(request.getSocialAccountId());
         }
         if (request.getGuestId() != null) {
             GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(request.getGuestId());
-            if (guestToken == null) return null;
-            return cartDao.selectActiveCartByGuestTokenId(guestToken.getId());
+            if (guestToken == null) return new ArrayList<>();
+            return cartDao.selectActiveCartsByGuestTokenId(guestToken.getId());
         }
-        return null;
+        return new ArrayList<>();
     }
 
-    private CartResponse.CartInfo buildCartInfo(Cart cart) {
-        List<CartItem> items = cartDao.selectCartItems(cart.getId());
-
+    private CartResponse.CartInfo buildCartInfo(List<Cart> items) {
         List<CartResponse.ItemInfo> itemInfos = new ArrayList<>();
         BigDecimal totalPrice = BigDecimal.ZERO;
 
-        for (CartItem ci : items) {
+        for (Cart c : items) {
             CartResponse.ItemInfo info = new CartResponse.ItemInfo();
-            info.setCartItemId(ci.getId());
-            info.setProductDetId(ci.getProductDetId());
-            info.setProductId(ci.getProductId());        // JOIN 으로 가져온 상품 ID
-            info.setProductName(ci.getProductName());
-            info.setProductImage(ci.getProductImage());
-            info.setProductDetSize(ci.getProductDetSize());
-            info.setProductDetColor(ci.getProductDetColor());
-            info.setSkuDiscountRate(ci.getSkuDiscountRate());
-            info.setQuantity(ci.getQuantity());
-            info.setUnitPrice(ci.getUnitPrice());
-            info.setOptionsSnapshot(ci.getOptionsSnapshot());
+            info.setCartId(c.getId());
+            info.setProductId(c.getProductId());
+            info.setProductDetId(c.getProductDetId());
+            info.setProductName(c.getProductName());
+            info.setProductImage(c.getProductImage());
+            info.setProductDetSize(c.getProductDetSize());
+            info.setProductDetColor(c.getProductDetColor());
+            info.setSkuDiscountRate(c.getSkuDiscountRate());
+            info.setQuantity(c.getQuantity());
+            info.setUnitPrice(c.getUnitPrice());
 
-            BigDecimal subtotal = ci.getUnitPrice()
-                    .multiply(BigDecimal.valueOf(ci.getQuantity()));
+            BigDecimal subtotal = c.getUnitPrice() != null
+                    ? c.getUnitPrice().multiply(BigDecimal.valueOf(c.getQuantity()))
+                    : BigDecimal.ZERO;
             info.setSubtotal(subtotal);
             totalPrice = totalPrice.add(subtotal);
 
@@ -180,7 +184,6 @@ public class CartService {
         }
 
         CartResponse.CartInfo result = new CartResponse.CartInfo();
-        result.setCartId(cart.getId());
         result.setItems(itemInfos);
         result.setTotalCount(itemInfos.size());
         result.setTotalPrice(totalPrice);

@@ -13,7 +13,6 @@ public class OrderRequest {
     @Schema(name = "OrderRequestCreate", description = "Order create request", type = "object")
     public static class Create {
         private String orderNo;
-        private Long cartId;
         private Long socialAccountId;
         private Long productAmount;
         private Long discountAmount;
@@ -46,6 +45,7 @@ public class OrderRequest {
     @Setter
     @Schema(name = "OrderRequestItem", description = "Order item request", type = "object")
     public static class Item {
+        private Long cartId;
         private Long productId;
         private Long productDetId;
         private String productName;

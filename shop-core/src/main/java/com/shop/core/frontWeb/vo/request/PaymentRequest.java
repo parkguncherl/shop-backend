@@ -26,9 +26,7 @@ public class PaymentRequest {
     @Schema(name = "PaymentRequestCreateDet", description = "Payment detail create request", type = "object")
     public static class CreateDet {
         private Long paymentId;
-        private String paymentNo;
         private Long orderId;
-        private String orderNo;
         private String payType;
         private String payMethod;
         private Long amount;

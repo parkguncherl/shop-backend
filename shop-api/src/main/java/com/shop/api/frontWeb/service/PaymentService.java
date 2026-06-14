@@ -9,6 +9,7 @@ import com.shop.core.frontWeb.dao.PaymentDao;
 import com.shop.core.frontWeb.vo.request.PaymentRequest;
 import com.shop.core.frontWeb.vo.response.PaymentResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -28,8 +30,15 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponse.Info createPayment(PaymentRequest.Create request) {
+        // orderId가 없으면 orderNo로 조회 (order 생성 응답 파싱 실패 방어)
+        Long orderId = request.getOrderId();
+
+        if (orderId == null) {
+            throw new IllegalArgumentException("orderId를 확인할 수 없습니다. orderNo=" + request.getOrderNo());
+        }
+
         Payment payment = Payment.builder()
-                .orderId(request.getOrderId())
+                .orderId(orderId)
                 .orderNo(request.getOrderNo())
                 .paymentId(request.getPaymentId())
                 .paymentStatus("P")
@@ -44,12 +53,8 @@ public class PaymentService {
             for (PaymentRequest.CreateDet requestDet : request.getDetails()) {
                 PaymentDet det = PaymentDet.builder()
                         .paymentId(payment.getId())
-                        .paymentNo(requestDet.getPaymentNo())
-                        .orderId(payment.getOrderId())
-                        .orderNo(payment.getOrderNo())
                         .payType(requestDet.getPayType())
                         .payMethod(requestDet.getPayMethod())
-                        .paymentStatus("P")
                         .amount(requestDet.getAmount())
                         .pgProvider(requestDet.getPgProvider())
                         .pgTid(requestDet.getPgTid())
@@ -104,7 +109,7 @@ public class PaymentService {
 
         List<PaymentDet> details = paymentDao.selectPaymentDets(payment.getId());
         boolean hasPgPayment = details.stream()
-                .anyMatch(det -> "PG".equals(det.getPayType()) && "P".equals(det.getPaymentStatus()) && det.getAmount() != null && det.getAmount() > 0);
+                .anyMatch(det -> "PG".equals(det.getPayType()) && det.getAmount() != null && det.getAmount() > 0);
         if (hasPgPayment) {
             portOnePaymentClient.cancelPayment(payment.getPaymentId(), request != null ? request.getReason() : null);
         }
@@ -113,7 +118,6 @@ public class PaymentService {
         paymentDao.updatePaymentCancel(payment);
 
         for (PaymentDet det : details) {
-            if (!"P".equals(det.getPaymentStatus())) continue;
             det.setCancelAmount(det.getAmount());
             paymentDao.updatePaymentDetCancel(det);
         }
@@ -139,15 +143,13 @@ public class PaymentService {
     }
 
     private void clearOrderedCart(PaymentRequest.Create request, Payment payment) {
-        Long cartId = request.getCartId();
-        if (cartId == null) {
-            Order order = orderDao.selectOrderById(payment.getOrderId());
-            cartId = order != null ? order.getCartId() : null;
+        Order order = orderDao.selectOrderById(payment.getOrderId());
+        if (order == null || order.getSocialAccountId() == null) {
+            log.warn("[clearOrderedCart] order 또는 socialAccountId 없음 → 건너뜀");
+            return;
         }
-        if (cartId == null || cartId <= 0) return;
-
-        cartDao.deleteAllCartItems(cartId);
-        cartDao.updateCartStatus(cartId, "ordered");
+        int updated = cartDao.markOrderedBySocialAccountId(order.getSocialAccountId());
+        log.info("[clearOrderedCart] socialAccountId={} updated={}", order.getSocialAccountId(), updated);
     }
 
     private PaymentResponse.Info toInfo(Payment payment) {
@@ -166,10 +168,8 @@ public class PaymentService {
             PaymentResponse.Det det = new PaymentResponse.Det();
             det.setPaymentDetId(paymentDet.getId());
             det.setPaymentId(paymentDet.getPaymentId());
-            det.setPaymentNo(paymentDet.getPaymentNo());
             det.setPayType(paymentDet.getPayType());
             det.setPayMethod(paymentDet.getPayMethod());
-            det.setPaymentStatus(paymentDet.getPaymentStatus());
             det.setAmount(paymentDet.getAmount());
             det.setPgProvider(paymentDet.getPgProvider());
             det.setPgTid(paymentDet.getPgTid());

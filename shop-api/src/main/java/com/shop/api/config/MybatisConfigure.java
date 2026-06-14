@@ -1,6 +1,7 @@
 package com.shop.api.config;
 
 import com.shop.core.enums.BooleanValueCode;
+import com.shop.core.enums.CartStatus;
 import com.shop.core.enums.PointType;
 import com.shop.core.enums.SortTypeCode;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,8 @@ public class MybatisConfigure {
             new SortTypeCode.TypeHandler(),
             new JsonbTypeHandler(),
             new StringListTypeHandler(),
-            new PointType.TypeHandler()
+            new PointType.TypeHandler(),
+            new CartStatus.TypeHandler()
     };
 
     @Bean

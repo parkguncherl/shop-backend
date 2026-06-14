@@ -15,6 +15,7 @@ public class OrderItem {
 
     private Long id;
     private Long orderId;
+    private Long cartId;        // TB_CART.id 참조 (주문 당시 장바구니 아이템)
     private Long productId;
     private Long productDetId;
     private String productName;

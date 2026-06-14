@@ -15,7 +15,6 @@ public class OrderResponse {
     public static class Info {
         private Long orderId;
         private String orderNo;
-        private Long cartId;
         private Long socialAccountId;
         private String orderStatus;
         private Long productAmount;

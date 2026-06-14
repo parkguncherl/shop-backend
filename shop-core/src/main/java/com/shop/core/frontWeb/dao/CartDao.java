@@ -1,13 +1,14 @@
 package com.shop.core.frontWeb.dao;
 
 import com.shop.core.entity.Cart;
-import com.shop.core.entity.CartItem;
+import com.shop.core.enums.CartStatus;
 import com.shop.core.frontWeb.vo.request.CartRequest;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,65 +17,74 @@ public class CartDao {
     private final SqlSessionTemplate sqlSession;
     private static final String NAMESPACE = "com.shop.mapper.frontWeb.Cart.";
 
-    /** 게스트 토큰 ID로 활성 장바구니 조회 */
-    public Cart selectActiveCartByGuestTokenId(Long guestTokenId) {
-        return sqlSession.selectOne(NAMESPACE + "selectActiveCartByGuestTokenId", guestTokenId);
+    /** 소셜 계정 ID로 활성 장바구니 아이템 목록 조회 */
+    public List<Cart> selectActiveCartsBySocialAccountId(Long socialAccountId) {
+        return sqlSession.selectList(NAMESPACE + "selectActiveCartsBySocialAccountId", socialAccountId);
     }
 
-    /** 소셜 계정 ID로 활성 장바구니 조회 */
-    public Cart selectActiveCartBySocialAccountId(Long socialAccountId) {
-        return sqlSession.selectOne(NAMESPACE + "selectActiveCartBySocialAccountId", socialAccountId);
+    /** 게스트 토큰 ID로 활성 장바구니 아이템 목록 조회 */
+    public List<Cart> selectActiveCartsByGuestTokenId(Long guestTokenId) {
+        return sqlSession.selectList(NAMESPACE + "selectActiveCartsByGuestTokenId", guestTokenId);
     }
 
-    /** 장바구니 아이템 목록 조회 */
-    public List<CartItem> selectCartItems(Long cartId) {
-        return sqlSession.selectList(NAMESPACE + "selectCartItems", cartId);
+    /** 특정 상품이 이미 담겨 있는지 확인 (소셜 계정 기준) */
+    public Cart selectActiveCartItemBySocialAccountId(Long socialAccountId, Long productDetId) {
+        return sqlSession.selectOne(NAMESPACE + "selectActiveCartItemBySocialAccountId",
+                Map.of("socialAccountId", socialAccountId, "productDetId", productDetId));
     }
 
-    /** 장바구니 생성 */
+    /** 특정 상품이 이미 담겨 있는지 확인 (게스트 기준) */
+    public Cart selectActiveCartItemByGuestTokenId(Long guestTokenId, Long productDetId) {
+        return sqlSession.selectOne(NAMESPACE + "selectActiveCartItemByGuestTokenId",
+                Map.of("guestTokenId", guestTokenId, "productDetId", productDetId));
+    }
+
+    /** 장바구니 아이템 추가 */
     public int insertCart(Cart cart) {
         return sqlSession.insert(NAMESPACE + "insertCart", cart);
     }
 
-    /** 장바구니 아이템 추가 */
-    public int insertCartItem(CartItem cartItem) {
-        return sqlSession.insert(NAMESPACE + "insertCartItem", cartItem);
-    }
-
-    /** 장바구니 아이템 수량 수정 */
+    /** 수량 수정 (TB_CART.id 기준) */
     public int updateCartItemQuantity(CartRequest.UpdateItem request) {
         return sqlSession.update(NAMESPACE + "updateCartItemQuantity", request);
     }
 
-    /** 장바구니 아이템 삭제 */
-    public int deleteCartItem(Long cartItemId) {
-        return sqlSession.update(NAMESPACE + "deleteCartItem", cartItemId);
+    /** 수량 직접 설정 (병합 시 사용) */
+    public int updateCartItemQuantityById(Long cartId, Integer quantity) {
+        return sqlSession.update(NAMESPACE + "updateCartItemQuantityById",
+                Map.of("cartId", cartId, "quantity", quantity));
     }
 
-    /** 장바구니 전체 비우기 */
-    public int deleteAllCartItems(Long cartId) {
-        return sqlSession.update(NAMESPACE + "deleteAllCartItems", cartId);
+    /** 단건 삭제 (del_yn = 'Y') */
+    public int deleteCartItem(Long cartId) {
+        return sqlSession.update(NAMESPACE + "deleteCartItem", cartId);
     }
 
-    /** 회원 전환 시 장바구니 social_account_id 업데이트 */
-    public int updateCartSocialAccountId(Long cartId, Long socialAccountId) {
-        Cart param = new Cart();
-        param.setId(cartId);
-        param.setSocialAccountId(socialAccountId);
-        return sqlSession.update(NAMESPACE + "updateCartSocialAccountId", param);
+    /** 소셜 계정의 활성 아이템 전체 주문완료 처리 (status='O', del_yn='Y') */
+    public int markOrderedBySocialAccountId(Long socialAccountId) {
+        return sqlSession.update(NAMESPACE + "markOrderedBySocialAccountId", socialAccountId);
     }
 
-    /** 로그인 시 게스트 카트 → 회원 귀속 (guestId 로 social_account_id 일괄 업데이트) */
+    /** 게스트 토큰의 활성 아이템 전체 삭제 처리 (del_yn='Y') */
+    public int markDeletedByGuestTokenId(Long guestTokenId) {
+        return sqlSession.update(NAMESPACE + "markDeletedByGuestTokenId", guestTokenId);
+    }
+
+    /** 로그인 시 게스트 ID 기준으로 cart의 social_account_id 일괄 업데이트 */
     public int updateCartSocialAccountIdByGuestId(Long socialAccountId, String guestId) {
         return sqlSession.update(NAMESPACE + "updateCartSocialAccountIdByGuestId",
-                java.util.Map.of("socialAccountId", socialAccountId, "guestId", guestId));
+                Map.of("socialAccountId", socialAccountId, "guestId", guestId));
     }
 
-    /** 장바구니 상태 변경 (merged, ordered 등) */
-    public int updateCartStatus(Long cartId, String status) {
-        Cart param = new Cart();
-        param.setId(cartId);
-        param.setStatus(status);
-        return sqlSession.update(NAMESPACE + "updateCartStatus", param);
+    /** 회원 전환 시 cart의 social_account_id 업데이트 (단건) */
+    public int updateCartSocialAccountId(Long cartId, Long socialAccountId) {
+        return sqlSession.update(NAMESPACE + "updateCartSocialAccountId",
+                Map.of("id", cartId, "socialAccountId", socialAccountId));
+    }
+
+    /** 상태 변경 (id 기준) */
+    public int updateCartStatus(Long cartId, CartStatus status) {
+        return sqlSession.update(NAMESPACE + "updateCartStatus",
+                Map.of("id", cartId, "status", status.getCode()));
     }
 }

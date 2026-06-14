@@ -14,9 +14,6 @@ public class CartResponse {
     @Schema(name = "CartResponseCartInfo", description = "장바구니 정보", type = "object")
     public static class CartInfo {
 
-        @Schema(description = "장바구니 ID")
-        private Long cartId;
-
         @Schema(description = "아이템 목록")
         private List<ItemInfo> items;
 
@@ -32,8 +29,8 @@ public class CartResponse {
     @Schema(name = "CartResponseItemInfo", description = "장바구니 아이템 정보", type = "object")
     public static class ItemInfo {
 
-        @Schema(description = "장바구니 아이템 ID")
-        private Long cartItemId;
+        @Schema(description = "장바구니 ID (TB_CART.id)")
+        private Long cartId;
 
         @Schema(description = "상품 ID")
         private Long productId;
@@ -64,8 +61,5 @@ public class CartResponse {
 
         @Schema(description = "소계 (단가 × 수량)")
         private BigDecimal subtotal;
-
-        @Schema(description = "옵션 스냅샷 JSON")
-        private String optionsSnapshot;
     }
 }
