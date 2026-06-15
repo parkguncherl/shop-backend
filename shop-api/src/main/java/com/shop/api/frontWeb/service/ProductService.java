@@ -33,6 +33,13 @@ public class ProductService {
     }
 
     /**
+     * 상품 검색 비즈니스 레이어 (상품명 + 색상)
+     */
+    public PageResponse<ProductResponse.ProductInfo> selectProductSearchList(PageRequest<ProductRequest.ProductSearchFilter> pageRequest) {
+        return productDao.selectProductSearchList(pageRequest);
+    }
+
+    /**
      * 상품 상세 조회 비즈니스 레이어
      * @param param productId, partnerId
      * @return ProductDetail (상품정보 + SKU목록 + 연관상품목록)

@@ -45,6 +45,18 @@ public class ProductDao {
     }
 
     /**
+     * 상품 검색 (상품명 + 색상 LIKE)
+     */
+    public PageResponse<ProductResponse.ProductInfo> selectProductSearchList(PageRequest<ProductRequest.ProductSearchFilter> pageRequest) {
+        List<ProductResponse.ProductInfo> list = sqlSession.selectList(NAMESPACE + "selectProductSearchList", pageRequest);
+        if (list != null && !list.isEmpty()) {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount(), list, list.size());
+        } else {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
+        }
+    }
+
+    /**
      * 상품 상세 조회 (TB_PRODUCT + 이미지)
      */
     public ProductResponse.ProductDetail selectProductDetail(ProductRequest.ProductDetailParam param) {

@@ -60,6 +60,27 @@ public class ProductController {
     }
 
     /**
+     * 상품 검색 (상품명 + 색상)
+     *
+     * @param productSearchFilter keyword, lastId
+     * @return 검색된 ProductInfo 목록 페이징
+     */
+    @AccessLog("frontWeb 이하 상품 검색")
+    @GetMapping(value = "/productSearch")
+    @Operation(summary = "frontWeb 이하 상품 검색 (상품명 + 색상)")
+    @NotAuthRequired
+    public ApiResponse<PageResponse<ProductResponse.ProductInfo>> selectProductSearchList(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
+            @Parameter(name = "ProductRequestProductSearchFilter", description = "상품 검색 필터", in = ParameterIn.QUERY) ProductRequest.ProductSearchFilter productSearchFilter,
+            @Parameter(name = "PageRequest", description = "상품 검색 페이징") PageRequest<ProductRequest.ProductSearchFilter> pageRequest
+    ) {
+        productSearchFilter.setPartnerId(guestUser.getPartnerId());
+        pageRequest.setFilter(productSearchFilter);
+        PageResponse<ProductResponse.ProductInfo> response = productService.selectProductSearchList(pageRequest);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
      * 상품 상세 조회
      *
      * @param productId 상품 id

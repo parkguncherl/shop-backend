@@ -21,6 +21,24 @@ public class ProductRequest {
 
         @Schema(description = "카테고리 id")
         private String categoryId;
+
+        @Schema(description = "정렬 기준: PRICE_ASC | PRICE_DESC | POPULAR")
+        private String sort;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ProductRequestProductSearchFilter", description = "상품 검색 필터")
+    public static class ProductSearchFilter implements RequestFilter {
+
+        @Schema(description = "검색 키워드 (상품명 또는 색상)")
+        private String keyword;
+
+        @Schema(description = "partner id")
+        private Integer partnerId;
+
+        @Schema(description = "last id")
+        private Integer lastId;
     }
 
     @Getter

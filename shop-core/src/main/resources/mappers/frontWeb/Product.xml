@@ -48,10 +48,60 @@
             AND P.PARTNER_ID = #{filter.partnerId}
             </if>
         </where>
-        ORDER BY P.ID
+        <choose>
+            <when test='filter.sort == "PRICE_ASC"'>ORDER BY P.SELL_AMT ASC, P.ID ASC</when>
+            <when test='filter.sort == "PRICE_DESC"'>ORDER BY P.SELL_AMT DESC, P.ID ASC</when>
+            <when test='filter.sort == "POPULAR"'>ORDER BY P.FAVORITE_POINT DESC, P.ID ASC</when>
+            <otherwise>ORDER BY P.ID DESC</otherwise>
+        </choose>
         LIMIT #{pageRowCount} + 1;
     </select>
 
+
+    <!-- 상품 검색 (상품명 + 색상) -->
+    <select id="selectProductSearchList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.frontWeb.vo.response.ProductResponse$ProductInfo">
+        /* com.shop.mapper.frontWeb.Product.selectProductSearchList */
+        SELECT DISTINCT
+              P.ID                  AS id
+            , P.PARTNER_ID          AS partnerId
+            , P.PROD_CD             AS prodCd
+            , P.PROD_NM             AS prodNm
+            , P.PROD_TP             AS prodTp
+            , P.PROD_DET_TP         AS prodDetTp
+            , P.COMPOSITION         AS composition
+            , P.REP_FILE_ID         AS repFileId
+            , P.DETAIL_FILE_ID      AS detailFileId
+            , P.SIZE_FILE_ID        AS sizeFileId
+            , P.ETC_FILE_ID         AS etcFileId
+            , P.MAKE_YMD            AS makeYmd
+            , P.ORG_AMT             AS orgAmt
+            , P.SELL_AMT            AS sellAmt
+            , P.DISCOUNT_RATE       AS discountRate
+            , P.IS_SPRING           AS isSpring
+            , P.IS_SUMMER           AS isSummer
+            , P.IS_AUTUMN           AS isAutumn
+            , P.IS_WINTER           AS isWinter
+            , P.FAVORITE_POINT      AS favoritePoint
+            , FD.SYS_FILE_NM        AS sysFileNm
+        FROM TB_PRODUCT P
+        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
+        LEFT JOIN TB_PRODUCT_DET PD ON PD.PRODUCT_ID = P.ID AND PD.SLEEP_YN = 'N'
+        <where>
+            AND P.DEL_YN = 'N'
+            AND P.PARTNER_ID = #{filter.partnerId}
+            <if test='filter.lastId != null'>
+                AND P.ID > #{filter.lastId}
+            </if>
+            <if test='filter.keyword != null and filter.keyword != ""'>
+                AND (
+                    P.PROD_NM LIKE CONCAT('%', #{filter.keyword}, '%')
+                    OR PD.PRODUCT_DET_COLOR LIKE CONCAT('%', #{filter.keyword}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY P.ID
+        LIMIT #{pageRowCount} + 1;
+    </select>
 
     <!-- 상품 상세 조회 -->
     <select id="selectProductDetail" parameterType="com.shop.core.frontWeb.vo.request.ProductRequest$ProductDetailParam"
