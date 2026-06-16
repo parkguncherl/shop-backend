@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.Review">
+
+    <insert id="insertReview"
+            parameterType="com.shop.core.entity.Review"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        /* Review.insertReview */
+        INSERT INTO TB_REVIEW (
+            SOCIAL_ACCOUNT_ID,
+            ORDER_ITEM_ID,
+            PRODUCT_ID,
+            PRODUCT_DET_ID,
+            RATING,
+            CONTENT,
+            FILE_ID,
+            IS_BLINDED,
+            DEL_YN,
+            CRE_TM,
+            UPT_TM
+        ) VALUES (
+            #{socialAccountId},
+            #{orderItemId},
+            #{productId},
+            #{productDetId},
+            #{rating},
+            #{content},
+            #{fileId},
+            'N',
+            'N',
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <select id="selectReviewById"
+            parameterType="Long"
+            resultType="com.shop.core.entity.Review">
+        /* Review.selectReviewById */
+        SELECT
+            ID                AS id,
+            SOCIAL_ACCOUNT_ID AS socialAccountId,
+            ORDER_ITEM_ID     AS orderItemId,
+            PRODUCT_ID        AS productId,
+            PRODUCT_DET_ID    AS productDetId,
+            RATING            AS rating,
+            CONTENT           AS content,
+            FILE_ID           AS fileId,
+            IS_BLINDED        AS isBlinded,
+            DEL_YN            AS delYn,
+            CRE_TM            AS creTm,
+            UPT_TM            AS uptTm
+        FROM TB_REVIEW
+        WHERE ID = #{id}
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectReviewByOrderItemId"
+            parameterType="Long"
+            resultType="com.shop.core.entity.Review">
+        /* Review.selectReviewByOrderItemId */
+        SELECT
+            ID                AS id,
+            SOCIAL_ACCOUNT_ID AS socialAccountId,
+            ORDER_ITEM_ID     AS orderItemId,
+            PRODUCT_ID        AS productId,
+            PRODUCT_DET_ID    AS productDetId,
+            RATING            AS rating,
+            CONTENT           AS content,
+            FILE_ID           AS fileId,
+            IS_BLINDED        AS isBlinded,
+            DEL_YN            AS delYn,
+            CRE_TM            AS creTm,
+            UPT_TM            AS uptTm
+        FROM TB_REVIEW
+        WHERE ORDER_ITEM_ID = #{orderItemId}
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectReviewsByProductId"
+            parameterType="Long"
+            resultType="com.shop.core.frontWeb.vo.response.ReviewResponse$ProductItem">
+        /* Review.selectReviewsByProductId */
+        SELECT
+            ID                AS id,
+            SOCIAL_ACCOUNT_ID AS socialAccountId,
+            RATING            AS rating,
+            CONTENT           AS content,
+            FILE_ID           AS fileId,
+            CRE_TM            AS creTm
+        FROM TB_REVIEW
+        WHERE PRODUCT_ID = #{productId}
+          AND DEL_YN     = 'N'
+          AND IS_BLINDED = 'N'
+        ORDER BY ID DESC
+    </select>
+
+    <select id="selectProductReviewSummary"
+            parameterType="Long"
+            resultType="com.shop.core.frontWeb.vo.response.ReviewResponse$ProductList">
+        /* Review.selectProductReviewSummary */
+        SELECT
+            #{productId}               AS productId,
+            ROUND(AVG(RATING), 1)      AS avgRating,
+            COUNT(*)                   AS reviewCount
+        FROM TB_REVIEW
+        WHERE PRODUCT_ID = #{productId}
+          AND DEL_YN     = 'N'
+          AND IS_BLINDED = 'N'
+    </select>
+
+    <select id="selectMyReviews"
+            parameterType="Long"
+            resultType="com.shop.core.frontWeb.vo.response.ReviewResponse$MyItem">
+        /* Review.selectMyReviews */
+        SELECT
+            R.ID                AS id,
+            R.ORDER_ITEM_ID     AS orderItemId,
+            R.PRODUCT_ID        AS productId,
+            OI.PRODUCT_NAME     AS productName,
+            R.RATING            AS rating,
+            R.CONTENT           AS content,
+            R.FILE_ID           AS fileId,
+            R.CRE_TM            AS creTm
+        FROM TB_REVIEW R
+        LEFT JOIN TB_ORDER_ITEM OI ON OI.ID = R.ORDER_ITEM_ID
+        WHERE R.SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND R.DEL_YN = 'N'
+        ORDER BY R.ID DESC
+    </select>
+
+    <update id="updateReview"
+            parameterType="com.shop.core.frontWeb.vo.request.ReviewRequest$Update">
+        /* Review.updateReview */
+        UPDATE TB_REVIEW SET
+            RATING  = #{rating},
+            CONTENT = #{content},
+            FILE_ID = #{fileId},
+            UPT_TM  = NOW()
+        WHERE ID = #{id}
+          AND SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND DEL_YN = 'N'
+    </update>
+
+    <update id="deleteReview" parameterType="Long">
+        /* Review.deleteReview */
+        UPDATE TB_REVIEW SET
+            DEL_YN = 'Y',
+            UPT_TM = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>

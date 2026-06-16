@@ -48,6 +48,10 @@ public class OrderDao {
         return sqlSession.selectList(NAMESPACE + "selectOrdersBySocialAccountId", socialAccountId);
     }
 
+    public Order selectOrderByOrderItemId(Long orderItemId) {
+        return sqlSession.selectOne(NAMESPACE + "selectOrderByOrderItemId", orderItemId);
+    }
+
     public int updateOrderStatus(Long orderId, String orderStatus) {
         Order order = new Order();
         order.setId(orderId);

@@ -230,6 +230,18 @@
         ORDER BY ID DESC
     </select>
 
+    <select id="selectOrderByOrderItemId"
+            parameterType="Long"
+            resultType="com.shop.core.entity.Order">
+        /* Order.selectOrderByOrderItemId */
+        SELECT
+            <include refid="orderColumns" />
+        FROM TB_ORDER O
+        JOIN TB_ORDER_ITEM OI ON OI.ORDER_ID = O.ID
+        WHERE OI.ID = #{orderItemId}
+        LIMIT 1
+    </select>
+
     <update id="updateOrderStatus"
             parameterType="com.shop.core.entity.Order">
         /* Order.updateOrderStatus */
