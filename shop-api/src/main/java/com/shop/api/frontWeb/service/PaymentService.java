@@ -3,9 +3,12 @@ package com.shop.api.frontWeb.service;
 import com.shop.core.entity.Payment;
 import com.shop.core.entity.PaymentDet;
 import com.shop.core.entity.Order;
+import com.shop.core.entity.PointHistory;
+import com.shop.core.enums.PointType;
 import com.shop.core.frontWeb.dao.CartDao;
 import com.shop.core.frontWeb.dao.OrderDao;
 import com.shop.core.frontWeb.dao.PaymentDao;
+import com.shop.core.frontWeb.dao.PointDao;
 import com.shop.core.frontWeb.vo.request.PaymentRequest;
 import com.shop.core.frontWeb.vo.response.PaymentResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class PaymentService {
     private final PaymentDao paymentDao;
     private final OrderDao orderDao;
     private final CartDao cartDao;
+    private final PointDao pointDao;
     private final PortOnePaymentClient portOnePaymentClient;
 
     @Transactional
@@ -123,6 +127,29 @@ public class PaymentService {
         }
 
         orderDao.updateOrderStatus(payment.getOrderId(), "C");
+
+        // ── 포인트 취소 처리 ──
+        // 적립된 포인트 차감 (earnedPoint > 0 이면 차감)
+        if (order.getEarnedPoint() != null && order.getEarnedPoint() > 0) {
+            pointDao.insertPointHistory(PointHistory.builder()
+                    .socialAccountId(order.getSocialAccountId())
+                    .orderId(order.getId())
+                    .pointType(PointType.RESTORE)
+                    .pointAmount(-order.getEarnedPoint())
+                    .description("주문 " + order.getOrderNo() + " 취소 - 적립 포인트 회수")
+                    .build());
+        }
+        // 사용한 포인트 환불 (usedPoint > 0 이면 복원)
+        if (order.getUsedPoint() != null && order.getUsedPoint() > 0) {
+            pointDao.insertPointHistory(PointHistory.builder()
+                    .socialAccountId(order.getSocialAccountId())
+                    .orderId(order.getId())
+                    .pointType(PointType.RESTORE)
+                    .pointAmount(order.getUsedPoint())
+                    .description("주문 " + order.getOrderNo() + " 취소 - 사용 포인트 환불")
+                    .build());
+        }
+
         return getPayment(payment.getId());
     }
 
