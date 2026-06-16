@@ -235,7 +235,23 @@
             resultType="com.shop.core.entity.Order">
         /* Order.selectOrderByOrderItemId */
         SELECT
-            <include refid="orderColumns" />
+            O.ID                AS id,
+            O.ORDER_NO          AS orderNo,
+            O.SOCIAL_ACCOUNT_ID AS socialAccountId,
+            O.ORDER_STATUS      AS orderStatus,
+            O.PRODUCT_AMOUNT    AS productAmount,
+            O.DISCOUNT_AMOUNT   AS discountAmount,
+            O.USED_POINT        AS usedPoint,
+            O.PAYMENT_AMOUNT    AS paymentAmount,
+            O.EARNED_POINT      AS earnedPoint,
+            O.RECEIVER_NAME     AS receiverName,
+            O.RECEIVER_PHONE    AS receiverPhone,
+            O.ZIP_CODE          AS zipCode,
+            O.ADDRESS           AS address,
+            O.ADDRESS_DETAIL    AS addressDetail,
+            O.MEMO              AS memo,
+            O.CRE_TM            AS creTm,
+            O.UPT_TM            AS uptTm
         FROM TB_ORDER O
         JOIN TB_ORDER_ITEM OI ON OI.ORDER_ID = O.ID
         WHERE OI.ID = #{orderItemId}

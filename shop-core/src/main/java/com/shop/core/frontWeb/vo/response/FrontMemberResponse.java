@@ -34,5 +34,8 @@ public class FrontMemberResponse {
 
         @Schema(description = "신규 가입 여부")
         private boolean isNewMember;
+
+        @Schema(description = "파트너 ID")
+        private Integer partnerId;
     }
 }

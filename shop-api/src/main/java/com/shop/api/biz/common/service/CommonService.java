@@ -114,27 +114,6 @@ public class CommonService {
 
     /* webpImageUpload */
     public FileDet webpImageUpload(MultipartFile file, String key, String fileType, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
-
-//        if (file.getContentType() == null || !file.getContentType().startsWith("image")) {
-//            throw new CustomRuntimeException("이미지 파일이 아닙니다: " + file.getContentType());
-//        }
-//
-//        String originalFileName = file.getOriginalFilename();
-//        ConvertResult result = this.optimizeAndConvertToWebp(file);
-//
-//        //resizeImageKeepAspectRatio(file, Integer.parseInt(commonRequest.getImageFileWidth()), Integer.parseInt(commonRequest.getImageFileHeight()));
-//
-//
-//        String finalKey = key.replaceAll("\\.[^.]+$", "." + result.extension());
-//
-//        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-//                .bucket(BUKET_NAME)
-//                .key(finalKey)
-//                .contentType(result.contentType())
-//                .build();
-//
-//        s3Client.putObject(putObjectRequest,RequestBody.fromBytes(result.bytes()));
-
         String originalFileName = file.getOriginalFilename();
         String finalKey = this.webpImageUploadToBucket(file, key);
 

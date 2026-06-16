@@ -104,6 +104,7 @@ public class FrontLoginService {
         response.setAccessToken(token.getAccessToken());
         response.setRefreshToken(token.getRefreshToken());
         response.setNewMember(isNewMember);
+        response.setPartnerId(account.getPartnerId());
         return response;
     }
 

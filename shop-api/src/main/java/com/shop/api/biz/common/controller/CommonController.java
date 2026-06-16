@@ -40,9 +40,6 @@ import java.util.List;
 public class CommonController {
 
     private final CommonService commonService;
-    private final UserService userService;
-    private final FileDao fileDao;
-    private final FileService fileService;
 
     /**
      * 개별_파일_조회

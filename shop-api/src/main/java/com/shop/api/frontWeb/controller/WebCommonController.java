@@ -6,6 +6,7 @@ import com.shop.api.biz.system.service.PartnerCodeService;
 import com.shop.api.biz.common.service.CommonService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.common.vo.request.CommonRequest;
+import com.shop.core.biz.common.vo.response.CommonResponse;
 import com.shop.core.biz.system.vo.request.CodeRequest;
 import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
@@ -13,6 +14,7 @@ import com.shop.core.biz.system.vo.response.CodeResponse;
 import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
 import com.shop.core.entity.FileDet;
 import com.shop.core.entity.PartnerCode;
+import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.WebCommonRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -160,6 +163,28 @@ public class WebCommonController {
         List<FileDet> fileList = commonService.selectFileList(fileId);
 
         return new ApiResponse<>(ApiResultCode.SUCCESS, fileList);
+    }
+
+    /**
+     * FO 리뷰 이미지 다중 업로드
+     * - 최대 5장, fileId=0 이면 신규 tb_file 레코드 생성 후 fileId 반환
+     *
+     * @param commonRequest multipart/form-data (fileId, uploadFiles)
+     * @return 생성된 fileId
+     */
+    @PostMapping(value = "/imgfile/uploads")
+    @NotAuthRequired
+    @Operation(summary = "FO 리뷰 이미지 다중 업로드")
+    public ApiResponse<Integer> reviewImgFileUploads(
+            CommonRequest.FileUploads commonRequest
+    ) throws IOException {
+        // 프론트 사용자를 시스템 계정으로 처리
+        User frontUser = new User();
+        frontUser.setLoginId("FRONT_USER");
+
+        List<CommonResponse.FileDown> result = commonService.imgFileUploads(commonRequest, frontUser);
+        Integer fileId = result.isEmpty() ? null : result.get(0).getFileId();
+        return new ApiResponse<>(ApiResultCode.SUCCESS, fileId);
     }
 
 }

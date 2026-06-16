@@ -124,7 +124,7 @@
             R.FILE_ID           AS fileId,
             R.CRE_TM            AS creTm
         FROM TB_REVIEW R
-        LEFT JOIN TB_ORDER_ITEM OI ON OI.ID = R.ORDER_ITEM_ID
+        JOIN TB_ORDER_ITEM OI ON OI.ID = R.ORDER_ITEM_ID
         WHERE R.SOCIAL_ACCOUNT_ID = #{socialAccountId}
           AND R.DEL_YN = 'N'
         ORDER BY R.ID DESC
