@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -34,8 +37,11 @@ public class PartnerDao {
     /**
      * 내파트너만 조회하기
      */
-    public PartnerResponse.Select selectMyPartnerBySubDomain(String subDomain) {
-        return sqlSession.selectOne("selectMyPartnerBySubDomain", subDomain);
+    public PartnerResponse.Select selectMyPartnerBySubDomain(String domain, String subDomain) {
+        Map<String, String> params = new HashMap<>();
+        params.put("domain", domain);
+        params.put("subDomain", subDomain);
+        return sqlSession.selectOne("selectMyPartnerBySubDomain", params);
     }
 /**
      * 화주관리_목록_조회 (페이징)

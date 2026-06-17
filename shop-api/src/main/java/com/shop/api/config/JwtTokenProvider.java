@@ -31,12 +31,7 @@ public class JwtTokenProvider {
     }
 
     // Guest Token 생성
-    public String createGuestToken(String guestId, String subDomain) {
-        Integer partnerId = 1;
-        if(!StringUtils.isEmpty(subDomain) && !StringUtils.equalsAny(subDomain, "www")){
-            PartnerResponse.Select partner = partnerDao.selectMyPartnerBySubDomain(subDomain);
-            partnerId = partner.getId();
-        }
+    public String createGuestToken(String guestId, Integer partnerId) {
 
         return Jwts.builder()
                 .subject(guestId)

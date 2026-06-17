@@ -505,32 +505,4 @@ public class AuthController {
         }
     }
 
-
-    /**
-     * 계정별 메뉴 권한 체크
-     *
-     * @param jwtUser
-     * @return
-     */
-    @GetMapping(value = "/revertToWmsAuth")
-    @Operation(summary = "물류권한으로 돌아가기")
-    public ApiResponse revertToWmsAuth(@Parameter(hidden = true) @JwtUser User jwtUser) {
-        User user = userService.selectUserById(jwtUser.getId());
-        if(Objects.equals(user.getUserType(),"5") && Integer.parseInt(user.getAuthCd()) < 400){
-            UserRequest.Update onlyOneColumn = new UserRequest.Update();
-            onlyOneColumn.setId(jwtUser.getId());
-            onlyOneColumn.setOrgPartnerId(0); // 파트너도 삭제
-            onlyOneColumn.setPartnerId(0); // 파트너도 삭제
-            onlyOneColumn.setAuthCd(GlobalConst.LOGIS_ADMIN.getCode()); // 물류관리자
-            userService.updateUser(onlyOneColumn);
-            authTokenService.deleteAuthTokenByAccessToken(user.getId());
-        } else {
-            return new ApiResponse<>(ApiResultCode.SUCCESS,"권한이 물류관리자");
-        }
-
-        return new ApiResponse<>(ApiResultCode.SUCCESS);
-    }
-
-
-
 }

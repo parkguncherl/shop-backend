@@ -6,7 +6,6 @@ import com.shop.api.biz.system.service.ContactService;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.request.ContactRequest;
-import com.shop.core.biz.system.vo.request.MenuRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.ContactResponse;
 import com.shop.core.entity.Contact;
@@ -14,11 +13,9 @@ import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,8 +73,6 @@ public class ContactController {
             @Parameter(name = "PageRequest", description = "접속로그 조회 페이징") PageRequest<ContactRequest.PagingFilter> pageRequest,
             @Parameter(hidden = true) @JwtUser User jwtUser // JWT로 인증된 사용자 정보 주입
     ) {
-        log.debug("<======= ContactRequest.PagingFilter: {}", filter);
-
         // JWT 인증된 사용자를 이용한 추가적인 로직이 필요할 수 있습니다
         pageRequest.setFilter(filter);  // 필터를 pageRequest에 설정
         PageResponse<ContactResponse.Paging> response = contactService.selectContactListPagingjwt(pageRequest, jwtUser); // 서비스에서 페이징된 접속로그 목록 조회
@@ -94,11 +89,7 @@ public class ContactController {
     @GetMapping(value = "/{contactId}")
     @Operation(summary = "접속로그 조회")
     public ApiResponse<Contact> selectContactById(@PathVariable Integer contactId) {
-
-        log.debug(">>>>>> contactId = {}", contactId);
         Contact contact = contactService.selectContactById(contactId);
-        log.debug(">>>>>> contact = {}", contact);
-
         if (contact == null) {
             return new ApiResponse<>(ApiResultCode.DATA_NOT_FOUND);
         }

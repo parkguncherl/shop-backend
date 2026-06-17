@@ -1,5 +1,6 @@
 package com.shop.api.utils;
 
+import com.google.common.net.InternetDomainName;
 import com.shop.core.enums.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
@@ -141,28 +144,6 @@ public class CommUtil {
     }
 
 
-    /**
-     * uri 가져오기
-     *
-     * @return
-     */
-    public static String getUri() {
-        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        String uri = null;
-
-        if (requestAttributes != null) {
-            HttpServletRequest request = requestAttributes.getRequest();
-            try {
-                uri = request.getRequestURI();
-            } catch (Exception e) {
-                return "/";
-            }
-        } else {
-            return "/";
-        }
-        return uri;
-    }
-
     public static String getFileName(String name) throws UnsupportedEncodingException {
         Date date = new Date();
         String dateText = new SimpleDateFormat("yyyyMMdd").format(date);
@@ -272,19 +253,6 @@ public class CommUtil {
         }
     }
 
-    /**
-     * 오늘 날짜를 원하는 형식으로 변경한다. getNowDate("yyyyMMdd")
-     *
-     * @return String
-     */
-    public static String getNowDate(String format) {
-        Date date = new Date();
-        String dateText = new SimpleDateFormat(format).format(date);
-        return dateText;
-    }
-
-
-
     public static XSSFRow makeSampletRow(String[] headerInfo, XSSFRow row){
         int dataIndex = 0;
         for (String colunmNm : headerInfo) {
@@ -316,6 +284,37 @@ public class CommUtil {
         }
         return "";
     }
+    public static String[] extractDomainParts(String urlStr) {
+        try {
+            // 1. URI 객체를 생성하여 호스트명(Host)만 추출
+            URI uri = new URI(urlStr);
+            String host = uri.getHost();
 
+            if (host == null) return new String[]{null, ""};
 
+            // 2. localhost이거나 IP 주소인 경우 (서브도메인이 없으므로 null, host 반환)
+            if (host.equals("localhost") || host.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}")) {
+                return new String[]{null, null};
+            }
+
+            // 3. Guava를 사용하여 메인 도메인 추출
+            InternetDomainName domainName = InternetDomainName.from(host);
+            if (domainName.hasPublicSuffix()) {
+                String mainDomain = domainName.topPrivateDomain().toString(); // 예: gguanggu.com
+
+                // 전체 호스트명에서 메인 도메인 부분을 제외한 나머지를 서브도메인으로 추출
+                if (host.equals(mainDomain)) {
+                    return new String[]{null, mainDomain}; // 서브도메인이 없는 경우
+                } else {
+                    // 메인 도메인 앞의 점(.)까지 포함해서 잘라냅니다. (예: "admin.gguanggu.com" -> "admin")
+                    String subDomain = host.substring(0, host.length() - mainDomain.length() - 1);
+                    return new String[]{subDomain, mainDomain};
+                }
+            }
+
+            return new String[]{null, host};
+        } catch (URISyntaxException | IllegalArgumentException e) {
+            return new String[]{null, null} ;
+        }
+    }
 }

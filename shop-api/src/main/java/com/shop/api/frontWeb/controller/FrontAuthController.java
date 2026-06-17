@@ -43,7 +43,6 @@ public class FrontAuthController {
     @Operation(summary = "web-Guest Token 발급")
     public ApiResponse<GuestToken> issueGuestToken(HttpServletRequest request) {
 
-        log.debug("issueGuestToken  start ==>");
         String clientIp    = getClientIp(request);
         String userAgent   = request.getHeader("User-Agent");
         String refererUrl  = request.getHeader("X-Referer-URL");   // ← 변경

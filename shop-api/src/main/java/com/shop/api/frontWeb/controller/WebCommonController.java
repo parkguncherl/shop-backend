@@ -1,6 +1,7 @@
 package com.shop.api.frontWeb.controller;
 
 import com.shop.api.annotation.AccessLog;
+import com.shop.api.annotation.GuestUser;
 import com.shop.api.biz.system.service.CodeService;
 import com.shop.api.biz.system.service.PartnerCodeService;
 import com.shop.api.biz.common.service.CommonService;
@@ -13,6 +14,7 @@ import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.CodeResponse;
 import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
 import com.shop.core.entity.FileDet;
+import com.shop.core.entity.GuestToken;
 import com.shop.core.entity.PartnerCode;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
@@ -100,10 +102,10 @@ public class WebCommonController {
     @GetMapping(value = "/partnerCode/{partnerUpperCode}")
     @Operation(summary = "web-partnerCode 목록 조회")
     @NotAuthRequired
-    public ApiResponse<List<PartnerCodeResponse.LowerSelect>> partnerCodeList(@PathVariable String partnerUpperCode) {
+    public ApiResponse<List<PartnerCodeResponse.LowerSelect>> partnerCodeList(@Parameter(hidden = true) @GuestUser GuestToken guestUser, @PathVariable String partnerUpperCode) {
         PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest = new PartnerCodeRequest.PartnerCodeDropDown();
         partnerCodeRequest.setCodeUpper(partnerUpperCode);
-        partnerCodeRequest.setPartnerId(1);
+        partnerCodeRequest.setPartnerId(guestUser.getPartnerId());
         List<PartnerCodeResponse.LowerSelect> response = partnerCodeService.selectLowerCodeByCodeUpperForPartnerCodeMng(partnerCodeRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
@@ -119,6 +121,7 @@ public class WebCommonController {
     @Operation(summary = "web-partnerCode 조회")
     @NotAuthRequired
     public ApiResponse<PartnerCode> partnerCodeByUk(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
             @Parameter(description = "partnerCode 고유 키 조합 조회 필터") WebCommonRequest.partnerCodeByUkFilter partnerCodeByUkFilter
     ) {
         // 필수값 체크
@@ -126,7 +129,7 @@ public class WebCommonController {
             return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE);
         }
 
-        partnerCodeByUkFilter.setPartnerId(1);
+        partnerCodeByUkFilter.setPartnerId(guestUser.getPartnerId());
 
         PartnerCode response = partnerCodeService.selectPartnerCodeByUk(partnerCodeByUkFilter.getPartnerId(), partnerCodeByUkFilter.getCodeUpper(), partnerCodeByUkFilter.getCodeCd());
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);

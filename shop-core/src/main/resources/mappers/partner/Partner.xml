@@ -91,7 +91,7 @@
         ORDER BY TP.PARTNER_NM ASC;
     </select>
 
-    <select id="selectMyPartnerBySubDomain" parameterType="String" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
+    <select id="selectMyPartnerBySubDomain" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
         /* com.shop.mapper.partner.selectMyPartnerBySubDomain */
         SELECT
             TP.ID AS id,
@@ -110,8 +110,9 @@
             TP.UPD_USER AS updUser,
             FN_GET_USERNAME(TP.UPD_USER) as upduserNm
         FROM TB_PARTNER TP
-       WHERE TP.SUB_DOMAIN = #{subDomain}
-         AND A.DEL_YN = 'N'
+       WHERE TP.DOMAIN = #{domain}
+         AND TP.SUB_DOMAIN = #{subDomain}
+         AND TP.DEL_YN = 'N'
        LIMIT 1
     </select>
 

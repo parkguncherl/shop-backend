@@ -49,7 +49,7 @@ dependencies {
     implementation 'commons-codec:commons-codec:1.15'
 
     // Guava
-    implementation 'com.google.guava:guava:32.1.2-jre'
+    implementation 'com.google.guava:guava:33.0.0-jre'
 
     // Slack API
     implementation "com.slack.api:slack-api-client:1.46.0"
