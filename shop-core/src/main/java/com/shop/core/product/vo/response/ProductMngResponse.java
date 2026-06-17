@@ -19,6 +19,9 @@ public class ProductMngResponse {
     @Schema(name = "ProductMngResponseProductInfo", description = "상품관리 영역 상품정보", type = "object")
     public static class ProductInfo extends Product {
 
+        @Schema(description = "파트너명")
+        private String partnerNm;
+
         @Schema(description = "상품구분명")
         private String prodTpNm;
 

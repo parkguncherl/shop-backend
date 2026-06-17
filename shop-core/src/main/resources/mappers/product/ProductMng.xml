@@ -7,6 +7,7 @@
         SELECT
               TP.ID AS id
             , TP.PARTNER_ID AS partnerId
+            , FN_GET_PARTNERNM( TP.PARTNER_ID ) AS partnerNm
             , TP.PROD_CD AS prodCd
             , TP.PROD_NM AS prodNm
             , TP.PROD_TP AS prodTp
@@ -38,7 +39,7 @@
                      CASE WHEN TP.IS_AUTUMN = 'Y' THEN 'F' ELSE '_' END,
                      CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END) AS SEASON
         FROM TB_PRODUCT TP
-              LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
         <where>
             AND TP.DEL_YN = 'N'
             <if test='prodNm != null and !prodNm.equals("")'>
