@@ -169,6 +169,24 @@ public class WebCommonController {
     }
 
     /**
+     * FO 리뷰 이미지 단건 삭제 (TB_FILE_DET)
+     *
+     * @param fileDetId 삭제할 TB_FILE_DET.ID
+     * @return SUCCESS
+     */
+    @DeleteMapping(value = "/fileDet/{fileDetId}")
+    @NotAuthRequired
+    @Operation(summary = "FO 파일 상세 단건 삭제")
+    public ApiResponse<ApiResultCode> deleteFileDet(
+            @PathVariable Integer fileDetId
+    ) {
+        User frontUser = new User();
+        frontUser.setLoginId("FRONT_USER");
+        commonService.deleteFileDetByIdWithBuket(fileDetId, frontUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    /**
      * FO 리뷰 이미지 다중 업로드
      * - 최대 5장, fileId=0 이면 신규 tb_file 레코드 생성 후 fileId 반환
      *
