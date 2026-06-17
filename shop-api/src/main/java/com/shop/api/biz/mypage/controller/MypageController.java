@@ -46,6 +46,21 @@ public class MypageController {
 
 
     /**
+     * 즐겨찾기 조회
+     * @param jwtUser
+     * @return
+     */
+    @GetMapping(value = "/favorites")
+    @Operation(summary = "즐겨찾기 조회")
+    public ApiResponse<List<FavoritesResponse.SelectFavorites>> selectFavorites(
+            @Parameter(hidden = true) @JwtUser User jwtUser) {
+        User user = userService.selectUserById(jwtUser.getId());
+        List<FavoritesResponse.SelectFavorites> list = mypageService.selectFavorites(jwtUser.getId(), user.getAuthCd());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, list);
+    }
+
+
+    /**
      * 즐겨찾기 등록
      *
      * @param jwtUser
@@ -135,7 +150,7 @@ public class MypageController {
      */
     @PutMapping(value = "")
     @Operation(summary = "마이페이지 수정")
-    public ApiResponse updateMypage(
+    public ApiResponse<ApiResultCode> updateMypage(
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter(description = "마이페이지 수정") @RequestBody UserRequest.Update request
     ) {
@@ -143,7 +158,7 @@ public class MypageController {
         if (StringUtils.isEmpty(request.getUserNm()) || StringUtils.isEmpty(request.getPhoneNo())) {
             return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE);
         }
-        if(request.getPhoneNo().indexOf("*") > -1){
+        if(request.getPhoneNo().contains("*")){
             request.setPhoneNo(null);
         } else {
             CommUtil.phoneFieldCheck(EsseType.ESS, request.getPhoneNo(), 11, "전화번호");
