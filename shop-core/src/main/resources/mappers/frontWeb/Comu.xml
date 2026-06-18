@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.Comu">
+
+    <!-- ═══════════════════════════════ TB_COMU ═══════════════════════════════ -->
+
+    <insert id="insertComu"
+            parameterType="com.shop.core.entity.Comu"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        /* Comu.insertComu */
+        INSERT INTO TB_COMU (
+            COMU_TYPE,
+            EVENT_ID,
+            CRE_USER,
+            CRE_TM,
+            DEL_YN
+        ) VALUES (
+            #{comuType},
+            #{eventId},
+            #{creUser},
+            NOW(),
+            'N'
+        )
+    </insert>
+
+    <select id="selectComuById"
+            parameterType="Long"
+            resultType="com.shop.core.entity.Comu">
+        /* Comu.selectComuById */
+        SELECT
+            ID         AS id,
+            COMU_TYPE  AS comuType,
+            EVENT_ID   AS eventId,
+            CRE_USER   AS creUser,
+            CRE_TM     AS creTm,
+            DEL_YN     AS delYn
+        FROM TB_COMU
+        WHERE ID = #{id}
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectComuListByOrderId"
+            parameterType="Long"
+            resultType="com.shop.core.frontWeb.vo.response.ComuResponse$Summary">
+        /* Comu.selectComuListByOrderId */
+        SELECT
+            C.ID                                AS id,
+            C.COMU_TYPE                         AS comuType,
+            CD_CODE.CODE_NM                     AS comuTypeName,
+            C.EVENT_ID                          AS orderId,
+            LAST_MSG.COMU_CNTN                  AS lastMessage,
+            LAST_MSG.CRE_TM                     AS lastMessageTm,
+            C.CRE_TM                            AS creTm
+        FROM TB_COMU C
+        LEFT JOIN TB_CODE CD_CODE
+               ON CD_CODE.CODE_UPPER = '10130'
+              AND CD_CODE.CODE_CD    = C.COMU_TYPE
+              AND CD_CODE.DEL_YN    = 'N'
+        LEFT JOIN LATERAL (
+            SELECT COMU_CNTN, CRE_TM
+            FROM TB_COMU_DET
+            WHERE COMU_ID = C.ID
+              AND DEL_YN  = 'N'
+            ORDER BY ID DESC
+            LIMIT 1
+        ) LAST_MSG ON TRUE
+        WHERE C.EVENT_ID = #{orderId}
+          AND C.DEL_YN   = 'N'
+        ORDER BY C.ID DESC
+    </select>
+
+    <!-- ═══════════════════════════════ TB_COMU_DET ══════════════════════════ -->
+
+    <insert id="insertComuDet"
+            parameterType="com.shop.core.entity.ComuDet"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        /* Comu.insertComuDet */
+        INSERT INTO TB_COMU_DET (
+            COMU_ID,
+            REQ_YN,
+            COMU_CNTN,
+            FILE_ID,
+            CRE_USER,
+            CRE_TM,
+            DEL_YN
+        ) VALUES (
+            #{comuId},
+            #{reqYn},
+            #{comuCntn},
+            #{fileId},
+            #{creUser},
+            NOW(),
+            'N'
+        )
+    </insert>
+
+    <select id="selectComuDetById"
+            parameterType="Long"
+            resultType="com.shop.core.entity.ComuDet">
+        /* Comu.selectComuDetById */
+        SELECT
+            ID        AS id,
+            COMU_ID   AS comuId,
+            REQ_YN    AS reqYn,
+            COMU_CNTN AS comuCntn,
+            FILE_ID   AS fileId,
+            CRE_USER  AS creUser,
+            CRE_TM    AS creTm,
+            DEL_YN    AS delYn
+        FROM TB_COMU_DET
+        WHERE ID = #{id}
+          AND DEL_YN = 'N'
+    </select>
+
+    <select id="selectMessagesByComuId"
+            parameterType="Long"
+            resultType="com.shop.core.frontWeb.vo.response.ComuResponse$Message">
+        /* Comu.selectMessagesByComuId */
+        SELECT
+            ID        AS id,
+            COMU_ID   AS comuId,
+            REQ_YN    AS reqYn,
+            COMU_CNTN AS comuCntn,
+            FILE_ID   AS fileId,
+            CRE_USER  AS creUser,
+            CRE_TM    AS creTm
+        FROM TB_COMU_DET
+        WHERE COMU_ID = #{comuId}
+          AND DEL_YN  = 'N'
+        ORDER BY ID ASC
+    </select>
+
+    <update id="deleteComuDet" parameterType="Long">
+        /* Comu.deleteComuDet */
+        UPDATE TB_COMU_DET SET
+            DEL_YN = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deleteComu" parameterType="Long">
+        /* Comu.deleteComu */
+        UPDATE TB_COMU SET DEL_YN = 'Y' WHERE ID = #{id}
+    </update>
+
+    <update id="deleteComuDetByComuId" parameterType="Long">
+        /* Comu.deleteComuDetByComuId */
+        UPDATE TB_COMU_DET SET DEL_YN = 'Y' WHERE COMU_ID = #{comuId}
+    </update>
+
+    <select id="selectCodeDesc" resultType="String">
+        /* Comu.selectCodeDesc */
+        SELECT CODE_DESC
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+          AND CODE_CD    = #{codeCd}
+          AND DEL_YN     = 'N'
+        LIMIT 1
+    </select>
+
+    <select id="selectCodeNm" resultType="String">
+        /* Comu.selectCodeNm */
+        SELECT CODE_NM
+        FROM TB_CODE
+        WHERE CODE_UPPER = #{codeUpper}
+          AND CODE_CD    = #{codeCd}
+          AND DEL_YN     = 'N'
+        LIMIT 1
+    </select>
+
+</mapper>

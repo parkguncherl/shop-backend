@@ -14,6 +14,7 @@
         , COMP_NO               AS compNo
         , DETAIL_INFO           AS detailInfo
         , PARTNER_EMAIL         AS partnerEmail
+        , FIRST_GREETING_MESSAGE AS firstGreetingMessage
         , CRE_USER              AS creUser
         , CRE_TM                AS creTm
         , UPD_USER              AS updUser
@@ -46,6 +47,7 @@
             FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
             TP.UPD_TM AS updTm,
             TP.UPD_USER AS updUser,
+            TP.FIRST_GREETING_MESSAGE ,
             FN_GET_USERNAME(TP.UPD_USER) as upduserNm
         FROM TB_PARTNER AS TP
         WHERE TP.DEL_YN = 'N'
@@ -63,6 +65,31 @@
             #{pageRowCount} ROWS ONLY
     </select>
 
+
+    <select id="selectPartnerDet" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
+        /* com.shop.mapper.partner.selectPartnerDet */
+        SELECT
+        TP.ID AS id,
+        TP.PARTNER_TICKER ,
+        TP.PARTNER_TYPE ,
+        FN_GET_CODE('10060', TP.PARTNER_TYPE) PARTNER_TYPE_NM,
+        TP.PARTNER_NM,
+        TP.PARTNER_SUB_NM,
+        TP.DOMAIN ,
+        TP.SUB_DOMAIN,
+        TP.PHONE_NO,
+        TP.FIRST_GREETING_MESSAGE ,
+        TP.CRE_TM AS creTm,
+        TP.CRE_USER AS creUser,
+        FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
+        TP.UPD_TM AS updTm,
+        TP.UPD_USER AS updUser,
+        FN_GET_USERNAME(TP.UPD_USER) as upduserNm
+        FROM
+        TB_PARTNER TP
+        WHERE TP.ID = #{id}
+    </select>
+
     <select id="selectPartnerList" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
         /* com.shop.mapper.partner.selectPartnerList */
         SELECT
@@ -75,6 +102,7 @@
             TP.DOMAIN ,
             TP.SUB_DOMAIN,
             TP.PHONE_NO,
+            TP.FIRST_GREETING_MESSAGE ,
             TP.CRE_TM AS creTm,
             TP.CRE_USER AS creUser,
             FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
@@ -103,6 +131,7 @@
             TP.DOMAIN ,
             TP.SUB_DOMAIN,
             TP.PHONE_NO,
+            TP.FIRST_GREETING_MESSAGE ,
             TP.CRE_TM AS creTm,
             TP.CRE_USER AS creUser,
             FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
@@ -128,6 +157,7 @@
                 TP.DOMAIN ,
                 TP.SUB_DOMAIN,
                 TP.PHONE_NO,
+                TP.FIRST_GREETING_MESSAGE ,
                 TP.CRE_TM AS creTm,
                 TP.CRE_USER AS creUser,
                 FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
@@ -150,7 +180,8 @@
             PARTNER_NM,
             PARTNER_TICKER,
             PARTNER_SUB_NM,
-            DOMAIN
+            DOMAIN,
+            FIRST_GREETING_MESSAGE ,
             <if test="phoneNo != null">
                 , PHONE_NO
             </if>
@@ -166,7 +197,8 @@
             #{partnerNm},
             #{partnerTicker},
             #{partnerSubNm},
-            #{domain}
+            #{domain},
+            #{firstGreetingMessage},
             <if test="phoneNo != null">
                 , #{phoneNo}
             </if>
@@ -188,27 +220,24 @@
             <if test="partnerType != null">
                 , PARTNER_TYPE = #{partnerType}
             </if>
-
             <if test="partnerNm != null">
                 , PARTNER_NM = #{partnerNm}
             </if>
-
+            <if test="firstGreetingMessage != null">
+                , FIRST_GREETING_MESSAGE = #{firstGreetingMessage}
+            </if>
             <if test="partnerTicker != null">
                 , PARTNER_TICKER = #{partnerTicker}
             </if>
-
             <if test="partnerSubNm != null">
                 , PARTNER_SUB_NM = #{partnerSubNm}
             </if>
-
             <if test="domain != null">
                 , DOMAIN = #{domain}
             </if>
-
             <if test="phoneNo != null">
                 , PHONE_NO = #{phoneNo}
             </if>
-
             <if test="subDomain != null">
                 , SUB_DOMAIN = #{subDomain}
             </if>

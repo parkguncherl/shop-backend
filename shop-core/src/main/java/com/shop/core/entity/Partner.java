@@ -46,4 +46,7 @@ public class Partner extends BaseEntity implements Serializable {
 
     @Schema(description = "전화번호")
     private String phoneNo;
+
+    @Schema(description = "첫인사 메시지")
+    private String firstGreetingMessage;
 }

@@ -72,6 +72,16 @@ public class PartnerDao {
     }
 
     /**
+     * 화주관리_상세
+     *
+     * @return
+     */
+    public PartnerResponse.Select selectPartnerDet(Integer id) {
+        return sqlSession.selectOne(PRE_NS.concat("selectPartnerDet"), id);
+    }
+
+
+    /**
      * 화주_등록
      *
      * @param partner
