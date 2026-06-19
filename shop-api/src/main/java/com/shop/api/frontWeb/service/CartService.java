@@ -37,13 +37,21 @@ public class CartService {
      */
     @Transactional
     public CartResponse.CartInfo addItem(CartRequest.AddItem request) {
-        GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(request.getGuestId());
-        if (guestToken == null) {
-            throw new IllegalArgumentException("유효하지 않은 게스트 ID: " + request.getGuestId());
-        }
+        Long socialAccountId;
+        Long guestTokenId;
 
-        Long socialAccountId = guestToken.getSocialAccountId();
-        Long guestTokenId    = guestToken.getId();
+        if (request.getSocialAccountId() != null) {
+            // 로그인 사용자 - guestToken 조회 불필요
+            socialAccountId = request.getSocialAccountId();
+            guestTokenId    = null;
+        } else {
+            GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(request.getGuestId());
+            if (guestToken == null) {
+                throw new IllegalArgumentException("유효하지 않은 게스트 ID: " + request.getGuestId());
+            }
+            socialAccountId = guestToken.getSocialAccountId();
+            guestTokenId    = guestToken.getId();
+        }
 
         // 이미 담긴 상품 확인
         Cart existing = (socialAccountId != null)

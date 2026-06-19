@@ -96,7 +96,7 @@
         /* Cart.insertCart */
         INSERT INTO TB_CART (
             SOCIAL_ACCOUNT_ID,
-            GUEST_TOKEN_ID,
+            <if test="guestTokenId != null">GUEST_TOKEN_ID,</if>
             PRODUCT_DET_ID,
             QUANTITY,
             UNIT_PRICE,
@@ -107,7 +107,7 @@
             UPT_TM
         ) VALUES (
             #{socialAccountId},
-            #{guestTokenId},
+            <if test="guestTokenId != null">#{guestTokenId},</if>
             #{productDetId},
             #{quantity},
             #{unitPrice},

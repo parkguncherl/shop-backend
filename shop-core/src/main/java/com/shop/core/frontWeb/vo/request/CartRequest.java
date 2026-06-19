@@ -13,8 +13,11 @@ public class CartRequest {
     @Schema(name = "CartRequestAddItem", description = "장바구니 상품 추가 요청", type = "object")
     public static class AddItem {
 
-        @Schema(description = "게스트 ID", required = true)
+        @Schema(description = "게스트 ID")
         private String guestId;
+
+        @Schema(description = "소셜 계정 ID (로그인 시)")
+        private Long socialAccountId;
 
         @Schema(description = "상품 상세 ID (tb_product_det.id)", required = true)
         private Long productDetId;
