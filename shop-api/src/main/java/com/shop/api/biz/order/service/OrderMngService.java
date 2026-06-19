@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class OrderMngService {
 
     private final OrderDao orderDao;
     private final com.shop.api.frontWeb.service.OrderService foOrderService;

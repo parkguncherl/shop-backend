@@ -2,7 +2,7 @@ package com.shop.api.biz.order.controller;
 
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
-import com.shop.api.biz.order.service.OrderService;
+import com.shop.api.biz.order.service.OrderMngService;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
@@ -20,12 +20,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/order")
-@Tag(name = "BO OrderController", description = "BO 주문 관리 API")
+@RequestMapping("/orderMng")
+@Tag(name = "OrderMngController", description = "BO 주문 관리 API")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderMngController {
 
-    private final OrderService orderService;
+    private final OrderMngService orderMngService;
 
     @AccessLog("주문 목록 조회")
     @GetMapping("/list")
@@ -35,7 +35,7 @@ public class OrderController {
             @Parameter(description = "조회 시작일") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @Parameter(description = "조회 종료일") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
     ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, orderService.getOrderListForBo(fromDate, toDate));
+        return new ApiResponse<>(ApiResultCode.SUCCESS, orderMngService.getOrderListForBo(fromDate, toDate));
     }
 
     @AccessLog("주문 상세 조회")
@@ -45,7 +45,7 @@ public class OrderController {
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter(description = "주문 ID") @PathVariable Long orderId
     ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, orderService.getOrderDetail(orderId));
+        return new ApiResponse<>(ApiResultCode.SUCCESS, orderMngService.getOrderDetail(orderId));
     }
 
     @AccessLog("주문 결제 취소")
@@ -56,6 +56,6 @@ public class OrderController {
             @Parameter(description = "결제 SEQ") @PathVariable Long paymentSeq,
             @RequestBody(required = false) PaymentRequest.Cancel request
     ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, orderService.cancelPayment(paymentSeq, request));
+        return new ApiResponse<>(ApiResultCode.SUCCESS, orderMngService.cancelPayment(paymentSeq, request));
     }
 }
