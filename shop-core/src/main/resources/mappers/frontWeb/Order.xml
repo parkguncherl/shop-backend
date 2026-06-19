@@ -258,6 +258,30 @@
         LIMIT 1
     </select>
 
+    <select id="selectOrderListForBo" parameterType="map" resultType="com.shop.core.frontWeb.vo.response.OrderResponse$BoListItem">
+        /* Order.selectOrderListForBo */
+        SELECT
+            O.ID                AS orderId,
+            O.ORDER_NO          AS orderNo,
+            O.ORDER_STATUS      AS orderStatus,
+            O.PRODUCT_AMOUNT    AS productAmount,
+            O.USED_POINT        AS usedPoint,
+            O.PAYMENT_AMOUNT    AS paymentAmount,
+            O.CRE_TM            AS creTm,
+            P.ID                AS paymentSeq,
+            P.PAYMENT_STATUS    AS paymentStatus,
+            COUNT(OI.ID)        AS itemCount,
+            (SELECT PRODUCT_NAME FROM TB_ORDER_ITEM WHERE ORDER_ID = O.ID ORDER BY ID ASC LIMIT 1) AS topProductName
+        FROM TB_ORDER O
+        LEFT JOIN TB_PAYMENT P ON P.ORDER_ID = O.ID AND P.DEL_YN = 'N'
+        LEFT JOIN TB_ORDER_ITEM OI ON OI.ORDER_ID = O.ID
+        WHERE O.CRE_TM &gt;= #{fromDateTime}
+          AND O.CRE_TM  &lt;  #{toDateTime}
+        GROUP BY O.ID, O.ORDER_NO, O.ORDER_STATUS, O.PRODUCT_AMOUNT, O.USED_POINT,
+                 O.PAYMENT_AMOUNT, O.CRE_TM, P.ID, P.PAYMENT_STATUS
+        ORDER BY O.ID DESC
+    </select>
+
     <update id="updateOrderStatus"
             parameterType="com.shop.core.entity.Order">
         /* Order.updateOrderStatus */

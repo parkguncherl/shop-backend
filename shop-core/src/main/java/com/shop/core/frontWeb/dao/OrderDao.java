@@ -3,11 +3,15 @@ package com.shop.core.frontWeb.dao;
 import com.shop.core.entity.Order;
 import com.shop.core.entity.OrderDelivery;
 import com.shop.core.entity.OrderItem;
+import com.shop.core.frontWeb.vo.response.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,6 +54,13 @@ public class OrderDao {
 
     public Order selectOrderByOrderItemId(Long orderItemId) {
         return sqlSession.selectOne(NAMESPACE + "selectOrderByOrderItemId", orderItemId);
+    }
+
+    public List<OrderResponse.BoListItem> selectOrderListForBo(LocalDateTime fromDateTime, LocalDateTime toDateTime) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("fromDateTime", fromDateTime);
+        params.put("toDateTime", toDateTime);
+        return sqlSession.selectList(NAMESPACE + "selectOrderListForBo", params);
     }
 
     public int updateOrderStatus(Long orderId, String orderStatus) {

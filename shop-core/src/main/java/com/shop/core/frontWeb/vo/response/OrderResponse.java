@@ -11,6 +11,23 @@ public class OrderResponse {
 
     @Getter
     @Setter
+    @Schema(name = "OrderResponseBoListItem", description = "BO 주문 목록 항목", type = "object")
+    public static class BoListItem {
+        private Long orderId;
+        private String orderNo;
+        private String orderStatus;
+        private Long productAmount;
+        private Long usedPoint;
+        private Long paymentAmount;
+        private LocalDateTime creTm;
+        private Long paymentSeq;
+        private String paymentStatus;
+        private Integer itemCount;
+        private String topProductName;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "OrderResponseInfo", description = "Order response", type = "object")
     public static class Info {
         private Long orderId;
