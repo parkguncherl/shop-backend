@@ -32,6 +32,7 @@ public class ComuResponse {
         private Integer fileId;
         private String creUser;
         private LocalDateTime creTm;
+        private String readYn;
     }
 
     @Getter
@@ -44,6 +45,25 @@ public class ComuResponse {
         private Long orderId;
         private String lastMessage;
         private LocalDateTime lastMessageTm;
+        private LocalDateTime creTm;
+        private Integer unreadCount;
+    }
+
+    @Getter
+    @Setter
+    @Schema(name = "ComuResponseBoListItem", description = "BO 고객문의 목록 항목", type = "object")
+    public static class BoListItem {
+        private Long comuId;
+        private String comuType;
+        private String comuTypeName;
+        private Long orderId;
+        private String orderNo;
+        private LocalDateTime orderDate;
+        private String paymentStatus;
+        private String topProductName;
+        private String lastMessage;
+        private LocalDateTime lastMessageTm;
+        private Integer unreadCount;
         private LocalDateTime creTm;
     }
 }

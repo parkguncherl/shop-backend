@@ -30,6 +30,9 @@ public class ComuDet {
     @Schema(description = "등록자 (닉네임 or 이메일)")
     private String creUser;
 
+    @Schema(description = "읽음 여부 Y=읽음 / N=안 읽음")
+    private String readYn;
+
     private LocalDateTime creTm;
     private String delYn;
 }

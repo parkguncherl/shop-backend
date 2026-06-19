@@ -271,7 +271,7 @@
             P.ID                AS paymentSeq,
             P.PAYMENT_STATUS    AS paymentStatus,
             COUNT(OI.ID)        AS itemCount,
-            (SELECT PRODUCT_NAME FROM TB_ORDER_ITEM WHERE ORDER_ID = O.ID ORDER BY ID ASC LIMIT 1) AS topProductName
+            FN_GET_TOP_PRODUCT_NAME(O.ID)      AS topProductName
         FROM TB_ORDER O
         LEFT JOIN TB_PAYMENT P ON P.ORDER_ID = O.ID AND P.DEL_YN = 'N'
         LEFT JOIN TB_ORDER_ITEM OI ON OI.ORDER_ID = O.ID

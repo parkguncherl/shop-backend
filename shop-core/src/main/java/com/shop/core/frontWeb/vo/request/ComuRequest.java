@@ -33,4 +33,15 @@ public class ComuRequest {
         @Schema(description = "첨부 파일 ID")
         private Integer fileId;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ComuRequestAdminReply", description = "관리자 답변 요청", type = "object")
+    public static class AdminReply {
+        @Schema(description = "메시지 내용")
+        private String content;
+
+        @Schema(description = "첨부 파일 ID")
+        private Integer fileId;
+    }
 }

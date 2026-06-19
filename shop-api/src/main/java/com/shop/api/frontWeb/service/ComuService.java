@@ -14,7 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -138,6 +141,42 @@ public class ComuService {
         thread.setCreTm(comu.getCreTm());
         thread.setMessages(messages);
         return thread;
+    }
+
+    public List<ComuResponse.BoListItem> getComuListForBo(String comuType, String paymentStatus,
+                                                          String productName,
+                                                          LocalDate fromDate, LocalDate toDate) {
+        Map<String, Object> params = new HashMap<>();
+        if (comuType != null && !comuType.isBlank()) params.put("comuType", comuType);
+        if (paymentStatus != null && !paymentStatus.isBlank()) params.put("paymentStatus", paymentStatus);
+        if (productName != null && !productName.isBlank()) params.put("productName", productName);
+        if (fromDate != null) params.put("fromDate", fromDate.atStartOfDay());
+        if (toDate != null) params.put("toDate", toDate.plusDays(1).atStartOfDay());
+        return comuDao.selectComuListForBo(params);
+    }
+
+    @Transactional
+    public ComuResponse.Thread addAdminReply(Long comuId, String content, Integer fileId) {
+        Comu comu = comuDao.selectComuById(comuId);
+        if (comu == null) throw new IllegalArgumentException("상담 정보를 찾을 수 없습니다.");
+
+        comuDao.insertComuDet(ComuDet.builder()
+                .comuId(comuId)
+                .reqYn("N")
+                .comuCntn(content)
+                .fileId(fileId)
+                .creUser(ADMIN_USER)
+                .build());
+
+        return getThread(comuId);
+    }
+
+    @Transactional
+    public void markRead(Long comuId, boolean callerIsAdmin) {
+        // 관리자가 읽으면 고객 메시지(reqYn='Y')를 읽음 처리
+        // 고객이 읽으면 관리자 메시지(reqYn='N')를 읽음 처리
+        String reqYnToMark = callerIsAdmin ? "Y" : "N";
+        comuDao.updateReadYnByComuId(comuId, reqYnToMark);
     }
 
     public List<ComuResponse.Summary> getComuListByOrderId(Long orderId) {

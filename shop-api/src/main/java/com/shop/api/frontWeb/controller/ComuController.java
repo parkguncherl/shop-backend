@@ -56,6 +56,16 @@ public class ComuController {
     }
 
     @NotAuthRequired
+    @PostMapping("/{comuId}/read")
+    @Operation(summary = "메시지 읽음 처리")
+    public ApiResponse<Void> markRead(
+            @PathVariable Long comuId,
+            @Parameter(description = "관리자 여부 (true=관리자, false=고객)") @RequestParam(defaultValue = "false") boolean isAdmin) {
+        comuService.markRead(comuId, isAdmin);
+        return new ApiResponse<>();
+    }
+
+    @NotAuthRequired
     @GetMapping("/order/{orderId}")
     @Operation(summary = "주문별 상담 목록 조회")
     public ApiResponse<List<ComuResponse.Summary>> getComuListByOrderId(@PathVariable Long orderId) {

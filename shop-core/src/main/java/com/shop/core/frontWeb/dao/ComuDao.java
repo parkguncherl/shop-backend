@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -38,6 +39,17 @@ public class ComuDao {
 
     public List<ComuResponse.Message> selectMessagesByComuId(Long comuId) {
         return sqlSession.selectList(NS + "selectMessagesByComuId", comuId);
+    }
+
+    public List<ComuResponse.BoListItem> selectComuListForBo(Map<String, Object> params) {
+        return sqlSession.selectList(NS + "selectComuListForBo", params);
+    }
+
+    public int updateReadYnByComuId(Long comuId, String reqYn) {
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+        params.put("comuId", comuId);
+        params.put("reqYn", reqYn);
+        return sqlSession.update(NS + "updateReadYnByComuId", params);
     }
 
     public int deleteComuDet(Long id) {

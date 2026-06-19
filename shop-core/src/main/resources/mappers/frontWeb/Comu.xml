@@ -51,20 +51,19 @@
             C.EVENT_ID                          AS orderId,
             LAST_MSG.COMU_CNTN                  AS lastMessage,
             LAST_MSG.CRE_TM                     AS lastMessageTm,
-            C.CRE_TM                            AS creTm
+            C.CRE_TM                            AS creTm,
+            UNREAD.cnt                          AS unreadCount
         FROM TB_COMU C
-        LEFT JOIN TB_CODE CD_CODE
-               ON CD_CODE.CODE_UPPER = '10130'
-              AND CD_CODE.CODE_CD    = C.COMU_TYPE
-              AND CD_CODE.DEL_YN    = 'N'
+        LEFT JOIN TB_CODE CD_CODE ON CD_CODE.CODE_UPPER = '10130' AND CD_CODE.CODE_CD = C.COMU_TYPE AND CD_CODE.DEL_YN = 'N'
         LEFT JOIN LATERAL (
-            SELECT COMU_CNTN, CRE_TM
-            FROM TB_COMU_DET
-            WHERE COMU_ID = C.ID
-              AND DEL_YN  = 'N'
-            ORDER BY ID DESC
-            LIMIT 1
+            SELECT COMU_CNTN, CRE_TM FROM TB_COMU_DET
+            WHERE COMU_ID = C.ID AND DEL_YN = 'N'
+            ORDER BY ID DESC LIMIT 1
         ) LAST_MSG ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT COUNT(*) AS cnt FROM TB_COMU_DET
+            WHERE COMU_ID = C.ID AND DEL_YN = 'N' AND REQ_YN = 'N' AND READ_YN = 'N'
+        ) UNREAD ON TRUE
         WHERE C.EVENT_ID = #{orderId}
           AND C.DEL_YN   = 'N'
         ORDER BY C.ID DESC
@@ -84,7 +83,8 @@
             FILE_ID,
             CRE_USER,
             CRE_TM,
-            DEL_YN
+            DEL_YN,
+            READ_YN
         ) VALUES (
             #{comuId},
             #{reqYn},
@@ -92,6 +92,7 @@
             #{fileId},
             #{creUser},
             NOW(),
+            'N',
             'N'
         )
     </insert>
@@ -108,7 +109,8 @@
             FILE_ID   AS fileId,
             CRE_USER  AS creUser,
             CRE_TM    AS creTm,
-            DEL_YN    AS delYn
+            DEL_YN    AS delYn,
+            READ_YN   AS readYn
         FROM TB_COMU_DET
         WHERE ID = #{id}
           AND DEL_YN = 'N'
@@ -125,12 +127,75 @@
             COMU_CNTN AS comuCntn,
             FILE_ID   AS fileId,
             CRE_USER  AS creUser,
-            CRE_TM    AS creTm
+            CRE_TM    AS creTm,
+            READ_YN   AS readYn
         FROM TB_COMU_DET
         WHERE COMU_ID = #{comuId}
           AND DEL_YN  = 'N'
         ORDER BY ID ASC
     </select>
+
+    <select id="selectComuListForBo" parameterType="map"
+            resultType="com.shop.core.frontWeb.vo.response.ComuResponse$BoListItem">
+        /* Comu.selectComuListForBo */
+        SELECT
+            C.ID                                AS comuId,
+            C.COMU_TYPE                         AS comuType,
+            CD_CODE.CODE_NM                     AS comuTypeName,
+            C.EVENT_ID                          AS orderId,
+            O.ORDER_NO                          AS orderNo,
+            O.CRE_TM                            AS orderDate,
+            P.PAYMENT_STATUS                    AS paymentStatus,
+            FN_GET_TOP_PRODUCT_NAME(O.ID)       AS topProductName,
+            LAST_MSG.COMU_CNTN                  AS lastMessage,
+            LAST_MSG.CRE_TM                     AS lastMessageTm,
+            UNREAD.cnt                          AS unreadCount,
+            C.CRE_TM                            AS creTm
+        FROM TB_COMU C
+        LEFT JOIN TB_CODE CD_CODE ON CD_CODE.CODE_UPPER = '10130' AND CD_CODE.CODE_CD = C.COMU_TYPE AND CD_CODE.DEL_YN = 'N'
+        LEFT JOIN TB_ORDER O ON O.ID = C.EVENT_ID
+        LEFT JOIN TB_PAYMENT P ON P.ORDER_ID = O.ID AND P.DEL_YN = 'N'
+        LEFT JOIN LATERAL (
+            SELECT COMU_CNTN, CRE_TM FROM TB_COMU_DET
+            WHERE COMU_ID = C.ID AND DEL_YN = 'N'
+            ORDER BY ID DESC LIMIT 1
+        ) LAST_MSG ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT COUNT(*) AS cnt FROM TB_COMU_DET
+            WHERE COMU_ID = C.ID AND DEL_YN = 'N' AND REQ_YN = 'Y' AND READ_YN = 'N'
+        ) UNREAD ON TRUE
+        WHERE C.DEL_YN = 'N'
+        <if test="comuType != null and comuType != ''">
+            AND C.COMU_TYPE = #{comuType}
+        </if>
+        <if test="paymentStatus != null and paymentStatus != ''">
+            AND P.PAYMENT_STATUS = #{paymentStatus}
+        </if>
+        <if test="productName != null and productName != ''">
+            AND EXISTS (
+                SELECT 1 FROM TB_ORDER_ITEM OI2
+                WHERE OI2.ORDER_ID = O.ID
+                  AND OI2.PRODUCT_NAME ILIKE '%' || #{productName} || '%'
+            )
+        </if>
+        <if test="fromDate != null">
+            AND O.CRE_TM &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            AND O.CRE_TM &lt; #{toDate}
+        </if>
+        ORDER BY C.ID DESC
+    </select>
+
+    <update id="updateReadYnByComuId" parameterType="map">
+        /* Comu.updateReadYnByComuId */
+        UPDATE TB_COMU_DET SET
+            READ_YN = 'Y'
+        WHERE COMU_ID = #{comuId}
+          AND REQ_YN  = #{reqYn}
+          AND DEL_YN  = 'N'
+          AND READ_YN = 'N'
+    </update>
 
     <update id="deleteComuDet" parameterType="Long">
         /* Comu.deleteComuDet */
