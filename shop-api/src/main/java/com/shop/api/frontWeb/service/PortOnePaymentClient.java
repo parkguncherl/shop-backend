@@ -1,6 +1,7 @@
 package com.shop.api.frontWeb.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestClientResponseException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PortOnePaymentClient {
@@ -51,6 +53,11 @@ public class PortOnePaymentClient {
                     .body(String.class);
         } catch (RestClientResponseException e) {
             String responseBody = e.getResponseBodyAsString();
+            // PortOne이 이미 취소된 결제라고 응답한 경우 → 정상으로 간주
+            if (responseBody.contains("기 취소 거래") || responseBody.contains("ALREADY_CANCELLED")) {
+                log.info("[cancelPayment] PortOne 이미 취소된 결제 paymentId={}", paymentId);
+                return responseBody;
+            }
             throw new IllegalStateException(StringUtils.hasText(responseBody) ? responseBody : e.getMessage(), e);
         }
     }

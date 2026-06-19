@@ -96,7 +96,9 @@ public class PaymentService {
             throw new IllegalArgumentException("Payment not found.");
         }
         if ("C".equals(payment.getPaymentStatus())) {
-            return toInfo(payment);
+            PaymentResponse.Info info = toInfo(payment);
+            info.setAlreadyCancelled(true);
+            return info;
         }
         if (!"P".equals(payment.getPaymentStatus())) {
             throw new IllegalStateException("Only paid payments can be cancelled.");

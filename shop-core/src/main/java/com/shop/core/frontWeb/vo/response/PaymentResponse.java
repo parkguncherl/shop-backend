@@ -22,6 +22,7 @@ public class PaymentResponse {
         private String currency;
         private LocalDateTime paidTm;
         private List<Det> details;
+        private Boolean alreadyCancelled;
     }
 
     @Getter
