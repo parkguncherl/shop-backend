@@ -60,6 +60,7 @@ public class ComuResponse {
         private String orderNo;
         private LocalDateTime orderDate;
         private String paymentStatus;
+        private String paymentStatusName;
         private String topProductName;
         private String lastMessage;
         private LocalDateTime lastMessageTm;

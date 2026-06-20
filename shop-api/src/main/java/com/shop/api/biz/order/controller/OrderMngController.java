@@ -3,6 +3,8 @@ package com.shop.api.biz.order.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.order.service.OrderMngService;
+import com.shop.core.biz.orderMng.vo.request.OrderMngRequest;
+import com.shop.core.biz.orderMng.vo.response.OrderMngResponse;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
@@ -13,10 +15,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -30,12 +30,11 @@ public class OrderMngController {
     @AccessLog("주문 목록 조회")
     @GetMapping("/list")
     @Operation(summary = "주문 목록 조회 (기간별)")
-    public ApiResponse<List<OrderResponse.BoListItem>> getOrderList(
+    public ApiResponse<List<OrderMngResponse.BoListItem>> getOrderList(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "조회 시작일") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-            @Parameter(description = "조회 종료일") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
+            @ModelAttribute OrderMngRequest.ListFilter filter
     ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, orderMngService.getOrderListForBo(fromDate, toDate));
+        return new ApiResponse<>(ApiResultCode.SUCCESS, orderMngService.getOrderListForBo(filter));
     }
 
     @AccessLog("주문 상세 조회")

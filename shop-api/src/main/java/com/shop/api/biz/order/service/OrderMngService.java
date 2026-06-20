@@ -1,7 +1,9 @@
 package com.shop.api.biz.order.service;
 
 import com.shop.api.frontWeb.service.PaymentService;
-import com.shop.core.frontWeb.dao.OrderDao;
+import com.shop.core.biz.orderMng.dao.OrderMngDao;
+import com.shop.core.biz.orderMng.vo.request.OrderMngRequest;
+import com.shop.core.biz.orderMng.vo.response.OrderMngResponse;
 import com.shop.core.frontWeb.vo.request.PaymentRequest;
 import com.shop.core.frontWeb.vo.response.OrderResponse;
 import com.shop.core.frontWeb.vo.response.PaymentResponse;
@@ -16,18 +18,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderMngService {
 
-    private final OrderDao orderDao;
+    private final OrderMngDao orderMngDao;
     private final com.shop.api.frontWeb.service.OrderService foOrderService;
     private final PaymentService paymentService;
 
-    public List<OrderResponse.BoListItem> getOrderListForBo(LocalDate fromDate, LocalDate toDate) {
-        LocalDate normalizedFrom = fromDate != null ? fromDate : LocalDate.now();
-        LocalDate normalizedTo   = toDate   != null ? toDate   : LocalDate.now();
+    public List<OrderMngResponse.BoListItem> getOrderListForBo(OrderMngRequest.ListFilter filter) {
+        LocalDate fromDate = filter.getFromDate() != null ? filter.getFromDate() : LocalDate.now();
+        LocalDate toDate   = filter.getToDate()   != null ? filter.getToDate()   : LocalDate.now();
 
-        LocalDateTime fromDateTime = normalizedFrom.atStartOfDay();
-        LocalDateTime toDateTime   = normalizedTo.plusDays(1).atStartOfDay();
+        LocalDateTime fromDateTime = fromDate.atStartOfDay();
+        LocalDateTime toDateTime   = toDate.plusDays(1).atStartOfDay();
 
-        return orderDao.selectOrderListForBo(fromDateTime, toDateTime);
+        return orderMngDao.selectOrderListForBo(fromDateTime, toDateTime);
     }
 
     public OrderResponse.Info getOrderDetail(Long orderId) {

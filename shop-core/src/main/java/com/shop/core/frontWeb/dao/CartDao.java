@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,11 @@ public class CartDao {
     public Cart selectActiveCartItemByGuestTokenId(Long guestTokenId, Long productDetId) {
         return sqlSession.selectOne(NAMESPACE + "selectActiveCartItemByGuestTokenId",
                 Map.of("guestTokenId", guestTokenId, "productDetId", productDetId));
+    }
+
+    /** productDetId로 상품 판매가 조회 */
+    public BigDecimal selectSellAmtByProductDetId(Long productDetId) {
+        return sqlSession.selectOne(NAMESPACE + "selectSellAmtByProductDetId", productDetId);
     }
 
     /** 장바구니 아이템 추가 */

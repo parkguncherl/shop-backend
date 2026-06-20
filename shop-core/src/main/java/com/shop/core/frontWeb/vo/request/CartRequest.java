@@ -4,8 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 public class CartRequest {
 
     @Getter
@@ -24,9 +22,6 @@ public class CartRequest {
 
         @Schema(description = "수량", required = true)
         private Integer quantity;
-
-        @Schema(description = "단가 (담을 당시 가격)")
-        private BigDecimal unitPrice;
     }
 
     @Getter

@@ -88,6 +88,16 @@
         LIMIT 1
     </select>
 
+    <!-- productDetId로 상품 판매가 조회 -->
+    <select id="selectSellAmtByProductDetId" parameterType="Long" resultType="java.math.BigDecimal">
+        /* Cart.selectSellAmtByProductDetId */
+        SELECT P.SELL_AMT
+        FROM TB_PRODUCT_DET PD
+        JOIN TB_PRODUCT P ON P.ID = PD.PRODUCT_ID
+        WHERE PD.ID = #{productDetId}
+        LIMIT 1
+    </select>
+
     <!-- 장바구니 아이템 추가 -->
     <insert id="insertCart"
             parameterType="com.shop.core.entity.Cart"

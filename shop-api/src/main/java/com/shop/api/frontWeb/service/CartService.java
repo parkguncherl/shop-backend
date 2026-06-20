@@ -65,13 +65,14 @@ public class CartService {
             updateRequest.setQuantity(existing.getQuantity() + request.getQuantity());
             cartDao.updateCartItemQuantity(updateRequest);
         } else {
-            // 신규 추가
+            // 신규 추가 - 가격은 상품 테이블에서 조회
+            BigDecimal unitPrice = cartDao.selectSellAmtByProductDetId(request.getProductDetId());
             Cart item = Cart.builder()
                     .socialAccountId(socialAccountId)
                     .guestTokenId(guestTokenId)
                     .productDetId(request.getProductDetId())
                     .quantity(request.getQuantity())
-                    .unitPrice(request.getUnitPrice())
+                    .unitPrice(unitPrice)
                     .currency("KRW")
                     .build();
             cartDao.insertCart(item);

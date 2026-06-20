@@ -146,6 +146,7 @@
             O.ORDER_NO                          AS orderNo,
             O.CRE_TM                            AS orderDate,
             P.PAYMENT_STATUS                    AS paymentStatus,
+            FN_GET_CODENM('10070', P.PAYMENT_STATUS) AS paymentStatusName,
             FN_GET_TOP_PRODUCT_NAME(O.ID)       AS topProductName,
             LAST_MSG.COMU_CNTN                  AS lastMessage,
             LAST_MSG.CRE_TM                     AS lastMessageTm,
