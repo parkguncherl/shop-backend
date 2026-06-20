@@ -41,9 +41,15 @@ public class CartService {
         Long guestTokenId;
 
         if (request.getSocialAccountId() != null) {
-            // 로그인 사용자 - guestToken 조회 불필요
             socialAccountId = request.getSocialAccountId();
-            guestTokenId    = null;
+            // guestId가 있으면 우선 조회, 없으면 socialAccountId로 fallback (모바일 등 쿠키 없는 환경)
+            if (request.getGuestId() != null) {
+                GuestToken gt = guestTokenDao.selectGuestTokenByGuestId(request.getGuestId());
+                guestTokenId = gt != null ? gt.getId() : null;
+            } else {
+                GuestToken gt = guestTokenDao.selectLatestGuestTokenBySocialAccountId(socialAccountId);
+                guestTokenId = gt != null ? gt.getId() : null;
+            }
         } else {
             GuestToken guestToken = guestTokenDao.selectGuestTokenByGuestId(request.getGuestId());
             if (guestToken == null) {
@@ -65,6 +71,9 @@ public class CartService {
             updateRequest.setQuantity(existing.getQuantity() + request.getQuantity());
             cartDao.updateCartItemQuantity(updateRequest);
         } else {
+            if (guestTokenId == null) {
+                throw new IllegalStateException("게스트 토큰을 찾을 수 없습니다. 다시 로그인 후 시도해 주세요.");
+            }
             // 신규 추가 - 가격은 상품 테이블에서 조회
             BigDecimal unitPrice = cartDao.selectSellAmtByProductDetId(request.getProductDetId());
             Cart item = Cart.builder()

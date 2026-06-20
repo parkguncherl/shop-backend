@@ -70,6 +70,15 @@
         WHERE GUEST_ID = #{guestId}
     </select>
 
+    <select id="selectLatestGuestTokenBySocialAccountId" parameterType="Long" resultType="com.shop.core.entity.GuestToken">
+        /* GuestToken.selectLatestGuestTokenBySocialAccountId */
+        SELECT ID, GUEST_ID, PARTNER_ID, GUEST_TOKEN, SOCIAL_ACCOUNT_ID, EXPIRE_DATE, CRE_TM
+        FROM TB_GUEST_TOKEN
+        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
+        ORDER BY CRE_TM DESC
+        LIMIT 1
+    </select>
+
     <update id="updateSocialAccountIdByGuestId" parameterType="com.shop.core.entity.GuestToken">
         /* GuestToken.updateSocialAccountIdByGuestId */
         UPDATE TB_GUEST_TOKEN
