@@ -34,11 +34,15 @@ public class OrderResponse {
         private String orderNo;
         private Long socialAccountId;
         private String orderStatus;
+        private String orderStatusNm;
         private Long productAmount;
         private Long discountAmount;
         private Long usedPoint;
         private Long paymentAmount;
         private Long earnedPoint;
+        private Long paymentSeq;
+        private String paymentStatus;
+        private String paymentStatusNm;
         private Delivery delivery;
         private LocalDateTime creTm;
         private List<Item> items;

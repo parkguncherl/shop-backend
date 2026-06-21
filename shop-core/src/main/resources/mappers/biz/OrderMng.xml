@@ -6,25 +6,50 @@
     <select id="selectOrderListForBo" parameterType="map" resultType="com.shop.core.biz.orderMng.vo.response.OrderMngResponse$BoListItem">
         /* OrderMng.selectOrderListForBo */
         SELECT
-            O.ID                AS orderId,
-            O.ORDER_NO          AS orderNo,
-            O.ORDER_STATUS      AS orderStatus,
-            O.PRODUCT_AMOUNT    AS productAmount,
-            O.USED_POINT        AS usedPoint,
-            O.PAYMENT_AMOUNT    AS paymentAmount,
-            O.CRE_TM            AS creTm,
-            P.ID                AS paymentSeq,
-            P.PAYMENT_STATUS    AS paymentStatus,
-            COUNT(OI.ID)        AS itemCount,
-            FN_GET_TOP_PRODUCT_NAME(O.ID) AS topProductName
+            O.ID                              AS orderId,
+            O.ORDER_NO                        AS orderNo,
+            O.ORDER_STATUS                    AS orderStatus,
+            FN_GET_CODE('10100', O.ORDER_STATUS)   AS orderStatusNm,
+            O.PRODUCT_AMOUNT                  AS productAmount,
+            O.USED_POINT                      AS usedPoint,
+            O.PAYMENT_AMOUNT                  AS paymentAmount,
+            O.CRE_TM                          AS creTm,
+            P.ID                              AS paymentSeq,
+            P.PAYMENT_STATUS                  AS paymentStatus,
+            FN_GET_CODE('10070', P.PAYMENT_STATUS) AS paymentStatusNm,
+            COUNT(OI.ID)                      AS itemCount,
+            FN_GET_TOP_PRODUCT_NAME(O.ID)     AS topProductName
         FROM TB_ORDER O
-        LEFT JOIN TB_PAYMENT P ON P.ORDER_ID = O.ID AND P.DEL_YN = 'N'
+        LEFT JOIN TB_PAYMENT P  ON P.ORDER_ID = O.ID AND P.DEL_YN = 'N'
         LEFT JOIN TB_ORDER_ITEM OI ON OI.ORDER_ID = O.ID
         WHERE O.CRE_TM &gt;= #{fromDateTime}
           AND O.CRE_TM  &lt;  #{toDateTime}
         GROUP BY O.ID, O.ORDER_NO, O.ORDER_STATUS, O.PRODUCT_AMOUNT, O.USED_POINT,
                  O.PAYMENT_AMOUNT, O.CRE_TM, P.ID, P.PAYMENT_STATUS
         ORDER BY O.ID DESC
+    </select>
+
+    <!-- BO 주문 상세 조회 -->
+    <select id="selectOrderDetailForBo" parameterType="Long" resultType="com.shop.core.frontWeb.vo.response.OrderResponse$Info">
+        /* OrderMng.selectOrderDetailForBo */
+        SELECT
+            O.ID                              AS orderId,
+            O.ORDER_NO                        AS orderNo,
+            O.SOCIAL_ACCOUNT_ID               AS socialAccountId,
+            O.ORDER_STATUS                    AS orderStatus,
+            FN_GET_CODE('10100', O.ORDER_STATUS)   AS orderStatusNm,
+            O.PRODUCT_AMOUNT                  AS productAmount,
+            O.DISCOUNT_AMOUNT                 AS discountAmount,
+            O.USED_POINT                      AS usedPoint,
+            O.PAYMENT_AMOUNT                  AS paymentAmount,
+            O.EARNED_POINT                    AS earnedPoint,
+            O.CRE_TM                          AS creTm,
+            P.ID                              AS paymentSeq,
+            P.PAYMENT_STATUS                  AS paymentStatus,
+            FN_GET_CODE('10070', P.PAYMENT_STATUS) AS paymentStatusNm
+        FROM TB_ORDER O
+        LEFT JOIN TB_PAYMENT P ON P.ORDER_ID = O.ID AND P.DEL_YN = 'N'
+        WHERE O.ID = #{orderId}
     </select>
 
 </mapper>

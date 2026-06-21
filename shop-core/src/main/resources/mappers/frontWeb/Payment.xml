@@ -162,7 +162,7 @@
             O.ORDER_NO           AS orderNo,
             O.SOCIAL_ACCOUNT_ID  AS socialAccountId,
             O.ORDER_STATUS       AS orderStatus,
-            FN_GET_CODE('10070', O.ORDER_STATUS) AS orderStatusNm,
+            FN_GET_CODE('10100', O.ORDER_STATUS) AS orderStatusNm,
             P.PAYMENT_ID         AS paymentId,
             P.PAYMENT_STATUS     AS paymentStatus,
             FN_GET_CODE('10070', P.PAYMENT_STATUS) AS paymentStatusNm,

@@ -3,6 +3,7 @@ package com.shop.api.frontWeb.service;
 import com.shop.core.entity.Order;
 import com.shop.core.entity.PointHistory;
 import com.shop.core.entity.Review;
+import com.shop.core.enums.OrderStatus;
 import com.shop.core.enums.PointType;
 import com.shop.core.frontWeb.dao.OrderDao;
 import com.shop.core.frontWeb.dao.PointDao;
@@ -35,7 +36,7 @@ public class ReviewService {
         if (!order.getSocialAccountId().equals(request.getSocialAccountId())) {
             throw new IllegalStateException("본인의 주문에만 리뷰를 작성할 수 있습니다.");
         }
-        if (!"P".equals(order.getOrderStatus())) {
+        if (!OrderStatus.PAID.getCode().equals(order.getOrderStatus())) {
             throw new IllegalStateException("결제 완료된 주문에만 리뷰를 작성할 수 있습니다.");
         }
 

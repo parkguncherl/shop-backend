@@ -4,6 +4,7 @@ import com.shop.core.entity.Order;
 import com.shop.core.entity.OrderDelivery;
 import com.shop.core.entity.OrderItem;
 import com.shop.core.entity.PointHistory;
+import com.shop.core.enums.OrderStatus;
 import com.shop.core.enums.PointType;
 import com.shop.core.frontWeb.dao.OrderDao;
 import com.shop.core.frontWeb.dao.PointDao;
@@ -28,7 +29,7 @@ public class OrderService {
         Order order = Order.builder()
                 .orderNo(request.getOrderNo())
                 .socialAccountId(request.getSocialAccountId())
-                .orderStatus("R")
+                .orderStatus(OrderStatus.ORDER.getCode())
                 .productAmount(request.getProductAmount())
                 .discountAmount(request.getDiscountAmount())
                 .usedPoint(request.getUsedPoint())

@@ -1,6 +1,8 @@
 package com.shop.api.frontWeb.service;
 
 import com.shop.core.entity.*;
+import com.shop.core.enums.OrderStatus;
+import com.shop.core.enums.PaymentStatus;
 import com.shop.core.enums.PointType;
 import com.shop.core.frontWeb.dao.CartDao;
 import com.shop.core.frontWeb.dao.OrderDao;
@@ -32,7 +34,7 @@ public class CheckoutService {
         Order order = Order.builder()
                 .orderNo(request.getOrderNo())
                 .socialAccountId(request.getSocialAccountId())
-                .orderStatus("R")
+                .orderStatus(OrderStatus.ORDER.getCode())
                 .productAmount(request.getProductAmount())
                 .discountAmount(request.getDiscountAmount())
                 .usedPoint(request.getUsedPoint())
@@ -88,7 +90,7 @@ public class CheckoutService {
                 .orderId(order.getId())
                 .orderNo(order.getOrderNo())
                 .paymentId(request.getPaymentId())
-                .paymentStatus("P")
+                .paymentStatus(PaymentStatus.PAID.getCode())
                 .totalAmount(request.getTotalAmount())
                 .currency(request.getCurrency() != null ? request.getCurrency() : "KRW")
                 .cancelAmount(0L)
@@ -116,7 +118,7 @@ public class CheckoutService {
         }
 
         // ── 6. 주문 상태 → 결제완료 ──
-        orderDao.updateOrderStatus(order.getId(), "P");
+        orderDao.updateOrderStatus(order.getId(), OrderStatus.PAID.getCode());
 
         // ── 7. 포인트 처리 ──
         if (order.getUsedPoint() != null && order.getUsedPoint() > 0) {

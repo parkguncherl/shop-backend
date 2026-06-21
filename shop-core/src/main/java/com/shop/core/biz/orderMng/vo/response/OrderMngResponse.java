@@ -15,12 +15,14 @@ public class OrderMngResponse {
         private Long orderId;
         private String orderNo;
         private String orderStatus;
+        private String orderStatusNm;
         private Long productAmount;
         private Long usedPoint;
         private Long paymentAmount;
         private LocalDateTime creTm;
         private Long paymentSeq;
         private String paymentStatus;
+        private String paymentStatusNm;
         private Integer itemCount;
         private String topProductName;
     }

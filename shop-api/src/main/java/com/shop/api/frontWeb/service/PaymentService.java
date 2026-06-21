@@ -4,6 +4,8 @@ import com.shop.core.entity.Payment;
 import com.shop.core.entity.PaymentDet;
 import com.shop.core.entity.Order;
 import com.shop.core.entity.PointHistory;
+import com.shop.core.enums.OrderStatus;
+import com.shop.core.enums.PaymentStatus;
 import com.shop.core.enums.PointType;
 import com.shop.core.frontWeb.dao.CartDao;
 import com.shop.core.frontWeb.dao.OrderDao;
@@ -45,7 +47,7 @@ public class PaymentService {
                 .orderId(orderId)
                 .orderNo(request.getOrderNo())
                 .paymentId(request.getPaymentId())
-                .paymentStatus("P")
+                .paymentStatus(PaymentStatus.PAID.getCode())
                 .totalAmount(request.getTotalAmount())
                 .currency(request.getCurrency())
                 .cancelAmount(0L)
@@ -71,7 +73,7 @@ public class PaymentService {
             }
         }
 
-        orderDao.updateOrderStatus(payment.getOrderId(), "P");
+        orderDao.updateOrderStatus(payment.getOrderId(), OrderStatus.PAID.getCode());
         clearOrderedCart(request, payment);
 
         return getPayment(payment.getId());
@@ -95,12 +97,12 @@ public class PaymentService {
         if (payment == null) {
             throw new IllegalArgumentException("Payment not found.");
         }
-        if ("C".equals(payment.getPaymentStatus())) {
+        if (PaymentStatus.CANCELLED.getCode().equals(payment.getPaymentStatus())) {
             PaymentResponse.Info info = toInfo(payment);
             info.setAlreadyCancelled(true);
             return info;
         }
-        if (!"P".equals(payment.getPaymentStatus())) {
+        if (!PaymentStatus.PAID.getCode().equals(payment.getPaymentStatus())) {
             throw new IllegalStateException("Only paid payments can be cancelled.");
         }
 
@@ -128,7 +130,7 @@ public class PaymentService {
             paymentDao.updatePaymentDetCancel(det);
         }
 
-        orderDao.updateOrderStatus(payment.getOrderId(), "C");
+        orderDao.updateOrderStatus(payment.getOrderId(), OrderStatus.CANCEL.getCode());
 
         // ── 포인트 취소 처리 ──
         // 적립된 포인트 차감 (earnedPoint > 0 이면 차감)
