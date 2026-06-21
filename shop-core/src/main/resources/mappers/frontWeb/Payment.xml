@@ -179,7 +179,7 @@
             OD.ADDRESS          AS address,
             OD.ADDRESS_DETAIL   AS addressDetail,
             OD.DELIVERY_STATUS  AS deliveryStatus,
-            FN_GET_CODE('10100', OD.DELIVERY_STATUS) AS deliveryStatusNm,
+            FN_GET_CODE('10110', OD.DELIVERY_STATUS) AS deliveryStatusNm,
             OD.DELIVERY_COMPANY AS deliveryCompany,
             OD.INVOICE_NO       AS invoiceNo
         FROM TB_PAYMENT P

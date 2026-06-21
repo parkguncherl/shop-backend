@@ -4,6 +4,7 @@ import com.shop.core.entity.Order;
 import com.shop.core.entity.OrderDelivery;
 import com.shop.core.entity.OrderItem;
 import com.shop.core.entity.PointHistory;
+import com.shop.core.enums.DeliveryStatus;
 import com.shop.core.enums.OrderStatus;
 import com.shop.core.enums.PointType;
 import com.shop.core.frontWeb.dao.OrderDao;
@@ -73,7 +74,7 @@ public class OrderService {
                 .address(order.getAddress())
                 .addressDetail(order.getAddressDetail())
                 .memo(order.getMemo())
-                .deliveryStatus("READY")
+                .deliveryStatus(DeliveryStatus.READY.getCode())
                 .delYn("N")
                 .build();
         orderDao.insertOrderDelivery(delivery);

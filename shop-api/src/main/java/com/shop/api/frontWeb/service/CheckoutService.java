@@ -1,6 +1,7 @@
 package com.shop.api.frontWeb.service;
 
 import com.shop.core.entity.*;
+import com.shop.core.enums.DeliveryStatus;
 import com.shop.core.enums.OrderStatus;
 import com.shop.core.enums.PaymentStatus;
 import com.shop.core.enums.PointType;
@@ -80,7 +81,7 @@ public class CheckoutService {
                 .address(order.getAddress())
                 .addressDetail(order.getAddressDetail())
                 .memo(order.getMemo())
-                .deliveryStatus("READY")
+                .deliveryStatus(DeliveryStatus.READY.getCode())
                 .delYn("N")
                 .build();
         orderDao.insertOrderDelivery(delivery);

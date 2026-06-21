@@ -86,7 +86,7 @@
         ) VALUES (
             #{orderNo},
             #{socialAccountId},
-            COALESCE(#{orderStatus}, 'R'),
+            COALESCE(#{orderStatus}, 'O'),
             COALESCE(#{productAmount}, 0),
             COALESCE(#{discountAmount}, 0),
             COALESCE(#{usedPoint}, 0),
@@ -132,7 +132,7 @@
             #{address},
             #{addressDetail},
             #{memo},
-            COALESCE(#{deliveryStatus}, 'READY'),
+            COALESCE(#{deliveryStatus}, 'R'),
             COALESCE(#{delYn}, 'N'),
             NOW(),
             NOW()
