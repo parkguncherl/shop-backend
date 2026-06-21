@@ -98,7 +98,7 @@ public class PartnerDao {
      * @return
      */
     public Partner selectPartnerById(Integer partnerId) {
-        return sqlSession.selectOne(PRE_NS.concat("selectPartnerById"), partnerId);
+        return sqlSession.selectOne(PRE_NS.concat("selectPartnerDet"), partnerId);
     }
 
 

@@ -42,28 +42,6 @@
     </select>
 
 
-    <select id="selectPartnerById" resultType="com.shop.core.entity.Partner">
-        /* com.shop.mapper.partner.selectPartnerById */
-        SELECT
-            TP.ID AS id,
-            TP.PARTNER_TICKER,
-            TP.PARTNER_TYPE,
-            TP.PARTNER_NM,
-            TP.PARTNER_SUB_NM,
-            TP.DOMAIN,
-            TP.SUB_DOMAIN,
-            TP.PHONE_NO,
-            TP.REP_NM,
-            TP.EMAIL,
-            TP.FIRST_GREETING_MESSAGE,
-            TP.CRE_TM AS creTm,
-            TP.CRE_USER AS creUser,
-            TP.UPD_TM AS updTm,
-            TP.UPD_USER AS updUser
-        FROM TB_PARTNER TP
-        WHERE TP.ID = #{partnerId}
-    </select>
-
     <select id="selectPartnerDet" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
         /* com.shop.mapper.partner.selectPartnerDet */
         SELECT
