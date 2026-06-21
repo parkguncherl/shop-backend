@@ -78,6 +78,7 @@ public class PartnerRequest {
                     .partnerSubNm(getPartnerSubNm())
                     .domain(getDomain())
                     .phoneNo(getPhoneNo())
+                    .repNm(getRepNm())
                     .partnerType(getPartnerType())
                     .creUser(getCreUser())
                     .updUser(getUpdUser() != null ? getUpdUser() : getCreUser())

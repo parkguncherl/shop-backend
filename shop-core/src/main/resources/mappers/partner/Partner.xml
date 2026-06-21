@@ -42,6 +42,7 @@
             TP.DOMAIN ,
             TP.SUB_DOMAIN,
             TP.PHONE_NO,
+            TP.REP_NM,
             TP.CRE_TM AS creTm,
             TP.CRE_USER AS creUser,
             FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
@@ -78,6 +79,7 @@
         TP.DOMAIN ,
         TP.SUB_DOMAIN,
         TP.PHONE_NO,
+        TP.REP_NM,
         TP.FIRST_GREETING_MESSAGE ,
         TP.CRE_TM AS creTm,
         TP.CRE_USER AS creUser,
@@ -183,13 +185,16 @@
             DOMAIN,
             FIRST_GREETING_MESSAGE ,
             <if test="phoneNo != null">
-                , PHONE_NO
+                 PHONE_NO ,
+            </if>
+            <if test="repNm != null">
+                REP_NM ,
             </if>
             <if test="subDomain != null">
-                , SUB_DOMAIN
+                SUB_DOMAIN ,
             </if>
-            , CRE_USER
-            , UPD_USER
+            CRE_USER,
+            UPD_USER
         )
         VALUES
         (
@@ -200,13 +205,16 @@
             #{domain},
             #{firstGreetingMessage},
             <if test="phoneNo != null">
-                , #{phoneNo}
+                 #{phoneNo},
+            </if>
+            <if test="repNm != null">
+                #{repNm},
             </if>
             <if test="subDomain != null">
-                , #{SUB_DOMAIN}
+                 #{SUB_DOMAIN},
             </if>
-            , #{creUser}
-            , #{creUser}
+            #{creUser},
+            #{creUser}
         )
     </insert>
 
@@ -237,6 +245,9 @@
             </if>
             <if test="phoneNo != null">
                 , PHONE_NO = #{phoneNo}
+            </if>
+            <if test="repNm != null">
+                , REP_NM = #{repNm}
             </if>
             <if test="subDomain != null">
                 , SUB_DOMAIN = #{subDomain}
