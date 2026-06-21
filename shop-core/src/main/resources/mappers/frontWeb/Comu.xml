@@ -135,8 +135,7 @@
         ORDER BY ID ASC
     </select>
 
-    <select id="selectComuListForBo" parameterType="map"
-            resultType="com.shop.core.frontWeb.vo.response.ComuResponse$BoListItem">
+    <select id="selectComuListForBo" resultType="com.shop.core.frontWeb.vo.response.ComuResponse$BoListItem">
         /* Comu.selectComuListForBo */
         SELECT
             C.ID                                AS comuId,
@@ -146,11 +145,11 @@
             O.ORDER_NO                          AS orderNo,
             O.CRE_TM                            AS orderDate,
             P.PAYMENT_STATUS                    AS paymentStatus,
-            FN_GET_CODENM('10070', P.PAYMENT_STATUS) AS paymentStatusName,
+            FN_GET_CODE('10070', P.PAYMENT_STATUS) AS paymentStatusName,
             FN_GET_TOP_PRODUCT_NAME(O.ID)       AS topProductName,
             LAST_MSG.COMU_CNTN                  AS lastMessage,
             LAST_MSG.CRE_TM                     AS lastMessageTm,
-            UNREAD.cnt                          AS unreadCount,
+            UNREAD.cntCntn                      AS cntCntn,
             C.CRE_TM                            AS creTm
         FROM TB_COMU C
         LEFT JOIN TB_CODE CD_CODE ON CD_CODE.CODE_UPPER = '10130' AND CD_CODE.CODE_CD = C.COMU_TYPE AND CD_CODE.DEL_YN = 'N'
@@ -162,8 +161,8 @@
             ORDER BY ID DESC LIMIT 1
         ) LAST_MSG ON TRUE
         LEFT JOIN LATERAL (
-            SELECT COUNT(*) AS cnt FROM TB_COMU_DET
-            WHERE COMU_ID = C.ID AND DEL_YN = 'N' AND REQ_YN = 'Y' AND READ_YN = 'N'
+            SELECT CONCAT(SUM(CASE WHEN READ_YN = 'N' THEN 1 ELSE 0 END), ' / ' ,COUNT(ID)) AS cntCntn FROM TB_COMU_DET
+             WHERE COMU_ID = C.ID AND DEL_YN = 'N' AND REQ_YN = 'Y'
         ) UNREAD ON TRUE
         WHERE C.DEL_YN = 'N'
         <if test="comuType != null and comuType != ''">
@@ -185,7 +184,7 @@
         <if test="toDate != null">
             AND O.CRE_TM &lt; #{toDate}
         </if>
-        ORDER BY C.ID DESC
+        ORDER BY LAST_MSG.CRE_TM ASC
     </select>
 
     <update id="updateReadYnByComuId" parameterType="map">

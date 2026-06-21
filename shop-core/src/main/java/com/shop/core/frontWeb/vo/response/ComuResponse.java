@@ -64,7 +64,7 @@ public class ComuResponse {
         private String topProductName;
         private String lastMessage;
         private LocalDateTime lastMessageTm;
-        private Integer unreadCount;
+        private String cntCntn;
         private LocalDateTime creTm;
     }
 }
