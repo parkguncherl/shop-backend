@@ -63,39 +63,25 @@ public class PartnerRequest {
         private String partnerNm;
     }
 
-    // 1. 공통 로직을 담은 추상 클래스 생성
+    // 공통 Base: Partner 엔티티를 상속받아 모든 필드를 그대로 사용
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
     public abstract static class Base extends Partner implements RequestFilter {
 
-        /** 본 인스턴스가 상속한 엔티티를 반환하는 공통 함수 */
+        /** Base 자체가 Partner이므로 this를 반환 */
         public Partner toEntity() {
-            return Partner.builder()
-                    .id(getId())
-                    .partnerNm(getPartnerNm())
-                    .partnerTicker(getPartnerTicker())
-                    .partnerSubNm(getPartnerSubNm())
-                    .domain(getDomain())
-                    .phoneNo(getPhoneNo())
-                    .repNm(getRepNm())
-                    .partnerType(getPartnerType())
-                    .creUser(getCreUser())
-                    .updUser(getUpdUser() != null ? getUpdUser() : getCreUser())
-                    .build();
+            if (getUpdUser() == null) setUpdUser(getCreUser());
+            return this;
         }
     }
 
-    // 2. Create 클래스 (Base 상속)
     @Schema(name = "PartnerRequestCreate", description = "화주계정 생성 요청 파라미터")
     public static class Create extends Base {
-        // 추가로 Create에만 필요한 Validation(@NotBlank 등)이나 로직이 있다면 여기에 작성
     }
 
-    // 3. Update 클래스 (Base 상속)
     @Schema(name = "PartnerRequestUpdate", description = "화주계정 수정 요청 파라미터")
     public static class Update extends Base {
-        // 추가로 Update에만 필요한 로직이 있다면 여기에 작성
     }
 
     @Getter
