@@ -72,14 +72,13 @@ public class PartnerRequest {
         /** 본 인스턴스가 상속한 엔티티를 반환하는 공통 함수 */
         public Partner toEntity() {
             return Partner.builder()
-                    // Update 시에는 id가 필요하므로 getId()를 포함하는 것이 좋습니다.
-                    // (Create 시 id가 null이어도 DB의 Auto Increment가 동작하므로 무방함)
                     .id(getId())
                     .partnerNm(getPartnerNm())
                     .partnerTicker(getPartnerTicker())
                     .partnerSubNm(getPartnerSubNm())
                     .domain(getDomain())
                     .phoneNo(getPhoneNo())
+                    .partnerType(getPartnerType())
                     .creUser(getCreUser())
                     .updUser(getUpdUser() != null ? getUpdUser() : getCreUser())
                     .build();
@@ -96,8 +95,6 @@ public class PartnerRequest {
     @Schema(name = "PartnerRequestUpdate", description = "화주계정 수정 요청 파라미터")
     public static class Update extends Base {
         // 추가로 Update에만 필요한 로직이 있다면 여기에 작성
-        // 예: @NotNull(message = "수정 시 ID는 필수입니다.")
-        //    private Integer id;
     }
 
     @Getter
