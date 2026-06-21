@@ -1,32 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shop.mappers.Partner">
-    <sql id="partnerColumns">
-          ID                    AS id
-        , UPPER_PARTNER_ID      AS upperPartnerId
-        , FILE_ID               AS fileId
-        , LOGIS_ID              AS logisId
-        , PARTNER_NM            AS partnerNm
-        , SHORT_NM              AS shortNm
-        , PARTNER_TEL_NO        AS partnerTelNo
-        , REP_NM                AS repNm
-        , REP_TEL_NO            AS repTelNo
-        , COMP_NO               AS compNo
-        , DETAIL_INFO           AS detailInfo
-        , PARTNER_EMAIL         AS partnerEmail
-        , FIRST_GREETING_MESSAGE AS firstGreetingMessage
-        , CRE_USER              AS creUser
-        , CRE_TM                AS creTm
-        , UPD_USER              AS updUser
-        , UPD_TM                AS updTm
-        , DEL_YN                AS deleteYn
-        , ADD_TIME              AS addTime
-        , ETC_ACC_CNTN          AS etcAccCntn
-        , MISONG_YN             AS misongYn
-        , SIZE_INFO             AS sizeInfo
-        , ORDER_SHORT_NM        AS orderShortNm
-        , ORDER_SEQ             AS orderSeq
-    </sql>
 
     <select id="selectPartnerListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Paging">
         /* com.shop.mapper.partner.selectPartnerListPaging */
@@ -67,6 +41,28 @@
             #{pageRowCount} ROWS ONLY
     </select>
 
+
+    <select id="selectPartnerById" resultType="com.shop.core.entity.Partner">
+        /* com.shop.mapper.partner.selectPartnerById */
+        SELECT
+            TP.ID AS id,
+            TP.PARTNER_TICKER,
+            TP.PARTNER_TYPE,
+            TP.PARTNER_NM,
+            TP.PARTNER_SUB_NM,
+            TP.DOMAIN,
+            TP.SUB_DOMAIN,
+            TP.PHONE_NO,
+            TP.REP_NM,
+            TP.EMAIL,
+            TP.FIRST_GREETING_MESSAGE,
+            TP.CRE_TM AS creTm,
+            TP.CRE_USER AS creUser,
+            TP.UPD_TM AS updTm,
+            TP.UPD_USER AS updUser
+        FROM TB_PARTNER TP
+        WHERE TP.ID = #{partnerId}
+    </select>
 
     <select id="selectPartnerDet" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
         /* com.shop.mapper.partner.selectPartnerDet */
