@@ -124,6 +124,9 @@
             <if test='filter.prodNm != null and !filter.prodNm.equals("")'>
                 AND TP.PROD_NM LIKE CONCAT('%', #{filter.prodNm} ,'%')
             </if>
+            <if test="filter.partnerId != null">
+                AND TP.PARTNER_ID = #{filter.partnerId}
+            </if>
             <if test="filter.lastId != null">
                 AND (
                 TP.ID > #{filter.lastId}

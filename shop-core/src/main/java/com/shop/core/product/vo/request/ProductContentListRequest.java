@@ -75,6 +75,9 @@ public class ProductContentListRequest {
         @Schema(description = "상품명")
         private String prodNm;
 
+        @Schema(description = "파트너 id")
+        private Integer partnerId;
+
         @Schema(description = "컨텐츠 id(해당 id에 대응되지 아니하는 (혹은 애초에 컨텐츠와 관계가 부재한)행을 조회하기 위한 인자(컨텐츠 id에 대응되는 prod 는 이미 추가되었다 여기어 마땅하므로)")
         private Integer contentsId;
 
