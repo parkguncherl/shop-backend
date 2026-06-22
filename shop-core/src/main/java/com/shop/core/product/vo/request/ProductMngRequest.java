@@ -19,6 +19,9 @@ public class ProductMngRequest {
 
         @Schema(description = "상품명")
         private String prodNm;
+
+        @Schema(description = "파트너 id")
+        private Integer partnerId;
     }
 
     @Getter

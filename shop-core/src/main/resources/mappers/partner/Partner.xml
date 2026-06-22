@@ -147,7 +147,7 @@
         <if test="partnerNm != null and partnerNm != ''">
             AND TP.PARTNER_NM LIKE CONCAT('%', #{partnerNm}, '%')
         </if>
-        ORDER BY TPPARTNER_NM ASC;
+        ORDER BY TP.PARTNER_NM ASC;
     </select>
 
     <insert id="insertPartner" parameterType="com.shop.core.entity.Partner" useGeneratedKeys="true" keyProperty="id">

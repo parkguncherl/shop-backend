@@ -45,6 +45,9 @@
             <if test='prodNm != null and !prodNm.equals("")'>
                 AND TP.PROD_NM LIKE CONCAT('%' ,#{prodNm} ,'%')
             </if>
+            <if test="partnerId != null">
+                AND TP.PARTNER_ID = #{partnerId}
+            </if>
         </where>
         GROUP BY TP.ID
         ORDER BY TP.ID;
