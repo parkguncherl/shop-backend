@@ -55,4 +55,7 @@ public class Partner extends BaseEntity implements Serializable {
 
     @Schema(description = "첫인사 메시지")
     private String firstGreetingMessage;
+
+    @Schema(description = "리뷰 포인트 적립률 % 단위 즉 2 이면 2%")
+    private Integer reviewPointRate;
 }

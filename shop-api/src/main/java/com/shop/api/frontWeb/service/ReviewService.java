@@ -1,5 +1,7 @@
 package com.shop.api.frontWeb.service;
 
+import com.shop.core.biz.partner.dao.PartnerDao;
+import com.shop.core.biz.partner.vo.response.PartnerResponse;
 import com.shop.core.entity.Order;
 import com.shop.core.entity.PointHistory;
 import com.shop.core.entity.Review;
@@ -20,11 +22,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewService {
 
-    private static final long REVIEW_EARN_POINT = 100L;
+    private static final Integer DEFAULT_PARTNER_ID = 1;
 
     private final ReviewDao reviewDao;
     private final OrderDao orderDao;
     private final PointDao pointDao;
+    private final PartnerDao partnerDao;
 
     @Transactional
     public ReviewResponse.Info createReview(ReviewRequest.Create request) {
@@ -58,13 +61,23 @@ public class ReviewService {
 
         reviewDao.insertReview(review);
 
-        // 리뷰 포인트 적립
-        pointDao.insertPointHistory(PointHistory.builder()
-                .socialAccountId(request.getSocialAccountId())
-                .pointType(PointType.REVIEW)
-                .pointAmount(REVIEW_EARN_POINT)
-                .description("리뷰 작성 포인트 적립")
-                .build());
+        // 리뷰 포인트 적립: 실카드결제금액(포인트 제외) × review_point_rate / 100
+        PartnerResponse.Select partner = partnerDao.selectPartnerDet(DEFAULT_PARTNER_ID);
+        int rate = (partner != null && partner.getReviewPointRate() != null) ? partner.getReviewPointRate() : 0;
+        java.math.BigDecimal baseAmount = java.math.BigDecimal.valueOf(
+                order.getPaymentAmount() != null ? order.getPaymentAmount() : 0L);
+        java.math.BigDecimal earnPoint = baseAmount
+                .multiply(java.math.BigDecimal.valueOf(rate))
+                .divide(java.math.BigDecimal.valueOf(100), java.math.RoundingMode.DOWN);
+
+        if (earnPoint.compareTo(java.math.BigDecimal.ZERO) > 0) {
+            pointDao.insertPointHistory(PointHistory.builder()
+                    .socialAccountId(request.getSocialAccountId())
+                    .pointType(PointType.REVIEW)
+                    .pointAmount(earnPoint.longValue())
+                    .description("리뷰 작성 포인트 적립")
+                    .build());
+        }
 
         return toInfo(reviewDao.selectReviewById(review.getId()));
     }

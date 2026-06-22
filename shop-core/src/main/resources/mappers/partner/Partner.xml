@@ -24,6 +24,7 @@
             TP.UPD_TM AS updTm,
             TP.UPD_USER AS updUser,
             TP.FIRST_GREETING_MESSAGE ,
+            TP.REVIEW_POINT_RATE AS reviewPointRate,
             FN_GET_USERNAME(TP.UPD_USER) as upduserNm
         FROM TB_PARTNER AS TP
         WHERE TP.DEL_YN = 'N'
@@ -57,6 +58,7 @@
         TP.REP_NM,
         TP.EMAIL,
         TP.FIRST_GREETING_MESSAGE ,
+        TP.REVIEW_POINT_RATE AS reviewPointRate,
         TP.CRE_TM AS creTm,
         TP.CRE_USER AS creUser,
         FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
@@ -172,6 +174,9 @@
             <if test="subDomain != null">
                 SUB_DOMAIN ,
             </if>
+            <if test="reviewPointRate != null">
+                REVIEW_POINT_RATE ,
+            </if>
             CRE_USER,
             UPD_USER
         )
@@ -194,6 +199,9 @@
             </if>
             <if test="subDomain != null">
                 #{SUB_DOMAIN},
+            </if>
+            <if test="reviewPointRate != null">
+                #{reviewPointRate},
             </if>
             #{creUser},
             #{creUser}
@@ -236,6 +244,9 @@
             </if>
             <if test="subDomain != null">
                 , SUB_DOMAIN = #{subDomain}
+            </if>
+            <if test="reviewPointRate != null">
+                , REVIEW_POINT_RATE = #{reviewPointRate}
             </if>
         WHERE ID = #{id}
     </update>
