@@ -109,6 +109,30 @@ public class FrontLoginService {
     }
 
     @Transactional
+    public FrontMemberResponse.Token testLogin(String email, String password) {
+        if (!"luckeey@naver.com".equals(email) || !"!park11155*".equals(password)) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
+        }
+        SocialAccount account = socialAccountDao.selectById(4L);
+        if (account == null) throw new IllegalStateException("테스트 계정을 찾을 수 없습니다.");
+
+        socialAccountDao.updateLastLoginTm(account.getId());
+        MemberToken token = memberJwtService.issueToken(account);
+
+        FrontMemberResponse.Token response = new FrontMemberResponse.Token();
+        response.setMemberId(account.getId());
+        response.setProvider(account.getProvider());
+        response.setEmail(account.getEmail());
+        response.setNickname(account.getNickname());
+        response.setProfileImage(account.getProfileImage());
+        response.setAccessToken(token.getAccessToken());
+        response.setRefreshToken(token.getRefreshToken());
+        response.setNewMember(false);
+        response.setPartnerId(account.getPartnerId());
+        return response;
+    }
+
+    @Transactional
     public void withdraw(Long socialAccountId) {
         SocialAccount account = socialAccountDao.selectById(socialAccountId);
         if (account == null) throw new IllegalArgumentException("회원 정보를 찾을 수 없습니다.");

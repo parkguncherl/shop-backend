@@ -6,6 +6,7 @@ import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.SocialLoginRequest;
+import java.util.Map;
 import com.shop.core.frontWeb.vo.response.FrontMemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,6 +49,18 @@ public class FrontLoginController {
 
         frontLoginService.withdraw(socialAccountId);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+    @NotAuthRequired
+    @PostMapping("/test")
+    @Operation(summary = "테스트 로그인 (심사용)", description = "아이디/패스워드로 하드코딩된 테스트 계정 로그인")
+    public ApiResponse<FrontMemberResponse.Token> testLogin(@RequestBody Map<String, String> body) {
+        try {
+            FrontMemberResponse.Token result = frontLoginService.testLogin(body.get("email"), body.get("password"));
+            return new ApiResponse<>(ApiResultCode.SUCCESS, result);
+        } catch (Exception e) {
+            return new ApiResponse<>(ApiResultCode.FAIL, e.getMessage());
+        }
     }
 
     /**
