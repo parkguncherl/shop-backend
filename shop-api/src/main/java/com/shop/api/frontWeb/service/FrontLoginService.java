@@ -110,7 +110,7 @@ public class FrontLoginService {
 
     @Transactional
     public FrontMemberResponse.Token testLogin(String email, String password) {
-        if (!"luckeey@naver.com".equals(email) || !"!park11155*".equals(password)) {
+        if (!"luckeey@naver.com".equals(email) || !"park1111".equals(password)) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
         SocialAccount account = socialAccountDao.selectById(4L);
