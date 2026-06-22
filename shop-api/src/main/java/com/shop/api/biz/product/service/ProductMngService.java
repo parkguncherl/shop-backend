@@ -199,15 +199,8 @@ public class ProductMngService {
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Integer deleteProduct(ProductMngRequest.DeleteProduct deleteProduct, User jwtUser) {
-        ProductMngRequest.ProductDetInfoFilter productDetInfoFilter = new ProductMngRequest.ProductDetInfoFilter();
-        productDetInfoFilter.setProdId(deleteProduct.getId());
-
-        List<ProductMngResponse.ProductDetInfo> productDetInfoList = productMngDao.selectProdDetInfo(productDetInfoFilter);
-        if (!productDetInfoList.isEmpty()) {
-            throw new CustomRuntimeException("주어진 식별자에 대응하는 상품 이하 연관된 상품상세정보가 잔존하는 경우 삭제할 수 없음");
-        }
-
         deleteProduct.setUpdUser(jwtUser.getLoginId());
+        productMngDao.deleteCategoryProductByProductId(deleteProduct);
         return productMngDao.deleteProduct(deleteProduct);
     }
 

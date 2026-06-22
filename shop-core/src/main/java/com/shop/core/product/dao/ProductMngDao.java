@@ -143,4 +143,8 @@ public class ProductMngDao {
     public int deleteCategoryProduct(ProductMngRequest.DeleteCategoryProduct deleteCategoryProduct) {
         return sqlSession.update(NAMESPACE + "deleteCategoryProduct", deleteCategoryProduct);
     }
+
+    public int deleteCategoryProductByProductId(ProductMngRequest.DeleteProduct deleteProduct) {
+        return sqlSession.update(NAMESPACE + "deleteCategoryProductByProductId", deleteProduct);
+    }
 }

@@ -411,4 +411,14 @@
             , DEL_YN = 'Y'
         WHERE ID = #{id}
     </update>
+
+    <update id="deleteCategoryProductByProductId" parameterType="com.shop.core.product.vo.request.ProductMngRequest$DeleteProduct">
+        /* com.shop.mapper.product.ProductMng.deleteCategoryProductByProductId */
+        UPDATE TB_CATEGORY_PRODUCT SET
+              UPD_TM = NOW()
+            , UPD_USER = #{updUser}
+            , DEL_YN = 'Y'
+        WHERE PRODUCT_ID = #{id}
+          AND DEL_YN = 'N'
+    </update>
 </mapper>
