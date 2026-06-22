@@ -108,6 +108,14 @@ public class FrontLoginService {
         return response;
     }
 
+    @Transactional
+    public void withdraw(Long socialAccountId) {
+        SocialAccount account = socialAccountDao.selectById(socialAccountId);
+        if (account == null) throw new IllegalArgumentException("회원 정보를 찾을 수 없습니다.");
+        socialAccountDao.withdrawSocialAccount(socialAccountId);
+        socialAccountDao.deleteTokenByMemberId(socialAccountId);
+    }
+
     private String normalizeProvider(String provider) {
         if (StringUtils.isBlank(provider)) {
             return null;

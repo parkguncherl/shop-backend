@@ -21,6 +21,14 @@ public class FrontLoginController {
 
     private final FrontLoginService frontLoginService;
 
+    @DeleteMapping("/withdraw")
+    @Operation(summary = "회원 탈퇴", description = "개인정보 마스킹 처리 후 상태를 withdrawn으로 변경")
+    public ApiResponse<Void> withdraw(
+            @io.swagger.v3.oas.annotations.Parameter(description = "소셜 계정 ID") @RequestParam Long socialAccountId) {
+        frontLoginService.withdraw(socialAccountId);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
     /**
      * 소셜 로그인 콜백
      * - Next.js next-auth 에서 카카오/네이버/구글 인증 완료 후 호출

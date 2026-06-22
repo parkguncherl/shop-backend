@@ -97,4 +97,16 @@
         WHERE ID = #{id}
     </update>
 
+    <!-- 회원 탈퇴: 개인정보 마스킹 + 상태 withdrawn 변경 -->
+    <update id="withdrawSocialAccount" parameterType="Long">
+        /* SocialAccount.withdrawSocialAccount */
+        UPDATE TB_SOCIAL_ACCOUNT
+        SET EMAIL       = '***',
+            NICKNAME    = '***',
+            PROVIDER_ID = '***',
+            STATUS      = 'withdrawn',
+            UPT_TM      = NOW()
+        WHERE ID = #{id}
+    </update>
+
 </mapper>

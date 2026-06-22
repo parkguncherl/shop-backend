@@ -44,6 +44,11 @@ public class SocialAccountDao {
         return sqlSession.update(NS + "updateLastLoginTm", id);
     }
 
+    /** 회원 탈퇴: 개인정보 마스킹 + 상태 withdrawn */
+    public int withdrawSocialAccount(Long id) {
+        return sqlSession.update(NS + "withdrawSocialAccount", id);
+    }
+
     // ── 토큰 관리 ───────────────────────────────────────────────────
 
     /** 토큰 upsert (member_id UNIQUE → 있으면 갱신) */
