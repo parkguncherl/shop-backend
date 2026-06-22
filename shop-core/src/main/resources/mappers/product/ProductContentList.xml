@@ -105,6 +105,7 @@
         SELECT
               TP.ID AS id
             , TP.PROD_CD AS prodCd
+            , FN_GET_PARTNERNM( TP.PARTNER_ID ) AS partnerNm
             , TP.PROD_TP AS prodTp
             , TP.PROD_NM AS prodNm
             , TP.ORG_AMT AS orgAmt
@@ -114,6 +115,7 @@
             , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
             , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
             , TP.DISCOUNT_RATE AS discountRate
+            , TP.REP_FILE_ID AS repFileId
             , (SELECT COUNT(1) FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N') AS contentsProductCnt
         FROM TB_PRODUCT TP
         <where>
