@@ -41,6 +41,10 @@ public class ComuDao {
         return sqlSession.selectList(NS + "selectMessagesByComuId", comuId);
     }
 
+    public List<ComuResponse.ProductQna> selectProductQnaList(Long productId) {
+        return sqlSession.selectList(NS + "selectProductQnaList", productId);
+    }
+
     public List<ComuResponse.BoListItem> selectComuListForBo(Map<String, Object> params) {
         return sqlSession.selectList(NS + "selectComuListForBo", params);
     }

@@ -36,6 +36,17 @@ public class ComuRequest {
 
     @Getter
     @Setter
+    @Schema(name = "ComuRequestProductQna", description = "상품 Q&A 질문 등록 요청", type = "object")
+    public static class ProductQna {
+        @Schema(description = "소셜 계정 ID")
+        private Long socialAccountId;
+
+        @Schema(description = "질문 내용")
+        private String content;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "ComuRequestAdminReply", description = "관리자 답변 요청", type = "object")
     public static class AdminReply {
         @Schema(description = "메시지 내용")

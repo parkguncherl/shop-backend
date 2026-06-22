@@ -179,6 +179,30 @@ public class ComuService {
         comuDao.updateReadYnByComuId(comuId, reqYnToMark);
     }
 
+    public List<ComuResponse.ProductQna> getProductQnaList(Long productId) {
+        return comuDao.selectProductQnaList(productId);
+    }
+
+    @Transactional
+    public void createProductQna(Long productId, Long socialAccountId, String content) {
+        SocialAccount account = socialAccountDao.selectById(socialAccountId);
+        if (account == null) throw new IllegalArgumentException("회원 정보를 찾을 수 없습니다.");
+
+        Comu comu = Comu.builder()
+                .comuType("BA")
+                .eventId(productId)
+                .creUser(resolveDisplayName(account))
+                .build();
+        comuDao.insertComu(comu);
+
+        comuDao.insertComuDet(ComuDet.builder()
+                .comuId(comu.getId())
+                .reqYn("Y")
+                .comuCntn(content)
+                .creUser(resolveDisplayName(account))
+                .build());
+    }
+
     public List<ComuResponse.Summary> getComuListByOrderId(Long orderId) {
         return comuDao.selectComuListByOrderId(orderId);
     }

@@ -187,6 +187,33 @@
         ORDER BY LAST_MSG.CRE_TM ASC
     </select>
 
+    <select id="selectProductQnaList" parameterType="Long"
+            resultType="com.shop.core.frontWeb.vo.response.ComuResponse$ProductQna">
+        /* Comu.selectProductQnaList */
+        SELECT
+            C.ID            AS comuId,
+            Q.COMU_CNTN     AS question,
+            C.CRE_USER      AS creUser,
+            C.CRE_TM        AS creTm,
+            A.COMU_CNTN     AS answer,
+            A.CRE_TM        AS answerTm
+        FROM TB_COMU C
+        LEFT JOIN LATERAL (
+            SELECT COMU_CNTN FROM TB_COMU_DET
+            WHERE COMU_ID = C.ID AND REQ_YN = 'Y' AND DEL_YN = 'N'
+            ORDER BY ID ASC LIMIT 1
+        ) Q ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT COMU_CNTN, CRE_TM FROM TB_COMU_DET
+            WHERE COMU_ID = C.ID AND REQ_YN = 'N' AND DEL_YN = 'N'
+            ORDER BY ID ASC LIMIT 1
+        ) A ON TRUE
+        WHERE C.EVENT_ID  = #{productId}
+          AND C.COMU_TYPE = 'BA'
+          AND C.DEL_YN    = 'N'
+        ORDER BY C.ID DESC
+    </select>
+
     <update id="updateReadYnByComuId" parameterType="map">
         /* Comu.updateReadYnByComuId */
         UPDATE TB_COMU_DET SET

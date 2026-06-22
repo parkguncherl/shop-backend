@@ -3,6 +3,7 @@ package com.shop.api.frontWeb.controller;
 import com.shop.api.frontWeb.service.ComuService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.response.ApiResponse;
+import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.ComuRequest;
 import com.shop.core.frontWeb.vo.response.ComuResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -78,5 +79,22 @@ public class ComuController {
     public ApiResponse<Void> deleteComu(@PathVariable Long comuId) {
         comuService.deleteComu(comuId);
         return new ApiResponse<>();
+    }
+
+    @NotAuthRequired
+    @GetMapping("/product/{productId}/qna")
+    @Operation(summary = "상품 Q&A 목록 조회 (비로그인 가능)")
+    public ApiResponse<List<ComuResponse.ProductQna>> getProductQnaList(@PathVariable Long productId) {
+        return new ApiResponse<>(comuService.getProductQnaList(productId));
+    }
+
+    @NotAuthRequired
+    @PostMapping("/product/{productId}/qna")
+    @Operation(summary = "상품 Q&A 질문 등록 (로그인 필요)")
+    public ApiResponse<Void> createProductQna(
+            @PathVariable Long productId,
+            @RequestBody ComuRequest.ProductQna request) {
+        comuService.createProductQna(productId, request.getSocialAccountId(), request.getContent());
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 }

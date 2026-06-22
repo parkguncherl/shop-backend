@@ -51,6 +51,18 @@ public class ComuResponse {
 
     @Getter
     @Setter
+    @Schema(name = "ComuResponseProductQna", description = "상품 Q&A 항목", type = "object")
+    public static class ProductQna {
+        private Long comuId;
+        private String question;
+        private String creUser;
+        private LocalDateTime creTm;
+        private String answer;
+        private LocalDateTime answerTm;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "ComuResponseBoListItem", description = "BO 고객문의 목록 항목", type = "object")
     public static class BoListItem {
         private Long comuId;
