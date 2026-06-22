@@ -1,15 +1,19 @@
 package com.shop.api.frontWeb.controller;
 
 import com.shop.api.frontWeb.service.FrontLoginService;
+import com.shop.api.frontWeb.service.MemberJwtService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.SocialLoginRequest;
 import com.shop.core.frontWeb.vo.response.FrontMemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -20,11 +24,28 @@ import org.springframework.web.bind.annotation.*;
 public class FrontLoginController {
 
     private final FrontLoginService frontLoginService;
+    private final MemberJwtService memberJwtService;
 
+    @NotAuthRequired
     @DeleteMapping("/withdraw")
-    @Operation(summary = "회원 탈퇴", description = "개인정보 마스킹 처리 후 상태를 withdrawn으로 변경")
+    @Operation(summary = "회원 탈퇴", description = "FO 멤버 JWT 검증 후 개인정보 마스킹 처리")
     public ApiResponse<Void> withdraw(
-            @io.swagger.v3.oas.annotations.Parameter(description = "소셜 계정 ID") @RequestParam Long socialAccountId) {
+            @Parameter(description = "소셜 계정 ID") @RequestParam Long socialAccountId,
+            HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+        if (!StringUtils.hasLength(authHeader) || !authHeader.startsWith("Bearer ")) {
+            return new ApiResponse<>(ApiResultCode.NOT_FOUND_TOKEN);
+        }
+        String token = authHeader.replace("Bearer ", "");
+        if (!memberJwtService.isValidToken(token)) {
+            return new ApiResponse<>(ApiResultCode.TOKEN_UNAVAILABLE);
+        }
+        Long tokenMemberId = memberJwtService.getMemberIdFromToken(token);
+        if (tokenMemberId == null || !tokenMemberId.equals(socialAccountId)) {
+            return new ApiResponse<>(ApiResultCode.FAIL, "본인 계정만 탈퇴할 수 있습니다.");
+        }
+
         frontLoginService.withdraw(socialAccountId);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
