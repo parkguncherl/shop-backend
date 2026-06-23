@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.biz.Mis">
+
+    <select id="selectProductViewList" parameterType="map" resultType="com.shop.core.biz.mis.vo.response.MisResponse$ProductViewItem">
+        /* com.shop.mapper.biz.Mis.selectProductViewList */
+        SELECT
+              P.ID                                                                   AS prodId
+            , P.PROD_NM                                                             AS prodNm
+            , P.REP_FILE_ID                                                         AS repFileId
+            , COUNT(DISTINCT OI.ID)                                                 AS purchaseCnt
+            , COUNT(DISTINCT C.ID)                                                  AS cartCnt
+            , COUNT(DISTINCT PVL.ID)                                                AS pageViewCnt
+            , ROUND((  COUNT(DISTINCT OI.ID)  * 100
+                     + COUNT(DISTINCT C.ID)   *  30
+                     + COUNT(DISTINCT PVL.ID) *   5) / 100.0, 1)                    AS totalScore
+        FROM TB_PRODUCT P
+        LEFT JOIN TB_ORDER_ITEM OI
+               ON OI.PRODUCT_ID = P.ID
+              AND OI.CRE_TM &gt;= #{fromDateTime}
+              AND OI.CRE_TM  &lt; #{toDateTime}
+        LEFT JOIN TB_PRODUCT_DET PD
+               ON PD.PRODUCT_ID = P.ID
+              AND PD.DEL_YN = 'N'
+        LEFT JOIN TB_CART C
+               ON C.PRODUCT_DET_ID = PD.ID
+              AND C.CRE_TM &gt;= #{fromDateTime}
+              AND C.CRE_TM  &lt; #{toDateTime}
+        LEFT JOIN TB_PAGE_VIEW_LOG PVL
+               ON PVL.PRODUCT_ID = P.ID
+              AND PVL.IS_BOUNCE = 'N'
+              AND PVL.SCROLL_DEPTH &gt;= 30
+              AND PVL.CRE_TM &gt;= #{fromDateTime}
+              AND PVL.CRE_TM  &lt; #{toDateTime}
+        WHERE P.DEL_YN = 'N'
+        GROUP BY P.ID, P.PROD_NM, P.REP_FILE_ID
+        ORDER BY totalScore DESC
+    </select>
+
+</mapper>
