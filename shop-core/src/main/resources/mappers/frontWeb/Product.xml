@@ -158,6 +158,7 @@
         LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = PD.FILE_ID AND FD.FILE_SEQ = 1 AND FD.DEL_YN = 'N'
         WHERE PD.PRODUCT_ID = #{productId}
           AND PD.SLEEP_YN   = 'N'
+          AND PD.DEL_YN = 'N'
         ORDER BY PD.PRODUCT_DET_SEQ
     </select>
 
