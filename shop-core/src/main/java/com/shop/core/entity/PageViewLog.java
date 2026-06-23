@@ -29,6 +29,9 @@ public class PageViewLog extends BaseEntity {
     @Schema(description = "페이지 URL")
     private String pageUrl;
 
+    @Schema(description = "이전 상품 ID (어떤 상품을 보다가 진입했는지)")
+    private Integer befProductId;
+
     @Schema(description = "상품 ID")
     private Integer productId;
 
