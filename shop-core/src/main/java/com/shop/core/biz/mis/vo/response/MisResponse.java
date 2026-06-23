@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 public class MisResponse {
 
     @Getter
@@ -16,6 +18,6 @@ public class MisResponse {
         private Long purchaseCnt;
         private Long cartCnt;
         private Long pageViewCnt;
-        private Long totalScore;
+        private BigDecimal totalScore;
     }
 }
