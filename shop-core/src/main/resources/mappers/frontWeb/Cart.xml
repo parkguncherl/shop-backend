@@ -105,6 +105,7 @@
             keyProperty="id">
         /* Cart.insertCart */
         INSERT INTO TB_CART (
+            PARTNER_ID,
             SOCIAL_ACCOUNT_ID,
             <if test="guestTokenId != null">GUEST_TOKEN_ID,</if>
             PRODUCT_DET_ID,
@@ -116,6 +117,7 @@
             CRE_TM,
             UPT_TM
         ) VALUES (
+            #{partnerId},
             #{socialAccountId},
             <if test="guestTokenId != null">#{guestTokenId},</if>
             #{productDetId},

@@ -29,6 +29,7 @@ public class OrderService {
     public OrderResponse.Info createOrder(OrderRequest.Create request) {
         Order order = Order.builder()
                 .orderNo(request.getOrderNo())
+                .partnerId(request.getPartnerId())
                 .socialAccountId(request.getSocialAccountId())
                 .orderStatus(OrderStatus.ORDER.getCode())
                 .productAmount(request.getProductAmount())

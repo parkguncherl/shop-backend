@@ -22,6 +22,9 @@ public class Cart {
     @Schema(description = "PK (장바구니 아이템 ID)")
     private Long id;
 
+    @Schema(description = "파트너 ID")
+    private Integer partnerId;
+
     @Schema(description = "소셜 계정 ID — 회원 키")
     private Long socialAccountId;
 

@@ -1,8 +1,10 @@
 package com.shop.api.frontWeb.controller;
 
+import com.shop.api.annotation.GuestUser;
 import com.shop.api.frontWeb.service.CartService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.response.ApiResponse;
+import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.CartRequest;
 import com.shop.core.frontWeb.vo.response.CartResponse;
@@ -50,8 +52,11 @@ public class CartController {
     @PostMapping("/item")
     @Operation(summary = "장바구니 상품 추가",
                description = "동일 상품+옵션이 이미 있으면 수량 합산")
-    public ApiResponse<CartResponse.CartInfo> addItem(@RequestBody CartRequest.AddItem request) {
+    public ApiResponse<CartResponse.CartInfo> addItem(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
+            @RequestBody CartRequest.AddItem request) {
         try {
+            request.setPartnerId(guestUser.getPartnerId());
             CartResponse.CartInfo result = cartService.addItem(request);
             return new ApiResponse<>(ApiResultCode.SUCCESS, result);
         } catch (IllegalArgumentException e) {

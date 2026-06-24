@@ -15,6 +15,7 @@ public class CheckoutRequest {
 
         // ── 주문 정보 ──
         private String orderNo;
+        private Integer partnerId;
         private Long socialAccountId;
         private Long productAmount;
         private Long discountAmount;

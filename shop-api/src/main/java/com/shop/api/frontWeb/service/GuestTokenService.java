@@ -77,6 +77,13 @@ public class GuestTokenService {
         return guestTokenInfo;
     }
     /**
+     * guestId 로 GuestToken 엔티티 조회
+     */
+    public com.shop.core.entity.GuestToken findByGuestId(String guestId) {
+        return guestTokenDao.selectGuestTokenByGuestId(guestId);
+    }
+
+    /**
      * Rate Limiting 체크
      */
     public boolean checkRateLimit(String guestId) {

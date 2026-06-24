@@ -11,6 +11,9 @@ public class CartRequest {
     @Schema(name = "CartRequestAddItem", description = "장바구니 상품 추가 요청", type = "object")
     public static class AddItem {
 
+        @Schema(description = "파트너 ID")
+        private Integer partnerId;
+
         @Schema(description = "게스트 ID")
         private String guestId;
 

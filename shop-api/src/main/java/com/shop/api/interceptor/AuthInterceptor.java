@@ -143,9 +143,14 @@ public class AuthInterceptor implements HandlerInterceptor {
                         return false;
                     }
 
-                    Integer partnerId     = jwtTokenProvider.getPartnerId(guestToken);  // ← 추가
+                    Integer partnerId = jwtTokenProvider.getPartnerId(guestToken);
+                    if (partnerId == null) {
+                        // 구 토큰(partnerId claim 없음) → DB fallback
+                        com.shop.core.entity.GuestToken gt = guestTokenService.findByGuestId(guestId);
+                        if (gt != null) partnerId = gt.getPartnerId();
+                    }
                     request.setAttribute("GUEST_ID", guestId);
-                    request.setAttribute("PARTNER_ID",  partnerId);
+                    request.setAttribute("PARTNER_ID", partnerId);
                 }
             }
         }

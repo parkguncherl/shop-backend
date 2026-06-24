@@ -6,20 +6,42 @@
     <select id="selectProductViewList" parameterType="com.shop.core.biz.mis.vo.request.MisRequest$ListFilter" resultType="com.shop.core.biz.mis.vo.response.MisResponse$ProductViewItem">
         /* com.shop.mapper.biz.Mis.selectProductViewList */
         SELECT
-              P.ID                                                                   AS prodId
+              P.ID                                                                  AS prodId
             , P.PROD_NM                                                             AS prodNm
             , P.REP_FILE_ID                                                         AS repFileId
-            , COUNT(DISTINCT OI.ID)                                                 AS purchaseCnt
-            , COUNT(DISTINCT C.ID)                                                  AS cartCnt
-            , COUNT(DISTINCT PVL.ID)                                                AS pageViewCnt
-            , ROUND((  COUNT(DISTINCT OI.ID)  * 100
-                     + COUNT(DISTINCT C.ID)   *  30
-                     + COUNT(DISTINCT PVL.ID) *   5) / 100.0, 1)                    AS totalScore
+            , COALESCE(OI_AGG.totalPaymentAmt, 0)                                  AS totalPaymentAmt
+            , COALESCE(OI_AGG.purchaseCnt,     0)                                  AS purchaseCnt
+            , COALESCE(C_AGG.cartCnt,          0)                                  AS cartCnt
+            , COALESCE(PVL_AGG.pageViewCnt,    0)                                  AS pageViewCnt
+            , ROUND((  COALESCE(OI_AGG.purchaseCnt,  0) * 100
+                     + COALESCE(C_AGG.cartCnt,        0) *  30
+                     + COALESCE(PVL_AGG.pageViewCnt,  0) *   5) / 100.0, 1)        AS totalScore
         FROM TB_PRODUCT P
-        LEFT JOIN TB_ORDER_ITEM OI ON OI.PRODUCT_ID = P.ID AND OI.CRE_TM &gt;= #{fromDate} AND OI.CRE_TM  &lt; #{toDate}
-        LEFT JOIN TB_PRODUCT_DET PD ON PD.PRODUCT_ID = P.ID AND PD.DEL_YN = 'N'
-        LEFT JOIN TB_CART C ON C.PRODUCT_DET_ID = PD.ID AND C.CRE_TM &gt;= #{fromDate} AND C.CRE_TM  &lt; #{toDate}
-        LEFT JOIN TB_PAGE_VIEW_LOG PVL ON PVL.PRODUCT_ID = P.ID AND PVL.IS_BOUNCE = 'N' AND PVL.SCROLL_DEPTH &gt;= 30 AND PVL.CRE_TM &gt;= #{fromDate} AND PVL.CRE_TM  &lt; #{toDate}
+        LEFT JOIN (
+            SELECT OI.PRODUCT_ID
+                 , SUM(OI.PAYMENT_AMOUNT) AS totalPaymentAmt
+                 , COUNT(OI.ID)           AS purchaseCnt
+            FROM TB_ORDER_ITEM OI
+            JOIN TB_ORDER O ON O.ID = OI.ORDER_ID AND O.ORDER_STATUS IN ('O', 'P', 'R', 'S', 'D') AND O.PARTNER_ID = #{partnerId}
+            WHERE OI.CRE_TM &gt;= #{fromDate} AND OI.CRE_TM &lt; #{toDate}
+            GROUP BY OI.PRODUCT_ID
+        ) OI_AGG ON OI_AGG.PRODUCT_ID = P.ID
+        LEFT JOIN (
+            SELECT PD.PRODUCT_ID
+                 , COUNT(C.ID) AS cartCnt
+            FROM TB_PRODUCT_DET PD
+            JOIN TB_CART C ON C.PRODUCT_DET_ID = PD.ID AND C.CRE_TM &gt;= #{fromDate} AND C.CRE_TM &lt; #{toDate} AND C.PARTNER_ID = #{partnerId}
+            WHERE PD.DEL_YN = 'N'
+            GROUP BY PD.PRODUCT_ID
+        ) C_AGG ON C_AGG.PRODUCT_ID = P.ID
+        LEFT JOIN (
+            SELECT PVL.PRODUCT_ID
+                 , COUNT(PVL.ID) AS pageViewCnt
+            FROM TB_PAGE_VIEW_LOG PVL
+            WHERE PVL.IS_BOUNCE = 'N' AND PVL.SCROLL_DEPTH &gt;= 30
+              AND PVL.CRE_TM &gt;= #{fromDate} AND PVL.CRE_TM &lt; #{toDate}
+            GROUP BY PVL.PRODUCT_ID
+        ) PVL_AGG ON PVL_AGG.PRODUCT_ID = P.ID
         WHERE P.PARTNER_ID = #{partnerId}
           AND P.DEL_YN = 'N'
         <if test="weather != null and weather.size() > 0">
@@ -34,7 +56,6 @@
             </foreach>
           )
         </if>
-        GROUP BY P.ID, P.PROD_NM, P.REP_FILE_ID
         ORDER BY totalScore DESC
     </select>
 

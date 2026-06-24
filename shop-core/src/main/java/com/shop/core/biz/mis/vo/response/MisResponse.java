@@ -15,6 +15,7 @@ public class MisResponse {
         private Integer prodId;
         private String prodNm;
         private Integer repFileId;
+        private Long totalPaymentAmt;
         private Long purchaseCnt;
         private Long cartCnt;
         private Long pageViewCnt;

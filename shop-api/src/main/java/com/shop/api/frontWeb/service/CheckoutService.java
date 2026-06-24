@@ -29,7 +29,7 @@ public class CheckoutService {
     private final CartDao cartDao;
 
     @Transactional
-    public CheckoutResponse.Info checkout(CheckoutRequest.Create request) {
+    public CheckoutResponse.Info checkout(CheckoutRequest.Create request, GuestToken guestUser) {
 
         // ── 1. 주문 생성 ──
         Order order = Order.builder()
@@ -47,6 +47,7 @@ public class CheckoutService {
                 .address(request.getAddress())
                 .addressDetail(request.getAddressDetail())
                 .memo(request.getMemo())
+                .partnerId(guestUser.getPartnerId())
                 .build();
         orderDao.insertOrder(order);
 

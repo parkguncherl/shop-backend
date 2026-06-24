@@ -1,8 +1,10 @@
 package com.shop.api.frontWeb.controller;
 
+import com.shop.api.annotation.GuestUser;
 import com.shop.api.frontWeb.service.OrderService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.response.ApiResponse;
+import com.shop.core.entity.GuestToken;
 import com.shop.core.frontWeb.vo.request.OrderRequest;
 import com.shop.core.frontWeb.vo.response.OrderResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +26,10 @@ public class OrderController {
     @NotAuthRequired
     @PostMapping
     @Operation(summary = "Create order")
-    public ApiResponse<OrderResponse.Info> createOrder(@RequestBody OrderRequest.Create request) {
+    public ApiResponse<OrderResponse.Info> createOrder(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
+            @RequestBody OrderRequest.Create request) {
+        request.setPartnerId(guestUser.getPartnerId());
         return new ApiResponse<>(orderService.createOrder(request));
     }
 

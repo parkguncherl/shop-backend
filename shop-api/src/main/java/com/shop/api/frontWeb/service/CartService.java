@@ -77,6 +77,7 @@ public class CartService {
             // 신규 추가 - 가격은 상품 테이블에서 조회
             BigDecimal unitPrice = cartDao.selectSellAmtByProductDetId(request.getProductDetId());
             Cart item = Cart.builder()
+                    .partnerId(request.getPartnerId())
                     .socialAccountId(socialAccountId)
                     .guestTokenId(guestTokenId)
                     .productDetId(request.getProductDetId())
