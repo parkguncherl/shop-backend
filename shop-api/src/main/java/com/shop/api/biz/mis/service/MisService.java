@@ -20,4 +20,13 @@ public class MisService {
         filter.setToDate(filter.getToDate().plusDays(1));
         return misDao.selectProductViewList(filter);
     }
+
+    public List<MisResponse.SalesStatItem> getSalesStatList(MisRequest.SalesStatFilter filter) {
+        filter.setToDate(filter.getToDate().plusDays(1));
+        return misDao.selectSalesStatList(filter);
+    }
+
+    public List<MisResponse.ProductViewItem> getSalesStatDetailList(MisRequest.SalesStatDetailFilter filter) {
+        return misDao.selectSalesStatDetailList(filter);
+    }
 }

@@ -34,4 +34,26 @@ public class MisController {
         filter.setPartnerId(jwtUser.getPartnerId());
         return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getProductViewList(filter));
     }
+
+    @AccessLog("MIS 판매 실적 목록 조회")
+    @GetMapping("/salesStatList")
+    @Operation(summary = "MIS 판매 실적 조회 (월별/주차별)")
+    public ApiResponse<List<MisResponse.SalesStatItem>> getSalesStatList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @ModelAttribute MisRequest.SalesStatFilter filter
+    ) {
+        filter.setPartnerId(jwtUser.getPartnerId());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getSalesStatList(filter));
+    }
+
+    @AccessLog("MIS 판매 실적 상세 목록 조회")
+    @GetMapping("/salesStatDetailList")
+    @Operation(summary = "MIS 판매 실적 상세 조회 (특정 월/주차 상품 분석)")
+    public ApiResponse<List<MisResponse.ProductViewItem>> getSalesStatDetailList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @ModelAttribute MisRequest.SalesStatDetailFilter filter
+    ) {
+        filter.setPartnerId(jwtUser.getPartnerId());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getSalesStatDetailList(filter));
+    }
 }

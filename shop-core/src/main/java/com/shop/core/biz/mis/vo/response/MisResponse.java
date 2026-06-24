@@ -21,4 +21,13 @@ public class MisResponse {
         private Long pageViewCnt;
         private BigDecimal totalScore;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "MisResponseSalesStatItem", description = "MIS 판매 실적 항목", type = "object")
+    public static class SalesStatItem {
+        private String period;
+        private Long totalPaymentAmt;
+        private Long purchaseCnt;
+    }
 }
