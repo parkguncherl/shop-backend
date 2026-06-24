@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class MisRequest {
 
@@ -21,5 +22,11 @@ public class MisRequest {
         @Schema(description = "조회 종료일")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         private LocalDate toDate;
+
+        @Schema(description = "계절 필터 (spring, summer, autumn, winter)")
+        private List<String> weather;
+
+        @Schema(description = "partnerId")
+        private Integer partnerId;
     }
 }

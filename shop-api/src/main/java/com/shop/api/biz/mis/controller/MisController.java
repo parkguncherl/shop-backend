@@ -31,6 +31,7 @@ public class MisController {
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @ModelAttribute MisRequest.ListFilter filter
     ) {
+        filter.setPartnerId(jwtUser.getPartnerId());
         return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getProductViewList(filter));
     }
 }

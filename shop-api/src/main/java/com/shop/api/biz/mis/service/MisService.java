@@ -17,12 +17,7 @@ public class MisService {
     private final MisDao misDao;
 
     public List<MisResponse.ProductViewItem> getProductViewList(MisRequest.ListFilter filter) {
-        LocalDate fromDate = filter.getFromDate() != null ? filter.getFromDate() : LocalDate.now();
-        LocalDate toDate   = filter.getToDate()   != null ? filter.getToDate()   : LocalDate.now();
-
-        LocalDateTime fromDateTime = fromDate.atStartOfDay();
-        LocalDateTime toDateTime   = toDate.plusDays(1).atStartOfDay();
-
-        return misDao.selectProductViewList(fromDateTime, toDateTime);
+        filter.setToDate(filter.getToDate().plusDays(1));
+        return misDao.selectProductViewList(filter);
     }
 }
