@@ -30,4 +30,17 @@ public class MisResponse {
         private Long totalPaymentAmt;
         private Long purchaseCnt;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "MisResponseCategoryViewItem", description = "MIS 카테고리 분석 항목", type = "object")
+    public static class CategoryViewItem {
+        private Integer categoryId;
+        private String categoryNm;
+        private Long totalPaymentAmt;
+        private Long purchaseCnt;
+        private Long cartCnt;
+        private Long pageViewCnt;
+        private BigDecimal totalScore;
+    }
 }

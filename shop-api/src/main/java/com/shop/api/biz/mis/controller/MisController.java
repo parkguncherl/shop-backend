@@ -56,4 +56,15 @@ public class MisController {
         filter.setPartnerId(jwtUser.getPartnerId());
         return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getSalesStatDetailList(filter));
     }
+
+    @AccessLog("MIS 카테고리 분석 목록 조회")
+    @GetMapping("/categoryViewList")
+    @Operation(summary = "MIS 카테고리별 판매 분석 조회")
+    public ApiResponse<List<MisResponse.CategoryViewItem>> getCategoryViewList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @ModelAttribute MisRequest.CategoryViewFilter filter
+    ) {
+        filter.setPartnerId(jwtUser.getPartnerId());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getCategoryViewList(filter));
+    }
 }

@@ -32,4 +32,8 @@ public class MisDao {
     public List<MisResponse.ProductViewItem> selectSalesStatDetailList(MisRequest.SalesStatDetailFilter filter) {
         return sqlSession.selectList(NAMESPACE + "selectSalesStatDetailList", filter);
     }
+
+    public List<MisResponse.CategoryViewItem> selectCategoryViewList(MisRequest.CategoryViewFilter filter) {
+        return sqlSession.selectList(NAMESPACE + "selectCategoryViewList", filter);
+    }
 }

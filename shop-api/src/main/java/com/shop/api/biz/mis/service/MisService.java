@@ -29,4 +29,9 @@ public class MisService {
     public List<MisResponse.ProductViewItem> getSalesStatDetailList(MisRequest.SalesStatDetailFilter filter) {
         return misDao.selectSalesStatDetailList(filter);
     }
+
+    public List<MisResponse.CategoryViewItem> getCategoryViewList(MisRequest.CategoryViewFilter filter) {
+        filter.setToDate(filter.getToDate().plusDays(1));
+        return misDao.selectCategoryViewList(filter);
+    }
 }
