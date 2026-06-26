@@ -171,7 +171,10 @@
                                  AND OI.CRE_TM &lt;  CURRENT_DATE THEN 1 ELSE 0 END), 0)                                              AS yesterdayPurchaseCnt
             , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'P' AND OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
                                  AND OI.CRE_TM &lt;  CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)                              AS yesterdayPaymentAmt
+            , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'C' AND OI.CRE_TM &gt;= CURRENT_DATE THEN 1 ELSE 0 END), 0)                       AS todayCancelCnt
             , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'C' AND OI.CRE_TM &gt;= CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)      AS todayCancelAmt
+            , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'C' AND OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
+                                 AND OI.CRE_TM &lt;  CURRENT_DATE THEN 1 ELSE 0 END), 0)                                              AS yesterdayCancelCnt
             , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'C' AND OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
                                  AND OI.CRE_TM &lt;  CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)                              AS yesterdayCancelAmt
         FROM TB_ORDER_ITEM OI

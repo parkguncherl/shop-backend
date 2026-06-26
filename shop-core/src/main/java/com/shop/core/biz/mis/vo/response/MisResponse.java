@@ -39,7 +39,9 @@ public class MisResponse {
         private Long todayPaymentAmt;
         private Long yesterdayPurchaseCnt;
         private Long yesterdayPaymentAmt;
+        private Long todayCancelCnt;
         private Long todayCancelAmt;
+        private Long yesterdayCancelCnt;
         private Long yesterdayCancelAmt;
     }
 
