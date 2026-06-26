@@ -57,6 +57,15 @@ public class MisController {
         return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getSalesStatDetailList(filter));
     }
 
+    @AccessLog("MIS 금일/어제 판매 현황 조회")
+    @GetMapping("/dailySalesStat")
+    @Operation(summary = "MIS 금일/어제 판매 현황 조회")
+    public ApiResponse<MisResponse.DailySalesStat> getDailySalesStat(
+            @Parameter(hidden = true) @JwtUser User jwtUser
+    ) {
+        return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getDailySalesStat(jwtUser.getPartnerId()));
+    }
+
     @AccessLog("MIS 카테고리 분석 목록 조회")
     @GetMapping("/categoryViewList")
     @Operation(summary = "MIS 카테고리별 판매 분석 조회")

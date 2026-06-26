@@ -33,6 +33,16 @@ public class MisResponse {
 
     @Getter
     @Setter
+    @Schema(name = "MisResponseDailySalesStat", description = "MIS 금일/어제 판매 현황", type = "object")
+    public static class DailySalesStat {
+        private Long todayPurchaseCnt;
+        private Long todayPaymentAmt;
+        private Long yesterdayPurchaseCnt;
+        private Long yesterdayPaymentAmt;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "MisResponseCategoryViewItem", description = "MIS 카테고리 분석 항목", type = "object")
     public static class CategoryViewItem {
         private Integer categoryId;

@@ -30,6 +30,10 @@ public class MisService {
         return misDao.selectSalesStatDetailList(filter);
     }
 
+    public MisResponse.DailySalesStat getDailySalesStat(Integer partnerId) {
+        return misDao.selectDailySalesStat(partnerId);
+    }
+
     public List<MisResponse.CategoryViewItem> getCategoryViewList(MisRequest.CategoryViewFilter filter) {
         filter.setToDate(filter.getToDate().plusDays(1));
         return misDao.selectCategoryViewList(filter);
