@@ -33,6 +33,10 @@ public class MisDao {
         return sqlSession.selectList(NAMESPACE + "selectSalesStatDetailList", filter);
     }
 
+    public MisResponse.DailySalesStat selectDailySalesStat(Integer partnerId) {
+        return sqlSession.selectOne(NAMESPACE + "selectDailySalesStat", partnerId);
+    }
+
     public List<MisResponse.CategoryViewItem> selectCategoryViewList(MisRequest.CategoryViewFilter filter) {
         return sqlSession.selectList(NAMESPACE + "selectCategoryViewList", filter);
     }
