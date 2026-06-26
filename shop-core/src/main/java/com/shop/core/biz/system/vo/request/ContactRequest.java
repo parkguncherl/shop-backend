@@ -48,6 +48,10 @@ public class ContactRequest {
         private String uriNm;
 
         @Schema(required = false)
+        @Parameter(description = "URI")
+        private String uri;
+
+        @Schema(required = false)
         @Parameter(description = "거래구분")
         private String tranType;
 

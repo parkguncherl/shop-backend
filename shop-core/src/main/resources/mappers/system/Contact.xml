@@ -48,11 +48,21 @@
         LEFT OUTER JOIN TB_USER B ON B.ID = A.USER_ID
         <where>
             <if test='filter.loginId != null and !filter.loginId.equals("")'>
-                AND USER_ID = #{filter.loginId}
+                AND B.LOGIN_ID LIKE CONCAT('%', #{filter.loginId}, '%')
+            </if>
+            <if test='filter.userNm != null and !filter.userNm.equals("")'>
+                AND B.USER_NM LIKE CONCAT('%', #{filter.userNm}, '%')
             </if>
             <if test='filter.tranType != null and !filter.tranType.equals("")'>
                 AND TRAN_TYPE = #{filter.tranType}
             </if>
+            <if test='filter.uriNm != null and !filter.uriNm.equals("")'>
+                AND A.URI_NM LIKE CONCAT('%', #{filter.uriNm}, '%')
+            </if>
+            <if test='filter.uri != null and !filter.uri.equals("")'>
+                AND A.URI LIKE CONCAT('%', #{filter.uri}, '%')
+            </if>
+
             <if test='filter.partnerId != null and !filter.partnerId.equals("")'>
                 AND A.PARTNER_ID = #{filter.partnerId}
             </if>
