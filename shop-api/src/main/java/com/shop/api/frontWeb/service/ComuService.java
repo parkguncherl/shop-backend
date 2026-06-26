@@ -108,6 +108,21 @@ public class ComuService {
     }
 
     @Transactional
+    public void deleteAdminMessage(Long comuDetId, String loginId) {
+        ComuDet det = comuDao.selectComuDetById(comuDetId);
+        if (det == null) {
+            throw new IllegalArgumentException("메시지를 찾을 수 없습니다.");
+        }
+        if (!"N".equals(det.getReqYn())) {
+            throw new IllegalStateException("관리자 메시지만 삭제할 수 있습니다.");
+        }
+        if (!loginId.equals(det.getCreUser())) {
+            throw new IllegalStateException("본인 메시지만 삭제할 수 있습니다.");
+        }
+        comuDao.deleteComuDet(comuDetId);
+    }
+
+    @Transactional
     public void deleteMessage(Long comuDetId, Long socialAccountId) {
         ComuDet det = comuDao.selectComuDetById(comuDetId);
         if (det == null) {

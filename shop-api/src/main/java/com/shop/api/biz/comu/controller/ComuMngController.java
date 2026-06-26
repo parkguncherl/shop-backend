@@ -52,6 +52,17 @@ public class ComuMngController {
         return new ApiResponse<>(ApiResultCode.SUCCESS, comuService.getThread(comuId));
     }
 
+    @AccessLog("관리자 메시지 삭제")
+    @DeleteMapping("/message/{comuDetId}")
+    @Operation(summary = "관리자 본인 메시지 삭제 (BO)")
+    public ApiResponse<Void> deleteAdminMessage(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @PathVariable Long comuDetId
+    ) {
+        comuService.deleteAdminMessage(comuDetId, jwtUser.getLoginId());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, null);
+    }
+
     @AccessLog("고객 문의 답변 등록")
     @PostMapping("/{comuId}/reply")
     @Operation(summary = "관리자 답변 등록 (BO)")
