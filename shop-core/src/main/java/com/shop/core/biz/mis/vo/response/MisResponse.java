@@ -39,6 +39,8 @@ public class MisResponse {
         private Long todayPaymentAmt;
         private Long yesterdayPurchaseCnt;
         private Long yesterdayPaymentAmt;
+        private Long todayCancelAmt;
+        private Long yesterdayCancelAmt;
     }
 
     @Getter

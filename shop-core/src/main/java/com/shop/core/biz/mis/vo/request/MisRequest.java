@@ -26,6 +26,9 @@ public class MisRequest {
         @Schema(description = "계절 필터 (spring, summer, autumn, winter)")
         private List<String> weather;
 
+        @Schema(description = "주문상태 단일 필터 (없으면 O,P,R,S,D 전체)")
+        private String orderStatus;
+
         @Schema(description = "partnerId")
         private Integer partnerId;
     }
@@ -45,6 +48,9 @@ public class MisRequest {
         @Schema(description = "조회 종료일")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         private LocalDate toDate;
+
+        @Schema(description = "주문상태 단일 필터 (없으면 O,P,R,S,D 전체)")
+        private String orderStatus;
 
         @Schema(description = "partnerId")
         private Integer partnerId;

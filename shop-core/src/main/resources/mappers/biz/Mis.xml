@@ -22,7 +22,9 @@
                  , SUM(OI.PAYMENT_AMOUNT) AS totalPaymentAmt
                  , COUNT(OI.ID)           AS purchaseCnt
             FROM TB_ORDER_ITEM OI
-            JOIN TB_ORDER O ON O.ID = OI.ORDER_ID AND O.ORDER_STATUS IN ('O', 'P', 'R', 'S', 'D') AND O.PARTNER_ID = #{partnerId}
+            JOIN TB_ORDER O ON O.ID = OI.ORDER_ID
+                           AND O.PARTNER_ID = #{partnerId}
+                           AND (<if test="orderStatus != null and orderStatus != ''">O.ORDER_STATUS = #{orderStatus}</if><if test="orderStatus == null or orderStatus == ''">O.ORDER_STATUS IN ('O','P','R','S','D')</if>)
             WHERE OI.CRE_TM &gt;= #{fromDate} AND OI.CRE_TM &lt; #{toDate}
             GROUP BY OI.PRODUCT_ID
         ) OI_AGG ON OI_AGG.PRODUCT_ID = P.ID
@@ -69,7 +71,7 @@
              , COUNT(OI.ID)           AS purchaseCnt
         FROM TB_ORDER_ITEM OI
         JOIN TB_ORDER O ON O.ID = OI.ORDER_ID
-                       AND O.ORDER_STATUS IN ('O','P','R','S','D')
+                       AND (<if test="orderStatus != null and orderStatus != ''">O.ORDER_STATUS = #{orderStatus}</if><if test="orderStatus == null or orderStatus == ''">O.ORDER_STATUS IN ('O','P','R','S','D')</if>)
                        AND O.PARTNER_ID = #{partnerId}
         WHERE OI.CRE_TM &gt;= #{fromDate}
           AND OI.CRE_TM &lt; #{toDate}
@@ -82,7 +84,7 @@
              , COUNT(OI.ID)           AS purchaseCnt
         FROM TB_ORDER_ITEM OI
         JOIN TB_ORDER O ON O.ID = OI.ORDER_ID
-                       AND O.ORDER_STATUS IN ('O','P','R','S','D')
+                       AND (<if test="orderStatus != null and orderStatus != ''">O.ORDER_STATUS = #{orderStatus}</if><if test="orderStatus == null or orderStatus == ''">O.ORDER_STATUS IN ('O','P','R','S','D')</if>)
                        AND O.PARTNER_ID = #{partnerId}
         WHERE OI.CRE_TM &gt;= #{fromDate}
           AND OI.CRE_TM &lt; #{toDate}
@@ -163,15 +165,18 @@
     <select id="selectDailySalesStat" parameterType="java.lang.Integer" resultType="com.shop.core.biz.mis.vo.response.MisResponse$DailySalesStat">
         /* com.shop.mapper.biz.Mis.selectDailySalesStat */
         SELECT
-              COALESCE(SUM(CASE WHEN OI.CRE_TM &gt;= CURRENT_DATE THEN 1 ELSE 0 END), 0)                      AS todayPurchaseCnt
-            , COALESCE(SUM(CASE WHEN OI.CRE_TM &gt;= CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)      AS todayPaymentAmt
-            , COALESCE(SUM(CASE WHEN OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
-                                 AND OI.CRE_TM &lt;  CURRENT_DATE THEN 1 ELSE 0 END), 0)                      AS yesterdayPurchaseCnt
-            , COALESCE(SUM(CASE WHEN OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
-                                 AND OI.CRE_TM &lt;  CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)      AS yesterdayPaymentAmt
+              COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'P' AND OI.CRE_TM &gt;= CURRENT_DATE THEN 1 ELSE 0 END), 0)                      AS todayPurchaseCnt
+            , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'P' AND OI.CRE_TM &gt;= CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)      AS todayPaymentAmt
+            , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'P' AND OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
+                                 AND OI.CRE_TM &lt;  CURRENT_DATE THEN 1 ELSE 0 END), 0)                                              AS yesterdayPurchaseCnt
+            , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'P' AND OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
+                                 AND OI.CRE_TM &lt;  CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)                              AS yesterdayPaymentAmt
+            , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'C' AND OI.CRE_TM &gt;= CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)      AS todayCancelAmt
+            , COALESCE(SUM(CASE WHEN O.ORDER_STATUS = 'C' AND OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
+                                 AND OI.CRE_TM &lt;  CURRENT_DATE THEN OI.PAYMENT_AMOUNT ELSE 0 END), 0)                              AS yesterdayCancelAmt
         FROM TB_ORDER_ITEM OI
         JOIN TB_ORDER O ON O.ID = OI.ORDER_ID
-                       AND O.ORDER_STATUS IN ('O','P','R','S','D')
+                       AND O.ORDER_STATUS IN ('P','C')
                        AND O.PARTNER_ID = #{partnerId}
         WHERE OI.CRE_TM &gt;= CURRENT_DATE - INTERVAL '1 day'
     </select>
