@@ -40,4 +40,8 @@ public class MisDao {
     public List<MisResponse.CategoryViewItem> selectCategoryViewList(MisRequest.CategoryViewFilter filter) {
         return sqlSession.selectList(NAMESPACE + "selectCategoryViewList", filter);
     }
+
+    public List<MisResponse.ReviewFitItem> selectReviewFitAnalysis() {
+        return sqlSession.selectList(NAMESPACE + "selectReviewFitAnalysis");
+    }
 }

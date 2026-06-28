@@ -76,4 +76,13 @@ public class MisController {
         filter.setPartnerId(jwtUser.getPartnerId());
         return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getCategoryViewList(filter));
     }
+
+    @AccessLog("MIS 리뷰 사이즈 분석 조회")
+    @GetMapping("/reviewFitAnalysis")
+    @Operation(summary = "MIS 리뷰 사이즈/키/몸무게 분석")
+    public ApiResponse<List<MisResponse.ReviewFitItem>> getReviewFitAnalysis(
+            @Parameter(hidden = true) @JwtUser User jwtUser
+    ) {
+        return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getReviewFitAnalysis());
+    }
 }

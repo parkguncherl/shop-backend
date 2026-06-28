@@ -47,6 +47,16 @@ public class MisResponse {
 
     @Getter
     @Setter
+    @Schema(name = "MisResponseReviewFitItem", description = "MIS 리뷰 사이즈 분석 항목", type = "object")
+    public static class ReviewFitItem {
+        private String fitGroup;
+        private String myHeight;
+        private String myWeight;
+        private Long cnt;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "MisResponseCategoryViewItem", description = "MIS 카테고리 분석 항목", type = "object")
     public static class CategoryViewItem {
         private Integer categoryId;

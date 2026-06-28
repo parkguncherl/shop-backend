@@ -230,4 +230,24 @@
         ORDER BY totalScore DESC
     </select>
 
+    <select id="selectReviewFitAnalysis" resultType="com.shop.core.biz.mis.vo.response.MisResponse$ReviewFitItem">
+        /* com.shop.mapper.biz.Mis.selectReviewFitAnalysis */
+        SELECT
+            CASE
+                WHEN MY_FIT = '5'            THEN '적당해요'
+                WHEN MY_FIT IN ('1', '3')    THEN '작아요'
+                WHEN MY_FIT IN ('7', '9')    THEN '커요'
+            END   AS fitGroup,
+            MY_HEIGHT AS myHeight,
+            MY_WEIGHT AS myWeight,
+            COUNT(*)  AS cnt
+        FROM TB_REVIEW
+        WHERE MY_FIT   IS NOT NULL
+          AND MY_HEIGHT IS NOT NULL
+          AND MY_WEIGHT IS NOT NULL
+          AND DEL_YN = 'N'
+        GROUP BY fitGroup, MY_HEIGHT, MY_WEIGHT
+        ORDER BY fitGroup, MY_HEIGHT, MY_WEIGHT
+    </select>
+
 </mapper>

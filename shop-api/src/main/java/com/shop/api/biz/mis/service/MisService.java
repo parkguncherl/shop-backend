@@ -38,4 +38,8 @@ public class MisService {
         filter.setToDate(filter.getToDate().plusDays(1));
         return misDao.selectCategoryViewList(filter);
     }
+
+    public List<MisResponse.ReviewFitItem> getReviewFitAnalysis() {
+        return misDao.selectReviewFitAnalysis();
+    }
 }
