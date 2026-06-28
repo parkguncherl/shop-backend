@@ -22,6 +22,10 @@ public class DeliveryAddressDao {
         return sqlSession.selectOne(NAMESPACE + "selectById", id);
     }
 
+    public DeliveryAddress selectDuplicate(DeliveryAddress deliveryAddress) {
+        return sqlSession.selectOne(NAMESPACE + "selectDuplicate", deliveryAddress);
+    }
+
     public int insert(DeliveryAddress deliveryAddress) {
         return sqlSession.insert(NAMESPACE + "insert", deliveryAddress);
     }

@@ -17,6 +17,9 @@ public class ReviewRequest {
         private Integer rating;
         private String content;
         private Long fileId;
+        private String myFit;
+        private String myWeight;
+        private String myHeight;
     }
 
     @Getter
@@ -28,5 +31,8 @@ public class ReviewRequest {
         private Integer rating;
         private String content;
         private Long fileId;
+        private String myFit;
+        private String myWeight;
+        private String myHeight;
     }
 }

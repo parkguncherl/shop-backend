@@ -15,6 +15,9 @@
             RATING,
             CONTENT,
             FILE_ID,
+            MY_FIT,
+            MY_WEIGHT,
+            MY_HEIGHT,
             IS_BLINDED,
             DEL_YN,
             CRE_TM,
@@ -27,6 +30,9 @@
             #{rating},
             #{content},
             #{fileId},
+            #{myFit},
+            #{myWeight},
+            #{myHeight},
             'N',
             'N',
             NOW(),
@@ -47,6 +53,9 @@
             RATING            AS rating,
             CONTENT           AS content,
             FILE_ID           AS fileId,
+            MY_FIT            AS myFit,
+            MY_WEIGHT         AS myWeight,
+            MY_HEIGHT         AS myHeight,
             IS_BLINDED        AS isBlinded,
             DEL_YN            AS delYn,
             CRE_TM            AS creTm,
@@ -69,6 +78,9 @@
             RATING            AS rating,
             CONTENT           AS content,
             FILE_ID           AS fileId,
+            MY_FIT            AS myFit,
+            MY_WEIGHT         AS myWeight,
+            MY_HEIGHT         AS myHeight,
             IS_BLINDED        AS isBlinded,
             DEL_YN            AS delYn,
             CRE_TM            AS creTm,
@@ -122,6 +134,9 @@
             R.RATING            AS rating,
             R.CONTENT           AS content,
             R.FILE_ID           AS fileId,
+            R.MY_FIT            AS myFit,
+            R.MY_WEIGHT         AS myWeight,
+            R.MY_HEIGHT         AS myHeight,
             R.CRE_TM            AS creTm
         FROM TB_REVIEW R
         JOIN TB_ORDER_ITEM OI ON OI.ID = R.ORDER_ITEM_ID
@@ -134,10 +149,13 @@
             parameterType="com.shop.core.frontWeb.vo.request.ReviewRequest$Update">
         /* Review.updateReview */
         UPDATE TB_REVIEW SET
-            RATING  = #{rating},
-            CONTENT = #{content},
-            FILE_ID = #{fileId},
-            UPT_TM  = NOW()
+            RATING     = #{rating},
+            CONTENT    = #{content},
+            FILE_ID    = #{fileId},
+            MY_FIT     = #{myFit},
+            MY_WEIGHT  = #{myWeight},
+            MY_HEIGHT  = #{myHeight},
+            UPT_TM     = NOW()
         WHERE ID = #{id}
           AND SOCIAL_ACCOUNT_ID = #{socialAccountId}
           AND DEL_YN = 'N'

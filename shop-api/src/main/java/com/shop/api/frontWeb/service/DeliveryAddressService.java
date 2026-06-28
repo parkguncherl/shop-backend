@@ -24,12 +24,7 @@ public class DeliveryAddressService {
 
     @Transactional
     public DeliveryAddressResponse.Info save(DeliveryAddressRequest.Save request) {
-        // 기본 배송지로 저장 시 기존 기본 배송지 해제
-        if ("Y".equals(request.getIsDefault())) {
-            deliveryAddressDao.clearDefault(request.getSocialAccountId());
-        }
-
-        DeliveryAddress entity = DeliveryAddress.builder()
+        DeliveryAddress candidate = DeliveryAddress.builder()
                 .socialAccountId(request.getSocialAccountId())
                 .alias(request.getAlias())
                 .receiverName(request.getReceiverName())
@@ -41,8 +36,19 @@ public class DeliveryAddressService {
                 .isDefault(request.getIsDefault() != null ? request.getIsDefault() : "N")
                 .build();
 
-        deliveryAddressDao.insert(entity);
-        return toInfo(deliveryAddressDao.selectById(entity.getId()));
+        // 동일한 배송지가 이미 존재하면 기존 항목 반환
+        DeliveryAddress existing = deliveryAddressDao.selectDuplicate(candidate);
+        if (existing != null) {
+            return toInfo(existing);
+        }
+
+        // 기본 배송지로 저장 시 기존 기본 배송지 해제
+        if ("Y".equals(request.getIsDefault())) {
+            deliveryAddressDao.clearDefault(request.getSocialAccountId());
+        }
+
+        deliveryAddressDao.insert(candidate);
+        return toInfo(deliveryAddressDao.selectById(candidate.getId()));
     }
 
     @Transactional

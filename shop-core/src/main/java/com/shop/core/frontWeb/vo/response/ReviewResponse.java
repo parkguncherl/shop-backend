@@ -21,6 +21,9 @@ public class ReviewResponse {
         private Integer rating;
         private String content;
         private Long fileId;
+        private String myFit;
+        private String myWeight;
+        private String myHeight;
         private String isBlinded;
         private LocalDateTime creTm;
         private LocalDateTime uptTm;
@@ -59,6 +62,9 @@ public class ReviewResponse {
         private Integer rating;
         private String content;
         private Long fileId;
+        private String myFit;
+        private String myWeight;
+        private String myHeight;
         private LocalDateTime creTm;
     }
 }

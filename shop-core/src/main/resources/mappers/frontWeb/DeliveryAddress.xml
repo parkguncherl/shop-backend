@@ -24,6 +24,23 @@
         WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
           AND DEL_YN = 'N'
         ORDER BY IS_DEFAULT DESC, ID DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectDuplicate" parameterType="com.shop.core.entity.DeliveryAddress" resultType="com.shop.core.entity.DeliveryAddress">
+        /* DeliveryAddress.selectDuplicate */
+        SELECT <include refid="columns" />
+        FROM TB_DELIVERY_ADDRESS
+        WHERE SOCIAL_ACCOUNT_ID = #{socialAccountId}
+          AND ALIAS             = #{alias}
+          AND RECEIVER_NAME     = #{receiverName}
+          AND RECEIVER_PHONE    = #{receiverPhone}
+          AND ZIP_CODE          = #{zipCode}
+          AND ADDRESS           = #{address}
+          AND IFNULL(ADDRESS_DETAIL, '') = IFNULL(#{addressDetail}, '')
+          AND IFNULL(MEMO, '')           = IFNULL(#{memo}, '')
+          AND DEL_YN = 'N'
+        LIMIT 1
     </select>
 
     <select id="selectById" parameterType="Long" resultType="com.shop.core.entity.DeliveryAddress">

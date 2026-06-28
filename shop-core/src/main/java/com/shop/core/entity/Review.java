@@ -21,6 +21,9 @@ public class Review {
     private Integer rating;
     private String content;
     private Long fileId;
+    private String myFit;
+    private String myWeight;
+    private String myHeight;
     private String isBlinded;
     private String delYn;
     private LocalDateTime creTm;

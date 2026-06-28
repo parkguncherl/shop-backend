@@ -57,6 +57,9 @@ public class ReviewService {
                 .rating(request.getRating())
                 .content(request.getContent())
                 .fileId(request.getFileId())
+                .myFit(request.getMyFit())
+                .myWeight(request.getMyWeight())
+                .myHeight(request.getMyHeight())
                 .build();
 
         reviewDao.insertReview(review);
@@ -138,6 +141,9 @@ public class ReviewService {
         info.setRating(r.getRating());
         info.setContent(r.getContent());
         info.setFileId(r.getFileId());
+        info.setMyFit(r.getMyFit());
+        info.setMyWeight(r.getMyWeight());
+        info.setMyHeight(r.getMyHeight());
         info.setIsBlinded(r.getIsBlinded());
         info.setCreTm(r.getCreTm());
         info.setUptTm(r.getUptTm());
