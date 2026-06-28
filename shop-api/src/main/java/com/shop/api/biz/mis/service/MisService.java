@@ -39,7 +39,9 @@ public class MisService {
         return misDao.selectCategoryViewList(filter);
     }
 
-    public List<MisResponse.ReviewFitItem> getReviewFitAnalysis() {
-        return misDao.selectReviewFitAnalysis();
+    public List<MisResponse.ReviewFitItem> getReviewFitAnalysis(MisRequest.ReviewFitFilter filter) {
+        filter.setToDate(filter.getToDate() != null ? filter.getToDate() : java.time.LocalDate.now());
+        filter.setFromDate(filter.getFromDate() != null ? filter.getFromDate() : filter.getToDate().minusMonths(1));
+        return misDao.selectReviewFitAnalysis(filter);
     }
 }

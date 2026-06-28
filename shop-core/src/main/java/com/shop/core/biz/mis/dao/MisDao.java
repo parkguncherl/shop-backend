@@ -41,7 +41,7 @@ public class MisDao {
         return sqlSession.selectList(NAMESPACE + "selectCategoryViewList", filter);
     }
 
-    public List<MisResponse.ReviewFitItem> selectReviewFitAnalysis() {
-        return sqlSession.selectList(NAMESPACE + "selectReviewFitAnalysis");
+    public List<MisResponse.ReviewFitItem> selectReviewFitAnalysis(MisRequest.ReviewFitFilter filter) {
+        return sqlSession.selectList(NAMESPACE + "selectReviewFitAnalysis", filter);
     }
 }

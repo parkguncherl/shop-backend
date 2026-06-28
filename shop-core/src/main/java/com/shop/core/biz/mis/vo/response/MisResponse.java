@@ -50,8 +50,7 @@ public class MisResponse {
     @Schema(name = "MisResponseReviewFitItem", description = "MIS 리뷰 사이즈 분석 항목", type = "object")
     public static class ReviewFitItem {
         private String fitGroup;
-        private String myHeight;
-        private String myWeight;
+        private String myHeightWeightNm;
         private Long cnt;
     }
 

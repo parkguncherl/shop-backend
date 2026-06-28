@@ -81,8 +81,10 @@ public class MisController {
     @GetMapping("/reviewFitAnalysis")
     @Operation(summary = "MIS 리뷰 사이즈/키/몸무게 분석")
     public ApiResponse<List<MisResponse.ReviewFitItem>> getReviewFitAnalysis(
-            @Parameter(hidden = true) @JwtUser User jwtUser
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @ModelAttribute MisRequest.ReviewFitFilter filter
     ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getReviewFitAnalysis());
+        filter.setPartnerId(jwtUser.getPartnerId());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getReviewFitAnalysis(filter));
     }
 }

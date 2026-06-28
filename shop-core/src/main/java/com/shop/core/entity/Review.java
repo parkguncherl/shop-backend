@@ -3,6 +3,7 @@ package com.shop.core.entity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -26,6 +27,7 @@ public class Review {
     private String myHeight;
     private String isBlinded;
     private String delYn;
+    private LocalDate reviewDate;
     private LocalDateTime creTm;
     private LocalDateTime uptTm;
 }

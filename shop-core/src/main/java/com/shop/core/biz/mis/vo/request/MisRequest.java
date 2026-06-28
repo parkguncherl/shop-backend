@@ -75,6 +75,26 @@ public class MisRequest {
 
     @Getter
     @Setter
+    @Schema(name = "MisRequestReviewFitFilter", description = "MIS 리뷰 사이즈 분석 필터", type = "object")
+    public static class ReviewFitFilter {
+
+        @Schema(description = "조회 시작일")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate fromDate;
+
+        @Schema(description = "조회 종료일")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate toDate;
+
+        @Schema(description = "partnerId")
+        private Integer partnerId;
+
+        @Schema(description = "카테고리 ID")
+        private Integer categoryId;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "MisRequestSalesStatDetailFilter", description = "MIS 판매 실적 상세 조회 필터", type = "object")
     public static class SalesStatDetailFilter {
 

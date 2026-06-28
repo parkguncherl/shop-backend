@@ -230,24 +230,21 @@
         ORDER BY totalScore DESC
     </select>
 
-    <select id="selectReviewFitAnalysis" resultType="com.shop.core.biz.mis.vo.response.MisResponse$ReviewFitItem">
+    <select id="selectReviewFitAnalysis" parameterType="com.shop.core.biz.mis.vo.request.MisRequest$ReviewFitFilter" resultType="com.shop.core.biz.mis.vo.response.MisResponse$ReviewFitItem">
         /* com.shop.mapper.biz.Mis.selectReviewFitAnalysis */
         SELECT
-            CASE
-                WHEN MY_FIT = '5'            THEN '적당해요'
-                WHEN MY_FIT IN ('1', '3')    THEN '작아요'
-                WHEN MY_FIT IN ('7', '9')    THEN '커요'
-            END   AS fitGroup,
-            MY_HEIGHT AS myHeight,
-            MY_WEIGHT AS myWeight,
-            COUNT(*)  AS cnt
-        FROM TB_REVIEW
-        WHERE MY_FIT   IS NOT NULL
-          AND MY_HEIGHT IS NOT NULL
-          AND MY_WEIGHT IS NOT NULL
-          AND DEL_YN = 'N'
-        GROUP BY fitGroup, MY_HEIGHT, MY_WEIGHT
-        ORDER BY fitGroup, MY_HEIGHT, MY_WEIGHT
+            FN_GET_PARTNER_CODE('P0003', R.MY_FIT,    #{partnerId})                                                      AS fitGroup,
+            CONCAT(FN_GET_PARTNER_CODE('P0004', R.MY_HEIGHT, #{partnerId}), ' / ', FN_GET_PARTNER_CODE('P0005', R.MY_WEIGHT, #{partnerId}), ' kg') AS myHeightWeightNm,
+            COUNT(*)                                                                                                      AS cnt
+        FROM TB_REVIEW R
+        <if test="categoryId != null">
+        JOIN TB_CATEGORY_PRODUCT CP ON CP.PRODUCT_ID = R.PRODUCT_ID AND CP.DEL_YN = 'N' AND CP.CATEGORY_ID = #{categoryId}
+        </if>
+        WHERE R.DEL_YN = 'N'
+          <if test="fromDate != null">AND R.REVIEW_DATE &gt;= #{fromDate}</if>
+          <if test="toDate != null">AND R.REVIEW_DATE &lt;= #{toDate}</if>
+        GROUP BY R.MY_FIT, R.MY_HEIGHT, R.MY_WEIGHT
+        ORDER BY R.MY_FIT, R.MY_HEIGHT, R.MY_WEIGHT
     </select>
 
 </mapper>

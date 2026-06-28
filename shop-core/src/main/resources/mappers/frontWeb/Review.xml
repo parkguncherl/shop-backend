@@ -20,6 +20,7 @@
             MY_HEIGHT,
             IS_BLINDED,
             DEL_YN,
+            REVIEW_DATE,
             CRE_TM,
             UPT_TM
         ) VALUES (
@@ -35,6 +36,7 @@
             #{myHeight},
             'N',
             'N',
+            CURRENT_DATE,
             NOW(),
             NOW()
         )
