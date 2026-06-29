@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
 
@@ -49,6 +50,8 @@ public class GroqChatService {
             }
         }
 
+        log.info("Groq 호출 - baseUrl={}, model={}, apiKeySet={}", groqProperties.getBaseUrl(), groqProperties.getModel(), groqProperties.getApiKey() != null && !groqProperties.getApiKey().isBlank());
+
         try {
             RestClient client = RestClient.builder()
                     .baseUrl(groqProperties.getBaseUrl())
@@ -65,9 +68,12 @@ public class GroqChatService {
             JsonNode root = objectMapper.readTree(responseBody);
             return root.path("choices").path(0).path("message").path("content").asText();
 
+        } catch (RestClientResponseException e) {
+            log.error("Groq HTTP 오류 - status={}, body={}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("Groq API 오류 [" + e.getStatusCode() + "]: " + e.getResponseBodyAsString());
         } catch (Exception e) {
-            log.error("Groq API 호출 실패", e);
-            throw new RuntimeException("AI 응답을 가져오는 중 오류가 발생했습니다.");
+            log.error("Groq API 호출 실패 - {}", e.getMessage(), e);
+            throw new RuntimeException("AI 오류: " + e.getMessage());
         }
     }
 
