@@ -16,8 +16,8 @@
             , R.RECEIV_CNT           AS receivCnt
             , R.PLUSMINUS            AS plusMinus
             , R.ETC_CNTN             AS etcCntn
-            , R.CRE_USER             AS creUser
-            , R.CRE_TM               AS creTm
+            , R.UPD_USER             AS updUser
+            , R.UPD_TM               AS updTm
         FROM TB_RECEIVING R
         JOIN TB_PRODUCT_DET PD ON PD.ID = R.PRODUCT_DET_ID AND PD.DEL_YN = 'N'
         JOIN TB_PRODUCT P ON P.ID = PD.PRODUCT_ID AND P.PARTNER_ID = #{partnerId} AND P.DEL_YN = 'N'
@@ -88,6 +88,28 @@
             , UPD_TM      = NOW()
         WHERE ID = #{id}
           AND DEL_YN = 'N'
+    </update>
+
+    <update id="updateReceivingIfExist" parameterType="com.shop.core.biz.receiving.vo.request.ReceivingRequest$UpdateReceiving">
+        /* com.shop.mapper.biz.Receiving.updateReceivingIfExist */
+        UPDATE TB_RECEIVING
+        SET
+        UPD_TM = NOW(),
+        UPD_USER = #{updUser}
+        <if test="receivDate != null">
+            , RECEIV_DATE = #{receivDate}
+        </if>
+        <if test="receivCnt != null">
+            , RECEIV_CNT = #{receivCnt}
+        </if>
+        <if test="plusMinus != null">
+            , PLUSMINUS = #{plusMinus}
+        </if>
+        <if test="etcCntn != null">
+            , ETC_CNTN = #{etcCntn}
+        </if>
+        WHERE ID = #{id}
+        AND DEL_YN = 'N'
     </update>
 
     <update id="deleteReceiving" parameterType="com.shop.core.biz.receiving.vo.request.ReceivingRequest$DeleteReceiving">

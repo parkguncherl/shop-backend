@@ -44,11 +44,11 @@ public class ReceivingResponse {
         @Schema(description = "비고")
         private String etcCntn;
 
-        @Schema(description = "등록자")
-        private String creUser;
+        @Schema(description = "수정자")
+        private String updUser;
 
-        @Schema(description = "등록일시")
-        private LocalDateTime creTm;
+        @Schema(description = "수정일시")
+        private LocalDateTime updTm;
     }
 
     @Getter

@@ -33,6 +33,10 @@ public class ReceivingService {
         return receivingDao.updateReceiving(request);
     }
 
+    public int updateReceivingIfExist(ReceivingRequest.UpdateReceiving request) {
+        return receivingDao.updateReceivingIfExist(request);
+    }
+
     public int deleteReceiving(ReceivingRequest.DeleteReceiving request) {
         return receivingDao.deleteReceiving(request);
     }

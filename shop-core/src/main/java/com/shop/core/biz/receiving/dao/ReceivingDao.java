@@ -33,6 +33,10 @@ public class ReceivingDao {
         return sqlSession.update(NAMESPACE + "updateReceiving", request);
     }
 
+    public int updateReceivingIfExist(ReceivingRequest.UpdateReceiving request) {
+        return sqlSession.update(NAMESPACE + "updateReceivingIfExist", request);
+    }
+
     public int deleteReceiving(ReceivingRequest.DeleteReceiving request) {
         return sqlSession.update(NAMESPACE + "deleteReceiving", request);
     }

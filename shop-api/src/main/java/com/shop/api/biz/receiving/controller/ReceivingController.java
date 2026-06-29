@@ -70,6 +70,20 @@ public class ReceivingController {
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 
+
+    @AccessLog("입고/출고 수정")
+    @PatchMapping("/updateReceivingIfExist")
+    @Operation(summary = "입고/출고 수정")
+    public ApiResponse<Void> updateReceivingIfExist(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestBody ReceivingRequest.UpdateReceiving request
+    ) {
+        request.setUpdUser(jwtUser.getUserNm());
+        receivingService.updateReceivingIfExist(request);
+        return new ApiResponse<>(ApiResultCode.SUCCESS);
+    }
+
+
     @AccessLog("입고/출고 삭제")
     @DeleteMapping("/deleteReceiving")
     @Operation(summary = "입고/출고 삭제")
