@@ -1,8 +1,10 @@
 package com.shop.api.frontWeb.controller;
 
+import com.shop.api.annotation.GuestUser;
 import com.shop.api.frontWeb.service.ReviewService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.response.ApiResponse;
+import com.shop.core.entity.GuestToken;
 import com.shop.core.entity.Review;
 import com.shop.core.frontWeb.vo.request.ReviewRequest;
 import com.shop.core.frontWeb.vo.response.ReviewResponse;
@@ -52,8 +54,10 @@ public class ReviewController {
     @NotAuthRequired
     @GetMapping("/product/{productId}")
     @Operation(summary = "상품 리뷰 목록 조회")
-    public ApiResponse<ReviewResponse.ProductList> getProductReviews(@PathVariable Long productId) {
-        return new ApiResponse<>(reviewService.getProductReviews(productId));
+    public ApiResponse<ReviewResponse.ProductList> getProductReviews(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
+            @PathVariable Long productId) {
+        return new ApiResponse<>(reviewService.getProductReviews(productId, guestUser));
     }
 
     @NotAuthRequired

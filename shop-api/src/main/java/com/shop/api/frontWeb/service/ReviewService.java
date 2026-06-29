@@ -2,6 +2,7 @@ package com.shop.api.frontWeb.service;
 
 import com.shop.core.biz.partner.dao.PartnerDao;
 import com.shop.core.biz.partner.vo.response.PartnerResponse;
+import com.shop.core.entity.GuestToken;
 import com.shop.core.entity.Order;
 import com.shop.core.entity.PointHistory;
 import com.shop.core.entity.Review;
@@ -111,7 +112,7 @@ public class ReviewService {
         reviewDao.deleteReview(id);
     }
 
-    public ReviewResponse.ProductList getProductReviews(Long productId) {
+    public ReviewResponse.ProductList getProductReviews(Long productId, GuestToken guestUser) {
         ReviewResponse.ProductList summary = reviewDao.selectProductReviewSummary(productId);
         if (summary == null) {
             summary = new ReviewResponse.ProductList();
@@ -119,7 +120,7 @@ public class ReviewService {
             summary.setAvgRating(0.0);
             summary.setReviewCount(0L);
         }
-        summary.setReviews(reviewDao.selectReviewsByProductId(productId));
+        summary.setReviews(reviewDao.selectReviewsByProductId(productId, guestUser.getPartnerId()));
         return summary;
     }
 

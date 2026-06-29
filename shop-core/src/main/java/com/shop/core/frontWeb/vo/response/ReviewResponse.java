@@ -39,6 +39,8 @@ public class ReviewResponse {
         private String content;
         private Long fileId;
         private LocalDateTime creTm;
+        private String fitGroup;
+        private String myHeightWeightNm;
     }
 
     @Getter

@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,8 +30,11 @@ public class ReviewDao {
         return sqlSession.selectOne(NS + "selectReviewByOrderItemId", orderItemId);
     }
 
-    public List<ReviewResponse.ProductItem> selectReviewsByProductId(Long productId) {
-        return sqlSession.selectList(NS + "selectReviewsByProductId", productId);
+    public List<ReviewResponse.ProductItem> selectReviewsByProductId(Long productId, Integer partnerId) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("productId", productId);
+        params.put("partnerId", partnerId);
+        return sqlSession.selectList(NS + "selectReviewsByProductId", params);
     }
 
     public ReviewResponse.ProductList selectProductReviewSummary(Long productId) {

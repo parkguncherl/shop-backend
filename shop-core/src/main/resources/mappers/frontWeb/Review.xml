@@ -92,9 +92,7 @@
           AND DEL_YN = 'N'
     </select>
 
-    <select id="selectReviewsByProductId"
-            parameterType="Long"
-            resultType="com.shop.core.frontWeb.vo.response.ReviewResponse$ProductItem">
+    <select id="selectReviewsByProductId" resultType="com.shop.core.frontWeb.vo.response.ReviewResponse$ProductItem">
         /* Review.selectReviewsByProductId */
         SELECT
             ID                AS id,
@@ -102,6 +100,8 @@
             RATING            AS rating,
             CONTENT           AS content,
             FILE_ID           AS fileId,
+            FN_GET_PARTNER_CODE('P0003', MY_FIT,    #{partnerId})                                                      AS fitGroup,
+            CONCAT(FN_GET_PARTNER_CODE('P0004', MY_HEIGHT, #{partnerId}), ' / ', FN_GET_PARTNER_CODE('P0005', MY_WEIGHT, #{partnerId}), ' kg') AS myHeightWeightNm,
             CRE_TM            AS creTm
         FROM TB_REVIEW
         WHERE PRODUCT_ID = #{productId}
