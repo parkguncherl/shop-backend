@@ -3,6 +3,12 @@ plugins {
     id 'io.spring.dependency-management'
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/release' }
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
 tasks.named('bootJar') {
     archiveFileName = 'shop-api.jar'
 }
@@ -55,7 +61,7 @@ dependencies {
     implementation "com.slack.api:slack-api-client:1.46.0"
 
     // Spring AI (Groq = OpenAI 호환)
-    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai:1.0.0'
 
     // JSON
     implementation 'org.json:json:20240303'
