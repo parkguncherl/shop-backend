@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.biz.Receiving">
+
+    <select id="selectReceivingList" parameterType="com.shop.core.biz.receiving.vo.request.ReceivingRequest$ListFilter" resultType="com.shop.core.biz.receiving.vo.response.ReceivingResponse$ReceivingItem">
+        /* com.shop.mapper.biz.Receiving.selectReceivingList */
+        SELECT
+              R.ID                    AS id
+            , R.PRODUCT_DET_ID       AS productDetId
+            , P.ID                   AS prodId
+            , P.PROD_NM              AS prodNm
+            , PD.PRODUCT_DET_SIZE    AS productDetSize
+            , PD.PRODUCT_DET_COLOR   AS productDetColor
+            , R.RECEIV_DATE          AS receivDate
+            , R.RECEIV_CNT           AS receivCnt
+            , R.PLUSMINUS            AS plusMinus
+            , R.ETC_CNTN             AS etcCntn
+            , R.CRE_USER             AS creUser
+            , R.CRE_TM               AS creTm
+        FROM TB_RECEIVING R
+        JOIN TB_PRODUCT_DET PD ON PD.ID = R.PRODUCT_DET_ID AND PD.DEL_YN = 'N'
+        JOIN TB_PRODUCT P ON P.ID = PD.PRODUCT_ID AND P.PARTNER_ID = #{partnerId} AND P.DEL_YN = 'N'
+        WHERE R.DEL_YN = 'N'
+        <if test="fromDate != null">
+            AND R.RECEIV_DATE &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            AND R.RECEIV_DATE &lt; #{toDate}
+        </if>
+        <if test="plusMinus != null and plusMinus != ''">
+            AND R.PLUSMINUS = #{plusMinus}
+        </if>
+        <!-- plusMinus: P=입고(+), M=출고(-) -->
+        <if test="prodNm != null and prodNm != ''">
+            AND P.PROD_NM LIKE CONCAT('%', #{prodNm}, '%')
+        </if>
+        ORDER BY R.ID DESC
+    </select>
+
+    <select id="selectProductDetSearchList" parameterType="com.shop.core.biz.receiving.vo.request.ReceivingRequest$ProductDetSearchFilter" resultType="com.shop.core.biz.receiving.vo.response.ReceivingResponse$ProductDetSearchItem">
+        /* com.shop.mapper.biz.Receiving.selectProductDetSearchList */
+        SELECT
+              PD.ID                  AS productDetId
+            , P.ID                   AS prodId
+            , P.PROD_NM              AS prodNm
+            , PD.PRODUCT_DET_SIZE    AS productDetSize
+            , PD.PRODUCT_DET_COLOR   AS productDetColor
+        FROM TB_PRODUCT_DET PD
+        JOIN TB_PRODUCT P ON P.ID = PD.PRODUCT_ID AND P.PARTNER_ID = #{partnerId} AND P.DEL_YN = 'N'
+        WHERE PD.DEL_YN = 'N'
+        <if test="prodNm != null and prodNm != ''">
+            AND P.PROD_NM LIKE CONCAT('%', #{prodNm}, '%')
+        </if>
+        ORDER BY P.PROD_NM, PD.PRODUCT_DET_COLOR, PD.PRODUCT_DET_SIZE
+    </select>
+
+    <insert id="insertReceiving" parameterType="com.shop.core.biz.receiving.vo.request.ReceivingRequest$InsertReceiving">
+        /* com.shop.mapper.biz.Receiving.insertReceiving */
+        INSERT INTO TB_RECEIVING (
+              PRODUCT_DET_ID
+            , RECEIV_DATE
+            , RECEIV_CNT
+            , PLUSMINUS
+            , ETC_CNTN
+            , CRE_USER
+            , UPD_USER
+        ) VALUES (
+              #{productDetId}
+            , #{receivDate}
+            , #{receivCnt}
+            , #{plusMinus}
+            , #{etcCntn}
+            , #{creUser}
+            , #{creUser}
+        )
+    </insert>
+
+    <update id="updateReceiving" parameterType="com.shop.core.biz.receiving.vo.request.ReceivingRequest$UpdateReceiving">
+        /* com.shop.mapper.biz.Receiving.updateReceiving */
+        UPDATE TB_RECEIVING
+        SET
+              RECEIV_DATE = #{receivDate}
+            , RECEIV_CNT  = #{receivCnt}
+            , PLUSMINUS   = #{plusMinus}
+            , ETC_CNTN    = #{etcCntn}
+            , UPD_USER    = #{updUser}
+            , UPD_TM      = NOW()
+        WHERE ID = #{id}
+          AND DEL_YN = 'N'
+    </update>
+
+    <update id="deleteReceiving" parameterType="com.shop.core.biz.receiving.vo.request.ReceivingRequest$DeleteReceiving">
+        /* com.shop.mapper.biz.Receiving.deleteReceiving */
+        UPDATE TB_RECEIVING
+        SET
+              DEL_YN   = 'Y'
+            , UPD_USER = #{updUser}
+            , UPD_TM   = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>

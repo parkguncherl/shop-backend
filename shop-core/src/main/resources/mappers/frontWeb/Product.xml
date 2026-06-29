@@ -154,6 +154,17 @@
             , PD.SKU_DISCOUNT_RATE   AS skuDiscountRate
             , PD.PRODUCT_DET_CNTN    AS productDetCntn
             , FD.SYS_FILE_NM         AS sysFileNm
+            , COALESCE((
+                SELECT SUM(CASE WHEN R.PLUSMINUS = 'P' THEN R.RECEIV_CNT ELSE -R.RECEIV_CNT END)
+                  FROM TB_RECEIVING R
+                 WHERE R.PRODUCT_DET_ID = PD.ID AND R.DEL_YN = 'N'
+              ), 0)
+            - COALESCE((
+                SELECT SUM(OI.QUANTITY)
+                  FROM TB_ORDER_ITEM OI
+                  JOIN TB_ORDER O ON O.ID = OI.ORDER_ID AND O.ORDER_STATUS NOT IN ('C')
+                 WHERE OI.PRODUCT_DET_ID = PD.ID
+              ), 0)                  AS stock
         FROM TB_PRODUCT_DET PD
         LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = PD.FILE_ID AND FD.FILE_SEQ = 1 AND FD.DEL_YN = 'N'
         WHERE PD.PRODUCT_ID = #{productId}

@@ -74,6 +74,9 @@ public class ProductResponse {
 
         @Schema(description = "SKU 이미지 파일명")
         private String sysFileNm;
+
+        @Schema(description = "현재 재고 (입고P - 출고M - 주문수량)")
+        private Integer stock;
     }
 
     @Getter
