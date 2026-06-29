@@ -1,80 +1,47 @@
 package com.shop.api.ai;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.shop.core.ai.GroqProperties;
 import com.shop.core.ai.vo.AiChatRequest;
 import com.shop.core.frontWeb.dao.ProductDao;
 import com.shop.core.frontWeb.vo.request.ProductRequest;
 import com.shop.core.frontWeb.vo.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GroqChatService {
 
-    private final GroqProperties groqProperties;
+    private final ChatClient.Builder chatClientBuilder;
     private final ProductDao productDao;
-    private final ObjectMapper objectMapper;
 
     public String chat(AiChatRequest.ProductChat req, Integer partnerId) {
         ProductResponse.ProductDetail product = fetchProduct(req.getProductId(), partnerId);
         String systemPrompt = buildSystemPrompt(product);
 
-        ObjectNode body = objectMapper.createObjectNode();
-        body.put("model", groqProperties.getModel());
-        body.put("max_tokens", 1024);
+        List<Message> history = req.getMessages() == null ? List.of() :
+            req.getMessages().stream()
+                .map(m -> "user".equals(m.getRole())
+                    ? (Message) new UserMessage(m.getContent())
+                    : new AssistantMessage(m.getContent()))
+                .collect(Collectors.toList());
 
-        ArrayNode messages = body.putArray("messages");
-
-        ObjectNode systemMsg = messages.addObject();
-        systemMsg.put("role", "system");
-        systemMsg.put("content", systemPrompt);
-
-        if (req.getMessages() != null) {
-            for (AiChatRequest.Message m : req.getMessages()) {
-                ObjectNode msg = messages.addObject();
-                msg.put("role", m.getRole());
-                msg.put("content", m.getContent());
-            }
-        }
-
-        log.info("Groq 호출 - baseUrl={}, model={}, apiKeySet={}", groqProperties.getBaseUrl(), groqProperties.getModel(), groqProperties.getApiKey() != null && !groqProperties.getApiKey().isBlank());
-
-        try {
-            RestClient client = RestClient.builder()
-                    .baseUrl(groqProperties.getBaseUrl())
-                    .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + groqProperties.getApiKey())
-                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .build();
-
-            String responseBody = client.post()
-                    .uri("/chat/completions")
-                    .body(body)
-                    .retrieve()
-                    .body(String.class);
-
-            JsonNode root = objectMapper.readTree(responseBody);
-            return root.path("choices").path(0).path("message").path("content").asText();
-
-        } catch (RestClientResponseException e) {
-            log.error("Groq HTTP 오류 - status={}, body={}", e.getStatusCode(), e.getResponseBodyAsString());
-            throw new RuntimeException("Groq API 오류 [" + e.getStatusCode() + "]: " + e.getResponseBodyAsString());
-        } catch (Exception e) {
-            log.error("Groq API 호출 실패 - {}", e.getMessage(), e);
-            throw new RuntimeException("AI 오류: " + e.getMessage());
-        }
+        return chatClientBuilder.build()
+            .prompt()
+            .system(systemPrompt)
+            .messages(history)
+            .call()
+            .content();
     }
 
     private ProductResponse.ProductDetail fetchProduct(Integer productId, Integer partnerId) {
@@ -83,8 +50,7 @@ public class GroqChatService {
         param.setPartnerId(partnerId);
         ProductResponse.ProductDetail detail = productDao.selectProductDetail(param);
         if (detail != null) {
-            List<ProductResponse.ProductDetInfo> detList = productDao.selectProductDetList(param);
-            detail.setDetList(detList);
+            detail.setDetList(productDao.selectProductDetList(param));
         }
         return detail;
     }

@@ -54,6 +54,9 @@ dependencies {
     // Slack API
     implementation "com.slack.api:slack-api-client:1.46.0"
 
+    // Spring AI (Groq = OpenAI 호환)
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+
     // JSON
     implementation 'org.json:json:20240303'
 
