@@ -59,6 +59,8 @@
         TP.EMAIL,
         TP.FIRST_GREETING_MESSAGE ,
         TP.REVIEW_POINT_RATE AS reviewPointRate,
+        TP.AI_STUDY_TEXT AS aiStudyText,
+        TP.AI_STUDY_PROD_DETAIL_TEXT AS aiStudyProdDetailText,
         TP.CRE_TM AS creTm,
         TP.CRE_USER AS creUser,
         FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
@@ -247,6 +249,12 @@
             </if>
             <if test="reviewPointRate != null">
                 , REVIEW_POINT_RATE = #{reviewPointRate}
+            </if>
+            <if test="aiStudyText != null">
+                , AI_STUDY_TEXT = #{aiStudyText}
+            </if>
+            <if test="aiStudyProdDetailText != null">
+                , AI_STUDY_PROD_DETAIL_TEXT = #{aiStudyProdDetailText}
             </if>
         WHERE ID = #{id}
     </update>

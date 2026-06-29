@@ -1,6 +1,8 @@
 package com.shop.api.ai;
 
 import com.shop.core.ai.vo.AiChatRequest;
+import com.shop.core.biz.partner.dao.PartnerDao;
+import com.shop.core.biz.partner.vo.response.PartnerResponse;
 import com.shop.core.frontWeb.dao.ProductDao;
 import com.shop.core.frontWeb.vo.request.ProductRequest;
 import com.shop.core.frontWeb.vo.response.ProductResponse;
@@ -10,11 +12,9 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -24,10 +24,12 @@ public class GroqChatService {
 
     private final ChatClient.Builder chatClientBuilder;
     private final ProductDao productDao;
+    private final PartnerDao partnerDao;
 
     public String chat(AiChatRequest.ProductChat req, Integer partnerId) {
         ProductResponse.ProductDetail product = fetchProduct(req.getProductId(), partnerId);
-        String systemPrompt = buildSystemPrompt(product);
+        PartnerResponse.Select partner = partnerId != null ? partnerDao.selectPartnerDet(partnerId) : null;
+        String systemPrompt = buildSystemPrompt(product, partner);
 
         List<Message> history = req.getMessages() == null ? List.of() :
             req.getMessages().stream()
@@ -55,13 +57,23 @@ public class GroqChatService {
         return detail;
     }
 
-    private String buildSystemPrompt(ProductResponse.ProductDetail product) {
-        if (product == null) {
-            return "당신은 쇼핑몰 상품 안내 AI 어시스턴트입니다. 친절하고 간결하게 답변해주세요.";
+    private String buildSystemPrompt(ProductResponse.ProductDetail product, PartnerResponse.Select partner) {
+        StringBuilder sb = new StringBuilder();
+
+        if (partner != null && partner.getAiStudyText() != null && !partner.getAiStudyText().isBlank()) {
+            sb.append(partner.getAiStudyText()).append("\n\n");
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("당신은 쇼핑몰 상품 안내 AI 어시스턴트입니다. 아래 상품 정보를 바탕으로 고객의 질문에 친절하고 간결하게 답변해주세요.\n\n");
+        if (partner != null && partner.getAiStudyProdDetailText() != null && !partner.getAiStudyProdDetailText().isBlank()) {
+            sb.append(partner.getAiStudyProdDetailText()).append("\n\n");
+        }
+
+        if (product == null) {
+            sb.append("당신은 쇼핑몰 상품 안내 AI 어시스턴트입니다. 친절하고 간결하게 답변해주세요.");
+            return sb.toString();
+        }
+
+        sb.append("아래 상품 정보를 바탕으로 고객의 질문에 친절하고 간결하게 답변해주세요.\n\n");
         sb.append("=== 상품 정보 ===\n");
         sb.append("상품명: ").append(nvl(product.getProdNm())).append("\n");
         sb.append("판매가: ").append(product.getSellAmt() != null ? product.getSellAmt().toPlainString() + "원" : "-").append("\n");
