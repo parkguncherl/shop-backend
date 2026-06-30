@@ -256,10 +256,14 @@
             COUNT(*)     AS cnt
         FROM TB_GUEST_TOKEN
         WHERE PARTNER_ID = #{partnerId}
+          AND REFERER_URL IS NOT NULL
           AND CONTACT_DATE &gt;= #{fromDate}
           AND CONTACT_DATE &lt; #{toDate}
           <if test="deviceType != null and deviceType != ''">
           AND DEVICE_TYPE = #{deviceType}
+          </if>
+          <if test="refererUrl != null and refererUrl != ''">
+          AND REFERER_URL LIKE '%' || #{refererUrl} || '%'
           </if>
         GROUP BY REFERER_URL, DEVICE_TYPE
         ORDER BY cnt DESC

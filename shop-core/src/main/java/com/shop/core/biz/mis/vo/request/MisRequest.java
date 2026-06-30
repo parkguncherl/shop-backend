@@ -109,6 +109,9 @@ public class MisRequest {
         @Schema(description = "디바이스 타입 (mobile, desktop)")
         private String deviceType;
 
+        @Schema(description = "유입 URL (부분 일치)")
+        private String refererUrl;
+
         @Schema(description = "partnerId")
         private Integer partnerId;
     }
