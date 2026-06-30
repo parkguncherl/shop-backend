@@ -63,6 +63,18 @@ public class ComuMngController {
         return new ApiResponse<>(ApiResultCode.SUCCESS, null);
     }
 
+    @AccessLog("고객 문의 특이사항/메모 수정")
+    @PatchMapping("/{comuId}/remark")
+    @Operation(summary = "특이사항 체크 및 관리자 메모 수정 (BO)")
+    public ApiResponse<Void> updateRemark(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @PathVariable Long comuId,
+            @RequestBody ComuRequest.UpdateRemark request
+    ) {
+        comuService.updateRemark(comuId, request.getRemarkYn(), request.getComment());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, null);
+    }
+
     @AccessLog("고객 문의 답변 등록")
     @PostMapping("/{comuId}/reply")
     @Operation(summary = "관리자 답변 등록 (BO)")

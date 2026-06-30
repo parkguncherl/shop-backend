@@ -14,13 +14,17 @@
             EVENT_ID,
             CRE_USER,
             CRE_TM,
-            DEL_YN
+            DEL_YN,
+            REMARK_YN,
+            COMMENT
         ) VALUES (
             #{comuType},
             #{eventId},
             #{creUser},
             NOW(),
-            'N'
+            'N',
+            COALESCE(#{remarkYn}, 'N'),
+            #{comment}
         )
     </insert>
 
@@ -34,7 +38,9 @@
             EVENT_ID   AS eventId,
             CRE_USER   AS creUser,
             CRE_TM     AS creTm,
-            DEL_YN     AS delYn
+            DEL_YN     AS delYn,
+            REMARK_YN  AS remarkYn,
+            COMMENT    AS comment
         FROM TB_COMU
         WHERE ID = #{id}
           AND DEL_YN = 'N'
@@ -150,7 +156,9 @@
             LAST_MSG.COMU_CNTN                  AS lastMessage,
             LAST_MSG.CRE_TM                     AS lastMessageTm,
             UNREAD.cntCntn                      AS cntCntn,
-            C.CRE_TM                            AS creTm
+            C.CRE_TM                            AS creTm,
+            C.REMARK_YN                         AS remarkYn,
+            C.COMMENT                           AS comment
         FROM TB_COMU C
         LEFT JOIN TB_CODE CD_CODE ON CD_CODE.CODE_UPPER = '10130' AND CD_CODE.CODE_CD = C.COMU_TYPE AND CD_CODE.DEL_YN = 'N'
         LEFT JOIN TB_ORDER O ON O.ID = C.EVENT_ID
@@ -213,6 +221,14 @@
           AND C.DEL_YN    = 'N'
         ORDER BY C.ID DESC
     </select>
+
+    <update id="updateComu" parameterType="com.shop.core.entity.Comu">
+        /* Comu.updateComu */
+        UPDATE TB_COMU SET
+            REMARK_YN = #{remarkYn},
+            COMMENT   = #{comment}
+        WHERE ID = #{id}
+    </update>
 
     <update id="updateReadYnByComuId" parameterType="map">
         /* Comu.updateReadYnByComuId */

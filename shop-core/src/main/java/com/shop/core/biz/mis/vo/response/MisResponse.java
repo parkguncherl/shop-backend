@@ -56,6 +56,15 @@ public class MisResponse {
 
     @Getter
     @Setter
+    @Schema(name = "MisResponseContactItem", description = "MIS 유입 경로 분석 항목", type = "object")
+    public static class ContactItem {
+        private String refererUrl;
+        private String deviceType;
+        private Long cnt;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "MisResponseCategoryViewItem", description = "MIS 카테고리 분석 항목", type = "object")
     public static class CategoryViewItem {
         private Integer categoryId;

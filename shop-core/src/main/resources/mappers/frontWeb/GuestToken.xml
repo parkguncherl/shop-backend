@@ -23,6 +23,7 @@
             FBCLID,
             SOCIAL_ACCOUNT_ID,
             EXPIRE_DATE,
+            CONTACT_DATE,
             CRE_TM
         ) VALUES (
              #{guestId},
@@ -43,6 +44,7 @@
              #{fbclid},
              #{socialAccountId},
              #{expireDate},
+             NOW(),
              NOW()
          )
     </insert>

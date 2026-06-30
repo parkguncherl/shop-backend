@@ -78,5 +78,7 @@ public class ComuResponse {
         private LocalDateTime lastMessageTm;
         private String cntCntn;
         private LocalDateTime creTm;
+        private String remarkYn;
+        private String comment;
     }
 }

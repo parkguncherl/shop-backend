@@ -247,4 +247,23 @@
         ORDER BY R.MY_FIT, R.MY_HEIGHT, R.MY_WEIGHT
     </select>
 
+
+    <select id="selectContactList" parameterType="com.shop.core.biz.mis.vo.request.MisRequest$ContactFilter" resultType="com.shop.core.biz.mis.vo.response.MisResponse$ContactItem">
+        /* com.shop.mapper.biz.Mis.selectContactList */
+        SELECT
+            REFERER_URL  AS refererUrl,
+            DEVICE_TYPE  AS deviceType,
+            COUNT(*)     AS cnt
+        FROM TB_GUEST_TOKEN
+        WHERE PARTNER_ID = #{partnerId}
+          AND CONTACT_DATE &gt;= #{fromDate}
+          AND CONTACT_DATE &lt; #{toDate}
+          <if test="deviceType != null and deviceType != ''">
+          AND DEVICE_TYPE = #{deviceType}
+          </if>
+        GROUP BY REFERER_URL, DEVICE_TYPE
+        ORDER BY cnt DESC
+        LIMIT 50
+    </select>
+
 </mapper>

@@ -95,6 +95,26 @@ public class MisRequest {
 
     @Getter
     @Setter
+    @Schema(name = "MisRequestContactFilter", description = "MIS 유입 경로 분석 조회 필터", type = "object")
+    public static class ContactFilter {
+
+        @Schema(description = "조회 시작일")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate fromDate;
+
+        @Schema(description = "조회 종료일")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        private LocalDate toDate;
+
+        @Schema(description = "디바이스 타입 (mobile, desktop)")
+        private String deviceType;
+
+        @Schema(description = "partnerId")
+        private Integer partnerId;
+    }
+
+    @Getter
+    @Setter
     @Schema(name = "MisRequestSalesStatDetailFilter", description = "MIS 판매 실적 상세 조회 필터", type = "object")
     public static class SalesStatDetailFilter {
 

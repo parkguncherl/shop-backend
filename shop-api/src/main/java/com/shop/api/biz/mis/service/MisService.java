@@ -44,4 +44,12 @@ public class MisService {
         filter.setFromDate(filter.getFromDate() != null ? filter.getFromDate() : filter.getToDate().minusMonths(1));
         return misDao.selectReviewFitAnalysis(filter);
     }
+
+    public List<MisResponse.ContactItem> getContactList(MisRequest.ContactFilter filter) {
+        LocalDate to = filter.getToDate() != null ? filter.getToDate() : LocalDate.now();
+        LocalDate from = filter.getFromDate() != null ? filter.getFromDate() : to.minusMonths(1);
+        filter.setToDate(to.plusDays(1));
+        filter.setFromDate(from);
+        return misDao.selectContactList(filter);
+    }
 }

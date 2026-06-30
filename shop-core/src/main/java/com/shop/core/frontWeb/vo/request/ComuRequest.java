@@ -55,4 +55,15 @@ public class ComuRequest {
         @Schema(description = "첨부 파일 ID")
         private Integer fileId;
     }
+
+    @Getter
+    @Setter
+    @Schema(name = "ComuRequestUpdateRemark", description = "특이사항/메모 수정 요청", type = "object")
+    public static class UpdateRemark {
+        @Schema(description = "특이사항 여부 (Y/N)")
+        private String remarkYn;
+
+        @Schema(description = "관리자 메모")
+        private String comment;
+    }
 }

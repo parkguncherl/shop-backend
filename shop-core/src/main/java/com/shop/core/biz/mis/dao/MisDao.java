@@ -44,4 +44,8 @@ public class MisDao {
     public List<MisResponse.ReviewFitItem> selectReviewFitAnalysis(MisRequest.ReviewFitFilter filter) {
         return sqlSession.selectList(NAMESPACE + "selectReviewFitAnalysis", filter);
     }
+
+    public List<MisResponse.ContactItem> selectContactList(MisRequest.ContactFilter filter) {
+        return sqlSession.selectList(NAMESPACE + "selectContactList", filter);
+    }
 }

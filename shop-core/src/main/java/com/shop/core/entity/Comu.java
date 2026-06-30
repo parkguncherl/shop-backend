@@ -26,4 +26,10 @@ public class Comu {
 
     private LocalDateTime creTm;
     private String delYn;
+
+    @Schema(description = "특이사항 여부 (Y/N)")
+    private String remarkYn;
+
+    @Schema(description = "관리자 메모")
+    private String comment;
 }

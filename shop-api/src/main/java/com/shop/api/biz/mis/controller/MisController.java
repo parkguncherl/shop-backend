@@ -87,4 +87,15 @@ public class MisController {
         filter.setPartnerId(jwtUser.getPartnerId());
         return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getReviewFitAnalysis(filter));
     }
+
+    @AccessLog("MIS 유입 경로 분석 조회")
+    @GetMapping("/contactList")
+    @Operation(summary = "MIS 유입 경로 분석 (referer_url × device_type TOP 50)")
+    public ApiResponse<List<MisResponse.ContactItem>> getContactList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @ModelAttribute MisRequest.ContactFilter filter
+    ) {
+        filter.setPartnerId(jwtUser.getPartnerId());
+        return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getContactList(filter));
+    }
 }

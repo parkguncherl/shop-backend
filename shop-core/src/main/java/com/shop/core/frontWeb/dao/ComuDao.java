@@ -56,6 +56,10 @@ public class ComuDao {
         return sqlSession.update(NS + "updateReadYnByComuId", params);
     }
 
+    public int updateComu(Comu comu) {
+        return sqlSession.update(NS + "updateComu", comu);
+    }
+
     public int deleteComuDet(Long id) {
         return sqlSession.update(NS + "deleteComuDet", id);
     }

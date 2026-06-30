@@ -194,6 +194,15 @@ public class ComuService {
         comuDao.updateReadYnByComuId(comuId, reqYnToMark);
     }
 
+    @Transactional
+    public void updateRemark(Long comuId, String remarkYn, String comment) {
+        Comu comu = comuDao.selectComuById(comuId);
+        if (comu == null) throw new IllegalArgumentException("문의를 찾을 수 없습니다.");
+        comu.setRemarkYn(remarkYn);
+        comu.setComment(comment);
+        comuDao.updateComu(comu);
+    }
+
     public List<ComuResponse.ProductQna> getProductQnaList(Long productId) {
         return comuDao.selectProductQnaList(productId);
     }
