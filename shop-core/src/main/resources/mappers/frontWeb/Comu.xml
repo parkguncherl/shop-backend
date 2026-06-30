@@ -176,8 +176,8 @@
         <if test="comuType != null and comuType != ''">
             AND C.COMU_TYPE = #{comuType}
         </if>
-        <if test="paymentStatus != null and paymentStatus != ''">
-            AND P.PAYMENT_STATUS = #{paymentStatus}
+        <if test="remarkYn != null and remarkYn != ''">
+            AND C.REMARK_YN = #{remarkYn}
         </if>
         <if test="productName != null and productName != ''">
             AND EXISTS (

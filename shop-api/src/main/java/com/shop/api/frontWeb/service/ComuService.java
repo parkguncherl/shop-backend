@@ -158,12 +158,12 @@ public class ComuService {
         return thread;
     }
 
-    public List<ComuResponse.BoListItem> getComuListForBo(String comuType, String paymentStatus,
+    public List<ComuResponse.BoListItem> getComuListForBo(String comuType, String remarkYn,
                                                           String productName,
                                                           LocalDate fromDate, LocalDate toDate) {
         Map<String, Object> params = new HashMap<>();
         if (comuType != null && !comuType.isBlank()) params.put("comuType", comuType);
-        if (paymentStatus != null && !paymentStatus.isBlank()) params.put("paymentStatus", paymentStatus);
+        if (remarkYn != null && !remarkYn.isBlank()) params.put("remarkYn", remarkYn);
         if (productName != null && !productName.isBlank()) params.put("productName", productName);
         if (fromDate != null) params.put("fromDate", fromDate.atStartOfDay());
         if (toDate != null) params.put("toDate", toDate.plusDays(1).atStartOfDay());

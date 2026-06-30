@@ -32,13 +32,13 @@ public class ComuMngController {
     public ApiResponse<List<ComuResponse.BoListItem>> getComuList(
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter(description = "문의 유형 코드") @RequestParam(required = false) String comuType,
-            @Parameter(description = "결제 상태") @RequestParam(required = false) String paymentStatus,
+            @Parameter(description = "특이사항 여부 (Y만 조회 시 Y)") @RequestParam(required = false) String remarkYn,
             @Parameter(description = "상품명 검색") @RequestParam(required = false) String productName,
             @Parameter(description = "구매일 시작") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @Parameter(description = "구매일 종료") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
     ) {
         return new ApiResponse<>(ApiResultCode.SUCCESS,
-                comuService.getComuListForBo(comuType, paymentStatus, productName, fromDate, toDate));
+                comuService.getComuListForBo(comuType, remarkYn, productName, fromDate, toDate));
     }
 
     @AccessLog("고객 문의 스레드 조회")
