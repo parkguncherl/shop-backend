@@ -175,6 +175,9 @@ public class UserRequest {
         @Parameter(description = "영업일")
         private LocalDate workYmd;
 
+        @Schema(description = "테마 (dark/white)")
+        private String tema;
+
         public User toEntity() {
             return User.builder()
                 .loginId(getLoginId())
@@ -197,6 +200,7 @@ public class UserRequest {
                 .useYn(getUseYn())
                 .lockYn(getLockYn())
                 .userType(getUserType())
+                .tema(getTema())
                 .build();
         }
     }
@@ -290,6 +294,9 @@ public class UserRequest {
         @Parameter(description = "영업일")
         private LocalDate workYmd;
 
+        @Schema(description = "테마 (dark/white)")
+        private String tema;
+
         public User toEntity() {
             return User.builder()
                 .id(getId())
@@ -314,6 +321,7 @@ public class UserRequest {
                 .lockYn(getLockYn())
                 .otpFailCnt(getOtpFailCnt())
                 .partnerId(getPartnerId())
+                .tema(getTema())
                 .build();
         }
     }

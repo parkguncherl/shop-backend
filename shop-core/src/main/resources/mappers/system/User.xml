@@ -27,7 +27,8 @@
          USE_YN                AS useYn,               /* 사용 여부  */
          LOCK_YN               AS lockYn,              /* 계정 잠김 여부  */
          AUTH_CD               AS authCd,              /* 권한 코드  */
-         USER_TYPE             AS userType             /* 사용자 유형  */
+         USER_TYPE             AS userType,            /* 사용자 유형  */
+         TEMA                  AS tema                 /* 테마  */
     </sql>
 
 
@@ -145,6 +146,7 @@
             , FN_GET_CODE('10020', TU.AUTH_CD) AS authNm
             , FN_GET_CODE('10020', TU.USER_TYPE) AS userTypeNm
             , IS_MOBILE_LOGIN
+            , TEMA                  AS tema
         FROM TB_USER TU
         WHERE LOGIN_ID = #{loginId}
           AND DEL_YN = 'N'
@@ -182,6 +184,7 @@
              , 0 AS otpSecond
              , FN_GET_CODE('10020', TU.AUTH_CD) AS authNm
              , FN_GET_CODE('10020', TU.USER_TYPE) AS userTypeNm
+             , TEMA                AS tema
         FROM TB_USER TU
         WHERE LOGIN_ID = #{loginId}
           AND DEL_YN = 'N'
@@ -226,6 +229,9 @@
         <if test="isMobileLogin != null">
             , IS_MOBILE_LOGIN
         </if>
+        <if test="tema != null">
+            , TEMA
+        </if>
         ) VALUES (
               #{loginId}
             , #{loginPass}
@@ -251,6 +257,9 @@
             , #{creUser}
         <if test="isMobileLogin != null">
             , #{isMobileLogin}
+        </if>
+        <if test="tema != null">
+            , #{tema}
         </if>
         )
     </insert>
@@ -307,6 +316,9 @@
             </if>
             <if test="isMobileLogin != null">
                 , IS_MOBILE_LOGIN = #{isMobileLogin}
+            </if>
+            <if test="tema != null">
+                , TEMA = #{tema}
             </if>
         WHERE ID = #{id}
     </update>

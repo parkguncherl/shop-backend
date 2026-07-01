@@ -144,6 +144,9 @@ public class User extends BaseEntity implements Serializable {
     @Schema(description = "모바일기기로 로그인")
     private String isMobileLogin;
 
+    @Schema(description = "테마 (dark/white)")
+    private String tema;
+
     @Override
     public String toString() {
         GsonBuilder gsonBuilder = new GsonBuilder();
