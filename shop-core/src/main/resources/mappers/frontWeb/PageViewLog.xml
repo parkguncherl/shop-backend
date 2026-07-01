@@ -17,6 +17,7 @@
             SCROLL_MAX,
             IS_BOUNCE,
             DEVICE_TYPE,
+            CLIENT_IP,
             CRE_TM
         ) VALUES (
                      #{guestId},
@@ -31,6 +32,7 @@
                      #{scrollMax},
                      #{isBounce},
                      #{deviceType},
+                     #{clientIp},
                      NOW()
                  )
     </insert>
@@ -62,6 +64,7 @@
             SCROLL_MAX,
             IS_BOUNCE,
             DEVICE_TYPE,
+            CLIENT_IP,
             CRE_TM
         FROM TB_PAGE_VIEW_LOG
         WHERE ID = #{id}

@@ -1,13 +1,15 @@
 package com.shop.api.frontWeb.controller;
 
+import com.shop.api.annotation.GuestUser;
 import com.shop.api.frontWeb.service.PageViewLogService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.response.ApiResponse;
+import com.shop.core.entity.GuestToken;
 import com.shop.core.enums.ApiResultCode;
 import com.shop.core.frontWeb.vo.request.PageViewLogRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +30,11 @@ public class PageViewLogController {
     @PostMapping("/pageView")
     @Operation(summary = "페이지 뷰 로그 저장")
     public ApiResponse<Void> insertPageViewLog(
-            @RequestBody PageViewLogRequest.Save  request,
-            HttpServletRequest httpRequest) {
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
+            @RequestBody PageViewLogRequest.Save  request) {
 
-        String guestId = (String) httpRequest.getAttribute("GUEST_ID");
-        request.setGuestId(guestId);
+        request.setGuestId(guestUser.getGuestId());
+        request.setClientIp(guestUser.getClientIp());
         pageViewLogService.insertPageViewLog(request);
         return new ApiResponse<>(ApiResultCode.SUCCESS, null);
     }

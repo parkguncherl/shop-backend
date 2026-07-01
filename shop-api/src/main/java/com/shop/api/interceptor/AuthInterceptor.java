@@ -151,6 +151,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                     }
                     request.setAttribute("GUEST_ID", guestId);
                     request.setAttribute("PARTNER_ID", partnerId);
+                    request.setAttribute("CLIENT_IP", jwtTokenProvider.getClientIp(guestToken));
                 }
             }
         }

@@ -40,6 +40,7 @@ public class WebConfigure implements WebMvcConfigurer {
     private String corsUrls;
 
     private final AuthInterceptor authInterceptor;
+    private final GuestUserResolver guestUserResolver;
 
 
     @Override
@@ -112,7 +113,7 @@ public class WebConfigure implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new JwtUserResolver());
-        resolvers.add(new GuestUserResolver());  // 추가
+        resolvers.add(guestUserResolver);  // 추가 — 스프링 빈 주입 (GuestTokenDao 사용)
     }
 
     @Bean

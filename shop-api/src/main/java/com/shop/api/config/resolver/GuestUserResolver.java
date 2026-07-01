@@ -33,6 +33,7 @@ public class GuestUserResolver implements HandlerMethodArgumentResolver {
         GuestToken guestToken = new GuestToken();
         guestToken.setGuestId((String)    request.getAttribute("GUEST_ID"));
         guestToken.setPartnerId((Integer) request.getAttribute("PARTNER_ID"));
+        guestToken.setClientIp((String)   request.getAttribute("CLIENT_IP"));  // JWT claim 에서 추출된 값
         // 필요한 필드만 세팅
 
         return guestToken;

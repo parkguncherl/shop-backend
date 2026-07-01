@@ -50,7 +50,7 @@ public class GuestTokenService {
             }
         }
 
-        String guestToken = jwtTokenProvider.createGuestToken(guestId, partnerId);
+        String guestToken = jwtTokenProvider.createGuestToken(guestId, partnerId, request.getClientIp());
         LocalDateTime expireDate = LocalDateTime.now().plusDays(30);
 
         GuestTokenResponse.GuestTokenInfo guestTokenInfo = new GuestTokenResponse.GuestTokenInfo();

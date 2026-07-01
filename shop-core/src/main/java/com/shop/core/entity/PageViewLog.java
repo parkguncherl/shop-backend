@@ -52,4 +52,7 @@ public class PageViewLog extends BaseEntity {
 
     @Schema(description = "디바이스 타입")
     private String deviceType;
+
+    @Schema(description = "클라이언트 IP")
+    private String clientIp;
 }
