@@ -70,10 +70,10 @@
     <insert id="insertNotice" parameterType="com.shop.core.entity.Notice">
         /* com.shop.mapper.Notice.insertNotice */
         INSERT INTO TB_NOTICE (
-            NOTICE_CD, PARTNER_ID, TITLE, MOVE_URI, GESI_YN,
+            NOTICE_CD, PARTNER_ID, TITLE, FILE_ID, MOVE_URI, GESI_YN,
             CRE_USER, CRE_TM, UPD_USER, UPD_TM
         ) VALUES (
-            #{noticeCd}, #{partnerId}, #{title}, #{moveUri}, COALESCE(#{gesiYn}, 'N'),
+            #{noticeCd}, #{partnerId}, #{title}, #{fileId}, #{moveUri}, COALESCE(#{gesiYn}, 'N'),
             #{creUser}, NOW(), #{updUser}, NOW()
         )
     </insert>
@@ -84,6 +84,7 @@
         UPDATE TB_NOTICE
         SET
             TITLE    = #{title},
+            FILE_ID  = #{fileId},
             MOVE_URI = #{moveUri},
             GESI_YN  = #{gesiYn},
             UPD_USER = #{updUser},

@@ -47,6 +47,9 @@ public class NoticeRequest {
         @Schema(description = "제목")
         private String title;
 
+        @Schema(description = "파일 ID")
+        private Integer fileId;
+
         @Schema(description = "이동 URI")
         private String moveUri;
 
