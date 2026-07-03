@@ -155,6 +155,106 @@
         ORDER BY ID ASC LIMIT 1
     </select>
 
+    <!-- 팝업 공지사항 목록 (BO 관리용) -->
+    <select id="selectPopupNoticeMngList" resultType="com.shop.core.entity.Notice">
+        /* com.shop.mapper.Notice.selectPopupNoticeMngList */
+        SELECT
+            ID          AS id,
+            NOTICE_CD   AS noticeCd,
+            PARTNER_ID  AS partnerId,
+            TITLE       AS title,
+            FILE_ID     AS fileId,
+            MOVE_URI    AS moveUri,
+            GESI_YN     AS gesiYn,
+            CRE_USER    AS creUser,
+            CRE_TM      AS creTm,
+            UPD_USER    AS updUser,
+            UPD_TM      AS updTm
+        FROM TB_NOTICE
+        WHERE DEL_YN = 'N'
+          AND NOTICE_CD = '1'
+          AND PARTNER_ID = #{partnerId}
+        ORDER BY ID DESC
+    </select>
+
+    <!-- 팝업 공지사항 단건 조회 -->
+    <select id="selectPopupNoticeById" resultType="com.shop.core.entity.Notice">
+        /* com.shop.mapper.Notice.selectPopupNoticeById */
+        SELECT
+            ID          AS id,
+            NOTICE_CD   AS noticeCd,
+            PARTNER_ID  AS partnerId,
+            TITLE       AS title,
+            FILE_ID     AS fileId,
+            MOVE_URI    AS moveUri,
+            GESI_YN     AS gesiYn,
+            CRE_USER    AS creUser,
+            CRE_TM      AS creTm,
+            UPD_USER    AS updUser,
+            UPD_TM      AS updTm
+        FROM TB_NOTICE
+        WHERE ID = #{id}
+          AND DEL_YN = 'N'
+    </select>
+
+    <!-- 팝업 공지사항 등록 -->
+    <insert id="insertPopupNotice" parameterType="com.shop.core.entity.Notice" useGeneratedKeys="true" keyProperty="id">
+        /* com.shop.mapper.Notice.insertPopupNotice */
+        INSERT INTO TB_NOTICE (NOTICE_CD, PARTNER_ID, TITLE, FILE_ID, MOVE_URI, GESI_YN, CRE_USER, UPD_USER)
+        VALUES ('1', #{partnerId}, #{title}, #{fileId}, #{moveUri}, COALESCE(#{gesiYn}, 'N'), #{creUser}, #{creUser})
+    </insert>
+
+    <!-- 팝업 공지사항 수정 -->
+    <update id="updatePopupNotice" parameterType="com.shop.core.entity.Notice">
+        /* com.shop.mapper.Notice.updatePopupNotice */
+        UPDATE TB_NOTICE
+        SET TITLE    = #{title},
+            FILE_ID  = #{fileId},
+            MOVE_URI = #{moveUri},
+            GESI_YN  = #{gesiYn},
+            UPD_USER = #{updUser},
+            UPD_TM   = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 팝업 공지사항 게시 여부 토글 -->
+    <update id="updatePopupNoticeGesiYn">
+        /* com.shop.mapper.Notice.updatePopupNoticeGesiYn */
+        UPDATE TB_NOTICE
+        SET GESI_YN  = #{gesiYn},
+            UPD_USER = #{updUser},
+            UPD_TM   = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 팝업 공지사항 삭제 (논리) -->
+    <update id="deletePopupNotice">
+        /* com.shop.mapper.Notice.deletePopupNotice */
+        UPDATE TB_NOTICE
+        SET DEL_YN   = 'Y',
+            UPD_USER = #{updUser},
+            UPD_TM   = NOW()
+        WHERE ID = #{id}
+    </update>
+
+    <!-- FO: 게시중인 팝업 공지사항 목록 -->
+    <select id="selectActivePopupNoticeList" resultType="com.shop.core.entity.Notice">
+        /* com.shop.mapper.Notice.selectActivePopupNoticeList */
+        SELECT
+            N.ID       AS id,
+            N.TITLE    AS title,
+            N.FILE_ID  AS fileId,
+            N.MOVE_URI AS moveUri,
+            F.SYS_FILE_NM AS sysFileNm
+        FROM TB_NOTICE N
+        LEFT JOIN TB_FILE_DET F ON F.FILE_ID = N.FILE_ID AND F.USE_YN = 'Y'
+        WHERE N.DEL_YN = 'N'
+          AND N.NOTICE_CD = '1'
+          AND N.GESI_YN = 'Y'
+          AND N.PARTNER_ID = #{partnerId}
+        ORDER BY N.ID ASC
+    </select>
+
     <!-- 스티커 정보 수정 -->
     <update id="updateStickerInfo" parameterType="com.shop.core.biz.notice.vo.request.NoticeRequest$StickerUpdate">
         UPDATE TB_NOTICE

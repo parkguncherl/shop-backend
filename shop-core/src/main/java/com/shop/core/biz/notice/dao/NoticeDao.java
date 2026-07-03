@@ -102,4 +102,39 @@ public class NoticeDao {
     public int updateStickerInfo(NoticeRequest.StickerUpdate request) {
         return sqlSession.update(NAMESPACE.concat("updateStickerInfo"), request);
     }
+
+    public List<Notice> selectPopupNoticeMngList(Integer partnerId) {
+        return sqlSession.selectList(NAMESPACE.concat("selectPopupNoticeMngList"), partnerId);
+    }
+
+    public Notice selectPopupNoticeById(Integer id) {
+        return sqlSession.selectOne(NAMESPACE.concat("selectPopupNoticeById"), id);
+    }
+
+    public int insertPopupNotice(Notice notice) {
+        return sqlSession.insert(NAMESPACE.concat("insertPopupNotice"), notice);
+    }
+
+    public int updatePopupNotice(Notice notice) {
+        return sqlSession.update(NAMESPACE.concat("updatePopupNotice"), notice);
+    }
+
+    public int updatePopupNoticeGesiYn(Integer id, String gesiYn, String updUser) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        params.put("gesiYn", gesiYn);
+        params.put("updUser", updUser);
+        return sqlSession.update(NAMESPACE.concat("updatePopupNoticeGesiYn"), params);
+    }
+
+    public int deletePopupNotice(Integer id, String updUser) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        params.put("updUser", updUser);
+        return sqlSession.update(NAMESPACE.concat("deletePopupNotice"), params);
+    }
+
+    public List<Notice> selectActivePopupNoticeList(Integer partnerId) {
+        return sqlSession.selectList(NAMESPACE.concat("selectActivePopupNoticeList"), partnerId);
+    }
 }

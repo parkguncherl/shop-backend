@@ -66,6 +66,18 @@ public class Notice extends BaseEntity implements Serializable {
     @Schema(description = "조회수")
     private String readCnt;
 
+    /** 파일 ID */
+    @Schema(description = "파일 ID")
+    private Integer fileId;
+
+    /** 게시 여부 */
+    @Schema(description = "게시 여부 (Y/N)")
+    private String gesiYn;
+
+    /** 시스템 파일명 (조회 전용) */
+    @Schema(description = "시스템 파일명")
+    private String sysFileNm;
+
 
     @Override
     public String toString() {
