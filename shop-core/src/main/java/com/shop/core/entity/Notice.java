@@ -50,21 +50,9 @@ public class Notice extends BaseEntity implements Serializable {
     @Schema(description = "제목")
     private String title;
 
-    /** 공지사항 내용 */
-    @Schema(description = "공지사항 내용")
-    private String noticeCntn;
-
     /** 이동 URI */
     @Schema(description = "이동 URI")
     private String moveUri;
-
-    /** 권한 코드 */
-    @Schema(description = "권한 코드")
-    private String authCds;
-
-    /** 조회수 */
-    @Schema(description = "조회수")
-    private String readCnt;
 
     /** 파일 ID */
     @Schema(description = "파일 ID")

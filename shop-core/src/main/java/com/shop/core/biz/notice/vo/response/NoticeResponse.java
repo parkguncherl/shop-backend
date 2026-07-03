@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -24,46 +25,33 @@ public class NoticeResponse {
     @Schema(description = "제목")
     private String title;
 
-    @Schema(description = "공지사항 내용")
-    private String noticeCntn;
-
     @Schema(description = "이동 URI")
     private String moveUri;
 
-    @Schema(description = "권한 코드")
-    private String authCds;
-
-    @Schema(description = "삭제 여부")
-    private String delYn;
-
-    @Schema(description = "조회수")
-    private String readCnt;
+    @Schema(description = "게시 여부")
+    private String gesiYn;
 
     @Schema(description = "생성자")
     private String creUser;
 
     @Schema(description = "생성일시")
-    private LocalDateTime creTm;
+    private LocalDate creTm;
 
     @Schema(description = "수정자")
     private String updUser;
 
     @Schema(description = "수정일시")
-    private LocalDateTime updTm;
+    private LocalDate updTm;
 
     public static NoticeResponse fromEntity(Notice notice) {
         NoticeResponse response = new NoticeResponse();
         response.setId(notice.getId());
         response.setNoticeCd(notice.getNoticeCd());
         response.setTitle(notice.getTitle());
-        response.setNoticeCntn(notice.getNoticeCntn());
         response.setMoveUri(notice.getMoveUri());
-        response.setAuthCds(notice.getAuthCds());
-        response.setDelYn(notice.getDelYn());
+        response.setGesiYn(notice.getGesiYn());
         response.setCreUser(notice.getCreUser());
-        response.setCreTm(notice.getCreTm());
         response.setUpdUser(notice.getUpdUser());
-        response.setUpdTm(notice.getUpdTm());
         return response;
     }
 
@@ -84,32 +72,23 @@ public class NoticeResponse {
         @Schema(description = "제목")
         private String title;
 
-        @Schema(description = "공지사항 내용")
-        private String noticeCntn;
-
         @Schema(description = "이동 URI")
         private String moveUri;
 
-        @Schema(description = "권한 코드")
-        private String authCds;
-
-        @Schema(description = "삭제 여부")
-        private String delYn;
-
-        @Schema(description = "조회수")
-        private String readCnt;
+        @Schema(description = "게시 여부")
+        private String gesiYn;
 
         @Schema(description = "생성자")
         private String creUser;
 
         @Schema(description = "생성일시")
-        private LocalDateTime creTm;
+        private LocalDate creTm;
 
         @Schema(description = "수정자")
         private String updUser;
 
         @Schema(description = "수정일시")
-        private LocalDateTime updTm;
+        private LocalDate updTm;
 
         @Schema(description = "총 페이지 수")
         private Integer totalRowCount;
@@ -124,14 +103,10 @@ public class NoticeResponse {
             response.setId(notice.getId());
             response.setNoticeCd(notice.getNoticeCd());
             response.setTitle(notice.getTitle());
-            response.setNoticeCntn(notice.getNoticeCntn());
             response.setMoveUri(notice.getMoveUri());
-            response.setAuthCds(notice.getAuthCds());
-            response.setDelYn(notice.getDelYn());
+            response.setGesiYn(notice.getGesiYn());
             response.setCreUser(notice.getCreUser());
-            response.setCreTm(notice.getCreTm());
             response.setUpdUser(notice.getUpdUser());
-            response.setUpdTm(notice.getUpdTm());
             return response;
         }
     }
@@ -198,9 +173,6 @@ public class NoticeResponse {
 
         @Schema(description = "제목")
         private String title;
-
-        @Schema(description = "공지사항 내용")
-        private String noticeCntn;
 
         @Schema(description = "수정자")
         private String updUser;

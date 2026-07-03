@@ -44,20 +44,14 @@ public class NoticeRequest {
         @Schema(description = "공지사항 ID")
         private Integer id;
 
-        @Schema(description = "공지사항 코드")
-        private String noticeCd;
-
         @Schema(description = "제목")
         private String title;
-
-        @Schema(description = "내용")
-        private String noticeCntn;
 
         @Schema(description = "이동 URI")
         private String moveUri;
 
-        @Schema(description = "권한 코드")
-        private String authCds;
+        @Schema(description = "게시 여부")
+        private String gesiYn;
 
         @Schema(description = "수정자")
         private String updUser;
