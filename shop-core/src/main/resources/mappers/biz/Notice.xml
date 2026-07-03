@@ -40,13 +40,16 @@
         WHERE
             DEL_YN = 'N'
             AND NOTICE_CD != '20130'
+        <if test="filter != null and filter.partnerId != null">
+            AND PARTNER_ID = #{filter.partnerId}
+        </if>
         <if test="filter != null and filter.title != null and filter.title != ''">
             AND TITLE LIKE CONCAT('%', #{filter.title}, '%')
         </if>
-        <if test="filter.startDate != null and filter.endDate != null">
+        <if test="filter != null and filter.startDate != null and filter.endDate != null">
             AND CRE_TM BETWEEN #{filter.startDate} AND #{filter.endDate}
         </if>
-        <if test="filter.noticeCd != null and filter.noticeCd != ''">
+        <if test="filter != null and filter.noticeCd != null and filter.noticeCd != ''">
             AND NOTICE_CD = #{filter.noticeCd}
         </if>
         ORDER BY ID DESC
