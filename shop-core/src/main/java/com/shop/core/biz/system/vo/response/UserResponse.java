@@ -93,21 +93,9 @@ public class UserResponse {
         @Schema(description = "나의 가능한 기능들")
         private String myCustomRoles;
 
-        /** 등록일시 */
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        @Schema(description = "등록일시")
-        private LocalDateTime creTm;
-
         /** 등록자 */
         @Schema(description = "등록자")
         private String creUserNm;
-
-        /** 수정일시 */
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        @Schema(description = "수정일시")
-        private LocalDateTime updTm;
 
         /** 수정자 */
         @Schema(description = "수정자")

@@ -46,12 +46,6 @@ public class CodeResponse {
         @Schema(description = "기타정보(변환)")
         @Parameter(description = "기타정보(변환)")
         private String codeEtc;
-
-        /** 수정일시 */
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        @Schema(description = "수정일시")
-        protected LocalDateTime updTm;
     }
 
     @Getter
