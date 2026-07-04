@@ -305,8 +305,8 @@
             <if test="firstLoginYn != null">
               , FIRST_LOGIN_YN = #{firstLoginYn}
             </if>
-            <if test="deleteYn != null">
-              , DEL_YN = #{deleteYn}
+            <if test="delYn != null">
+              , DEL_YN = #{delYn}
             </if>
             <if test="useYn != null">
                 , USE_YN = #{useYn}

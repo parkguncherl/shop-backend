@@ -30,6 +30,7 @@
         A.CRE_TM AS creTm,
         A.UPD_TM AS updTm,
         A.UPD_USER AS updUser,
+        A.FILE_ID,
         (SELECT COUNT(D.ID) AS C FROM TB_FILE_DET D WHERE D.FILE_ID = A.FILE_ID AND D.DEL_YN = 'N') AS fileCnt,
         COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.CRE_USER = X.LOGIN_ID), A.CRE_USER) AS creUser,
         COUNT(*) OVER() AS totalRowCount
