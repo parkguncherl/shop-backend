@@ -49,6 +49,9 @@ public class ProductMngResponse {
         @Schema(description = "기타이미지 개수")
         private Integer etcFileIdCnt;
 
+        @Schema(description = "관련상품 연결 개수")
+        private Integer relCount;
+
         @Schema(description = "시즌")
         private String season;
     }
