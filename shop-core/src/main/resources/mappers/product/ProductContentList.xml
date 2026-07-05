@@ -18,7 +18,7 @@
             AND A.NEWS_TYPE = #{filter.newsType}
             AND A.PARTNER_ID = #{filter.partnerId}
             <if test='filter.newsTitle != null and !filter.newsTitle.equals("")'>
-                AND A.NEWS_TITLE = #{filter.newsTitle}
+                AND A.NEWS_TITLE LIKE CONCAT('%', #{filter.newsTitle},'%')
             </if>
             <if test="filter.lastId != null">
                 AND (
@@ -151,13 +151,15 @@
             , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
             , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
             , TP.DISCOUNT_RATE AS discountRate
+            , FD.SYS_FILE_NM
         FROM TB_PRODUCT TP
         JOIN TB_CONTENTS_PRODUCT CP ON CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N'
+        JOIN TB_FILE_DET FD ON FD.FILE_ID = TP.REP_FILE_ID AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         <where>
             AND TP.DEL_YN = 'N'
             AND CP.CONTENTS_ID = #{contentsId}
         </where>
-        GROUP BY TP.ID, CP.ID
+        GROUP BY TP.ID, CP.ID, CP.SEQ, FD.SYS_FILE_NM
         ORDER BY CP.SEQ
     </select>
 
