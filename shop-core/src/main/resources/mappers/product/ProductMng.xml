@@ -38,6 +38,7 @@
                      CASE WHEN TP.IS_SUMMER = 'Y' THEN 'S' ELSE '_' END,
                      CASE WHEN TP.IS_AUTUMN = 'Y' THEN 'F' ELSE '_' END,
                      CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END) AS SEASON
+            , (SELECT COUNT(1) FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N') AS relCount
         FROM TB_PRODUCT TP
         JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
         <where>
@@ -105,7 +106,7 @@
             , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
             , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
             , CPD.ID AS categoryProductId
-            , FN_GET_PARTNER_CODE_ID(CPD.CATEGORY_ID) AS categoryNm
+            , FN_GET_PARTNER_CODE_ID('P0001', CPD.CATEGORY_ID) AS categoryNm
             , CPD.SEQ AS seq
             , CPD.CATEGORY_ID AS categoryId
         FROM TB_PRODUCT TP
@@ -345,7 +346,7 @@
             , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
             , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
         FROM TB_PRODUCT TP
-            LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        LEFT JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
         <where>
             AND TP.DEL_YN = 'N'
             <if test='prodNm != null and !prodNm.equals("")'>
@@ -377,8 +378,8 @@
             UPD_USER
         ) VALUES (
             get_next_category_product_seq(#{categoryId}) ,
-            #{categoryId} ,
             #{partnerId} ,
+            #{categoryId} ,
             #{productId} ,
             #{creUser} ,
             #{updUser}

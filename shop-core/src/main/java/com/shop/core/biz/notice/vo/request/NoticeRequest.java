@@ -91,9 +91,6 @@ public class NoticeRequest {
     @Setter
     @Schema(description = "스티커 정보 수정 요청")
     public static class StickerUpdate {
-        @Schema(description = "공지사항 내용")
-        private String noticeCntn;
-
         @Schema(description = "수정자")
         private String updUser;
 

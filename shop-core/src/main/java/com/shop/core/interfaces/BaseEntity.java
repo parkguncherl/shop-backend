@@ -1,6 +1,5 @@
 package com.shop.core.interfaces;
 
-import com.shop.core.enums.BooleanValueCode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * <pre>
@@ -31,32 +30,25 @@ import java.time.LocalDateTime;
 public class BaseEntity {
 
     /** 등록일시 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Schema(description = "등록일시")
-    //@JsonIgnore  // JSON 직렬화/역직렬화에서 완전히 제외
-    protected LocalDateTime creTm;
+    protected LocalDate creTm;
 
     /** 등록자 */
     @Schema(description = "등록자")
-    //@JsonIgnore  // JSON 직렬화/역직렬화에서 완전히 제외
     protected String creUser;
 
     /** 수정일시 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Schema(description = "수정일시")
-    //@JsonIgnore  // JSON 직렬화/역직렬화에서 완전히 제외
-    protected LocalDateTime updTm;
+    protected LocalDate updTm;
 
     /** 수정자 */
     @Schema(description = "수정자")
     //@JsonIgnore  // JSON 직렬화/역직렬화에서 완전히 제외
     protected String updUser;
-
-    /** 삭제여부 */
-    @Schema(description = "삭제여부")
-    protected BooleanValueCode deleteYn;
 
     /** 페이징 조회에만 사용 */
     // 접근자가 무시되게끔 하는 본 에너테이션은 비활성화

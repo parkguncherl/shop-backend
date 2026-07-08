@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.shop.core.entity.adapter.LocalDateSerializer;
 import com.shop.core.entity.adapter.LocalDateTimeSerializer;
 import com.shop.core.entity.adapter.LocalTimeSerializer;
+import com.shop.core.enums.BooleanValueCode;
 import com.shop.core.interfaces.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -68,6 +69,10 @@ public class FileDet extends BaseEntity implements Serializable {
      * 파일_사이즈
      */
     private Integer fileSize;
+
+    /** 삭제여부 */
+    @Schema(description = "삭제여부")
+    private BooleanValueCode deleteYn;
 
     @Override
     public String toString() {

@@ -10,32 +10,33 @@
         MOVE_URI  AS moveUri,
         FILE_ID   AS fileId,
         GESI_YN   AS gesiYn,
-        CRE_USER  AS creUser,
-        CRE_TM    AS creTm,
-        UPD_USER  AS updUser,
-        UPD_TM    AS updTm,
-        DEL_YN    AS delYn
+        CRE_USER          AS creUser,
+        CRE_TM AS creTm,
+        UPD_USER          AS updUser,
+        UPD_TM AS updTm,
+        DEL_YN            AS delYn
     </sql>
 
     <!-- 공지사항 목록 조회 페이징 -->
     <select id="selectNoticeListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.notice.vo.response.NoticeResponse$Paging">
         /* com.shop.mapper.biz.notice.selectNoticeListPaging */
         SELECT
-            ROW_NUMBER() OVER(ORDER BY A.ID DESC) AS no,
-            A.ID        AS id,
-            A.NOTICE_CD AS noticeCd,
-            A.TITLE     AS title,
-            A.MOVE_URI  AS moveUri,
-            A.GESI_YN   AS gesiYn,
-            A.CRE_TM    AS creTm,
-            A.UPD_TM    AS updTm,
-            A.UPD_USER  AS updUser,
-            COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.CRE_USER = X.LOGIN_ID), A.CRE_USER) AS creUser,
-            COUNT(*) OVER() AS totalRowCount
+        ROW_NUMBER() OVER(ORDER BY A.ID DESC) AS no,
+        A.ID AS id,
+        A.NOTICE_CD AS noticeCd,
+        A.TITLE AS title,
+        A.MOVE_URI AS moveUri,
+        A.GESI_YN AS gesiYn,
+        A.CRE_TM AS creTm,
+        A.UPD_TM AS updTm,
+        A.UPD_USER AS updUser,
+        A.FILE_ID,
+        (SELECT COUNT(D.ID) AS C FROM TB_FILE_DET D WHERE D.FILE_ID = A.FILE_ID AND D.DEL_YN = 'N') AS fileCnt,
+        COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.CRE_USER = X.LOGIN_ID), A.CRE_USER) AS creUser,
+        COUNT(*) OVER() AS totalRowCount
         FROM TB_NOTICE A
         WHERE
-            A.DEL_YN = 'N'
-            AND A.NOTICE_CD = '2'
+        A.DEL_YN = 'N'
         <if test="filter != null and filter.partnerId != null">
             AND PARTNER_ID = #{filter.partnerId}
         </if>
@@ -129,10 +130,10 @@
             FILE_ID     AS fileId,
             MOVE_URI    AS moveUri,
             GESI_YN     AS gesiYn,
-            CRE_USER    AS creUser,
-            CRE_TM      AS creTm,
-            UPD_USER    AS updUser,
-            UPD_TM      AS updTm
+            CRE_USER          AS creUser,
+            CRE_TM AS creTm,
+            UPD_USER          AS updUser,
+            UPD_TM AS updTm
         FROM TB_NOTICE
         WHERE DEL_YN = 'N'
           AND NOTICE_CD = '1'
@@ -151,10 +152,10 @@
             FILE_ID     AS fileId,
             MOVE_URI    AS moveUri,
             GESI_YN     AS gesiYn,
-            CRE_USER    AS creUser,
-            CRE_TM      AS creTm,
-            UPD_USER    AS updUser,
-            UPD_TM      AS updTm
+            CRE_USER          AS creUser,
+            CRE_TM AS creTm,
+            UPD_USER          AS updUser,
+            UPD_TM AS updTm
         FROM TB_NOTICE
         WHERE ID = #{id}
           AND DEL_YN = 'N'
@@ -201,7 +202,7 @@
     </update>
 
     <!-- FO: 게시중인 팝업 공지사항 목록 -->
-    <select id="selectActivePopupNoticeList" resultType="com.shop.core.entity.Notice">
+    <select id="selectActivePopupNoticeList" parameterType="java.lang.Integer" resultType="com.shop.core.entity.Notice">
         /* com.shop.mapper.Notice.selectActivePopupNoticeList */
         SELECT
             N.ID       AS id,
@@ -210,7 +211,7 @@
             N.MOVE_URI AS moveUri,
             F.SYS_FILE_NM AS sysFileNm
         FROM TB_NOTICE N
-        LEFT JOIN TB_FILE_DET F ON F.FILE_ID = N.FILE_ID AND F.USE_YN = 'Y'
+        LEFT JOIN TB_FILE_DET F ON F.FILE_ID = N.FILE_ID AND F.DEL_YN = 'N'
         WHERE N.DEL_YN = 'N'
           AND N.NOTICE_CD = '1'
           AND N.GESI_YN = 'Y'
@@ -221,8 +222,7 @@
     <!-- 스티커 정보 수정 -->
     <update id="updateStickerInfo" parameterType="com.shop.core.biz.notice.vo.request.NoticeRequest$StickerUpdate">
         UPDATE TB_NOTICE
-        SET NOTICE_CNTN = #{noticeCntn},
-            UPD_USER = #{updUser},
+        SET UPD_USER = #{updUser},
             UPD_TM = NOW()
         WHERE ID = (
             SELECT ID
