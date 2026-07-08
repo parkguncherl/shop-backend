@@ -106,7 +106,7 @@ public class WebCommonController {
         PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest = new PartnerCodeRequest.PartnerCodeDropDown();
         partnerCodeRequest.setCodeUpper(partnerUpperCode);
         partnerCodeRequest.setPartnerId(guestUser.getPartnerId());
-        List<PartnerCodeResponse.LowerSelect> response = partnerCodeService.selectLowerCodeByCodeUpperForPartnerCodeMng(partnerCodeRequest);
+        List<PartnerCodeResponse.LowerSelect> response = partnerCodeService.selectPartnerCodeList(partnerCodeRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 

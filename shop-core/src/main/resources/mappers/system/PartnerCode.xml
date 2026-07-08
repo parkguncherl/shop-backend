@@ -136,6 +136,30 @@
         </choose>
     </select>
 
+    <select id="selectPartnerCodeList" parameterType="com.shop.core.biz.system.vo.request.PartnerCodeRequest$PartnerCodeDropDown"  resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
+        /* com.shop.mapper.PartnerCode.selectPartnerCodeList */
+        SELECT
+        <include refid="codeColumns" />
+        , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC) AS no
+        , COALESCE((SELECT USER_NM FROM TB_USER X WHERE TC.UPD_USER = X.LOGIN_ID), TC.UPD_USER) AS updNm
+        , COALESCE((SELECT USER_NM FROM TB_USER X WHERE TC.CRE_USER = X.LOGIN_ID), TC.CRE_USER) AS creNm
+        FROM TB_PARTNER_CODE TC
+        WHERE 1 = 1
+        AND TC.DEL_YN = 'N'
+        AND TC.CODE_UPPER = #{codeUpper}
+        AND TC.PARTNER_ID = #{partnerId}
+        <if test="codeNm != null">
+            AND TC.CODE_NM LIKE CONCAT('%', #{codeNm}, '%')
+        </if>
+        <if test="codeCd != null">
+            AND TC.CODE_CD = #{codeCd}
+        </if>
+        <if test="codeEtc != null">
+            AND TC.CODE_ETC = #{codeEtc}
+        </if>
+         ORDER BY TC.CODE_ORDER ASC
+    </select>
+
     <insert id="insertPartnerCode" parameterType="com.shop.core.entity.PartnerCode" useGeneratedKeys="true" keyProperty="id">
         /* com.shop.mapper.PartnerCode.insertPartnerCode */
         INSERT INTO TB_PARTNER_CODE
