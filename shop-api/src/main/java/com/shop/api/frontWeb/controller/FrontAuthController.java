@@ -147,8 +147,8 @@ public class FrontAuthController {
 
             String[] parts = host.split("\\.");
 
-            // admin.gguanggu.com → admin
-            // www.gguanggu.com → www
+            // admin.mapsiggun.com → admin
+            // www.mapsiggun.com → www
             if (parts.length >= 3) {
                 return StringUtils.hasText(parts[0]) ? parts[0] : DEFAULT_SUB_DOMAIN;
             }

@@ -300,13 +300,13 @@ public class CommUtil {
             // 3. Guava를 사용하여 메인 도메인 추출
             InternetDomainName domainName = InternetDomainName.from(host);
             if (domainName.hasPublicSuffix()) {
-                String mainDomain = domainName.topPrivateDomain().toString(); // 예: gguanggu.com
+                String mainDomain = domainName.topPrivateDomain().toString(); // 예: mapsiggun.com
 
                 // 전체 호스트명에서 메인 도메인 부분을 제외한 나머지를 서브도메인으로 추출
                 if (host.equals(mainDomain)) {
                     return new String[]{null, mainDomain}; // 서브도메인이 없는 경우
                 } else {
-                    // 메인 도메인 앞의 점(.)까지 포함해서 잘라냅니다. (예: "admin.gguanggu.com" -> "admin")
+                    // 메인 도메인 앞의 점(.)까지 포함해서 잘라냅니다. (예: "admin.mapsiggun.com" -> "admin")
                     String subDomain = host.substring(0, host.length() - mainDomain.length() - 1);
                     return new String[]{subDomain, mainDomain};
                 }
