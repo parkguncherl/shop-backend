@@ -102,6 +102,17 @@ public class PartnerCodeDao {
     }
 
     /**
+     * 하위_코드_조회 (by codeUpper) 주로 fo 에서
+     *
+     * @param partnerCodeRequest
+     * @return
+     */
+    public List<PartnerCodeResponse.LowerSelect> selectPartnerCodeList(PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest) {
+        return sqlSession.selectList(PRE_NS.concat("selectPartnerCodeList"), partnerCodeRequest);
+    }
+
+
+    /**
      * 코드_등록
      *
      * @param code

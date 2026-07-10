@@ -26,6 +26,13 @@
             , P.IS_WINTER           AS isWinter
             , P.FAVORITE_POINT      AS favoritePoint
             , FD.SYS_FILE_NM        AS sysFileNm
+            , (SELECT STRING_AGG(DISTINCT PD2.STNDR_COLOR, ',')
+                 FROM TB_PRODUCT_DET PD2
+                WHERE PD2.PRODUCT_ID = P.ID
+                  AND PD2.DEL_YN = 'N'
+                  AND PD2.SLEEP_YN = 'N'
+                  AND PD2.STNDR_COLOR IS NOT NULL
+                  AND PD2.STNDR_COLOR != '') AS stndrColors
         FROM TB_PRODUCT P
         LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         <where>
@@ -83,6 +90,13 @@
             , P.IS_WINTER           AS isWinter
             , P.FAVORITE_POINT      AS favoritePoint
             , FD.SYS_FILE_NM        AS sysFileNm
+            , (SELECT STRING_AGG(DISTINCT PD2.STNDR_COLOR, ',')
+                 FROM TB_PRODUCT_DET PD2
+                WHERE PD2.PRODUCT_ID = P.ID
+                  AND PD2.DEL_YN = 'N'
+                  AND PD2.SLEEP_YN = 'N'
+                  AND PD2.STNDR_COLOR IS NOT NULL
+                  AND PD2.STNDR_COLOR != '') AS stndrColors
         FROM TB_PRODUCT P
         LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         LEFT JOIN TB_PRODUCT_DET PD ON PD.PRODUCT_ID = P.ID AND PD.SLEEP_YN = 'N'
@@ -151,6 +165,7 @@
             , PD.PRODUCT_DET_SEQ     AS productDetSeq
             , PD.PRODUCT_DET_SIZE    AS productDetSize
             , PD.PRODUCT_DET_COLOR   AS productDetColor
+            , PD.STNDR_COLOR         AS stndrColor
             , PD.SKU_DISCOUNT_RATE   AS skuDiscountRate
             , PD.PRODUCT_DET_CNTN    AS productDetCntn
             , FD.SYS_FILE_NM         AS sysFileNm

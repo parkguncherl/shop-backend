@@ -95,6 +95,7 @@
             , TPD.PRODUCT_DET_SEQ AS productDetSeq
             , TPD.PRODUCT_DET_SIZE AS productDetSize
             , TPD.PRODUCT_DET_COLOR AS productDetColor
+            , TPD.STNDR_COLOR AS stndrColor
             , TPD.SKU_DISCOUNT_RATE AS skuDiscountRate
             , TPD.FILE_ID AS fileId
             , TPD.SLEEP_YN AS sleepYn
@@ -260,6 +261,9 @@
         <if test="productDetCntn != null">
             , PRODUCT_DET_CNTN
         </if>
+        <if test="stndrColor != null">
+            , STNDR_COLOR
+        </if>
             , SLEEP_YN
             , CRE_USER
             , UPD_USER
@@ -274,6 +278,9 @@
         </if>
         <if test="productDetCntn != null">
             , #{productDetCntn}
+        </if>
+        <if test="stndrColor != null">
+            , #{stndrColor}
         </if>
             , #{sleepYn}
             , #{creUser}
@@ -333,6 +340,9 @@
         </if>
         <if test="productDetColor != null">
             , PRODUCT_DET_COLOR = #{productDetColor}
+        </if>
+        <if test="stndrColor != null">
+            , STNDR_COLOR = #{stndrColor}
         </if>
         <if test="skuDiscountRate != null">
             , SKU_DISCOUNT_RATE = #{skuDiscountRate}

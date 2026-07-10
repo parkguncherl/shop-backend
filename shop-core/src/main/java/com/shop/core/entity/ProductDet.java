@@ -41,6 +41,9 @@ public class ProductDet extends BaseEntity implements Serializable {
     @Schema(description = "상품상세 컬러")
     private String productDetColor;
 
+    @Schema(description = "표준 색상코드(RGB 6자리 hex, 예: ffffff)")
+    private String stndrColor;
+
     @Schema(description = "스큐 할인율")
     private BigDecimal skuDiscountRate;
 

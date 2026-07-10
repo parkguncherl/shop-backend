@@ -79,6 +79,17 @@ public class PartnerCodeService {
     }
 
 
+
+    /**
+     * 하위_코드_조회 (by codeUpper) 주로 fo에서
+     *
+     * @param partnerCodeRequest
+     * @return
+     */
+    public List<PartnerCodeResponse.LowerSelect> selectPartnerCodeList(PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest) {
+        return partnerCodeDao.selectPartnerCodeList(partnerCodeRequest);
+    }
+
     /**
      * 코드_등록
      *
