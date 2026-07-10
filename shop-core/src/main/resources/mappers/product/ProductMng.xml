@@ -7,7 +7,7 @@
         SELECT
               TP.ID AS id
             , TP.PARTNER_ID AS partnerId
-            , FN_GET_PARTNERNM( TP.PARTNER_ID ) AS partnerNm
+            , PT.PARTNER_NM AS partnerNm
             , TP.PROD_CD AS prodCd
             , TP.PROD_NM AS prodNm
             , TP.PROD_TP AS prodTp
@@ -21,37 +21,70 @@
             , TP.ORG_AMT AS orgAmt
             , TP.SELL_AMT AS sellAmt
             , TP.DISCOUNT_RATE AS discountRate
-            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
-            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
-            , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
-            , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
-            , COUNT(TPD) AS prodDetCnt
-            , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.REP_FILE_ID AND FDI.DEL_YN = 'N') AS repFileIdCnt
-            , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.DETAIL_FILE_ID AND FDI.DEL_YN = 'N') AS detailFileIdCnt
-            , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.SIZE_FILE_ID AND FDI.DEL_YN = 'N') AS sizeFileIdCnt
-            , (SELECT COUNT(1) FROM TB_FILE_DET FDI WHERE FDI.FILE_ID = TP.ETC_FILE_ID AND FDI.DEL_YN = 'N') AS etcFileIdCnt
+            , C1.CODE_NM AS prodTpNm
+            , C2.CODE_NM AS prodDetTpNm
+            , TPD.prodColors
+            , TPD.prodSizes
+            , COALESCE(TPD.prodDetCnt, 0) AS prodDetCnt
+            , COALESCE(FD_REP.FILE_CNT, 0)    AS repFileIdCnt
+            , COALESCE(FD_DETAIL.FILE_CNT, 0) AS detailFileIdCnt
+            , COALESCE(FD_SIZE.FILE_CNT, 0)   AS sizeFileIdCnt
+            , COALESCE(FD_ETC.FILE_CNT, 0)    AS etcFileIdCnt
             , TP.IS_SPRING
             , TP.IS_SUMMER
             , TP.IS_AUTUMN
             , TP.IS_WINTER
-            , CONCAT(CASE WHEN TP.IS_SPRING = 'Y' THEN 'S' ELSE '_' END,
-                     CASE WHEN TP.IS_SUMMER = 'Y' THEN 'S' ELSE '_' END,
-                     CASE WHEN TP.IS_AUTUMN = 'Y' THEN 'F' ELSE '_' END,
-                     CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END) AS SEASON
-            , (SELECT COUNT(1) FROM TB_CONTENTS_PRODUCT CP WHERE CP.PRODUCT_ID = TP.ID AND CP.DEL_YN = 'N') AS relCount
+            , CONCAT(
+                CASE WHEN TP.IS_SPRING = 'Y' THEN 'S' ELSE '_' END,
+                CASE WHEN TP.IS_SUMMER = 'Y' THEN 'S' ELSE '_' END,
+                CASE WHEN TP.IS_AUTUMN = 'Y' THEN 'F' ELSE '_' END,
+                CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END
+            ) AS SEASON
+            , COALESCE(CP.REL_CNT, 0) AS relCount
         FROM TB_PRODUCT TP
-        JOIN TB_PRODUCT_DET TPD ON TP.ID = TPD.PRODUCT_ID AND TPD.DEL_YN = 'N'
+        INNER JOIN (
+            SELECT
+            PRODUCT_ID
+            , STRING_AGG(PRODUCT_DET_COLOR, ',') AS prodColors
+            , STRING_AGG(DISTINCT PRODUCT_DET_SIZE, ',') AS prodSizes
+            , COUNT(1) AS prodDetCnt
+            FROM TB_PRODUCT_DET
+            WHERE DEL_YN = 'N'
+            GROUP BY PRODUCT_ID
+        ) TPD ON TPD.PRODUCT_ID = TP.ID
+        LEFT JOIN TB_PARTNER PT ON PT.ID = TP.PARTNER_ID
+        LEFT JOIN TB_CODE C1 ON C1.CODE_UPPER = '90010' AND C1.CODE_CD = TP.PROD_TP
+        LEFT JOIN TB_CODE C2 ON C2.CODE_UPPER = '90011' AND C2.CODE_CD = TP.PROD_DET_TP
+        LEFT JOIN (
+            SELECT FILE_ID, COUNT(1) AS FILE_CNT
+            FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
+            ) FD_REP ON FD_REP.FILE_ID = TP.REP_FILE_ID
+        LEFT JOIN (
+            SELECT FILE_ID, COUNT(1) AS FILE_CNT
+            FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
+        ) FD_DETAIL ON FD_DETAIL.FILE_ID = TP.DETAIL_FILE_ID
+        LEFT JOIN (
+            SELECT FILE_ID, COUNT(1) AS FILE_CNT
+            FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
+        ) FD_SIZE ON FD_SIZE.FILE_ID = TP.SIZE_FILE_ID
+        LEFT JOIN (
+            SELECT FILE_ID, COUNT(1) AS FILE_CNT
+            FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
+        ) FD_ETC ON FD_ETC.FILE_ID = TP.ETC_FILE_ID
+        LEFT JOIN (
+            SELECT PRODUCT_ID, COUNT(1) AS REL_CNT
+            FROM TB_CONTENTS_PRODUCT WHERE DEL_YN = 'N' GROUP BY PRODUCT_ID
+        ) CP ON CP.PRODUCT_ID = TP.ID
         <where>
             AND TP.DEL_YN = 'N'
             <if test='prodNm != null and !prodNm.equals("")'>
-                AND TP.PROD_NM LIKE CONCAT('%' ,#{prodNm} ,'%')
+                AND TP.PROD_NM LIKE CONCAT('%', #{prodNm}, '%')
             </if>
             <if test="partnerId != null">
                 AND TP.PARTNER_ID = #{partnerId}
             </if>
         </where>
-        GROUP BY TP.ID
-        ORDER BY TP.ID;
+        ORDER BY TP.ID
     </select>
 
     <select id="selectProdDetInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductDetInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductDetInfo">

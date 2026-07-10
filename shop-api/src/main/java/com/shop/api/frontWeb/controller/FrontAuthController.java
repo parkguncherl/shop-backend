@@ -55,7 +55,7 @@ public class FrontAuthController {
         String deviceType  = parseDeviceType(userAgent);
         String os          = parseOs(userAgent);
         String browser     = parseBrowser(userAgent);
-        String origin = request.getHeader("Origin");  // https://www.gguanggu.com
+        String origin = request.getHeader("Origin");  // https://www.mapsiggun.com
         String subDomain = parseSubDomain(origin);
 
         GuestTokenRequest.Issue issueRequest = new GuestTokenRequest.Issue();
@@ -147,8 +147,8 @@ public class FrontAuthController {
 
             String[] parts = host.split("\\.");
 
-            // admin.gguanggu.com → admin
-            // www.gguanggu.com → www
+            // admin.mapsiggun.com → admin
+            // www.mapsiggun.com → www
             if (parts.length >= 3) {
                 return StringUtils.hasText(parts[0]) ? parts[0] : DEFAULT_SUB_DOMAIN;
             }
