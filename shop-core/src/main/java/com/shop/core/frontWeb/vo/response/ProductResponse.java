@@ -19,6 +19,9 @@ public class ProductResponse {
 
         @Schema(description = "sys fileNm")
         private String sysFileNm;
+
+        @Schema(description = "표준 색상코드 목록(콤마 구분, 예: f0a,00d)")
+        private String stndrColors;
     }
 
     @Getter
@@ -65,6 +68,9 @@ public class ProductResponse {
 
         @Schema(description = "컬러")
         private String productDetColor;
+
+        @Schema(description = "표준 색상코드(RGB hex)")
+        private String stndrColor;
 
         @Schema(description = "SKU 할인율")
         private BigDecimal skuDiscountRate;
