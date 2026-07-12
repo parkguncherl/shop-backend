@@ -30,8 +30,11 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -501,12 +504,38 @@ public class CommonService {
     /**
      * 비율 유지하면서 리사이징 (선택사항)
      */
+    /**
+     * 원본을 통째로 디코딩하지 않고 목표 크기에 맞춰 서브샘플링하여 축소 디코딩한다.
+     * (예: 4032x3024 → 250x150 목표 시 실제로는 ~252x189 만 디코딩 → 메모리 수십 배 절감, OOM 방지)
+     */
+    private BufferedImage readDownscaled(InputStream in, int targetW, int targetH) throws IOException {
+        try (ImageInputStream iis = ImageIO.createImageInputStream(in)) {
+            if (iis == null) throw new IOException("이미지 스트림을 열 수 없습니다.");
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+            if (!readers.hasNext()) throw new IOException("지원하지 않는 이미지 형식입니다.");
+            ImageReader reader = readers.next();
+            try {
+                reader.setInput(iis, true, true);
+                int srcW = reader.getWidth(0);
+                int srcH = reader.getHeight(0);
+                int sub = Math.max(1, Math.min(
+                        srcW / Math.max(1, targetW),
+                        srcH / Math.max(1, targetH)));
+                ImageReadParam param = reader.getDefaultReadParam();
+                param.setSourceSubsampling(sub, sub, 0, 0); // 1/sub 해상도로만 디코딩
+                return reader.read(0, param);
+            } finally {
+                reader.dispose();
+            }
+        }
+    }
+
     public byte[] resizeImageKeepAspectRatio(MultipartFile uploadFile, int width, int height) throws IOException {
         if (!isImageFile(uploadFile)) {
             throw new IllegalArgumentException("이미지 파일이 아닙니다: " + uploadFile.getContentType());
         }
 
-        BufferedImage originalImage = ImageIO.read(uploadFile.getInputStream());
+        BufferedImage originalImage = readDownscaled(uploadFile.getInputStream(), width, height);
         if (originalImage == null) {
             throw new IOException("이미지를 읽을 수 없습니다.");
         }
@@ -548,8 +577,11 @@ public class CommonService {
         // 이미지 그리기
         g2d.drawImage(originalImage, x, y, newWidth, newHeight, null);
         g2d.dispose();
+        originalImage.flush(); // 사용 후 즉시 메모리 해제
 
-        return bufferedImageToByteArray(resizedImage, getImageFormat(uploadFile));
+        byte[] out = bufferedImageToByteArray(resizedImage, getImageFormat(uploadFile));
+        resizedImage.flush();
+        return out;
     }
 
     /**
@@ -681,11 +713,12 @@ public class CommonService {
 
 //        BufferedImage originalImage = ImageIO.read(file.getInputStream()); todo 오리지널
 
-        // 메타데이터 포함 방향 보정된 이미지를 먼저 읽기
-        BufferedImage originalImage = Thumbnails.of(file.getInputStream())
-                .scale(1.0)
-                .useExifOrientation(true)
-                .asBufferedImage();
+        // 원본을 통째로 디코딩하지 않고 최대 2000px 로 서브샘플링하여 읽음 (OOM 방지)
+        // 최종 목표가 가로 1000 이므로 2000 상한이면 화질 손실 없음
+        BufferedImage originalImage = readDownscaled(file.getInputStream(), 2000, 2000);
+        if (originalImage == null) {
+            throw new IOException("이미지를 읽을 수 없습니다.");
+        }
 
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
@@ -704,6 +737,7 @@ public class CommonService {
                 .size(targetWidth, targetHeight)
                 .outputQuality(0.85) // 0.75 → 0.85 추천
                 .asBufferedImage();
+        originalImage.flush(); // 원본 버퍼 즉시 해제
 
         // 여기서 한 번만 처리 - 이후 jpg/webp 분기 모두 커버
         BufferedImage flatImage = new BufferedImage(
@@ -717,6 +751,7 @@ public class CommonService {
         g2d.fillRect(0, 0, flatImage.getWidth(), flatImage.getHeight());
         g2d.drawImage(resizedImage, 0, 0, null);
         g2d.dispose();
+        resizedImage.flush(); // 리사이즈 버퍼 즉시 해제
 
         // webp 사용 가능 여부를 정의한 환경변수에 따라 fallBack
         if (!WEBP_ENABLED) {
