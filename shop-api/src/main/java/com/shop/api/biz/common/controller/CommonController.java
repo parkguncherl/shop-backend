@@ -174,7 +174,7 @@ public class CommonController {
 
 
     /**
-     * 파일_삭제 (개별)
+     * 파일_삭제 (개별) notice 에서 삭제
      *
      * @param jwtUser
      * @param fileDetId

@@ -11,14 +11,10 @@
             FILE_EXT    AS fileext,
             FILE_NM     AS filenm,
             FILE_SIZE   AS filesize
-        FROM
-            TB_FILE_DET
-        WHERE
-            FILE_ID = #{fileId}
-         AND
-            DEL_YN = 'N'
-        ORDER BY
-            FILE_SEQ ASC  -- 최신 등록 순으로 정렬
+        FROM TB_FILE_DET
+       WHERE FILE_ID = #{fileId}
+         AND DEL_YN = 'N'
+       ORDER BY FILE_SEQ -- 최신 등록 순으로 정렬
     </select>
 
     <!-- 파일 상세 조회 -->
@@ -81,7 +77,7 @@
 
     <select id="selectMaxFileSeq" parameterType="Integer" resultType="Integer">
         /* com.shop.mapper.File.selectMaxFileSeq */
-        SELECT COALESCE(MAX(FILE_SEQ), 0) + 1 FROM TB_FILE_DET WHERE FILE_ID =  #{fileId}
+        SELECT COALESCE(MAX(FILE_SEQ), 0) + 1 FROM TB_FILE_DET WHERE FILE_ID =  #{fileId} AND DEL_YN = 'N'
     </select>
 
     <!-- 파일 상세등록 -->
@@ -139,6 +135,7 @@
              , UPD_USER = #{updUser}
          WHERE FILE_ID = #{fileId}  -- 삭제할 ID
            AND FILE_SEQ = #{fileSeq}
+           AND DEL_YN = 'N'
     </update>
 
     <update id="deleteFileDetByKey">

@@ -255,7 +255,7 @@ public class CommonService {
         if(selectFile!= null && selectFile.getSysFileNm() != null) {
             try {
                 this.deleteFileFromBucket(selectFile.getSysFileNm());
-                this.fileSeqArrangeDelete(fileId, fileSeq, jwtUser);
+                this.fileSeqArrangeDelete(fileId, fileSeq, selectFile.getId(), jwtUser);
             } catch (Exception e){
                 throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "s3 파일("+selectFile.getFileNm()+") 삭제 실패["+e.getMessage()+"]");
             }
@@ -266,7 +266,7 @@ public class CommonService {
         FileDet fileDet = fileDao.selectFileDetByKey(fileDetId);
         if(fileDet != null && fileDet.getSysFileNm() != null) {
             try {
-                this.fileSeqArrangeDelete(fileDet.getFileId(), fileDet.getFileSeq(), jwtUser);
+                fileDao.deleteFileDet(fileDetId, jwtUser);
                 this.deleteFileFromBucket(fileDet.getSysFileNm());
             } catch (Exception e){
                 throw new CustomRuntimeException(ApiResultCode.FAIL_CREATE, "s3 파일("+fileDet.getFileNm()+") 삭제 실패["+e.getMessage()+"]");
@@ -274,7 +274,7 @@ public class CommonService {
         }
     }
 
-    private void fileSeqArrangeDelete(Integer fileId,Integer fileSeq,User jwtUser){
+    private void fileSeqArrangeDelete(Integer fileId,Integer fileSeq, Integer fileDetId, User jwtUser){
         if(fileSeq == 1){
             List<FileDet> fileDetList = fileDao.selectFileList(fileId); // seq 로 정렬되어 온다.
             if(fileDetList.size() > 1){ // 두번째 오는넘을 1로 변경해서 1의 자리를 채운다.
@@ -282,7 +282,7 @@ public class CommonService {
                 fileDao.updateFileDetSeqNoOne(updateFileDet.getId());
             }
         }
-        fileDao.deleteFileDetByUk(fileId, fileSeq, jwtUser);
+        fileDao.deleteFileDet(fileDetId, jwtUser);
     }
 
     /* deleteFile 에서 버킷 수준 삭제 영역만 분리 */
