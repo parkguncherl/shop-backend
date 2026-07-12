@@ -60,6 +60,27 @@ public class ProductController {
     }
 
     /**
+     * frontWeb 이하 상품 목록 조회 (categoryId 필수 버전)
+     *
+     * @param productInfoListFilter categoryId 필수
+     * @return 조회된 ProductInfo 목록 페이징
+     */
+    @AccessLog("frontWeb 이하 상품 목록 조회(카테고리 필수)")
+    @GetMapping(value = "/productInfoListByCategory")
+    @Operation(summary = "frontWeb 이하 상품 목록 조회(카테고리 필수)")
+    @NotAuthRequired
+    public ApiResponse<PageResponse<ProductResponse.ProductInfo>> selectProductInfoListByCategory(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser,
+            @Parameter(name = "ProductRequestProductInfoListFilter", description = "상품 목록 필터(categoryId 필수)", in = ParameterIn.QUERY) ProductRequest.ProductInfoListFilter productInfoListFilter,
+            @Parameter(name = "PageRequest", description = "상품 목록 조회 페이징") PageRequest<ProductRequest.ProductInfoListFilter> pageRequest
+    ) {
+        productInfoListFilter.setPartnerId(guestUser.getPartnerId());
+        pageRequest.setFilter(productInfoListFilter);
+        PageResponse<ProductResponse.ProductInfo> response = productService.selectProductInfoListByCategory(pageRequest);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
      * 상품 검색 (상품명 + 색상)
      *
      * @param productSearchFilter keyword, lastId

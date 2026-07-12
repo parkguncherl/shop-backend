@@ -65,6 +65,57 @@
     </select>
 
 
+    <!-- 카테고리 필수 버전: categoryId 가 항상 넘어온다는 가정 (all/null 분기 제거) -->
+    <select id="selectProductInfoListByCategory" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.frontWeb.vo.response.ProductResponse$ProductInfo">
+        /* com.shop.mapper.frontWeb.Product.selectProductInfoListByCategory */
+        SELECT
+              P.ID                  AS id
+            , P.PARTNER_ID          AS partnerId
+            , P.PROD_CD             AS prodCd
+            , P.PROD_NM             AS prodNm
+            , P.PROD_TP             AS prodTp
+            , P.PROD_DET_TP         AS prodDetTp
+            , P.COMPOSITION         AS composition
+            , P.REP_FILE_ID         AS repFileId
+            , P.DETAIL_FILE_ID      AS detailFileId
+            , P.SIZE_FILE_ID        AS sizeFileId
+            , P.ETC_FILE_ID         AS etcFileId
+            , P.MAKE_YMD            AS makeYmd
+            , P.ORG_AMT             AS orgAmt
+            , P.SELL_AMT            AS sellAmt
+            , P.DISCOUNT_RATE       AS discountRate
+            , P.IS_SPRING           AS isSpring
+            , P.IS_SUMMER           AS isSummer
+            , P.IS_AUTUMN           AS isAutumn
+            , P.IS_WINTER           AS isWinter
+            , P.FAVORITE_POINT      AS favoritePoint
+            , FD.SYS_FILE_NM        AS sysFileNm
+            , (SELECT STRING_AGG(DISTINCT PD2.STNDR_COLOR, ',')
+                 FROM TB_PRODUCT_DET PD2
+                WHERE PD2.PRODUCT_ID = P.ID
+                  AND PD2.DEL_YN = 'N'
+                  AND PD2.SLEEP_YN = 'N'
+                  AND PD2.STNDR_COLOR IS NOT NULL
+                  AND PD2.STNDR_COLOR != '') AS stndrColors
+        FROM TB_PRODUCT P
+        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
+        JOIN TB_CATEGORY_PRODUCT CP ON CP.PRODUCT_ID = P.ID
+        JOIN TB_PARTNER_CODE PC ON PC.ID = CP.CATEGORY_ID
+                                     AND PC.PARTNER_ID = #{filter.partnerId}
+                                     AND PC.CODE_UPPER = 'P0001'
+                                     AND PC.DEL_YN = 'N'
+                                     AND PC.CODE_CD = #{filter.categoryId}
+        <where>
+            AND P.DEL_YN = 'N'
+            <if test='filter.lastId != null'>
+                AND P.ID > #{filter.lastId}
+            </if>
+        </where>
+        ORDER BY CP.SEQ
+        LIMIT #{pageRowCount} + 1;
+    </select>
+
+
     <!-- 상품 검색 (상품명 + 색상) -->
     <select id="selectProductSearchList" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.frontWeb.vo.response.ProductResponse$ProductInfo">
         /* com.shop.mapper.frontWeb.Product.selectProductSearchList */

@@ -45,6 +45,20 @@ public class ProductDao {
     }
 
     /**
+     * frontWeb 이하 상품 목록 조회 (categoryId 필수 버전)
+     * @param pageRequest categoryId 가 반드시 포함된다는 가정
+     * @return ProductInfo PageResponse
+     */
+    public PageResponse<ProductResponse.ProductInfo> selectProductInfoListByCategory(PageRequest<ProductRequest.ProductInfoListFilter> pageRequest) {
+        List<ProductResponse.ProductInfo> productInfoList = sqlSession.selectList(NAMESPACE + "selectProductInfoListByCategory", pageRequest);
+        if (productInfoList != null && !productInfoList.isEmpty()) {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount(), productInfoList, productInfoList.size());
+        } else {
+            return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
+        }
+    }
+
+    /**
      * 상품 검색 (상품명 + 색상 LIKE)
      */
     public PageResponse<ProductResponse.ProductInfo> selectProductSearchList(PageRequest<ProductRequest.ProductSearchFilter> pageRequest) {
