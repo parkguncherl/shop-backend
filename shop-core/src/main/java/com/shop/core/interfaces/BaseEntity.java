@@ -63,7 +63,6 @@ public class BaseEntity {
     protected Integer no;
 
     @Schema(description = "삭제여부")
-    @JsonIgnore  // JSON 직렬화/역직렬화에서 완전히 제외
     protected String delYn;
 
 }

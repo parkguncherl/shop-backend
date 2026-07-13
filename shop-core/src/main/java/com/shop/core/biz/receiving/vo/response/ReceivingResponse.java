@@ -62,6 +62,9 @@ public class ReceivingResponse {
         @Schema(description = "상품 id")
         private Integer prodId;
 
+        @Schema(description = "재고수량")
+        private Integer stock;
+
         @Schema(description = "상품명")
         private String prodNm;
 
