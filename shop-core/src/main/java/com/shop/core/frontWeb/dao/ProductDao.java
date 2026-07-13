@@ -10,7 +10,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -68,6 +70,14 @@ public class ProductDao {
         } else {
             return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
         }
+    }
+
+
+    /**
+     * 메인페이지
+     */
+    public List<ProductResponse.ProductInfo> selectProductListForMain(Integer partnerId) {
+        return sqlSession.selectList(NAMESPACE + "selectProductListForMain", partnerId);
     }
 
     /**

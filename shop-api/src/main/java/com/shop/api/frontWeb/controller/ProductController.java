@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 /**
  * <pre>
  * Description: frontWeb 이하 상품 Controller
@@ -124,5 +126,22 @@ public class ProductController {
             return new ApiResponse<>(ApiResultCode.DATA_NOT_FOUND);
         }
         return new ApiResponse<>(ApiResultCode.SUCCESS, detail);
+    }
+
+
+    /**
+     * 상품 목록 메인페이지
+     *
+     * @return 검색된 ProductInfo 목록 페이징
+     */
+    @AccessLog("상품 목록 시즌 상품 제외하고 나머지 ")
+    @GetMapping(value = "/selectProductListForMain")
+    @Operation(summary = "frontWeb 상품 목록 시즌 상품 제외하고 나머지")
+    @NotAuthRequired
+    public ApiResponse<List<ProductResponse.ProductInfo>> selectProductListForMain(
+            @Parameter(hidden = true) @GuestUser GuestToken guestUser
+    ) {
+        List<ProductResponse.ProductInfo> response = productService.selectProductListForMain(guestUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 }

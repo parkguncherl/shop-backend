@@ -2,12 +2,15 @@ package com.shop.api.frontWeb.service;
 
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
+import com.shop.core.entity.GuestToken;
 import com.shop.core.frontWeb.dao.ProductDao;
 import com.shop.core.frontWeb.vo.request.ProductRequest;
 import com.shop.core.frontWeb.vo.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <pre>
@@ -47,6 +50,14 @@ public class ProductService {
     public PageResponse<ProductResponse.ProductInfo> selectProductSearchList(PageRequest<ProductRequest.ProductSearchFilter> pageRequest) {
         return productDao.selectProductSearchList(pageRequest);
     }
+
+    /**
+     * 메인페이지 상품 목록
+     */
+    public List<ProductResponse.ProductInfo> selectProductListForMain(GuestToken guestUser) {
+        return productDao.selectProductListForMain(guestUser.getPartnerId()); // 시즌을 제외한
+    }
+
 
     /**
      * 상품 상세 조회 비즈니스 레이어

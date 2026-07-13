@@ -34,7 +34,7 @@
                   AND PD2.STNDR_COLOR IS NOT NULL
                   AND PD2.STNDR_COLOR != '') AS stndrColors
         FROM TB_PRODUCT P
-        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
+        JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         <where>
             AND P.DEL_YN = 'N'
             <if test='filter.lastId != null'>
@@ -98,7 +98,7 @@
                   AND PD2.STNDR_COLOR IS NOT NULL
                   AND PD2.STNDR_COLOR != '') AS stndrColors
         FROM TB_PRODUCT P
-        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
+        JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         JOIN TB_CATEGORY_PRODUCT CP ON CP.PRODUCT_ID = P.ID
         JOIN TB_PARTNER_CODE PC ON PC.ID = CP.CATEGORY_ID
                                      AND PC.PARTNER_ID = #{filter.partnerId}
@@ -113,6 +113,47 @@
         </where>
         ORDER BY CP.SEQ
         LIMIT #{pageRowCount} + 1;
+    </select>
+
+    <!-- 메인페이지 하단 상품록록 -->
+    <select id="selectProductListForMain" parameterType="java.lang.Integer" resultType="com.shop.core.frontWeb.vo.response.ProductResponse$ProductInfo">
+        /* com.shop.mapper.frontWeb.Product.selectProductListForMain */
+        SELECT
+               P.ID                  AS id
+             , P.PARTNER_ID          AS partnerId
+             , PC.CODE_NM            AS categoryNm
+             , P.PROD_CD             AS prodCd
+             , P.PROD_NM             AS prodNm
+             , P.PROD_TP             AS prodTp
+             , P.PROD_DET_TP         AS prodDetTp
+             , P.COMPOSITION         AS composition
+             , P.REP_FILE_ID         AS repFileId
+             , P.DETAIL_FILE_ID      AS detailFileId
+             , P.SIZE_FILE_ID        AS sizeFileId
+             , P.ETC_FILE_ID         AS etcFileId
+             , P.MAKE_YMD            AS makeYmd
+             , P.ORG_AMT             AS orgAmt
+             , P.SELL_AMT            AS sellAmt
+             , P.DISCOUNT_RATE       AS discountRate
+             , P.IS_SPRING           AS isSpring
+             , P.IS_SUMMER           AS isSummer
+             , P.IS_AUTUMN           AS isAutumn
+             , P.IS_WINTER           AS isWinter
+             , P.FAVORITE_POINT      AS favoritePoint
+             , FD.SYS_FILE_NM        AS sysFileNm
+             , (SELECT STRING_AGG(DISTINCT PD2.STNDR_COLOR, ',')
+                FROM TB_PRODUCT_DET PD2
+                WHERE PD2.PRODUCT_ID = P.ID
+                  AND PD2.DEL_YN = 'N'
+                  AND PD2.SLEEP_YN = 'N'
+                  AND PD2.STNDR_COLOR IS NOT NULL
+                  AND PD2.STNDR_COLOR != '') AS stndrColors
+         FROM TB_PRODUCT P
+         JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
+         JOIN TB_CATEGORY_PRODUCT CP ON P.ID = CP.PRODUCT_ID AND CP.PARTNER_ID = #{partnerId} AND CP.DEL_YN = 'N'
+         JOIN TB_PARTNER_CODE PC ON PC.CODE_UPPER = 'P0001' AND PC.ID = CP.CATEGORY_ID AND CP.PARTNER_ID = PC.PARTNER_ID AND PC.CODE_ETC = 'PROD' /* 시즌과 리사이클링 제외  */
+        WHERE P.DEL_YN  = 'N'
+        ORDER BY PC.CODE_ORDER, CP.SEQ
     </select>
 
 
@@ -149,8 +190,8 @@
                   AND PD2.STNDR_COLOR IS NOT NULL
                   AND PD2.STNDR_COLOR != '') AS stndrColors
         FROM TB_PRODUCT P
-        LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
-        LEFT JOIN TB_PRODUCT_DET PD ON PD.PRODUCT_ID = P.ID AND PD.SLEEP_YN = 'N'
+        JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
+        JOIN TB_PRODUCT_DET PD ON PD.PRODUCT_ID = P.ID AND PD.SLEEP_YN = 'N'
         <where>
             AND P.DEL_YN = 'N'
             AND P.PARTNER_ID = #{filter.partnerId}

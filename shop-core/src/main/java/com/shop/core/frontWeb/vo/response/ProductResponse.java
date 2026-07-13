@@ -22,6 +22,9 @@ public class ProductResponse {
 
         @Schema(description = "표준 색상코드 목록(콤마 구분, 예: f0a,00d)")
         private String stndrColors;
+
+        @Schema(description = "카테고리명")
+        private String categoryNm;
     }
 
     @Getter
