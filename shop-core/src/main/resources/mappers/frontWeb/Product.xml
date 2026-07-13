@@ -122,6 +122,7 @@
                P.ID                  AS id
              , P.PARTNER_ID          AS partnerId
              , PC.CODE_NM            AS categoryNm
+             , PC.CODE_CD            AS categoryId
              , P.PROD_CD             AS prodCd
              , P.PROD_NM             AS prodNm
              , P.PROD_TP             AS prodTp
