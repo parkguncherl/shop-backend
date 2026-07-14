@@ -25,9 +25,9 @@
 
     <sql id="cartItemJoin">
         FROM TB_CART C
-        JOIN TB_PRODUCT_DET PD ON PD.ID       = C.PRODUCT_DET_ID
+        JOIN TB_PRODUCT_DET PD ON PD.ID        = C.PRODUCT_DET_ID
         JOIN TB_PRODUCT     P  ON P.ID         = PD.PRODUCT_ID
-        JOIN TB_FILE_DET    FD ON FD.FILE_ID   = P.REP_FILE_ID AND FD.FILE_SEQ = 1
+        JOIN TB_FILE_DET    FD ON FD.FILE_ID   = P.REP_FILE_ID AND FD.FILE_SEQ = 1 AND FD.DEL_YN = 'N'
     </sql>
 
     <!-- 소셜 계정 ID로 활성 아이템 목록 조회 -->
