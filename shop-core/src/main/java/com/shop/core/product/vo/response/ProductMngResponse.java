@@ -22,6 +22,9 @@ public class ProductMngResponse {
         @Schema(description = "파트너명")
         private String partnerNm;
 
+        @Schema(description = "파트너 사이즈 정보 (콤마 구분, 예: 66,77)")
+        private String sizeInfo;
+
         @Schema(description = "상품구분명")
         private String prodTpNm;
 

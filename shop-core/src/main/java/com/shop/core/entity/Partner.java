@@ -59,6 +59,9 @@ public class Partner extends BaseEntity implements Serializable {
     @Schema(description = "리뷰 포인트 적립률 % 단위 즉 2 이면 2%")
     private Integer reviewPointRate;
 
+    @Schema(description = "사이즈 정보 (콤마 구분, 예: 66,77)")
+    private String sizeInfo;
+
     @Schema(description = "AI 기본 학습 텍스트 (고정 안내 역할 등)")
     private String aiStudyText;
 

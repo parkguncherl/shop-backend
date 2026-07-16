@@ -8,6 +8,7 @@
               TP.ID AS id
             , TP.PARTNER_ID AS partnerId
             , PT.PARTNER_NM AS partnerNm
+            , PT.SIZE_INFO AS sizeInfo
             , TP.PROD_CD AS prodCd
             , TP.PROD_NM AS prodNm
             , TP.PROD_TP AS prodTp

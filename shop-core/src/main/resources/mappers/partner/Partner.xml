@@ -25,6 +25,7 @@
             TP.UPD_USER AS updUser,
             TP.FIRST_GREETING_MESSAGE ,
             TP.REVIEW_POINT_RATE AS reviewPointRate,
+        TP.SIZE_INFO AS sizeInfo,
             FN_GET_USERNAME(TP.UPD_USER) as upduserNm
         FROM TB_PARTNER AS TP
         WHERE TP.DEL_YN = 'N'
@@ -59,6 +60,7 @@
         TP.EMAIL,
         TP.FIRST_GREETING_MESSAGE ,
         TP.REVIEW_POINT_RATE AS reviewPointRate,
+        TP.SIZE_INFO AS sizeInfo,
         TP.AI_STUDY_TEXT AS aiStudyText,
         TP.AI_STUDY_PROD_DETAIL_TEXT AS aiStudyProdDetailText,
         TP.CRE_TM AS creTm,
@@ -179,6 +181,9 @@
             <if test="reviewPointRate != null">
                 REVIEW_POINT_RATE ,
             </if>
+            <if test="sizeInfo != null">
+                SIZE_INFO ,
+            </if>
             CRE_USER,
             UPD_USER
         )
@@ -204,6 +209,9 @@
             </if>
             <if test="reviewPointRate != null">
                 #{reviewPointRate},
+            </if>
+            <if test="sizeInfo != null">
+                #{sizeInfo},
             </if>
             #{creUser},
             #{creUser}
@@ -249,6 +257,9 @@
             </if>
             <if test="reviewPointRate != null">
                 , REVIEW_POINT_RATE = #{reviewPointRate}
+            </if>
+            <if test="sizeInfo != null">
+                , SIZE_INFO = #{sizeInfo}
             </if>
             <if test="aiStudyText != null">
                 , AI_STUDY_TEXT = #{aiStudyText}
