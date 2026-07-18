@@ -251,12 +251,13 @@
     <select id="selectContactList" parameterType="com.shop.core.biz.mis.vo.request.MisRequest$ContactFilter" resultType="com.shop.core.biz.mis.vo.response.MisResponse$ContactItem">
         /* com.shop.mapper.biz.Mis.selectContactList */
         SELECT
-            REFERER_URL  AS refererUrl,
+            SUBSTRING(REFERER_URL FROM '^https?://(?:www\.|l\.)?([^/?#]+)') AS refererUrl,
             DEVICE_TYPE  AS deviceType,
             COUNT(*)     AS cnt
         FROM TB_GUEST_TOKEN
         WHERE PARTNER_ID = #{partnerId}
           AND REFERER_URL IS NOT NULL
+          AND REFERER_URL !~ '^https?://localhost(:[0-9]+)?'
           AND CONTACT_DATE &gt;= #{fromDate}
           AND CONTACT_DATE &lt; #{toDate}
           <if test="deviceType != null and deviceType != ''">
@@ -265,8 +266,8 @@
           <if test="refererUrl != null and refererUrl != ''">
           AND REFERER_URL LIKE '%' || #{refererUrl} || '%'
           </if>
-        GROUP BY REFERER_URL, DEVICE_TYPE
-        ORDER BY cnt DESC
+        GROUP BY SUBSTRING(REFERER_URL FROM '^https?://(?:www\.|l\.)?([^/?#]+)'), DEVICE_TYPE
+        ORDER BY CNT
         LIMIT 50
     </select>
 
