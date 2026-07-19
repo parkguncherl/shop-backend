@@ -22,6 +22,9 @@ public class ProductMngRequest {
 
         @Schema(description = "파트너 id")
         private Integer partnerId;
+
+        @Schema(description = "domae id")
+        private Integer domaeId;
     }
 
     @Getter

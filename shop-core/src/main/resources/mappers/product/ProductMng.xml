@@ -43,6 +43,7 @@
             ) AS SEASON
             , COALESCE(CP.REL_CNT, 0) AS relCount
             , TP.DOMAE_ID AS domaeId
+            , DOMAE.CODE_NM AS domaeNm
         FROM TB_PRODUCT TP
         INNER JOIN (
             SELECT
@@ -54,6 +55,7 @@
             WHERE DEL_YN = 'N'
             GROUP BY PRODUCT_ID
         ) TPD ON TPD.PRODUCT_ID = TP.ID
+        INNER JOIN TB_PARTNER_CODE DOMAE ON DOMAE.ID = TP.DOME_ID AND DOMAE.PARTNER_ID =  TP.PARTNER_ID AND DOMAE.CODE_UPPER = 'P0006'
         LEFT JOIN TB_PARTNER PT ON PT.ID = TP.PARTNER_ID
         LEFT JOIN TB_CODE C1 ON C1.CODE_UPPER = '90010' AND C1.CODE_CD = TP.PROD_TP
         LEFT JOIN TB_CODE C2 ON C2.CODE_UPPER = '90011' AND C2.CODE_CD = TP.PROD_DET_TP
@@ -84,6 +86,9 @@
             </if>
             <if test="partnerId != null">
                 AND TP.PARTNER_ID = #{partnerId}
+            </if>
+            <if test="domaeId != null">
+                AND TP.DOMAE_ID = #{domaeId}
             </if>
         </where>
         ORDER BY TP.ID
