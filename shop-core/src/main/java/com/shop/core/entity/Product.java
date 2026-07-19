@@ -88,4 +88,7 @@ public class Product extends BaseEntity implements Serializable {
 
     @Schema(description = "선호도 점수 인기정렬의 기준")
     private Integer favoritePoint;
+
+    @Schema(description = "도매정보")
+    private Integer domaeId;
 }

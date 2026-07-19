@@ -42,6 +42,7 @@
                 CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END
             ) AS SEASON
             , COALESCE(CP.REL_CNT, 0) AS relCount
+            , TP.DOMAE_ID AS domaeId
         FROM TB_PRODUCT TP
         INNER JOIN (
             SELECT
@@ -202,6 +203,9 @@
         <if test="isWinter != null">
             , IS_WINTER
         </if>
+        <if test="domaeId != null">
+            , DOMAE_ID
+        </if>
         ) VALUES (
               #{partnerId}
             , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
@@ -244,6 +248,9 @@
         </if>
         <if test="isWinter != null">
             , #{isWinter}
+        </if>
+        <if test="domaeId != null">
+            , #{domaeId}
         </if>
         )
     </insert>
@@ -322,6 +329,9 @@
             , IS_SUMMER = #{isSummer}
             , IS_AUTUMN = #{isAutumn}
             , IS_WINTER = #{isWinter}
+        <if test="domaeId != null">
+            , DOMAE_ID = #{domaeId}
+        </if>
         WHERE ID = #{id}
     </update>
 

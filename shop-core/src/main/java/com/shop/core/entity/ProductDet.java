@@ -55,4 +55,5 @@ public class ProductDet extends BaseEntity implements Serializable {
 
     @Schema(description = "상품상세 내용")
     private String productDetCntn;
+
 }
