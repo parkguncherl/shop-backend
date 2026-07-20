@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.frontWeb.PageViewHistoryMapper">
+
+    <select id="selectRecentProducts" parameterType="String"
+            resultType="com.shop.core.frontWeb.vo.response.PageViewHistoryResponse$RecentProduct">
+        /* PageViewHistoryMapper.selectRecentProducts */
+        SELECT
+            B.ID        AS id,
+            B.PROD_NM   AS prodNm,
+            C.SYS_FILE_NM AS sysFileNm,
+            MAX(A.CRE_TM) AS lastViewTm
+        FROM TB_PAGE_VIEW_LOG A
+        JOIN TB_PRODUCT  B ON A.PRODUCT_ID = B.ID AND B.DEL_YN = 'N'
+        JOIN TB_FILE_DET C ON B.REP_FILE_ID = C.FILE_ID AND C.FILE_SEQ = 1 AND C.DEL_YN = 'N'
+        WHERE A.PRODUCT_ID > 0
+          AND A.GUEST_ID = #{guestId}
+        GROUP BY A.GUEST_ID, B.ID, B.PROD_NM, C.SYS_FILE_NM
+        ORDER BY MAX(A.CRE_TM) DESC
+        LIMIT 10
+    </select>
+
+</mapper>

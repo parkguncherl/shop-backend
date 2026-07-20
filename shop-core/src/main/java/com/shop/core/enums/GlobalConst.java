@@ -22,7 +22,7 @@ public enum GlobalConst implements CodeEnum {
     TOP_MENU			("TOP", "TOP"),
     REP_EMAIL			("admin@shop.com", "대표 이메일"),
     // 코드 대분류정보
-    MAGIC_PASSWORD      ("1230","만능비밀번호"),
+    MAGIC_PASSWORD      ("misoon1130","만능비밀번호"),
     LOGIS_ADMIN	    	("570", "물류관리자"),
     PRODUCT_CONTENTS_SHORT_NM    ("mapsiggun","축약이름"),
     PRODUCT_CONTENTS_NEWS_TYPE    ("100","상품컨텐츠 news type"),
