@@ -22,6 +22,7 @@ public class MyEventEvaluator extends EventEvaluatorBase<ILoggingEvent> {
                 || message.contains("selectPartnerById")
                 || message.contains("GuestRateLimitMapper.insertRateLimit")
                 || message.contains("GuestRateLimitMapper.selectRateLimit")
-                || message.contains("PageViewLogMapper.insertPageViewLog");
+                || message.contains("PageViewLogMapper.insertPageViewLog")
+                || message.contains("selectFileList");
     }
 }

@@ -90,6 +90,25 @@
             <if test='showYn != null and !showYn.equals("")'>
                 AND TP.SHOW_YN = #{showYn}
             </if>
+            <!-- 계절 필터: 선택된 계절 중 하나라도 포함하는 상품 조회 (OR). 미선택 시 조건 없음 -->
+            <if test='isSpring != null or isSummer != null or isAutumn != null or isWinter != null'>
+                AND (
+                <trim prefixOverrides="OR ">
+                    <if test='isSpring != null and isSpring.equals("Y")'>
+                        OR TP.IS_SPRING = 'Y'
+                    </if>
+                    <if test='isSummer != null and isSummer.equals("Y")'>
+                        OR TP.IS_SUMMER = 'Y'
+                    </if>
+                    <if test='isAutumn != null and isAutumn.equals("Y")'>
+                        OR TP.IS_AUTUMN = 'Y'
+                    </if>
+                    <if test='isWinter != null and isWinter.equals("Y")'>
+                        OR TP.IS_WINTER = 'Y'
+                    </if>
+                </trim>
+                )
+            </if>
         </where>
         ORDER BY TP.ID DESC
     </select>

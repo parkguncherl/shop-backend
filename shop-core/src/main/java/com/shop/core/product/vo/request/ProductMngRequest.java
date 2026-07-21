@@ -28,6 +28,19 @@ public class ProductMngRequest {
 
         @Schema(description = "전시여부 (Y/N/null=전체)")
         private String showYn;
+
+        /* 계절 필터: 선택된 계절만 'Y' 로 전달된다. 복수 선택 시 OR 조건(하나라도 포함되면 조회) */
+        @Schema(description = "봄 포함 여부 (Y/null)")
+        private String isSpring;
+
+        @Schema(description = "여름 포함 여부 (Y/null)")
+        private String isSummer;
+
+        @Schema(description = "가을 포함 여부 (Y/null)")
+        private String isAutumn;
+
+        @Schema(description = "겨울 포함 여부 (Y/null)")
+        private String isWinter;
     }
 
     @Getter
