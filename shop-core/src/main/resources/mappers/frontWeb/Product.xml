@@ -235,6 +235,16 @@
             , P.IS_AUTUMN           AS isAutumn
             , P.IS_WINTER           AS isWinter
             , P.FAVORITE_POINT      AS favoritePoint
+            , P.THICK_TP            AS thickTp
+            , P.SPAN_TP             AS spanTp
+            , P.SHOW_TP             AS showTp
+            , P.LAUNDRY_TP          AS laundryTp
+            , FN_GET_CODE('90030', P.THICK_TP)    AS thickTpNm
+            , FN_GET_CODE('90040', P.SPAN_TP)     AS spanTpNm
+            , FN_GET_CODE('90050', P.SHOW_TP)     AS showTpNm
+            , FN_GET_CODE('90070', P.LAUNDRY_TP)  AS laundryTpNm
+            , P.TRANS_TP             AS transTp
+            , FN_GET_CODE('90060', P.TRANS_TP)    AS transTpNm
             , FD_REP.SYS_FILE_NM    AS repSysFileNm
             , FD_DET.SYS_FILE_NM    AS detailSysFileNm
             , FD_SZ.SYS_FILE_NM     AS sizeSysFileNm

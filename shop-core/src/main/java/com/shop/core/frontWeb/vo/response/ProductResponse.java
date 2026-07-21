@@ -48,6 +48,21 @@ public class ProductResponse {
         @Schema(description = "기타 이미지 파일명")
         private String etcSysFileNm;
 
+        @Schema(description = "두께 코드명")
+        private String thickTpNm;
+
+        @Schema(description = "신축성 코드명")
+        private String spanTpNm;
+
+        @Schema(description = "비침 코드명")
+        private String showTpNm;
+
+        @Schema(description = "세탁 코드명")
+        private String laundryTpNm;
+
+        @Schema(description = "비치는정도 코드명")
+        private String transTpNm;
+
         @Schema(description = "상품 상세(SKU) 목록")
         private List<ProductDetInfo> detList;
 

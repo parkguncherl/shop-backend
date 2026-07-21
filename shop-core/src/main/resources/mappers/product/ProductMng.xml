@@ -211,6 +211,21 @@
         <if test="domaeId != null">
             , DOMAE_ID
         </if>
+        <if test="thickTp != null">
+            , THICK_TP
+        </if>
+        <if test="spanTp != null">
+            , SPAN_TP
+        </if>
+        <if test="showTp != null">
+            , SHOW_TP
+        </if>
+        <if test="laundryTp != null">
+            , LAUNDRY_TP
+        </if>
+        <if test="transTp != null">
+            , TRANS_TP
+        </if>
         ) VALUES (
               #{partnerId}
             , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
@@ -256,6 +271,21 @@
         </if>
         <if test="domaeId != null">
             , #{domaeId}
+        </if>
+        <if test="thickTp != null">
+            , #{thickTp}
+        </if>
+        <if test="spanTp != null">
+            , #{spanTp}
+        </if>
+        <if test="showTp != null">
+            , #{showTp}
+        </if>
+        <if test="laundryTp != null">
+            , #{laundryTp}
+        </if>
+        <if test="transTp != null">
+            , #{transTp}
         </if>
         )
     </insert>
@@ -337,6 +367,11 @@
         <if test="domaeId != null">
             , DOMAE_ID = #{domaeId}
         </if>
+            , THICK_TP    = #{thickTp}
+            , SPAN_TP     = #{spanTp}
+            , SHOW_TP     = #{showTp}
+            , LAUNDRY_TP  = #{laundryTp}
+            , TRANS_TP     = #{transTp}
         WHERE ID = #{id}
     </update>
 
