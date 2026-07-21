@@ -69,7 +69,11 @@ public class ProductService {
         if (detail == null) return null;
 
         detail.setDetList(productDao.selectProductDetList(param));
-        detail.setRelatedList(productDao.selectRelatedProductList(param));
+
+        List<ProductResponse.RelatedProductInfo> relList = productDao.selectRelatedProductList(param);
+        detail.setRelatedList(relList.stream()
+                .filter(v -> !v.getId().equals(param.getProductId())) // 본인정보는 제외
+                .toList());
         return detail;
     }
 }

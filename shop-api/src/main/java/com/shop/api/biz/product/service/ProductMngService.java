@@ -4,6 +4,7 @@ import com.shop.api.biz.system.service.UserService;
 import com.shop.core.biz.common.dao.FileDao;
 import com.shop.core.entity.FileMng;
 import com.shop.core.entity.User;
+import com.shop.core.enums.ApiResultCode;
 import com.shop.core.enums.FilePathType;
 import com.shop.core.exception.CustomRuntimeException;
 import com.shop.core.product.dao.ProductMngDao;
@@ -74,6 +75,10 @@ public class ProductMngService {
         if (insertProductInfo.getProductDet() == null) {
             // 상품상세정보는 필수값
             throw new CustomRuntimeException("상품상세정보를 찾을 수 없음");
+        } else {
+            if(insertProductInfo.getProductDet().getProductDetColor().contains(",")){
+                throw new CustomRuntimeException(ApiResultCode.FAIL, "대표이미지만 ");
+            }
         }
 
         /** id 존재 여부에 따라 상품정보 및 상세정보 추가 혹은 상세정보 추가로 분기 */
@@ -140,6 +145,16 @@ public class ProductMngService {
 
         if (insertedProductDetCnt != 1) {
             throw new CustomRuntimeException("상품상세정보를 정상적으로 추가하지 못함");
+        }
+
+        if (insertProductInfo.getCategoryId() != null) {
+            ProductMngRequest.InsertCategoryProduct insertCategoryProduct = new ProductMngRequest.InsertCategoryProduct();
+            insertCategoryProduct.setCategoryId(insertProductInfo.getCategoryId());
+            insertCategoryProduct.setProductId(insertProductInfo.getId());
+            insertCategoryProduct.setPartnerId(jwtUser.getPartnerId());
+            insertCategoryProduct.setCreUser(jwtUser.getLoginId());
+            insertCategoryProduct.setUpdUser(jwtUser.getLoginId());
+            productMngDao.insertCategoryProduct(insertCategoryProduct);
         }
     }
 

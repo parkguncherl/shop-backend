@@ -92,6 +92,9 @@ public class Product extends BaseEntity implements Serializable {
     @Schema(description = "도매정보")
     private Integer domaeId;
 
+    @Schema(description = "전시여부")
+    private String showYn;
+
     @Schema(description = "두께 타입 코드")
     private String thickTp;
 
@@ -106,4 +109,7 @@ public class Product extends BaseEntity implements Serializable {
 
     @Schema(description = "비치는정도 타입 코드")
     private String transTp;
+
+    @Schema(description = "상품 상세 설명")
+    private String detInfo;
 }

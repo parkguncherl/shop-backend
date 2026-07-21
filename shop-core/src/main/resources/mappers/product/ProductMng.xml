@@ -44,6 +44,8 @@
             , COALESCE(CP.REL_CNT, 0) AS relCount
             , TP.DOMAE_ID AS domaeId
             , DOMAE.CODE_NM AS domaeNm
+            , TP.SHOW_YN AS showYn
+            , TP.DET_INFO AS detInfo
         FROM TB_PRODUCT TP
         INNER JOIN (
             SELECT
@@ -90,8 +92,11 @@
             <if test="domaeId != null">
                 AND TP.DOMAE_ID = #{domaeId}
             </if>
+            <if test='showYn != null and !showYn.equals("")'>
+                AND TP.SHOW_YN = #{showYn}
+            </if>
         </where>
-        ORDER BY TP.ID
+        ORDER BY TP.ID DESC
     </select>
 
     <select id="selectProdDetInfo" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductDetInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductDetInfo">
@@ -226,6 +231,9 @@
         <if test="transTp != null">
             , TRANS_TP
         </if>
+        <if test="detInfo != null">
+            , DET_INFO
+        </if>
         ) VALUES (
               #{partnerId}
             , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
@@ -286,6 +294,9 @@
         </if>
         <if test="transTp != null">
             , #{transTp}
+        </if>
+        <if test="detInfo != null">
+            , #{detInfo}
         </if>
         )
     </insert>
@@ -369,9 +380,10 @@
         </if>
             , THICK_TP    = #{thickTp}
             , SPAN_TP     = #{spanTp}
-            , SHOW_TP     = #{showTp}
+            , SHOW_YN     = #{showYn}
             , LAUNDRY_TP  = #{laundryTp}
             , TRANS_TP     = #{transTp}
+            , DET_INFO  = #{detInfo}
         WHERE ID = #{id}
     </update>
 

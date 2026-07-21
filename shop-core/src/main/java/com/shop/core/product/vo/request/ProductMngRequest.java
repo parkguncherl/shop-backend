@@ -25,6 +25,9 @@ public class ProductMngRequest {
 
         @Schema(description = "domae id")
         private Integer domaeId;
+
+        @Schema(description = "전시여부 (Y/N/null=전체)")
+        private String showYn;
     }
 
     @Getter
@@ -67,6 +70,9 @@ public class ProductMngRequest {
 
         @Schema(description = "추가하고자 하는 productDet dto 에 대응하는 field")
         private InsertProductDet productDet;
+
+        @Schema(description = "상품 생성 시 연결할 카테고리 id (선택)")
+        private Integer categoryId;
     }
 
     @Getter
