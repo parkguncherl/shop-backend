@@ -106,12 +106,9 @@
               TP.ID AS id
             , TP.PROD_CD AS prodCd
             , FN_GET_PARTNERNM( TP.PARTNER_ID ) AS partnerNm
-            , TP.PROD_TP AS prodTp
             , TP.PROD_NM AS prodNm
             , TP.ORG_AMT AS orgAmt
             , TP.SELL_AMT AS sellAmt
-            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
-            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
             , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
             , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
             , TP.DISCOUNT_RATE AS discountRate
@@ -146,8 +143,6 @@
             , TP.PROD_NM AS prodNm
             , TP.SELL_AMT AS sellAmt
             , TP.REP_FILE_ID AS repFileId
-            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
-            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
             , FN_GET_PRODUCT_COLORS(TP.ID) AS prodColors
             , FN_GET_PRODUCT_SIZES(TP.ID) AS prodSizes
             , TP.DISCOUNT_RATE AS discountRate

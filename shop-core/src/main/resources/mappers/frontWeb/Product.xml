@@ -9,8 +9,6 @@
             , P.PARTNER_ID          AS partnerId
             , P.PROD_CD             AS prodCd
             , P.PROD_NM             AS prodNm
-            , P.PROD_TP             AS prodTp
-            , P.PROD_DET_TP         AS prodDetTp
             , P.COMPOSITION         AS composition
             , P.REP_FILE_ID         AS repFileId
             , P.DETAIL_FILE_ID      AS detailFileId
@@ -73,8 +71,6 @@
             , P.PARTNER_ID          AS partnerId
             , P.PROD_CD             AS prodCd
             , P.PROD_NM             AS prodNm
-            , P.PROD_TP             AS prodTp
-            , P.PROD_DET_TP         AS prodDetTp
             , P.COMPOSITION         AS composition
             , P.REP_FILE_ID         AS repFileId
             , P.DETAIL_FILE_ID      AS detailFileId
@@ -126,8 +122,6 @@
              , PC.CODE_CD            AS categoryId
              , P.PROD_CD             AS prodCd
              , P.PROD_NM             AS prodNm
-             , P.PROD_TP             AS prodTp
-             , P.PROD_DET_TP         AS prodDetTp
              , P.COMPOSITION         AS composition
              , P.REP_FILE_ID         AS repFileId
              , P.DETAIL_FILE_ID      AS detailFileId
@@ -168,8 +162,6 @@
             , P.PARTNER_ID          AS partnerId
             , P.PROD_CD             AS prodCd
             , P.PROD_NM             AS prodNm
-            , P.PROD_TP             AS prodTp
-            , P.PROD_DET_TP         AS prodDetTp
             , P.COMPOSITION         AS composition
             , P.REP_FILE_ID         AS repFileId
             , P.DETAIL_FILE_ID      AS detailFileId
@@ -222,8 +214,6 @@
             , P.PARTNER_ID          AS partnerId
             , P.PROD_CD             AS prodCd
             , P.PROD_NM             AS prodNm
-            , P.PROD_TP             AS prodTp
-            , P.PROD_DET_TP         AS prodDetTp
             , P.COMPOSITION         AS composition
             , P.REP_FILE_ID         AS repFileId
             , P.DETAIL_FILE_ID      AS detailFileId

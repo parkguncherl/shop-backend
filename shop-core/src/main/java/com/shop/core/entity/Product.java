@@ -41,14 +41,11 @@ public class Product extends BaseEntity implements Serializable {
     @Schema(description = "상품명")
     private String prodNm;
 
-    @Schema(description = "상품유형")
-    private String ProdTp;
-
-    @Schema(description = "상품상세유형")
-    private String ProdDetTp;
-
     @Schema(description = "구성")
     private String composition;
+
+    @Schema(description = "신상번호")
+    private String sinsangNo;
 
     @Schema(description = "이미지 파일 id")
     private Integer repFileId;

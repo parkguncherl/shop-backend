@@ -38,17 +38,11 @@ public class ProductContentListResponse {
         @Schema(description = "매장명")
         private String partnerNm;
 
-        @Schema(description = "상품구분명")
-        private String prodTpNm;
-
         @Schema(description = "원가")
         private BigDecimal orgAmt;
 
         @Schema(description = "판매가")
         private BigDecimal sellAmt;
-
-        @Schema(description = "상품소분류명")
-        private String prodDetTpNm;
 
         @Schema(description = "컬러등")
         private String prodColors;
@@ -74,12 +68,6 @@ public class ProductContentListResponse {
 
         @Schema(description = "연결상품 정보 순서")
         private Integer contentsProductSeq;
-
-        @Schema(description = "상품분류명")
-        private String prodTpNm;
-
-        @Schema(description = "상품소분류명")
-        private String prodDetTpNm;
 
         @Schema(description = "컬러등")
         private String prodColors;

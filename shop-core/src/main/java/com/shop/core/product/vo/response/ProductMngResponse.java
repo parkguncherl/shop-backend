@@ -25,12 +25,6 @@ public class ProductMngResponse {
         @Schema(description = "파트너 사이즈 정보 (콤마 구분, 예: 66,77)")
         private String sizeInfo;
 
-        @Schema(description = "상품구분명")
-        private String prodTpNm;
-
-        @Schema(description = "상품상세구분명")
-        private String prodDetTpNm;
-
         @Schema(description = "색상(종류 나열)")
         private String prodColors;
 
@@ -71,12 +65,6 @@ public class ProductMngResponse {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductMngResponseProductInfoByExclusion", description = "상품관리 영역 제외를 포함하는 상품정보", type = "object")
     public static class ProductInfoByExclusion extends Product {
-
-        @Schema(description = "상품구분명")
-        private String prodTpNm;
-
-        @Schema(description = "상품상세구분명")
-        private String prodDetTpNm;
 
         @Schema(description = "색상(종류 나열)")
         private String prodColors;

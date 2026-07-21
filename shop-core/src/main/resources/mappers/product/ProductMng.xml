@@ -11,9 +11,8 @@
             , PT.SIZE_INFO AS sizeInfo
             , TP.PROD_CD AS prodCd
             , TP.PROD_NM AS prodNm
-            , TP.PROD_TP AS prodTp
-            , TP.PROD_DET_TP AS prodDetTp
             , TP.COMPOSITION AS composition
+            , TP.SINSANG_NO AS sinsangNo
             , TP.REP_FILE_ID AS repFileId
             , TP.DETAIL_FILE_ID AS detailFileId
             , TP.SIZE_FILE_ID AS sizeFileId
@@ -22,8 +21,6 @@
             , TP.ORG_AMT AS orgAmt
             , TP.SELL_AMT AS sellAmt
             , TP.DISCOUNT_RATE AS discountRate
-            , C1.CODE_NM AS prodTpNm
-            , C2.CODE_NM AS prodDetTpNm
             , TPD.prodColors
             , TPD.prodSizes
             , COALESCE(TPD.prodDetCnt, 0) AS prodDetCnt
@@ -59,8 +56,6 @@
         ) TPD ON TPD.PRODUCT_ID = TP.ID
         INNER JOIN TB_PARTNER_CODE DOMAE ON DOMAE.ID = TP.DOMAE_ID AND DOMAE.PARTNER_ID =  TP.PARTNER_ID AND DOMAE.CODE_UPPER = 'P0006'
         LEFT JOIN TB_PARTNER PT ON PT.ID = TP.PARTNER_ID
-        LEFT JOIN TB_CODE C1 ON C1.CODE_UPPER = '90010' AND C1.CODE_CD = TP.PROD_TP
-        LEFT JOIN TB_CODE C2 ON C2.CODE_UPPER = '90011' AND C2.CODE_CD = TP.PROD_DET_TP
         LEFT JOIN (
             SELECT FILE_ID, COUNT(1) AS FILE_CNT
             FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
@@ -132,9 +127,8 @@
             , TP.PARTNER_ID AS partnerId
             , TP.PROD_CD AS prodCd
             , TP.PROD_NM AS prodNm
-            , TP.PROD_TP AS prodTp
-            , TP.PROD_DET_TP AS prodDetTp
             , TP.COMPOSITION AS composition
+            , TP.SINSANG_NO AS sinsangNo
             , TP.REP_FILE_ID AS repFileId
             , TP.DETAIL_FILE_ID AS detailFileId
             , TP.SIZE_FILE_ID AS sizeFileId
@@ -143,8 +137,6 @@
             , TP.ORG_AMT AS orgAmt
             , TP.SELL_AMT AS sellAmt
             , TP.DISCOUNT_RATE AS discountRate
-            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
-            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
             , TP.IS_SPRING
             , TP.IS_SUMMER
             , TP.IS_AUTUMN
@@ -174,9 +166,8 @@
               PARTNER_ID
             , PROD_CD
             , PROD_NM
-            , PROD_TP
-            , PROD_DET_TP
             , COMPOSITION
+            , SINSANG_NO
         <if test="repFileId != null">
             , REP_FILE_ID
         </if>
@@ -238,9 +229,8 @@
               #{partnerId}
             , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
             , #{prodNm}
-            , #{prodTp}
-            , #{prodDetTp}
             , #{composition}
+            , #{sinsangNo}
         <if test="repFileId != null">
             , #{repFileId}
         </if>
@@ -350,14 +340,11 @@
         <if test="prodNm != null">
             , PROD_NM = #{prodNm}
         </if>
-        <if test="prodTp != null">
-            , PROD_TP = #{prodTp}
-        </if>
-        <if test="prodDetTp != null">
-            , PROD_DET_TP = #{prodDetTp}
-        </if>
         <if test="composition != null">
             , COMPOSITION = #{composition}
+        </if>
+        <if test="sinsangNo != null">
+            , SINSANG_NO = #{sinsangNo}
         </if>
         <if test="makeYmd != null">
             , MAKE_YMD = #{makeYmd}
@@ -447,8 +434,6 @@
             , TP.PARTNER_ID AS partnerId
             , TP.PROD_CD AS prodCd
             , TP.PROD_NM AS prodNm
-            , FN_GET_CODE('90010', TP.PROD_TP) prodTpNm
-            , FN_GET_CODE('90011', TP.PROD_DET_TP) prodDetTpNm
             , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
             , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
         FROM TB_PRODUCT TP
