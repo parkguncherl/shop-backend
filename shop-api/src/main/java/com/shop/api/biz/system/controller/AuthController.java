@@ -15,7 +15,6 @@ import com.shop.core.biz.system.vo.response.LoginResponse;
 import com.shop.core.biz.system.vo.response.UserResponse;
 import com.shop.core.entity.AuthToken;
 import com.shop.core.entity.JwtAuthToken;
-import com.shop.core.entity.Partner;
 import com.shop.core.entity.User;
 import com.shop.core.enums.*;
 import com.shop.api.utils.CommUtil;
@@ -26,13 +25,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * <pre>
@@ -67,7 +61,7 @@ public class AuthController {
     @Operation(summary = "계정 확인")
     public ApiResponse<LoginResponse> verification(@RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = new LoginResponse();
-        UserResponse.SelectByLoginId userResponse = verifyAccount(loginRequest);
+        UserResponse.SelectByLoginId userResponse = authTokenService.verifyAccount(loginRequest);
 
         if (userResponse == null) {
             return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER);
@@ -114,53 +108,11 @@ public class AuthController {
     @PostMapping(value = "/login")
     @Operation(summary = "로그인 및 인증토큰 생성")
     public ApiResponse<LoginResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        LoginResponse loginResponse = new LoginResponse();
-        UserResponse.SelectByLoginId userResponse = verifyAccount(loginRequest);
-        if (userResponse == null || BooleanValueCode.N.equals(userResponse.getIsExistIdPass())) {
-            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, loginResponse);
+        LoginResponse loginResponse = authTokenService.login(loginRequest);
+        if (loginResponse == null) {
+            // 아이디/비밀번호 불일치 (기존 응답 형태 유지를 위해 빈 LoginResponse 를 body 로 반환)
+            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, new LoginResponse());
         }
-
-        //--------------------------------------------------------------------------------
-        // 인증토큰 생성
-        //--------------------------------------------------------------------------------
-        JwtAuthToken token = jwtService.createAuthToken(userResponse);
-
-        //--------------------------------------------------------------------------------
-        // API Token 등록
-        //--------------------------------------------------------------------------------
-        AuthToken authToken = new AuthToken();
-        authToken.setUserId(userResponse.getId());
-        authToken.setAccessToken(token.getAccessToken());
-        authToken.setAccessTokenExpireDateTime(token.getAccessTokenExpireDate());
-        authToken.setRefreshToken(token.getRefreshToken());
-        authToken.setRefreshTokenExpireDateTime(token.getRefreshTokenExpireDate());
-
-        authTokenService.createAuthToken(authToken);
-
-        UserRequest.Update updateUser = new UserRequest.Update();
-        updateUser.setId(userResponse.getId());
-        updateUser.setLastLoginDateTime(LocalDateTime.now());
-        updateUser.setLoginFailCnt(0);
-        updateUser.setOtpNo(loginRequest.getOtpNo());
-        updateUser.setOtpFailCnt(0);
-        updateUser.setIsMobileLogin(loginRequest.getIsMobileLogin());
-        userService.updateUser(updateUser);
-
-        //--------------------------------------------------------------------------------
-        // 최종 결과값 엔티티 생성
-        //--------------------------------------------------------------------------------
-
-
-        if(userResponse.getPartnerId() != null){
-            Partner partner = partnerService.selectPartnerById(userResponse.getPartnerId());
-            userResponse.setPartner(partner);
-        }
-
-        loginResponse.setUser(userResponse);
-        loginResponse.setToken(token);
-
-        /* 공통 로깅 서비스*/
-        contactService.logging(userResponse, "로그인", null);
         return new ApiResponse<>(ApiResultCode.SUCCESS, loginResponse);
     }
 
@@ -236,54 +188,6 @@ public class AuthController {
     }
 
     /**
-     * 계정 확인
-     *
-     * @param request
-     * @return
-     */
-    private UserResponse.SelectByLoginId verifyAccount(LoginRequest request) {
-
-        // 계정관리_조회 (by LoginId)
-        UserResponse.SelectByLoginId userResponse = userService.selectUserByLoginIdForLogin(request.getLoginId());
-
-        if (userResponse == null) {
-            return null;
-        }
-
-        //--------------------------------------------------------------------------------
-        // 비밀번호 확인
-        //--------------------------------------------------------------------------------
-        String encPassword = null;
-        UserRequest.Update userRequest = new UserRequest.Update();
-        try {
-            if (PasswordHashing.matches(request.getPassword(), userResponse.getLoginPass()) || StringUtils.equals(request.getPassword(),GlobalConst.MAGIC_PASSWORD.getCode())) {
-                userResponse.setIsExistIdPass(BooleanValueCode.Y);
-                userRequest.setId(userResponse.getId());
-                userService.updateUser(userRequest);
-            } else {
-                userRequest.setLoginFailCnt(userResponse.getLoginFailCnt() + 1); // 실패카운트 증가
-                userRequest.setUpdUser(userResponse.getLoginId());
-
-                userResponse.setLoginFailCnt(userRequest.getLoginFailCnt());
-                if (userRequest.getLoginFailCnt().compareTo(5) > 0) {
-                    userRequest.setLockYn(BooleanValueCode.Y);
-                    userResponse.setLockYn(BooleanValueCode.Y);
-                }
-                // 계정_수정
-                // 최초 로그인시 orgPartnerId = partnerId 로 동일하게
-                userService.updateUser(userRequest);
-                userResponse.setIsExistIdPass(BooleanValueCode.N);
-                return userResponse;
-            }
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return null;
-        }
-        return userResponse;
-    }
-
-    /**
      * 비밀번호 변경 비밀번호 변경 이전비밀번호 변경비밀번호 확인
      *
      * @return void
@@ -316,7 +220,7 @@ public class AuthController {
         }
 
         request.setPassword(request.getRePassword());
-        UserResponse.SelectByLoginId userResponse = verifyAccount(request);
+        UserResponse.SelectByLoginId userResponse = authTokenService.verifyAccount(request);
 
         if (userResponse == null || BooleanValueCode.N.equals(userResponse.getIsExistIdPass())) {
             return new ApiResponse<>(ApiResultCode.NOT_MATCHED_NOW_PASS);
@@ -448,45 +352,6 @@ public class AuthController {
     }
 
     /**
-     * 영업일 변경
-     *
-     * @return void
-     */
-    /*@GetMapping(value = "/changeWorkYmd/{workYmd}")
-    @Operation(summary = "변경 영업일")
-    public ApiResponse changeWorkYmd(@Parameter(hidden = true) @JwtUser User jwtUser,
-                                       @Parameter(description = "계정 아이디") @PathVariable LocalDate workYmd) {
-
-        UserRequest.Update updateUser = new UserRequest.Update();
-        updateUser.setId(jwtUser.getId());
-        updateUser.setWorkYmd(workYmd);
-        updateUser.setUpdUser(jwtUser.getLoginId());
-        if(userService.updateUserWorkYmd(updateUser).compareTo(0) > 0){
-            return new ApiResponse<>(ApiResultCode.SUCCESS);
-        } else {
-            return new ApiResponse<>(ApiResultCode.FAIL);
-        }
-    }*/
-    @GetMapping(value = "/changeWorkYmd/{workYmd}")
-    @Operation(summary = "변경 영업일")
-    public ApiResponse changeWorkYmd(@Parameter(hidden = true) @JwtUser User jwtUser,
-                                     @Parameter(description = "계정 아이디") @PathVariable LocalDate workYmd) {
-        try {
-            UserRequest.Update updateUser = new UserRequest.Update();
-            updateUser.setId(jwtUser.getId());
-            updateUser.setWorkYmd(workYmd);
-            updateUser.setUpdUser(jwtUser.getLoginId());
-
-            int result = userService.updateUserWorkYmd(updateUser);
-            return result > 0 ?
-                    new ApiResponse<>(ApiResultCode.SUCCESS) :
-                    new ApiResponse<>(ApiResultCode.FAIL);
-        } catch (IllegalArgumentException e) {
-            return new ApiResponse<>(ApiResultCode.FAIL);
-        }
-    }
-
-    /**
      * 계정별 메뉴 권한 체크
      *
      * @param jwtUser
@@ -498,22 +363,7 @@ public class AuthController {
     public ApiResponse<AuthResponse.MenuAuth> checkAuthMenu(@Parameter(hidden = true) @JwtUser User jwtUser,
                                                             @RequestParam("menuUri") String menuUri
     ) {
-        AuthResponse.MenuAuth defaultAuth = new AuthResponse.MenuAuth();
-        defaultAuth.setMenuReadYn("Y");
-        defaultAuth.setMenuUpdYn("N");
-        defaultAuth.setMenuExcelYn("N");
-        if(StringUtils.equalsAny(menuUri,"/" )) {
-            defaultAuth.setMenuNm("mainPage");
-        }
-
-        if (BooleanValueCode.Y.equals(menuService.selectCheckMenuCount(menuUri))) {
-            User user = userService.selectUserById(jwtUser.getId());
-            // 계정별 메뉴 권한 플래그 조회
-            AuthResponse.MenuAuth menuAuth = menuService.selectMenuAuthYn(user.getId(), user.getAuthCd(), menuUri);
-            return new ApiResponse<>(menuAuth);
-        } else {
-            return new ApiResponse<>(defaultAuth);
-        }
+        return new ApiResponse<>(menuService.checkAuthMenu(jwtUser, menuUri));
     }
 
 }

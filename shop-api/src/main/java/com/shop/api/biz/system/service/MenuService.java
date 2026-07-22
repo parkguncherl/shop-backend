@@ -387,4 +387,30 @@ public class MenuService {
         return BooleanValueCode.Y;
     }
 
+    /**
+     * 계정별 메뉴 권한 체크
+     * 권한 관리 대상 메뉴면 계정의 실제 권한을, 대상이 아니면 기본 권한(읽기만 허용)을 반환한다.
+     *
+     * @param jwtUser 로그인 사용자
+     * @param menuUri 메뉴 URI
+     * @return 메뉴 권한 플래그
+     */
+    public AuthResponse.MenuAuth checkAuthMenu(User jwtUser, String menuUri) {
+        if (BooleanValueCode.Y.equals(this.selectCheckMenuCount(menuUri))) {
+            User user = userService.selectUserById(jwtUser.getId());
+            // 계정별 메뉴 권한 플래그 조회
+            return this.selectMenuAuthYn(user.getId(), user.getAuthCd(), menuUri);
+        }
+
+        // 권한 관리 대상이 아닌 메뉴의 기본 권한
+        AuthResponse.MenuAuth defaultAuth = new AuthResponse.MenuAuth();
+        defaultAuth.setMenuReadYn("Y");
+        defaultAuth.setMenuUpdYn("N");
+        defaultAuth.setMenuExcelYn("N");
+        if (StringUtils.equalsAny(menuUri, "/")) {
+            defaultAuth.setMenuNm("mainPage");
+        }
+        return defaultAuth;
+    }
+
 }
