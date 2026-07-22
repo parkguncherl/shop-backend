@@ -52,7 +52,7 @@ public class ProductMngService {
      * @param productDetInfoFilter
      * @return ProductDetInfo List
      */
-    public List<ProductMngResponse.ProductDetInfo> selectProdDetInfo(ProductMngRequest.ProductDetInfoFilter productDetInfoFilter, User jwtUser) {
+    public List<ProductMngResponse.ProductDetInfo> selectProdDetInfo(ProductMngRequest.ProductDetInfoFilter productDetInfoFilter) {
         return productMngDao.selectProdDetInfo(productDetInfoFilter);
     }
 

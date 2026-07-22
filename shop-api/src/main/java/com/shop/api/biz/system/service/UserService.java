@@ -52,16 +52,6 @@ public class UserService {
         return userDao.selectUserById(userId);
     }
 
-
-    /**
-     * 파트너id_조회 (by Id)
-     *
-     * @param userId
-     * @return
-     */
-    public Integer selectPartnerIdByUserId(Integer userId) {
-        return userDao.selectPartnerIdByUserId(userId);
-    }
     /**
      * 파트너id_조회 (by loginId)
      *
@@ -115,16 +105,6 @@ public class UserService {
     }
 
     /**
-     * 계정180일 미로그인 조회 (by LoginId)
-     *
-     * @param loginId
-     * @return
-     */
-    public String checkExpireDayByLoginId(String loginId) {
-        return userDao.checkExpireDayByLoginId(loginId);
-    }
-
-    /**
      * 계정_조회 (by Uk)
      *
      * @param user
@@ -158,40 +138,6 @@ public class UserService {
     }
 
     /**
-     * 계정_수정_파트너id
-     *
-     * @param userRequest
-     * @return
-     */
-    public Integer updateUserPartnerId(UserRequest.Update userRequest) {
-        return userDao.updateUserPartnerId(userRequest.toEntity());
-    }
-
-
-    /**
-     * 계정_수정_영업일
-     *
-     * @param userRequest
-     * @return
-     */
-    /* 기존코드
-    public Integer updateUserWorkYmd(UserRequest.Update userRequest) {
-        return userDao.updateUserWorkYmd(userRequest.toEntity());
-    }*/
-    public Integer updateUserWorkYmd(UserRequest.Update userRequest) {
-        // 파트너 생성시간 조회
-        LocalDateTime partnerCreatedTime = userDao.getPartnerCreatedTime(userRequest.getId());
-
-        // 파트너 생성시간이 존재하고, 변경하려는 영업일이 파트너 생성일자보다 이전인 경우
-        if (partnerCreatedTime != null &&
-                userRequest.getWorkYmd().atStartOfDay().isBefore(partnerCreatedTime.toLocalDate().atStartOfDay())) {
-            throw new IllegalArgumentException(
-                    "파트너 입점일자(" + partnerCreatedTime.toLocalDate() + ") 이전으로 영업일을 변경할 수 없습니다.");
-        }
-        return userDao.updateUserWorkYmd(userRequest.toEntity());
-    }
-
-    /**
      * 계정_삭제
      *
      * @param userRequest
@@ -202,17 +148,6 @@ public class UserService {
         //userDao.insertOutUser(user);  // 삭제테이블에 추가
         Integer rtnCount = userDao.deleteUser(userRequest.toEntity());
         return rtnCount;
-    }
-
-    /**
-     * 계정_권한조회
-     *
-     * @param user
-     * @return
-     */
-    public String getUserAuth(User user) {
-        // 권한을 조회한다.
-        return userDao.selectUserById(user.getId()).getAuthCd();
     }
 
     /**
@@ -254,16 +189,6 @@ public class UserService {
      * @return
      */
     public Integer updateUserUnLock(UserRequest.UnLock userRequest) {
-        /*
-        계정 휴면처리 안씀 20240813
-        // 계정_잠금_대상_조회 (by Uk)
-        UserExpire userExpire = userDao.selectExpireUserByUk(userRequest.toUserExpire());
-
-        if (userExpire != null) {
-            userDao.deleteExpireUser(userExpire.getUserId());
-            userRequest.setUserNm(userExpire.getUserNm());
-        }
-        */
         return userDao.updateUserUnLock(userRequest.toEntity());
     }
 
@@ -278,26 +203,12 @@ public class UserService {
     }
 
     /**
-     * OTP_실패_카운트_증가
-     *
-     * @param user
-     * @return
-     */
-    public Integer updateOtpFailCnt(User user) {
-        return userDao.updateOtpFailCnt(user);
-    }
-
-    /**
      * 계정 목록조회 (designer 조회)
      * @param partnerId
      * @return
      */
     public List<User> selectDesinerUserListByAuth350(Integer partnerId) {
         return userDao.selectDesinerUserList(partnerId, "350");
-    }
-
-    public List<User> selectDesinerUserListByAuth399(Integer partnerId) {
-        return userDao.selectDesinerUserList(partnerId, "399");
     }
 
 }

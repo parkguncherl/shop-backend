@@ -323,16 +323,6 @@
         WHERE ID = #{id}
     </update>
 
-    <update id="updateUserPartnerId" parameterType="com.shop.core.entity.User">
-        /* com.shop.mapper.User.updateUserPartnerId */
-        UPDATE TB_USER
-        SET UPD_TM   = NOW()
-          , UPD_USER = #{updUser}
-          , PARTNER_ID = #{partnerId}
-        WHERE ID = #{id}
-    </update>
-
-
     <delete id="deleteUser" parameterType="com.shop.core.entity.User">
         /* com.shop.mapper.User.deleteUser */
         DELETE

@@ -43,6 +43,7 @@
             , DOMAE.CODE_NM AS domaeNm
             , TP.SHOW_YN AS showYn
             , TP.DET_INFO AS detInfo
+            , FN_GET_STOCK(TP.ID, NULL)  AS stock
         FROM TB_PRODUCT TP
         INNER JOIN (
             SELECT
@@ -126,6 +127,7 @@
             , TPD.FILE_ID AS fileId
             , TPD.SLEEP_YN AS sleepYn
             , TPD.PRODUCT_DET_CNTN AS productDetCntn
+            , FN_GET_STOCK(NULL,TPD.ID)  AS stock
         FROM TB_PRODUCT_DET TPD
         <where>
             AND TPD.DEL_YN = 'N'

@@ -61,10 +61,9 @@ public class ProductMngController {
     @GetMapping(value = "/productDetInfoList")
     @Operation(summary = "상품상세목록 조회")
     public ApiResponse<List<ProductMngResponse.ProductDetInfo>> selectProdDetInfo(
-            @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter(name = "ProductMngRequestProductDetInfoFilter", description = "상품상세목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductDetInfoFilter productDetInfoFilter
     ) {
-        List<ProductMngResponse.ProductDetInfo> response = productMngService.selectProdDetInfo(productDetInfoFilter, jwtUser);
+        List<ProductMngResponse.ProductDetInfo> response = productMngService.selectProdDetInfo(productDetInfoFilter);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 

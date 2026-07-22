@@ -46,17 +46,7 @@
             , P.PROD_NM              AS prodNm
             , PD.PRODUCT_DET_SIZE    AS productDetSize
             , PD.PRODUCT_DET_COLOR   AS productDetColor
-            , COALESCE((
-                SELECT SUM(CASE WHEN R.PLUSMINUS = 'P' THEN R.RECEIV_CNT ELSE -R.RECEIV_CNT END)
-                FROM TB_RECEIVING R
-                WHERE R.PRODUCT_DET_ID = PD.ID AND R.DEL_YN = 'N'
-            ), 0)
-            - COALESCE((
-                SELECT SUM(OI.QUANTITY)
-                FROM TB_ORDER_ITEM OI
-                JOIN TB_ORDER O ON O.ID = OI.ORDER_ID AND O.ORDER_STATUS NOT IN ('C')
-                WHERE OI.PRODUCT_DET_ID = PD.ID
-            ), 0)                  AS stock
+            , FN_GET_STOCK(NULL, PD.ID)  AS stock
         FROM TB_PRODUCT_DET PD
         JOIN TB_PRODUCT P ON P.ID = PD.PRODUCT_ID AND P.PARTNER_ID = #{partnerId} AND P.DEL_YN = 'N'
         WHERE PD.DEL_YN = 'N'

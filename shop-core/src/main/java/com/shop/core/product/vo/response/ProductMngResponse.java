@@ -49,6 +49,9 @@ public class ProductMngResponse {
         @Schema(description = "관련상품 연결 개수")
         private Integer relCount;
 
+        @Schema(description = "재고")
+        private Integer stock;
+
         @Schema(description = "시즌")
         private String season;
     }
@@ -58,6 +61,9 @@ public class ProductMngResponse {
     @EqualsAndHashCode(callSuper = false)
     @Schema(name = "ProductMngResponseProductDetInfo", description = "상품관리 영역 상품상세정보", type = "object")
     public static class ProductDetInfo extends ProductDet {
+
+        @Schema(description = "재고 수량")
+        private Integer stock;
     }
 
     @Getter

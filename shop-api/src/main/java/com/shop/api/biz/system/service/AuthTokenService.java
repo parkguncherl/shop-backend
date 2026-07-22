@@ -4,13 +4,17 @@ import com.shop.api.biz.partner.service.PartnerService;
 import com.shop.core.biz.system.dao.AuthTokenDao;
 import com.shop.core.biz.system.vo.request.LoginRequest;
 import com.shop.core.biz.system.vo.request.UserRequest;
+import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.LoginResponse;
 import com.shop.core.biz.system.vo.response.UserResponse;
 import com.shop.core.entity.AuthToken;
 import com.shop.core.entity.Partner;
+import com.shop.core.entity.User;
+import com.shop.core.enums.ApiResultCode;
 import com.shop.core.enums.BooleanValueCode;
 import com.shop.core.enums.GlobalConst;
 import com.shop.core.entity.JwtAuthToken;
+import com.shop.api.utils.CommUtil;
 import com.shop.api.utils.PasswordHashing;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -95,6 +99,40 @@ public class AuthTokenService {
     }
 
     /**
+     * 계정 확인 (로그인 전 1차 검증).
+     * 계정/비밀번호/권한을 확인한다. 인증 실패는 예외가 아닌 일상적인 흐름이므로
+     * 예외를 던지지 않고 결과 코드/메시지를 담은 응답을 그대로 반환한다.
+     *
+     * @param loginRequest 로그인 요청
+     * @return 검증 결과 응답 (성공 시 body 에 계정 정보 포함)
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ApiResponse<LoginResponse> verification(LoginRequest loginRequest) {
+        UserResponse.SelectByLoginId userResponse = this.verifyAccount(loginRequest);
+
+        if (userResponse == null) {
+            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER);
+        }
+        if (BooleanValueCode.N.equals(userResponse.getIsExistIdPass())) {
+            String passMessage = "아이디 또는 비밀번호가 일치하지 않습니다. \n로그인 실패 횟수 ( " + userResponse.getLoginFailCnt() + " / 5 )";
+            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, passMessage);
+        }
+        if (userResponse.getAuthCd() == null) {
+            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, "권한을 부여받지 않았습니다. \n관리자에게 문의하세요");
+        }
+
+        userResponse.setIsMobileLogin(loginRequest.getIsMobileLogin());
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setUser(userResponse);
+
+        /* 공통 로깅 서비스 */
+        contactService.logging(userResponse, "로그인", null);
+
+        return new ApiResponse<>(ApiResultCode.SUCCESS, loginResponse);
+    }
+
+    /**
      * 계정 검증 (아이디 조회 + 비밀번호 확인, 실패 시 실패카운트/잠금 처리)
      *
      * @param request 로그인 요청
@@ -139,6 +177,143 @@ public class AuthTokenService {
             return null;
         }
         return userResponse;
+    }
+
+    /**
+     * 비밀번호 변경 (현재 비밀번호 확인 후 신규 비밀번호로 변경).
+     * 검증 단계별로 서로 다른 결과 코드를 반환한다.
+     *
+     * @param request 로그인/비밀번호 변경 요청
+     * @return 처리 결과 코드
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ApiResultCode changePassword(LoginRequest request) {
+
+        if (request != null && StringUtils.isEmpty(request.getRePassword())) {
+            return ApiResultCode.NOT_RE_PASS;
+        }
+        if (request != null && StringUtils.isEmpty(request.getModPassword())) {
+            return ApiResultCode.NOT_MOD_PASS;
+        }
+        if (request != null && StringUtils.isEmpty(request.getReModpassword())) {
+            return ApiResultCode.NOT_RE_MOD_PASS;
+        }
+
+        // 비밀번호 일치확인
+        if (!StringUtils.equals(request.getReModpassword(), request.getModPassword())) {
+            return ApiResultCode.NOT_MATCH_PASS;
+        }
+
+        // 비밀번호 포맷 확인(영문, 특수문자, 숫자 포함 8자 이상)
+        if (CommUtil.isBadPassword(request.getModPassword())) {
+            //return ApiResultCode.PASS_FORMAT_ERR; // todo 추후 비밀번호 규칙 정해지면 수정
+        }
+
+        // 현재 비밀번호 확인
+        request.setPassword(request.getRePassword());
+        UserResponse.SelectByLoginId userResponse = this.verifyAccount(request);
+        if (userResponse == null || BooleanValueCode.N.equals(userResponse.getIsExistIdPass())) {
+            return ApiResultCode.NOT_MATCHED_NOW_PASS;
+        }
+
+        try {
+            String encPassword = PasswordHashing.hash(request.getModPassword());
+            User user = new User();
+            user.setId(userResponse.getId());
+            user.setFirstLoginYn(BooleanValueCode.N);
+            user.setLoginPass(encPassword);
+            user.setUpdUser(userResponse.getLoginId());
+            userService.updatePassword(user);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ApiResultCode.FAIL_CHANGE_PASS;
+        }
+
+        return ApiResultCode.SUCCESS;
+    }
+
+    /**
+     * 비밀번호 유지 (변경 없이 최종 비밀번호 변경 일시만 갱신).
+     *
+     * @param request 로그인 요청
+     * @return 처리 결과 코드
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ApiResultCode stayPassword(LoginRequest request) {
+        UserResponse.SelectByLoginId userResponse = userService.selectUserByLoginIdForLogin(request.getLoginId());
+        if (userResponse == null) {
+            return ApiResultCode.NOT_MATCHED_NOW_PASS;
+        }
+
+        try {
+            User user = new User();
+            user.setLoginId(request.getLoginId());
+            user.setUpdUser(request.getLoginId());
+            userService.stayPassword(user);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ApiResultCode.FAIL_CHANGE_PASS;
+        }
+
+        return ApiResultCode.SUCCESS;
+    }
+
+    /**
+     * 비밀번호 초기화 (로그인ID + 연락처 확인 후 비밀번호를 연락처로 초기화).
+     * 검증 단계별로 서로 다른 결과 코드를 반환한다.
+     *
+     * @param request 로그인/초기화 요청
+     * @return 처리 결과 코드
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ApiResultCode passwordInit(LoginRequest request) {
+
+        if (request != null && StringUtils.isEmpty(request.getLoginId())) {
+            return ApiResultCode.NOT_LOGINID;
+        }
+        if (request != null && StringUtils.isEmpty(request.getPhoneNo())) {
+            return ApiResultCode.NOT_PHONENO;
+        }
+
+        UserResponse.SelectByLoginId userResponse = userService.selectUserByLoginIdCountryCode(request.getLoginId());
+        if (userResponse == null) {
+            return ApiResultCode.NOT_REG_LOGINID;
+        }
+        if (StringUtils.isEmpty(userResponse.getPhoneNo())) {
+            return ApiResultCode.NOT_REG_PHONENO;
+        }
+        if (!StringUtils.equals(userResponse.getPhoneNo().trim(), request.getPhoneNo().trim())) {
+            // todo 일단 연락처 다른것은 막아놓는다.
+            return ApiResultCode.NOT_MATCH_REG_PHONENO;
+        }
+        if (CommUtil.isBadPhoneNo(userResponse.getPhoneNo())) {
+            return ApiResultCode.NOT_FORM_PHONENO;
+        }
+
+//        String chgPass = CommUtil.getRamdomPassword();
+        String chgPass = userResponse.getPhoneNo();
+        //String phone = userResponse.getPhoneNo();
+        //Integer rsltCnt = commonService.sendSmsForPass(SmsType.FIND_PASS, phone, chgPass, userResponse.getId(), request.getCountryCode());
+        Integer rsltCnt = 1;
+
+        if (rsltCnt > 0) {
+            try {
+                // 메시지 전송되면 user 업데이트
+                String encPassword = PasswordHashing.hash(chgPass);
+                User user = new User();
+                user.setId(userResponse.getId());
+                user.setLoginPass(encPassword);
+                user.setFirstLoginYn(BooleanValueCode.Y);
+                user.setUpdUser(userResponse.getLoginId());
+                userService.updatePassword(user);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                return ApiResultCode.FAIL_SEND_SMS;
+            }
+            return ApiResultCode.SUCCESS;
+        } else {
+            return ApiResultCode.FAIL_SEND_SMS;
+        }
     }
 
 

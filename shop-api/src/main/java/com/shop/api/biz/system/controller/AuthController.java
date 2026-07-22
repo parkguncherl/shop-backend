@@ -2,13 +2,9 @@ package com.shop.api.biz.system.controller;
 
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
-import com.shop.api.biz.partner.service.PartnerService;
 import com.shop.api.biz.system.service.*;
-import com.shop.api.biz.common.service.CommonService;
-import com.shop.api.utils.PasswordHashing;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.system.vo.request.LoginRequest;
-import com.shop.core.biz.system.vo.request.UserRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.AuthResponse;
 import com.shop.core.biz.system.vo.response.LoginResponse;
@@ -24,7 +20,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -49,39 +44,13 @@ public class AuthController {
 
     private final UserService userService;
 
-    private final ContactService contactService;
-
     private final MenuService menuService;
-
-    private final CommonService commonService;
-    private final PartnerService partnerService;
 
     @NotAuthRequired
     @PostMapping(value = "/verification")
     @Operation(summary = "계정 확인")
     public ApiResponse<LoginResponse> verification(@RequestBody LoginRequest loginRequest) {
-        LoginResponse loginResponse = new LoginResponse();
-        UserResponse.SelectByLoginId userResponse = authTokenService.verifyAccount(loginRequest);
-
-        if (userResponse == null) {
-            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER);
-        } else {
-
-            if (BooleanValueCode.N.equals(userResponse.getIsExistIdPass())) {
-                String passMessage = "아이디 또는 비밀번호가 일치하지 않습니다. \n로그인 실패 횟수 ( " + userResponse.getLoginFailCnt() + " / 5 )";
-                return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, passMessage);
-            }
-        }
-
-        if(userResponse.getAuthCd() == null ){
-            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, "권한을 부여받지 않았습니다. \n관리자에게 문의하세요");
-        }
-
-        userResponse.setIsMobileLogin(loginRequest.getIsMobileLogin());
-        loginResponse.setUser(userResponse);
-        /* 공통 로깅 서비스*/
-        contactService.logging(userResponse, "로그인", null);
-        return new ApiResponse<>(ApiResultCode.SUCCESS, loginResponse);
+        return authTokenService.verification(loginRequest);
     }
 
     @NotAuthRequired
@@ -196,49 +165,7 @@ public class AuthController {
     @PostMapping(value = "/updatePassword")
     @Operation(summary = "비밀번호 전송")
     public ApiResponse<ApiResultCode> changePassword(@RequestBody LoginRequest request) {
-
-        if (request != null && StringUtils.isEmpty(request.getRePassword())) {
-            return new ApiResponse<>(ApiResultCode.NOT_RE_PASS);
-        }
-
-        if (request != null && StringUtils.isEmpty(request.getModPassword())) {
-            return new ApiResponse<>(ApiResultCode.NOT_MOD_PASS);
-        }
-
-        if (request != null && StringUtils.isEmpty(request.getReModpassword())) {
-            return new ApiResponse<>(ApiResultCode.NOT_RE_MOD_PASS);
-        }
-
-        // 비밀번호 일치확인
-        if (!StringUtils.equals(request.getReModpassword(), request.getModPassword())) {
-            return new ApiResponse<>(ApiResultCode.NOT_MATCH_PASS);
-        }
-
-        // 비밀번호 포맷 확인(영문, 특수문자, 숫자 포함 8자 이상)
-        if (CommUtil.isBadPassword(request.getModPassword())) {
-            //return new ApiResponse<>(ApiResultCode.PASS_FORMAT_ERR); // todo 추후 비밀번호 규칙 정해지면 수정
-        }
-
-        request.setPassword(request.getRePassword());
-        UserResponse.SelectByLoginId userResponse = authTokenService.verifyAccount(request);
-
-        if (userResponse == null || BooleanValueCode.N.equals(userResponse.getIsExistIdPass())) {
-            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_NOW_PASS);
-        }
-
-        try {
-            String encPassword = PasswordHashing.hash(request.getModPassword());
-            User user = new User();
-            user.setId(userResponse.getId());
-            user.setFirstLoginYn(BooleanValueCode.N);
-            user.setLoginPass(encPassword);
-            user.setUpdUser(userResponse.getLoginId());
-            userService.updatePassword(user);
-        } catch (Exception e) {
-            return new ApiResponse<>(ApiResultCode.FAIL_CHANGE_PASS);
-        }
-
-        return new ApiResponse<>(ApiResultCode.SUCCESS);
+        return new ApiResponse<>(authTokenService.changePassword(request));
     }
 
     /**
@@ -250,22 +177,7 @@ public class AuthController {
     @PostMapping(value = "/stayPassword")
     @Operation(summary = "비밀번호 전송")
     public ApiResponse<ApiResultCode> stayPassword(@RequestBody LoginRequest request) {
-        UserResponse.SelectByLoginId userResponse = userService.selectUserByLoginIdForLogin(request.getLoginId());
-
-        if (userResponse == null) {
-            return new ApiResponse<>(ApiResultCode.NOT_MATCHED_NOW_PASS);
-        }
-
-        try {
-            User user = new User();
-            user.setLoginId(request.getLoginId());
-            user.setUpdUser(request.getLoginId());
-            userService.stayPassword(user);
-        } catch (Exception e) {
-            return new ApiResponse<>(ApiResultCode.FAIL_CHANGE_PASS);
-        }
-
-        return new ApiResponse<>(ApiResultCode.SUCCESS);
+        return new ApiResponse<>(authTokenService.stayPassword(request));
     }
 
     /**
@@ -277,78 +189,7 @@ public class AuthController {
     @PostMapping(value = "/passwordInit")
     @Operation(summary = "비밀번호 전송")
     public ApiResponse<ApiResultCode> passwordInit(@RequestBody LoginRequest request) {
-
-        if (request != null && StringUtils.isEmpty(request.getLoginId())) {
-            return new ApiResponse<>(ApiResultCode.NOT_LOGINID);
-        }
-
-        if (request != null && StringUtils.isEmpty(request.getPhoneNo())) {
-            return new ApiResponse<>(ApiResultCode.NOT_PHONENO);
-        }
-
-        UserResponse.SelectByLoginId userResponse = userService.selectUserByLoginIdCountryCode(request.getLoginId());
-
-        if (userResponse == null) {
-            return new ApiResponse<>(ApiResultCode.NOT_REG_LOGINID);
-        }
-
-        if (StringUtils.isEmpty(userResponse.getPhoneNo())) {
-            return new ApiResponse<>(ApiResultCode.NOT_REG_PHONENO);
-        }
-
-        if (!StringUtils.equals(userResponse.getPhoneNo().trim(), request.getPhoneNo().trim())) {
-            return new ApiResponse<>(ApiResultCode.NOT_MATCH_REG_PHONENO);
-            // todo 일단 연락처 다른것은 막아놓는다.
-        }
-
-        if (CommUtil.isBadPhoneNo(userResponse.getPhoneNo())) {
-            return new ApiResponse<>(ApiResultCode.NOT_FORM_PHONENO);
-        }
-
-//        String chgPass = CommUtil.getRamdomPassword();
-        String chgPass = userResponse.getPhoneNo();
-        //String phone = userResponse.getPhoneNo();
-        //Integer rsltCnt = commonService.sendSmsForPass(SmsType.FIND_PASS, phone, chgPass, userResponse.getId(), request.getCountryCode());
-        Integer rsltCnt = 1;
-
-        if (rsltCnt > 0) {
-            try {
-                // 메시지 전송되면 user 업데이트
-                String encPassword = PasswordHashing.hash(chgPass);
-                User user = new User();
-                user.setId(userResponse.getId());
-                user.setLoginPass(encPassword);
-                user.setFirstLoginYn(BooleanValueCode.Y);
-                user.setUpdUser(userResponse.getLoginId());
-                userService.updatePassword(user);
-            } catch (Exception e) {
-                return new ApiResponse<>(ApiResultCode.FAIL_SEND_SMS);
-            }
-            return new ApiResponse<>(ApiResultCode.SUCCESS);
-        } else {
-            return new ApiResponse<>(ApiResultCode.FAIL_SEND_SMS);
-        }
-    }
-
-    /**
-     * 변경파트너id
-     *
-     * @return void
-     */
-    @GetMapping(value = "/changePartnerId/{partnerId}")
-    @Operation(summary = "변경파트너id")
-    public ApiResponse changePartnerId(@Parameter(hidden = true) @JwtUser User jwtUser,
-                                       @Parameter(description = "계정 아이디") @PathVariable Integer partnerId) {
-
-        UserRequest.Update updateUser = new UserRequest.Update();
-        updateUser.setId(jwtUser.getId());
-        updateUser.setPartnerId(partnerId);
-        updateUser.setUpdUser(jwtUser.getLoginId());
-        if(userService.updateUserPartnerId(updateUser).compareTo(0) > 0){
-            return new ApiResponse<>(ApiResultCode.SUCCESS);
-        } else {
-            return new ApiResponse<>(ApiResultCode.FAIL);
-        }
+        return new ApiResponse<>(authTokenService.passwordInit(request));
     }
 
     /**

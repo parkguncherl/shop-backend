@@ -5,14 +5,11 @@ import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.request.UserRequest;
 import com.shop.core.biz.system.vo.response.UserResponse;
 import com.shop.core.entity.User;
-import com.shop.core.entity.UserExpire;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,16 +46,6 @@ public class UserDao {
         } else {
             return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount());
         }
-    }
-
-    /**
-     * 계정_등록
-     *
-     * @param user
-     * @return
-     */
-    public Integer createUser(User user) {
-        return sqlSession.insert(PRE_NS.concat("createUser"), user);
     }
 
     /**
@@ -146,17 +133,6 @@ public class UserDao {
         return sqlSession.selectOne(PRE_NS.concat("selectUserByUk"), user);
     }
 
-
-    /**
-     * 180일 경과조회 계정_조회 (by Uk)
-     *
-     * @param loginId
-     * @return
-     */
-    public String checkExpireDayByLoginId(String loginId) {
-        return sqlSession.selectOne(PRE_NS.concat("checkExpireDayByLoginId"), loginId);
-    }
-
     /**
      * 계정_등록
      *
@@ -177,36 +153,6 @@ public class UserDao {
         return sqlSession.update(PRE_NS.concat("updateUser"), user);
     }
 
-    /**
-     * 파트너ID 수정
-     *
-     * @param user
-     * @return
-     */
-    public Integer updateUserPartnerId(User user) {
-        return sqlSession.update(PRE_NS.concat("updateUserPartnerId"), user);
-    }
-
-
-    /**
-     * 영업일 변경
-     *
-     * @param user
-     * @return
-     */
-    public Integer updateUserWorkYmd(User user) {
-        return sqlSession.update(PRE_NS.concat("updateUserWorkYmd"), user);
-    }
-
-    /**
-     * 파트너의 생성시간 조회
-     *
-     * @param userId 사용자 ID (Integer 타입)
-     * @return LocalDateTime 파트너 생성시간
-     */
-    public LocalDateTime getPartnerCreatedTime(Integer userId) {
-        return sqlSession.selectOne(PRE_NS.concat("getPartnerCreatedTime"), userId);
-    }
 
     /**
      * 계정_삭제
@@ -269,79 +215,6 @@ public class UserDao {
         return sqlSession.update(PRE_NS.concat("updatePasswordInit"), user);
     }
 
-
-    /**
-     * 계정 잠금처리(이름등 업데이트)
-     *
-     * @param id
-     * @return
-     */
-    public Integer updateExpireUser(Integer id) {
-        return sqlSession.update(PRE_NS.concat("updateExpireUser"), id);
-    }
-
-
-    /**
-     * 계정 잠금대상 정보 조회 계정 잠금처리
-     *
-     * @param expireDay
-     * @return
-     */
-    public List<UserResponse.SelectExfireUser> selectExpireUser(Integer expireDay) {
-        return sqlSession.selectList(PRE_NS.concat("selectExpireUser"), expireDay);
-    }
-
-    /**
-     * 계정_잠금_대상_조회 (by Uk)
-     *
-     * @param userExpire
-     * @return
-     */
-    public UserExpire selectExpireUserByUk(UserExpire userExpire) {
-        return sqlSession.selectOne(PRE_NS.concat("selectExpireUserByUk"), userExpire);
-    }
-
-    /**
-     * 휴면계정 생성
-     *
-     * @param id
-     * @return
-     */
-    public Integer insertExpireUser(Integer id) {
-        return sqlSession.update(PRE_NS.concat("insertExpireUser"), id);
-    }
-
-
-    /**
-     * 휴면계정 삭제
-     *
-     * @param id
-     * @return
-     */
-    public Integer deleteExpireUser(Integer id) {
-        return sqlSession.update(PRE_NS.concat("deleteExpireUser"), id);
-    }
-
-    /**
-     * 탈퇴(삭제)계정 생성
-     *
-     * @param user
-     * @return
-     */
-    public Integer insertOutUser(User user) {
-        return sqlSession.insert(PRE_NS.concat("insertOutUser"), user);
-    }
-
-
-    /**
-     * OTP_실패_카운트_증가
-     *
-     * @param user
-     * @return
-     */
-    public Integer updateOtpFailCnt(User user) {
-        return sqlSession.update(PRE_NS.concat("updateOtpFailCnt"), user);
-    }
 
     /**
      * 계정 목록조회 (designer 조회)
