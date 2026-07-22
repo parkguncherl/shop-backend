@@ -244,6 +244,9 @@
         <if test="detInfo != null">
             , DET_INFO
         </if>
+        <if test="showYn != null">
+            , SHOW_YN
+        </if>
         ) VALUES (
               #{partnerId}
             , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
@@ -306,6 +309,9 @@
         </if>
         <if test="detInfo != null">
             , #{detInfo}
+        </if>
+        <if test="showYn != null">
+            , #{showYn}
         </if>
         )
     </insert>
