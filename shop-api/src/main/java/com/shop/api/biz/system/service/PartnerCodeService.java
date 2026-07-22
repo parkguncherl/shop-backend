@@ -177,6 +177,48 @@ public class PartnerCodeService {
         partnerCodeDao.updatePartnerCode(partnerCode);
     }
 
+    /**
+     * 코드정보 변경 단건 (없으면 등록, 있으면 수정)
+     *
+     * @param codeRequest 코드 변경 Request
+     * @param jwtUser     로그인 사용자
+     */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void savePartnerCodeVal(PartnerCodeRequest.UpdatePartnerCodeVal codeRequest, User jwtUser) {
+        // 필수값 체크
+        if (StringUtils.isEmpty(codeRequest.getCodeUpper())) {
+            throw new CustomRuntimeException(ApiResultCode.NO_REQUIRED_VALUE, "파트너상위코드가 입력되지 않았습니다.");
+        }
+
+        User user = userService.selectUserById(jwtUser.getId());
+        if (user.getPartnerId() == null || user.getPartnerId() == 0) {
+            throw new CustomRuntimeException(ApiResultCode.NO_REQUIRED_VALUE, "로그인정보에 파트너 정보가 없습니다.");
+        }
+
+        codeRequest.setPartnerId(user.getPartnerId());
+
+        // 코드_조회 (by Uk)
+        PartnerCode partnerCode = this.selectPartnerCodeByUk(codeRequest.getPartnerId(), codeRequest.getCodeUpper(), codeRequest.getCodeCd());
+
+        if (partnerCode == null) {
+            // 없으면 등록
+            partnerCode = new PartnerCode();
+            partnerCode.setPartnerId(codeRequest.getPartnerId());
+            partnerCode.setCodeUpper(codeRequest.getCodeUpper());
+            partnerCode.setCodeCd(codeRequest.getCodeCd());
+            partnerCode.setCodeNm(codeRequest.getCodeNm());
+            partnerCode.setCodeOrder(1); // 일단 1번으로 등록
+            partnerCode.setCreUser(jwtUser.getLoginId());
+            partnerCode.setUpdUser(jwtUser.getLoginId());
+            this.insertPartnerCode(partnerCode);
+        } else {
+            // 있으면 수정
+            partnerCode.setCodeNm(codeRequest.getCodeNm());
+            partnerCode.setUpdUser(jwtUser.getLoginId());
+            this.updatePartnerCode(partnerCode);
+        }
+    }
+
 
     /**
      * 코드_삭제

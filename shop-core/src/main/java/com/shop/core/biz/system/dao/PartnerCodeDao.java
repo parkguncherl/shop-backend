@@ -132,6 +132,20 @@ public class PartnerCodeDao {
         sqlSession.update(PRE_NS.concat("updatePartnerCode"), partnerCode);
     }
 
+
+    /**
+     * 코드_수정_존재한것만
+     *
+     * @param partnerCode
+     * @return
+     */
+    public void updatePartnerCodeExistOnly(PartnerCode partnerCode) {
+        sqlSession.update(PRE_NS.concat("updatePartnerCodeExistOnly"), partnerCode);
+    }
+
+
+
+
     /**
      * 코드_삭제
      *

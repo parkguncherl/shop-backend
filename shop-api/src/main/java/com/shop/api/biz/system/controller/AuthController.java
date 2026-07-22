@@ -2,6 +2,7 @@ package com.shop.api.biz.system.controller;
 
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
+import com.shop.api.biz.partner.service.PartnerService;
 import com.shop.api.biz.system.service.*;
 import com.shop.api.biz.common.service.CommonService;
 import com.shop.api.utils.PasswordHashing;
@@ -14,6 +15,7 @@ import com.shop.core.biz.system.vo.response.LoginResponse;
 import com.shop.core.biz.system.vo.response.UserResponse;
 import com.shop.core.entity.AuthToken;
 import com.shop.core.entity.JwtAuthToken;
+import com.shop.core.entity.Partner;
 import com.shop.core.entity.User;
 import com.shop.core.enums.*;
 import com.shop.api.utils.CommUtil;
@@ -58,6 +60,7 @@ public class AuthController {
     private final MenuService menuService;
 
     private final CommonService commonService;
+    private final PartnerService partnerService;
 
     @NotAuthRequired
     @PostMapping(value = "/verification")
@@ -116,6 +119,7 @@ public class AuthController {
         if (userResponse == null || BooleanValueCode.N.equals(userResponse.getIsExistIdPass())) {
             return new ApiResponse<>(ApiResultCode.NOT_MATCHED_USER, loginResponse);
         }
+
         //--------------------------------------------------------------------------------
         // 인증토큰 생성
         //--------------------------------------------------------------------------------
@@ -145,6 +149,13 @@ public class AuthController {
         //--------------------------------------------------------------------------------
         // 최종 결과값 엔티티 생성
         //--------------------------------------------------------------------------------
+
+
+        if(userResponse.getPartnerId() != null){
+            Partner partner = partnerService.selectPartnerById(userResponse.getPartnerId());
+            userResponse.setPartner(partner);
+        }
+
         loginResponse.setUser(userResponse);
         loginResponse.setToken(token);
 

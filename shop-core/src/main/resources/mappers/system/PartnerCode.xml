@@ -236,8 +236,8 @@
         )
     </insert>
 
-    <update id="updatePartnerCode" parameterType="com.shop.core.entity.PartnerCode">
-        /* com.shop.mapper.PartnerCode.updatePartnerCode */
+    <update id="updatePartnerCodeExistOnly" parameterType="com.shop.core.entity.PartnerCode">
+        /* com.shop.mapper.PartnerCode.updatePartnerCodeExistOnly */
         UPDATE TB_PARTNER_CODE
         SET UPD_TM   = NOW()
         , UPD_USER = #{updUser}
@@ -274,6 +274,25 @@
         <if test="delYn != null">
             , DEL_YN = #{delYn}
         </if>
+        WHERE ID = #{id}
+    </update>
+
+
+    <update id="updatePartnerCode" parameterType="com.shop.core.entity.PartnerCode">
+        /* com.shop.mapper.PartnerCode.updatePartnerCode */
+        UPDATE TB_PARTNER_CODE
+           SET UPD_TM   = NOW()
+             , UPD_USER = #{updUser}
+             , CODE_UPPER = #{codeUpper}
+             , CODE_CD = #{codeCd}
+             , CODE_NM = #{codeNm}
+             , CODE_DESC = #{codeDesc}
+             , DEF_CODE_VAL = #{defCodeVal}
+             , CODE_ETC = #{codeEtc}
+             , CODE_ETC1 = #{codeEtc1}
+             , CODE_ETC2 = #{codeEtc2}
+             , CODE_ETC3 = #{codeEtc3}
+             , CODE_ORDER = #{codeOrder}
         WHERE ID = #{id}
     </update>
 

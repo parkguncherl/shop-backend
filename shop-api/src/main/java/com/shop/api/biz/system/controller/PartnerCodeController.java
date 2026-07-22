@@ -199,35 +199,7 @@ public class PartnerCodeController {
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @RequestBody @Parameter(description = "코드 변경 Request") PartnerCodeRequest.UpdatePartnerCodeVal codeRequest
     ) {
-        // 필수값 체크
-        if (StringUtils.isEmpty(codeRequest.getCodeUpper())) {
-            return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE, "파트너상위코드가 입력되지 않았습니다.");
-        }
-
-        User user = userService.selectUserById(jwtUser.getId());
-        if (user.getPartnerId() == null || user.getPartnerId() == 0) {
-            return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE, "로그인정보에 파트너 정보가 없습니다.");
-        }
-
-        codeRequest.setPartnerId(user.getPartnerId());
-
-        // 코드_콤보_조회 (by CodeUpper)
-        PartnerCode partnerCode = partnerCodeService.selectPartnerCodeByUk(codeRequest.getPartnerId(),codeRequest.getCodeUpper(), codeRequest.getCodeCd());
-        // insert
-        if (partnerCode == null) {
-            partnerCode = new PartnerCode();
-            partnerCode.setPartnerId(codeRequest.getPartnerId());
-            partnerCode.setCodeUpper(codeRequest.getCodeUpper());
-            partnerCode.setCodeCd(codeRequest.getCodeCd());
-            partnerCode.setCodeNm(codeRequest.getCodeNm());
-            partnerCode.setCodeOrder(1); // 일단 1번으로 등록
-            partnerCodeService.insertPartnerCode(partnerCode);
-        //update
-        } else {
-            partnerCode.setCodeNm(codeRequest.getCodeNm());
-            partnerCodeService.updatePartnerCode(partnerCode);
-        }
-
+        partnerCodeService.savePartnerCodeVal(codeRequest, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 

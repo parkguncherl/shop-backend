@@ -1,6 +1,7 @@
 package com.shop.core.biz.system.vo.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.shop.core.entity.Partner;
 import com.shop.core.entity.User;
 import com.shop.core.enums.BooleanValueCode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -100,6 +101,9 @@ public class UserResponse {
         /** 수정자 */
         @Schema(description = "수정자")
         private String updUserNm;
+
+        @Schema(description = "파트너")
+        private Partner partner;
     }
 
 
