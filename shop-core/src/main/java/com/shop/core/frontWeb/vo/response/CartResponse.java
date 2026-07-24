@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CartResponse {
@@ -61,5 +62,8 @@ public class CartResponse {
 
         @Schema(description = "소계 (단가 × 수량)")
         private BigDecimal subtotal;
+
+        @Schema(description = "장바구니 담은 일시")
+        private LocalDateTime creTm;
     }
 }

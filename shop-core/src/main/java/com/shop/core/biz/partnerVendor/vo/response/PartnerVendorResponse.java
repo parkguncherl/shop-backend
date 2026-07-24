@@ -33,7 +33,7 @@ public class PartnerVendorResponse extends PartnerVendor {
     protected static void copyFields(PartnerVendor src, PartnerVendorResponse dst) {
         dst.setId(src.getId());
         dst.setPartnerId(src.getPartnerId());
-        dst.setPartnerNm(src.getPartnerNm());
+        dst.setVendorNm(src.getVendorNm());
         dst.setLocation(src.getLocation());
         dst.setPhoneNo(src.getPhoneNo());
         dst.setPhoneNo2(src.getPhoneNo2());

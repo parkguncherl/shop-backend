@@ -6,7 +6,7 @@
     <sql id="vendorColumns">
         ID          AS id,
         PARTNER_ID  AS partnerId,
-        PARTNER_NM  AS partnerNm,
+        VENDOR_NM  AS vendorNm,
         LOCATION    AS location,
         PHONE_NO    AS phoneNo,
         PHONE_NO2   AS phoneNo2,
@@ -26,7 +26,7 @@
         ROW_NUMBER() OVER(ORDER BY A.ID DESC) AS no,
         A.ID AS id,
         A.PARTNER_ID AS partnerId,
-        A.PARTNER_NM AS partnerNm,
+        A.VENDOR_NM AS vendorNm,
         A.LOCATION AS location,
         A.PHONE_NO AS phoneNo,
         A.PHONE_NO2 AS phoneNo2,
@@ -43,8 +43,8 @@
         <if test="filter != null and filter.partnerId != null">
             AND A.PARTNER_ID = #{filter.partnerId}
         </if>
-        <if test="filter != null and filter.partnerNm != null and filter.partnerNm != ''">
-            AND A.PARTNER_NM LIKE CONCAT('%', #{filter.partnerNm}, '%')
+        <if test="filter != null and filter.vendorNm != null and filter.vendorNm != ''">
+            AND A.VENDOR_NM LIKE CONCAT('%', #{filter.vendorNm}, '%')
         </if>
         <if test="filter != null and filter.phoneNo != null and filter.phoneNo != ''">
             AND (A.PHONE_NO LIKE CONCAT('%', #{filter.phoneNo}, '%') OR A.PHONE_NO2 LIKE CONCAT('%', #{filter.phoneNo}, '%'))
@@ -67,10 +67,10 @@
     <insert id="insertPartnerVendor" parameterType="com.shop.core.entity.PartnerVendor">
         /* com.shop.mapper.PartnerVendor.insertPartnerVendor */
         INSERT INTO TB_PARTNER_VENDOR (
-            PARTNER_ID, PARTNER_NM, LOCATION, PHONE_NO, PHONE_NO2, KAKAO_ID, ETC_INFO,
+            PARTNER_ID, VENDOR_NM, LOCATION, PHONE_NO, PHONE_NO2, KAKAO_ID, ETC_INFO,
             DEL_YN, CRE_USER, CRE_TM, UPD_USER, UPD_TM
         ) VALUES (
-            #{partnerId}, #{partnerNm}, #{location}, #{phoneNo}, #{phoneNo2}, #{kakaoId}, #{etcInfo},
+            #{partnerId}, #{vendorNm}, #{location}, #{phoneNo}, #{phoneNo2}, #{kakaoId}, #{etcInfo},
             'N', #{creUser}, NOW(), #{updUser}, NOW()
         )
     </insert>
@@ -81,8 +81,8 @@
         /* com.shop.mapper.PartnerVendor.updatePartnerVendorExistOnly */
         UPDATE TB_PARTNER_VENDOR
         <set>
-            <if test="partnerNm != null">
-                PARTNER_NM = #{partnerNm},
+            <if test="vendorNm != null">
+                VENDOR_NM = #{vendorNm},
             </if>
             <if test="location != null">
                 LOCATION = #{location},
@@ -117,5 +117,19 @@
             UPD_TM   = NOW()
         WHERE ID = #{id}
     </update>
+
+    <!-- 협력업체 콤보(드롭다운) 목록 -->
+    <select id="selectPartnerVendorDropdown" parameterType="Integer" resultType="com.shop.core.entity.PartnerVendor">
+        /* com.shop.mapper.PartnerVendor.selectPartnerVendorDropdown */
+        SELECT
+            ID          AS id,
+            VENDOR_NM  AS vendorNm
+        FROM TB_PARTNER_VENDOR
+        WHERE DEL_YN = 'N'
+        <if test="_parameter != null">
+            AND PARTNER_ID = #{partnerId}
+        </if>
+        ORDER BY VENDOR_NM ASC
+    </select>
 
 </mapper>

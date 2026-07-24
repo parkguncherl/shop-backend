@@ -39,8 +39,8 @@
                 CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END
             ) AS SEASON
             , COALESCE(CP.REL_CNT, 0) AS relCount
-            , TP.DOMAE_ID AS domaeId
-            , DOMAE.CODE_NM AS domaeNm
+            , TP.VENDOR_ID AS vendorId
+            , VENDOR.VENDOR_NM AS vendorNm
             , TP.SHOW_YN AS showYn
             , TP.DET_INFO AS detInfo
             , FN_GET_STOCK(TP.ID, NULL)  AS stock
@@ -55,7 +55,7 @@
             WHERE DEL_YN = 'N'
             GROUP BY PRODUCT_ID
         ) TPD ON TPD.PRODUCT_ID = TP.ID
-        INNER JOIN TB_PARTNER_CODE DOMAE ON DOMAE.ID = TP.DOMAE_ID AND DOMAE.PARTNER_ID =  TP.PARTNER_ID AND DOMAE.CODE_UPPER = 'P0006'
+        LEFT JOIN TB_PARTNER_VENDOR VENDOR ON VENDOR.ID = TP.VENDOR_ID AND VENDOR.PARTNER_ID = TP.PARTNER_ID AND VENDOR.DEL_YN = 'N'
         LEFT JOIN TB_PARTNER PT ON PT.ID = TP.PARTNER_ID
         LEFT JOIN (
             SELECT FILE_ID, COUNT(1) AS FILE_CNT
@@ -85,8 +85,8 @@
             <if test="partnerId != null">
                 AND TP.PARTNER_ID = #{partnerId}
             </if>
-            <if test="domaeId != null">
-                AND TP.DOMAE_ID = #{domaeId}
+            <if test="vendorId != null">
+                AND TP.VENDOR_ID = #{vendorId}
             </if>
             <if test='showYn != null and !showYn.equals("")'>
                 AND TP.SHOW_YN = #{showYn}
@@ -225,8 +225,8 @@
         <if test="isWinter != null">
             , IS_WINTER
         </if>
-        <if test="domaeId != null">
-            , DOMAE_ID
+        <if test="vendorId != null">
+            , VENDOR_ID
         </if>
         <if test="thickTp != null">
             , THICK_TP
@@ -291,8 +291,8 @@
         <if test="isWinter != null">
             , #{isWinter}
         </if>
-        <if test="domaeId != null">
-            , #{domaeId}
+        <if test="vendorId != null">
+            , #{vendorId}
         </if>
         <if test="thickTp != null">
             , #{thickTp}
@@ -389,8 +389,8 @@
             , IS_SUMMER = #{isSummer}
             , IS_AUTUMN = #{isAutumn}
             , IS_WINTER = #{isWinter}
-        <if test="domaeId != null">
-            , DOMAE_ID = #{domaeId}
+        <if test="vendorId != null">
+            , VENDOR_ID = #{vendorId}
         </if>
             , THICK_TP    = #{thickTp}
             , SPAN_TP     = #{spanTp}

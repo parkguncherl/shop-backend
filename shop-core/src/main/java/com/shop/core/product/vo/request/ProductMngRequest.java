@@ -23,8 +23,8 @@ public class ProductMngRequest {
         @Schema(description = "파트너 id")
         private Integer partnerId;
 
-        @Schema(description = "domae id")
-        private Integer domaeId;
+        @Schema(description = "vendor id")
+        private Integer vendorId;
 
         @Schema(description = "전시여부 (Y/N/null=전체)")
         private String showYn;

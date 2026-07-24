@@ -14,7 +14,7 @@ public class PartnerVendorRequest {
     public static class PagingFilter extends PartnerVendor implements RequestFilter {
 
         @Schema(description = "명칭 검색어")
-        private String searchPartnerNm;
+        private String searchVendorNm;
     }
 
     @Getter
@@ -31,7 +31,7 @@ public class PartnerVendorRequest {
         private Integer id;
 
         @Schema(description = "명칭")
-        private String partnerNm;
+        private String vendorNm;
 
         @Schema(description = "위치")
         private String location;

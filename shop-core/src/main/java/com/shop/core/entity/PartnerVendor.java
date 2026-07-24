@@ -33,7 +33,7 @@ public class PartnerVendor extends BaseEntity implements Serializable {
     private Integer partnerId;
 
     @Schema(description = "명칭")
-    private String partnerNm;
+    private String vendorNm;
 
     @Schema(description = "위치")
     private String location;

@@ -197,6 +197,7 @@ public class CartService {
                     ? c.getUnitPrice().multiply(BigDecimal.valueOf(c.getQuantity()))
                     : BigDecimal.ZERO;
             info.setSubtotal(subtotal);
+            info.setCreTm(c.getCreTm());
             totalPrice = totalPrice.add(subtotal);
 
             itemInfos.add(info);

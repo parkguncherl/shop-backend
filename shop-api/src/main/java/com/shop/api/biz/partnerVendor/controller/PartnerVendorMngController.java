@@ -37,6 +37,15 @@ public class PartnerVendorMngController {
         return new ApiResponse<>(ApiResultCode.SUCCESS, partnerVendorDao.selectPartnerVendorListPaging(pageRequest));
     }
 
+    @AccessLog("협력업체 콤보 목록 조회")
+    @GetMapping("/dropdown")
+    @Operation(summary = "협력업체 콤보(드롭다운) 목록 조회")
+    public ApiResponse<java.util.List<PartnerVendor>> getDropdown(
+            @Parameter(hidden = true) @JwtUser User jwtUser
+    ) {
+        return new ApiResponse<>(ApiResultCode.SUCCESS, partnerVendorDao.selectPartnerVendorDropdown(jwtUser.getPartnerId()));
+    }
+
     @AccessLog("협력업체 단건 조회")
     @GetMapping("/{id}")
     @Operation(summary = "협력업체 단건 조회")

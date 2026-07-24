@@ -54,4 +54,11 @@ public class PartnerVendorDao {
     public Integer deletePartnerVendor(PartnerVendorRequest.Delete request) {
         return sqlSession.update(NAMESPACE.concat("deletePartnerVendor"), request);
     }
+
+    /**
+     * 협력업체 콤보(드롭다운)용 목록을 조회합니다.
+     */
+    public java.util.List<PartnerVendor> selectPartnerVendorDropdown(Integer partnerId) {
+        return sqlSession.selectList(NAMESPACE.concat("selectPartnerVendorDropdown"), partnerId);
+    }
 }
