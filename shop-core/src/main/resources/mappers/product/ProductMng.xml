@@ -25,6 +25,10 @@
             , TPD.prodSizes
             , COALESCE(TPD.prodDetCnt, 0) AS prodDetCnt
             , COALESCE(FD_REP.FILE_CNT, 0)    AS repFileIdCnt
+            , (
+                SELECT D.SYS_FILE_NM FROM TB_FILE_DET D
+                WHERE D.FILE_ID = TP.REP_FILE_ID AND D.FILE_SEQ = 1 AND D.DEL_YN = 'N'
+              ) AS repSysFileNm
             , COALESCE(FD_DETAIL.FILE_CNT, 0) AS detailFileIdCnt
             , COALESCE(FD_SIZE.FILE_CNT, 0)   AS sizeFileIdCnt
             , COALESCE(FD_ETC.FILE_CNT, 0)    AS etcFileIdCnt
@@ -187,6 +191,7 @@
               PARTNER_ID
             , PROD_CD
             , PROD_NM
+            , ORG_PROD_NM
             , COMPOSITION
             , SINSANG_NO
         <if test="repFileId != null">
@@ -253,6 +258,7 @@
               #{partnerId}
             , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
             , #{prodNm}
+            , #{orgProdNm}
             , #{composition}
             , #{sinsangNo}
         <if test="repFileId != null">
@@ -366,6 +372,9 @@
             , UPD_USER = #{updUser}
         <if test="prodNm != null">
             , PROD_NM = #{prodNm}
+        </if>
+        <if test="orgProdNm != null">
+            , ORG_PROD_NM = #{orgProdNm}
         </if>
         <if test="composition != null">
             , COMPOSITION = #{composition}

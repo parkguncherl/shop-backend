@@ -205,6 +205,27 @@ public class CommonController {
     }
 
     /**
+     * 파일url 일괄 조회 (목록 화면에서 N건을 한 번에 처리하기 위함)
+     *
+     * @param request 파일 키 목록
+     * @return fileKey -> presigned url 맵
+     */
+    @AccessLog("파일url 일괄 적용")
+    @PostMapping("/getFileUrls")
+    @Operation(summary = "파일 presigned url 일괄 조회")
+    public ApiResponse<java.util.Map<String, String>> getFileUrls(@RequestBody CommonRequest.FileKeys request) {
+        java.util.Map<String, String> result = new java.util.LinkedHashMap<>();
+        java.util.List<String> keys = request.getFileKeys();
+        if (keys != null) {
+            keys.stream()
+                    .filter(k -> k != null && !k.isBlank())
+                    .distinct()
+                    .forEach(k -> result.put(k, commonService.getFileUrl(k)));
+        }
+        return new ApiResponse<>(result);
+    }
+
+    /**
      * 파일_재정렬 (seq to seq)
      *
      * @param jwtUser

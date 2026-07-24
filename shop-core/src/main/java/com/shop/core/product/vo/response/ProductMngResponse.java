@@ -37,6 +37,9 @@ public class ProductMngResponse {
         @Schema(description = "대표이미지 개수")
         private Integer repFileIdCnt;
 
+        @Schema(description = "대표이미지 시스템 파일명 (목록 썸네일용, 첫번째 파일)")
+        private String repSysFileNm;
+
         @Schema(description = "상세이미지 개수")
         private Integer detailFileIdCnt;
 

@@ -3,7 +3,6 @@ package com.shop.core.biz.partnerVendor.vo.response;
 import com.shop.core.entity.PartnerVendor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
@@ -20,12 +19,16 @@ public class PartnerVendorResponse extends PartnerVendor {
     @Getter
     @Setter
     @NoArgsConstructor
-    @Schema(description = "협력업체 페이징 응답")
+    @Schema(name = "VendorMngResponseVendorPagingInfo", description = "협력업체 페이징 응답", type = "object")
     public static class Paging extends PartnerVendorResponse {
 
-        public static Paging fromEntity(PartnerVendor vendor) {
+        @Schema(description = "상품 개수")
+        private Integer prodCnt;
+
+        public static Paging fromEntity(PartnerVendor vendor, Integer prodCnt) {
             Paging response = new Paging();
             copyFields(vendor, response);
+            response.setProdCnt(prodCnt);
             return response;
         }
     }

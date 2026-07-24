@@ -151,6 +151,16 @@ public class CommonRequest {
     @Getter
     @Setter
     @EqualsAndHashCode
+    @Schema(name = "CommonRequestFileKeys", description = "파일 경로 일괄 가져오기 요청")
+    public static class FileKeys {
+
+        @Schema(description = "파일 키 목록")
+        private java.util.List<String> fileKeys;
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
     @Schema(name = "CommonRequestFileRearrangementRequest", description = "파일 재정렬(by steps) 요청 dto")
     public static class FileRearrangementRequest {
 

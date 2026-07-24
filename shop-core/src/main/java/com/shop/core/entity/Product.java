@@ -41,6 +41,9 @@ public class Product extends BaseEntity implements Serializable {
     @Schema(description = "상품명")
     private String prodNm;
 
+    @Schema(description = "원본상품명")
+    private String orgProdNm;
+
     @Schema(description = "구성")
     private String composition;
 

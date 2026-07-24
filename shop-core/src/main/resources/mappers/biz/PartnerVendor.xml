@@ -36,7 +36,8 @@
         A.UPD_TM AS updTm,
         COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.CRE_USER = X.LOGIN_ID), A.CRE_USER) AS creUser,
         A.UPD_USER AS updUser,
-        COUNT(*) OVER() AS totalRowCount
+        COUNT(*) OVER() AS totalRowCount,
+        (SELECT COUNT(X.ID) AS prodCnt FROM TB_PRODUCT X WHERE X.VENDOR_ID = A.ID) AS prodCnt
         FROM TB_PARTNER_VENDOR A
         WHERE
         A.DEL_YN = 'N'
