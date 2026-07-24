@@ -140,7 +140,7 @@ public class MenuController {
             CommUtil.korFieldCheck(EsseType.ESS, menuRequest.getMenuUri(), 100, "메뉴URI");
         }
 
-        ApiResponse apiResponse = this.checkMenu(menuRequest.getId(), menuRequest.getUpMenuCd(), menuRequest.getMenuCd(), menuRequest.getMenuNm(), "INS", menuRequest.getMenuUri());
+        ApiResponse apiResponse = this.checkMenu(menuRequest.getId(), menuRequest.getUpMenuCd(), menuRequest.getMenuCd(), menuRequest.getMenuNm(), "INS", menuRequest.getMenuUri(), menuRequest.getMenuEngNm());
         if (apiResponse != null) {
             return apiResponse;
         }
@@ -177,7 +177,7 @@ public class MenuController {
             CommUtil.korFieldCheck(EsseType.ESS, menuRequest.getMenuUri(), 100, "메뉴URI");
         }
 
-        ApiResponse apiResponse = this.checkMenu(menuRequest.getId(), menuRequest.getUpMenuCd(), menuRequest.getMenuCd(), menuRequest.getMenuNm(), "MOD", menuRequest.getMenuUri());
+        ApiResponse apiResponse = this.checkMenu(menuRequest.getId(), menuRequest.getUpMenuCd(), menuRequest.getMenuCd(), menuRequest.getMenuNm(), "MOD", menuRequest.getMenuUri(), menuRequest.getMenuEngNm());
 
         if (apiResponse != null) {
             return apiResponse;
@@ -361,7 +361,7 @@ public class MenuController {
      * @param meunUri
      * @return
      */
-    private ApiResponse checkMenu(Integer id, String upMenuCd, String menuCd, String menuNm, String modType, String meunUri) {
+    private ApiResponse checkMenu(Integer id, String upMenuCd, String menuCd, String menuNm, String modType, String meunUri, String menuEngNm) {
 
         if (upMenuCd.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")) {
             return new ApiResponse<>(ApiResultCode.MENU_CODE_CHECK);
@@ -392,6 +392,7 @@ public class MenuController {
             menu2.setMenuUri(meunUri);
             menu2.setUpMenuCd(upMenuCd);
             menu2.setMenuCd(menuCd);
+            menu2.setMenuEngNm(menuEngNm);
             if (menuService.selectMenuByUK(menu2) != null) {
                 return new ApiResponse<>(ApiResultCode.DUPLICATE_URI);
             }

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.PartnerVendor">
+
+    <!-- 협력업체 컬럼 정의 -->
+    <sql id="vendorColumns">
+        ID          AS id,
+        PARTNER_ID  AS partnerId,
+        PARTNER_NM  AS partnerNm,
+        LOCATION    AS location,
+        PHONE_NO    AS phoneNo,
+        PHONE_NO2   AS phoneNo2,
+        KAKAO_ID    AS kakaoId,
+        ETC_INFO    AS etcInfo,
+        CRE_USER    AS creUser,
+        CRE_TM      AS creTm,
+        UPD_USER    AS updUser,
+        UPD_TM      AS updTm,
+        DEL_YN      AS delYn
+    </sql>
+
+    <!-- 협력업체 목록 조회 (페이징) -->
+    <select id="selectPartnerVendorListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.partnerVendor.vo.response.PartnerVendorResponse$Paging">
+        /* com.shop.mapper.PartnerVendor.selectPartnerVendorListPaging */
+        SELECT
+        ROW_NUMBER() OVER(ORDER BY A.ID DESC) AS no,
+        A.ID AS id,
+        A.PARTNER_ID AS partnerId,
+        A.PARTNER_NM AS partnerNm,
+        A.LOCATION AS location,
+        A.PHONE_NO AS phoneNo,
+        A.PHONE_NO2 AS phoneNo2,
+        A.KAKAO_ID AS kakaoId,
+        A.ETC_INFO AS etcInfo,
+        A.CRE_TM AS creTm,
+        A.UPD_TM AS updTm,
+        COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.CRE_USER = X.LOGIN_ID), A.CRE_USER) AS creUser,
+        A.UPD_USER AS updUser,
+        COUNT(*) OVER() AS totalRowCount
+        FROM TB_PARTNER_VENDOR A
+        WHERE
+        A.DEL_YN = 'N'
+        <if test="filter != null and filter.partnerId != null">
+            AND A.PARTNER_ID = #{filter.partnerId}
+        </if>
+        <if test="filter != null and filter.partnerNm != null and filter.partnerNm != ''">
+            AND A.PARTNER_NM LIKE CONCAT('%', #{filter.partnerNm}, '%')
+        </if>
+        <if test="filter != null and filter.phoneNo != null and filter.phoneNo != ''">
+            AND (A.PHONE_NO LIKE CONCAT('%', #{filter.phoneNo}, '%') OR A.PHONE_NO2 LIKE CONCAT('%', #{filter.phoneNo}, '%'))
+        </if>
+        ORDER BY A.ID DESC
+        LIMIT #{pageRowCount} OFFSET (#{curPage} - 1) * #{pageRowCount}
+    </select>
+
+    <!-- 협력업체 단건 조회 -->
+    <select id="selectPartnerVendorById" parameterType="Integer" resultType="com.shop.core.entity.PartnerVendor">
+        /* com.shop.mapper.PartnerVendor.selectPartnerVendorById */
+        SELECT
+        <include refid="vendorColumns" />
+        FROM TB_PARTNER_VENDOR
+        WHERE ID = #{id}
+        AND DEL_YN = 'N'
+    </select>
+
+    <!-- 협력업체 등록 -->
+    <insert id="insertPartnerVendor" parameterType="com.shop.core.entity.PartnerVendor">
+        /* com.shop.mapper.PartnerVendor.insertPartnerVendor */
+        INSERT INTO TB_PARTNER_VENDOR (
+            PARTNER_ID, PARTNER_NM, LOCATION, PHONE_NO, PHONE_NO2, KAKAO_ID, ETC_INFO,
+            DEL_YN, CRE_USER, CRE_TM, UPD_USER, UPD_TM
+        ) VALUES (
+            #{partnerId}, #{partnerNm}, #{location}, #{phoneNo}, #{phoneNo2}, #{kakaoId}, #{etcInfo},
+            'N', #{creUser}, NOW(), #{updUser}, NOW()
+        )
+    </insert>
+
+    <!-- 협력업체 수정 -->
+    <update id="updatePartnerVendorExistOnly"
+            parameterType="com.shop.core.biz.partnerVendor.vo.request.PartnerVendorRequest$Update">
+        /* com.shop.mapper.PartnerVendor.updatePartnerVendorExistOnly */
+        UPDATE TB_PARTNER_VENDOR
+        <set>
+            <if test="partnerNm != null">
+                PARTNER_NM = #{partnerNm},
+            </if>
+            <if test="location != null">
+                LOCATION = #{location},
+            </if>
+            <if test="phoneNo != null">
+                PHONE_NO = #{phoneNo},
+            </if>
+            <if test="phoneNo2 != null">
+                PHONE_NO2 = #{phoneNo2},
+            </if>
+            <if test="kakaoId != null">
+                KAKAO_ID = #{kakaoId},
+            </if>
+            <if test="etcInfo != null">
+                ETC_INFO = #{etcInfo},
+            </if>
+            UPD_USER = #{updUser},
+            UPD_TM = NOW()
+        </set>
+
+        WHERE ID = #{id}
+
+    </update>
+
+    <!-- 협력업체 삭제 (논리적 삭제) -->
+    <update id="deletePartnerVendor" parameterType="com.shop.core.biz.partnerVendor.vo.request.PartnerVendorRequest$Delete">
+        /* com.shop.mapper.PartnerVendor.deletePartnerVendor */
+        UPDATE TB_PARTNER_VENDOR
+        SET
+            DEL_YN   = 'Y',
+            UPD_USER = #{updUser},
+            UPD_TM   = NOW()
+        WHERE ID = #{id}
+    </update>
+
+</mapper>
