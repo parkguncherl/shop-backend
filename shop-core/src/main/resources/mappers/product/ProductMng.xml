@@ -24,7 +24,7 @@
             , TPD.prodColors
             , TPD.prodSizes
             , COALESCE(TPD.prodDetCnt, 0) AS prodDetCnt
-            , COALESCE(FD_REP.FILE_CNT, 0)    AS repFileIdCnt
+            , COALESCE(FD_REP.FILE_CNT, 0) AS repFileIdCnt
             , (
                 SELECT D.SYS_FILE_NM FROM TB_FILE_DET D
                 WHERE D.FILE_ID = TP.REP_FILE_ID AND D.FILE_SEQ = 1 AND D.DEL_YN = 'N'
