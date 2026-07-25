@@ -25,6 +25,15 @@ public class PartnerVendorResponse extends PartnerVendor {
         @Schema(description = "상품 개수")
         private Integer prodCnt;
 
+        @Schema(description = "1개월 상품 판매 개수")
+        private Integer oneMonthsellCnt;
+
+        @Schema(description = "2개월 상품판매 개수")
+        private Integer twoMonthsellCnt;
+
+        @Schema(description = "3개월 상품판매 개수")
+        private Integer threeMonthsellCnt;
+
         public static Paging fromEntity(PartnerVendor vendor, Integer prodCnt) {
             Paging response = new Paging();
             copyFields(vendor, response);

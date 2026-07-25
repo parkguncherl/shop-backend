@@ -22,33 +22,49 @@
     <!-- 협력업체 목록 조회 (페이징) -->
     <select id="selectPartnerVendorListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.partnerVendor.vo.response.PartnerVendorResponse$Paging">
         /* com.shop.mapper.PartnerVendor.selectPartnerVendorListPaging */
+        WITH VENDOR_SALES_SUMMARY AS (
         SELECT
-        ROW_NUMBER() OVER(ORDER BY A.ID DESC) AS no,
-        A.ID AS id,
-        A.PARTNER_ID AS partnerId,
-        A.VENDOR_NM AS vendorNm,
-        A.LOCATION AS location,
-        A.PHONE_NO AS phoneNo,
-        A.PHONE_NO2 AS phoneNo2,
-        A.KAKAO_ID AS kakaoId,
-        A.ETC_INFO AS etcInfo,
-        A.CRE_TM AS creTm,
-        A.UPD_TM AS updTm,
-        COALESCE((SELECT X.USER_NM FROM TB_USER X WHERE A.CRE_USER = X.LOGIN_ID), A.CRE_USER) AS creUser,
-        A.UPD_USER AS updUser,
-        COUNT(*) OVER() AS totalRowCount,
-        <!-- 상품 등록수: 우측 상품목록(com.shop.mapper.VendorProduct.selectVendorProductList)과 동일 조건 -->
-        (
-            SELECT COUNT(DISTINCT X.ID)
-            FROM TB_PRODUCT X
-            JOIN TB_PRODUCT_DET D ON D.PRODUCT_ID = X.ID AND D.DEL_YN = 'N'
-            WHERE X.VENDOR_ID = A.ID
-              AND X.DEL_YN = 'N'
-              AND X.PARTNER_ID = A.PARTNER_ID
-        ) AS prodCnt
-        FROM TB_PARTNER_VENDOR A
-        WHERE
-        A.DEL_YN = 'N'
+            P.VENDOR_ID,
+            COUNT(DISTINCT CASE WHEN ORD.CRE_TM >= NOW() - INTERVAL '1 month' THEN OI.ID END) AS oneMonthsellCnt,
+            COUNT(DISTINCT CASE WHEN ORD.CRE_TM >= NOW() - INTERVAL '2 month' THEN OI.ID END) AS twoMonthsellCnt,
+            COUNT(DISTINCT CASE WHEN ORD.CRE_TM >= NOW() - INTERVAL '3 month' THEN OI.ID END) AS threeMonthsellCnt
+        FROM TB_ORDER_ITEM OI
+        JOIN TB_ORDER ORD ON ORD.ID = OI.ORDER_ID AND ORD.ORDER_STATUS IN ('O','P','R','S','D') AND ORD.CRE_TM >= NOW() - INTERVAL '3 month' -- 전체 범위인 3개월 이상 데이터만 미리 필터링
+        JOIN TB_PRODUCT P ON P.ID = OI.PRODUCT_ID AND P.DEL_YN = 'N'
+        GROUP BY P.VENDOR_ID
+        ),
+        VENDOR_PRODUCT_SUMMARY AS (
+        SELECT
+              X.VENDOR_ID,
+              COUNT(DISTINCT X.ID) AS prodCnt
+         FROM TB_PRODUCT X
+         JOIN TB_PRODUCT_DET D ON D.PRODUCT_ID = X.ID AND D.DEL_YN = 'N'
+        WHERE X.DEL_YN = 'N'
+        GROUP BY X.VENDOR_ID
+        )
+        SELECT
+              ROW_NUMBER() OVER(ORDER BY A.ID DESC) AS no,
+              A.ID AS id,
+              A.PARTNER_ID AS partnerId,
+              A.VENDOR_NM AS vendorNm,
+              A.LOCATION AS location,
+              A.PHONE_NO AS phoneNo,
+              A.PHONE_NO2 AS phoneNo2,
+              A.KAKAO_ID AS kakaoId,
+              A.ETC_INFO AS etcInfo,
+              A.CRE_TM AS creTm,
+              A.UPD_TM AS updTm,
+              COALESCE(U.USER_NM, A.CRE_USER) AS creUser,
+              A.UPD_USER AS updUser,
+              COUNT(*) OVER() AS totalRowCount,
+              COALESCE(VP.prodCnt, 0) AS prodCnt,
+              COALESCE(VS.oneMonthsellCnt, 0) AS oneMonthsellCnt,
+              COALESCE(VS.threeMonthsellCnt, 0) AS threeMonthsellCnt
+         FROM TB_PARTNER_VENDOR A
+         LEFT JOIN TB_USER U ON U.LOGIN_ID = A.CRE_USER
+         LEFT JOIN VENDOR_PRODUCT_SUMMARY VP ON VP.VENDOR_ID = A.ID
+         LEFT JOIN VENDOR_SALES_SUMMARY VS ON VS.VENDOR_ID = A.ID
+        WHERE A.DEL_YN = 'N'
         <if test="filter != null and filter.partnerId != null">
             AND A.PARTNER_ID = #{filter.partnerId}
         </if>
