@@ -205,6 +205,24 @@ public class CommonController {
     }
 
     /**
+     * 파일 프록시 - R2 오브젝트 바이트를 같은 오리진으로 스트리밍한다.
+     * 브라우저가 R2 presigned URL 을 직접 xhr 로 호출할 때 발생하는 CORS 를 우회하기 위함(Konva canvas 등).
+     */
+    @AccessLog("파일 프록시")
+    @GetMapping("/fileProxy")
+    @Operation(summary = "파일 바이트 프록시 (CORS 우회, canvas용)")
+    public org.springframework.http.ResponseEntity<byte[]> fileProxy(@RequestParam("fileKey") String fileKey) {
+        software.amazon.awssdk.core.ResponseBytes<software.amazon.awssdk.services.s3.model.GetObjectResponse> obj =
+                commonService.getFileBytes(fileKey);
+        String contentType = obj.response().contentType();
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_TYPE,
+                        contentType != null ? contentType : org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                .header(org.springframework.http.HttpHeaders.CACHE_CONTROL, "public, max-age=3600")
+                .body(obj.asByteArray());
+    }
+
+    /**
      * 파일url 일괄 조회 (목록 화면에서 N건을 한 번에 처리하기 위함)
      *
      * @param request 파일 키 목록

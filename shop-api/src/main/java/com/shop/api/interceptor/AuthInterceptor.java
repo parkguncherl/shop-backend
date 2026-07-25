@@ -131,8 +131,21 @@ public class AuthInterceptor implements HandlerInterceptor {
 
                     String guestId = jwtTokenProvider.getGuestId(guestToken);
 
+                    // 정적 공통코드 조회(카테고리/코드 등)는 자주 호출되나 부하가 낮으므로 rate limit 대상에서 제외
+                    boolean isStaticCommonCode =
+                            uri.startsWith("/shop-ap/frontWeb/webCommon/partnerCode")
+                            || uri.startsWith("/shop-ap/frontWeb/webCommon/partnerCodeByUk")
+                            || uri.startsWith("/shop-ap/frontWeb/webCommon/lower")
+                            || uri.startsWith("/shop-ap/frontWeb/webCommon/getCodeName");
+
+                    // 로컬(개발) 환경에서는 rate limit(429) 미적용
+                    String serverName = request.getServerName();
+                    boolean isLocal = "localhost".equalsIgnoreCase(serverName)
+                            || "127.0.0.1".equals(serverName)
+                            || "0:0:0:0:0:0:0:1".equals(serverName);
+
                     // PostgreSQL Rate Limiting
-                    if (!guestTokenService.checkRateLimit(guestId)) {
+                    if (!isStaticCommonCode && !isLocal && !guestTokenService.checkRateLimit(guestId)) {
                         log.warn(">>>>>> Rate Limit 초과 : {}", guestId);
                         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                         response.setStatus(429);

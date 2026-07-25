@@ -322,6 +322,21 @@ public class CommonService {
     }
 
     /**
+     * R2 오브젝트를 바이트로 직접 조회합니다. (브라우저가 R2 를 직접 호출할 때 발생하는 CORS 를 우회하기 위해
+     * 백엔드가 같은 오리진으로 프록시 스트리밍하는 용도. 예: Konva canvas 이미지)
+     *
+     * @param fileName 오브젝트 키(sysFileNm)
+     * @return content-type 과 바이트
+     */
+    public software.amazon.awssdk.core.ResponseBytes<software.amazon.awssdk.services.s3.model.GetObjectResponse> getFileBytes(String fileName) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(BUKET_NAME)
+                .key(fileName)
+                .build();
+        return s3Client.getObjectAsBytes(getObjectRequest);
+    }
+
+    /**
      * 단건파일 업로드
      * desc: 해당 영역은 전적으로 파일 업로드 요청에 따른 업로드(fileDet 추가 및 버킷에 오브젝트 저장 요청)만을 수행한다
      *
