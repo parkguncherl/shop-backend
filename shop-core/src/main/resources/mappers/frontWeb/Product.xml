@@ -33,6 +33,16 @@
                   AND PD2.STNDR_COLOR != '') AS stndrColors
         FROM TB_PRODUCT P
         JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
+        /* 시즌 순서(P0006 CODE_ORDER) 한 행 피벗 - 정렬용 */
+        CROSS JOIN (
+            SELECT
+                  MAX(CASE WHEN CODE_CD = 'SPRING' THEN CODE_ORDER END) AS spring_ord
+                , MAX(CASE WHEN CODE_CD = 'SUMMER' THEN CODE_ORDER END) AS summer_ord
+                , MAX(CASE WHEN CODE_CD = 'AUTUMN' THEN CODE_ORDER END) AS autumn_ord
+                , MAX(CASE WHEN CODE_CD = 'WINTER' THEN CODE_ORDER END) AS winter_ord
+            FROM TB_PARTNER_CODE
+            WHERE CODE_UPPER = 'P0006' AND PARTNER_ID = #{filter.partnerId} AND DEL_YN = 'N'
+        ) S
         <where>
             AND P.DEL_YN = 'N'
             <if test='filter.lastId != null'>
@@ -57,7 +67,17 @@
             <when test='filter.sort == "PRICE_ASC"'>ORDER BY P.SELL_AMT ASC, P.ID ASC</when>
             <when test='filter.sort == "PRICE_DESC"'>ORDER BY P.SELL_AMT DESC, P.ID ASC</when>
             <when test='filter.sort == "POPULAR"'>ORDER BY P.FAVORITE_POINT DESC, P.ID ASC</when>
-            <otherwise>ORDER BY P.ID DESC</otherwise>
+            <!-- 기본(신상품순): 활성 시즌 CODE_ORDER 평균(9=안보임/비활성 제외) → 최신순 -->
+            <otherwise>
+                ORDER BY
+                    (SELECT AVG(x) FROM unnest(ARRAY[
+                         CASE WHEN P.IS_SPRING = 'Y' AND S.spring_ord != 9 THEN S.spring_ord END,
+                         CASE WHEN P.IS_SUMMER = 'Y' AND S.summer_ord != 9 THEN S.summer_ord END,
+                         CASE WHEN P.IS_AUTUMN = 'Y' AND S.autumn_ord != 9 THEN S.autumn_ord END,
+                         CASE WHEN P.IS_WINTER = 'Y' AND S.winter_ord != 9 THEN S.winter_ord END
+                     ]) AS t(x)) ASC NULLS LAST,
+                    P.ID DESC
+            </otherwise>
         </choose>
         LIMIT #{pageRowCount} + 1;
     </select>
@@ -148,9 +168,27 @@
          JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
          JOIN TB_CATEGORY_PRODUCT CP ON P.ID = CP.PRODUCT_ID AND CP.PARTNER_ID = #{partnerId} AND CP.DEL_YN = 'N'
          JOIN TB_PARTNER_CODE PC ON PC.CODE_UPPER = 'P0001' AND PC.ID = CP.CATEGORY_ID AND CP.PARTNER_ID = PC.PARTNER_ID AND PC.CODE_ETC = 'PROD' /* 시즌과 리사이클링 제외  */
+         /* 시즌 순서(P0006 CODE_ORDER) 한 행 피벗 - 정렬용 */
+         CROSS JOIN (
+             SELECT
+                   MAX(CASE WHEN CODE_CD = 'SPRING' THEN CODE_ORDER END) AS spring_ord
+                 , MAX(CASE WHEN CODE_CD = 'SUMMER' THEN CODE_ORDER END) AS summer_ord
+                 , MAX(CASE WHEN CODE_CD = 'AUTUMN' THEN CODE_ORDER END) AS autumn_ord
+                 , MAX(CASE WHEN CODE_CD = 'WINTER' THEN CODE_ORDER END) AS winter_ord
+             FROM TB_PARTNER_CODE
+             WHERE CODE_UPPER = 'P0006' AND PARTNER_ID = #{partnerId} AND DEL_YN = 'N'
+         ) S
         WHERE P.DEL_YN  = 'N'
           AND P.SHOW_YN = 'Y'
-        ORDER BY PC.CODE_ORDER, CP.SEQ
+        /* 카테고리 순서 → 활성 시즌 CODE_ORDER 평균(9=안보임/비활성 제외) → 기존 SEQ */
+        ORDER BY PC.CODE_ORDER,
+                 (SELECT AVG(x) FROM unnest(ARRAY[
+                      CASE WHEN P.IS_SPRING = 'Y' AND S.spring_ord != 9 THEN S.spring_ord END,
+                      CASE WHEN P.IS_SUMMER = 'Y' AND S.summer_ord != 9 THEN S.summer_ord END,
+                      CASE WHEN P.IS_AUTUMN = 'Y' AND S.autumn_ord != 9 THEN S.autumn_ord END,
+                      CASE WHEN P.IS_WINTER = 'Y' AND S.winter_ord != 9 THEN S.winter_ord END
+                  ]) AS t(x)) ASC NULLS LAST,
+                 CP.SEQ
     </select>
 
 
