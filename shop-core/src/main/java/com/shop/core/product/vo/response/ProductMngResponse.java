@@ -57,6 +57,9 @@ public class ProductMngResponse {
 
         @Schema(description = "시즌")
         private String season;
+
+        @Schema(description = "협력업체명")
+        private String vendorNm;
     }
 
     @Getter
