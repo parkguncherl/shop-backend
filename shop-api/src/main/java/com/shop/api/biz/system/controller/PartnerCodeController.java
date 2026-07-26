@@ -204,6 +204,26 @@ public class PartnerCodeController {
     }
 
     /**
+     * 코드 정렬순서(CODE_ORDER) 단건 변경 - 콤보 변경 즉시 반영용 (예: 시즌 순서)
+     */
+    @AccessLog("파트너코드 순서 변경")
+    @PutMapping(value = "/order")
+    @Operation(summary = "코드 정렬순서(CODE_ORDER) 단건 변경")
+    public ApiResponse<Void> updateCodeOrder(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @RequestParam Integer id,
+            @RequestParam Integer codeOrder
+    ) {
+        com.shop.core.entity.PartnerCode code = com.shop.core.entity.PartnerCode.builder()
+                .id(id)
+                .codeOrder(codeOrder)
+                .updUser(jwtUser.getLoginId())
+                .build();
+        partnerCodeDao.updatePartnerCodeExistOnly(code);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, null);
+    }
+
+    /**
      * 코드_수정
      *
      * @param jwtUser
