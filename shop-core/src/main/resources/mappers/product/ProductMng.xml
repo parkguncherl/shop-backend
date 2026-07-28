@@ -11,6 +11,7 @@
             , PT.SIZE_INFO AS sizeInfo
             , TP.PROD_CD AS prodCd
             , TP.PROD_NM AS prodNm
+            , TP.ORG_PROD_NM AS orgProdNm
             , TP.COMPOSITION AS composition
             , TP.SINSANG_NO AS sinsangNo
             , TP.REP_FILE_ID AS repFileId
