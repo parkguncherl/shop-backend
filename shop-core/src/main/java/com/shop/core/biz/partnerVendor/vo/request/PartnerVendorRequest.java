@@ -45,6 +45,12 @@ public class PartnerVendorRequest {
         @Schema(description = "카톡ID")
         private String kakaoId;
 
+        @Schema(description = "카카오스토리 ID")
+        private String kakaoStoryId;
+
+        @Schema(description = "인스타그램 ID")
+        private String instaId;
+
         @Schema(description = "기타정보")
         private String etcInfo;
 

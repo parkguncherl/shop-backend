@@ -11,6 +11,8 @@
         PHONE_NO    AS phoneNo,
         PHONE_NO2   AS phoneNo2,
         KAKAO_ID    AS kakaoId,
+        KAKAO_STORY_ID AS kakaoStoryId,
+        INSTA_ID    AS instaId,
         ETC_INFO    AS etcInfo,
         CRE_USER    AS creUser,
         CRE_TM      AS creTm,
@@ -51,6 +53,8 @@
               A.PHONE_NO AS phoneNo,
               A.PHONE_NO2 AS phoneNo2,
               A.KAKAO_ID AS kakaoId,
+              A.KAKAO_STORY_ID AS kakaoStoryId,
+              A.INSTA_ID AS instaId,
               A.ETC_INFO AS etcInfo,
               A.CRE_TM AS creTm,
               A.UPD_TM AS updTm,
@@ -92,10 +96,10 @@
     <insert id="insertPartnerVendor" parameterType="com.shop.core.entity.PartnerVendor">
         /* com.shop.mapper.PartnerVendor.insertPartnerVendor */
         INSERT INTO TB_PARTNER_VENDOR (
-            PARTNER_ID, VENDOR_NM, LOCATION, PHONE_NO, PHONE_NO2, KAKAO_ID, ETC_INFO,
+            PARTNER_ID, VENDOR_NM, LOCATION, PHONE_NO, PHONE_NO2, KAKAO_ID, KAKAO_STORY_ID, INSTA_ID, ETC_INFO,
             DEL_YN, CRE_USER, CRE_TM, UPD_USER, UPD_TM
         ) VALUES (
-            #{partnerId}, #{vendorNm}, #{location}, #{phoneNo}, #{phoneNo2}, #{kakaoId}, #{etcInfo},
+            #{partnerId}, #{vendorNm}, #{location}, #{phoneNo}, #{phoneNo2}, #{kakaoId}, #{kakaoStoryId}, #{instaId}, #{etcInfo},
             'N', #{creUser}, NOW(), #{updUser}, NOW()
         )
     </insert>
@@ -120,6 +124,12 @@
             </if>
             <if test="kakaoId != null">
                 KAKAO_ID = #{kakaoId},
+            </if>
+            <if test="kakaoStoryId != null">
+                KAKAO_STORY_ID = #{kakaoStoryId},
+            </if>
+            <if test="instaId != null">
+                INSTA_ID = #{instaId},
             </if>
             <if test="etcInfo != null">
                 ETC_INFO = #{etcInfo},

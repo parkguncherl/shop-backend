@@ -50,6 +50,8 @@ public class PartnerVendorResponse extends PartnerVendor {
         dst.setPhoneNo(src.getPhoneNo());
         dst.setPhoneNo2(src.getPhoneNo2());
         dst.setKakaoId(src.getKakaoId());
+        dst.setKakaoStoryId(src.getKakaoStoryId());
+        dst.setInstaId(src.getInstaId());
         dst.setEtcInfo(src.getEtcInfo());
         dst.setCreTm(src.getCreTm());
         dst.setCreUser(src.getCreUser());
