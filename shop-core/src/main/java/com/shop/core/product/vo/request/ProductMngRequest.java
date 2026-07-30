@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 
 @Schema(name = "ProductMngRequest", description = "상품관리 영역 요청")
 public class ProductMngRequest {
@@ -86,12 +88,18 @@ public class ProductMngRequest {
 
         @Schema(description = "상품 생성 시 연결할 카테고리 id (선택)")
         private Integer categoryId;
+
+        @Schema(description = "상품 생성 시 연결할 카테고리 id 목록 (복수 선택)")
+        private List<Integer> categoryIds;
     }
 
     @Getter
     @Setter
     @Schema(name = "ProductMngRequestUpdateProduct", description = "상품 수정 dto")
     public static class UpdateProduct extends Product {
+
+        @Schema(description = "연결할 카테고리 id 목록 (복수 선택, 멱등적 추가)")
+        private List<Integer> categoryIds;
     }
 
     @Getter

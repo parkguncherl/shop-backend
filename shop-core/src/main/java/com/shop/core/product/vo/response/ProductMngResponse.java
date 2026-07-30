@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public class ProductMngResponse {
@@ -60,6 +61,9 @@ public class ProductMngResponse {
 
         @Schema(description = "협력업체명")
         private String vendorNm;
+
+        @Schema(description = "연결할 카테고리 id 목록 (복수 선택, 멱등적 추가)")
+        private List<Integer> categoryIds;
     }
 
     @Getter

@@ -147,9 +147,17 @@ public class ProductMngService {
             throw new CustomRuntimeException("상품상세정보를 정상적으로 추가하지 못함");
         }
 
-        if (insertProductInfo.getCategoryId() != null) {
+        // 연결할 카테고리 목록 산출 (복수 선택 categoryIds 우선, 없으면 단건 categoryId)
+        java.util.List<Integer> categoryIds = new java.util.ArrayList<>();
+        if (insertProductInfo.getCategoryIds() != null && !insertProductInfo.getCategoryIds().isEmpty()) {
+            categoryIds.addAll(insertProductInfo.getCategoryIds());
+        } else if (insertProductInfo.getCategoryId() != null) {
+            categoryIds.add(insertProductInfo.getCategoryId());
+        }
+        // 중복 제거 후 각 카테고리에 상품 연결
+        for (Integer categoryId : categoryIds.stream().filter(java.util.Objects::nonNull).distinct().toList()) {
             ProductMngRequest.InsertCategoryProduct insertCategoryProduct = new ProductMngRequest.InsertCategoryProduct();
-            insertCategoryProduct.setCategoryId(insertProductInfo.getCategoryId());
+            insertCategoryProduct.setCategoryId(categoryId);
             insertCategoryProduct.setProductId(insertProductInfo.getId());
             insertCategoryProduct.setPartnerId(jwtUser.getPartnerId());
             insertCategoryProduct.setCreUser(jwtUser.getLoginId());
@@ -194,7 +202,21 @@ public class ProductMngService {
         }
 
         updateProduct.setUpdUser(jwtUser.getLoginId());
-        return productMngDao.updateProduct(updateProduct);
+        Integer updatedCnt = productMngDao.updateProduct(updateProduct);
+
+        // 선택된 카테고리 등록 (멱등적 추가 - insert 시 존재체크/유니크 인덱스로 중복 방지)
+        if (updateProduct.getCategoryIds() != null && !updateProduct.getCategoryIds().isEmpty()) {
+            for (Integer categoryId : updateProduct.getCategoryIds()) {
+                ProductMngRequest.InsertCategoryProduct insertCategoryProduct = new ProductMngRequest.InsertCategoryProduct();
+                insertCategoryProduct.setCategoryId(categoryId);
+                insertCategoryProduct.setProductId(updateProduct.getId());
+                insertCategoryProduct.setPartnerId(jwtUser.getPartnerId());
+                insertCategoryProduct.setCreUser(jwtUser.getLoginId());
+                insertCategoryProduct.setUpdUser(jwtUser.getLoginId());
+                productMngDao.insertCategoryProduct(insertCategoryProduct);
+            }
+        }
+        return updatedCnt;
     }
 
     /**

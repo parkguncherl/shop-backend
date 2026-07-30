@@ -2,7 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shop.mapper.product.ProductMng">
 
-    <select id="selectProdInfoList" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoFilter" resultType="com.shop.core.product.vo.response.ProductMngResponse$ProductInfo">
+    <!-- categoryIds(jsonb 배열)만 JsonbTypeHandler 로 명시하고 나머지 컬럼은 auto-mapping.
+         (List.class 에 JsonbTypeHandler / StringListTypeHandler 가 모두 매핑되어 auto 선택이 모호해지는 문제 회피) -->
+    <resultMap id="productInfoResultMap" type="com.shop.core.product.vo.response.ProductMngResponse$ProductInfo" autoMapping="true">
+        <result property="categoryIds" column="categoryIds" typeHandler="com.shop.api.config.JsonbTypeHandler"/>
+    </resultMap>
+
+    <select id="selectProdInfoList" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoFilter" resultMap="productInfoResultMap">
         /* com.shop.mapper.product.ProductMng.selectProdInfoList */
         SELECT
               TP.ID AS id
@@ -49,6 +55,7 @@
             , TP.SHOW_YN AS showYn
             , TP.DET_INFO AS detInfo
             , FN_GET_STOCK(TP.ID, NULL)  AS stock
+            , (SELECT JSON_AGG(TCP.CATEGORY_ID ORDER BY TCP.CATEGORY_ID) FROM TB_CATEGORY_PRODUCT TCP WHERE TCP.PRODUCT_ID = TP.ID AND TCP.DEL_YN = 'N') AS categoryIds
         FROM TB_PRODUCT TP
         INNER JOIN (
             SELECT
@@ -512,6 +519,8 @@
             #{creUser} ,
             #{updUser}
         )
+        /* 이미 활성 상태로 존재하면 무시 (부분 유니크 인덱스 uk_tb_category_product 활용) */
+        ON CONFLICT (partner_id, category_id, product_id) WHERE del_yn = 'N' DO NOTHING
     </insert>
 
     <update id="updateCategoryProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$UpdateCategoryProduct">
