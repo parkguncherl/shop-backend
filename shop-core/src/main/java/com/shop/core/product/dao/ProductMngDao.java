@@ -55,6 +55,15 @@ public class ProductMngDao {
     }
 
     /**
+     * 상품관리-카테고리별 상품 건수 목록 조회
+     * @param partnerId
+     * @return CategoryWithCount List
+     */
+    public List<ProductMngResponse.CategoryWithCount> selectCategoryListWithCount(Integer partnerId) {
+        return sqlSession.selectList(NAMESPACE + "selectCategoryListWithCount", partnerId);
+    }
+
+    /**
      * 상품관리-상품정보 추가
      * @param insertProduct
      * @return inserted row's cnt

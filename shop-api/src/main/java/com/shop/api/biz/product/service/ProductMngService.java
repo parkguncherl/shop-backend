@@ -66,6 +66,15 @@ public class ProductMngService {
     }
 
     /**
+     * 상품관리-카테고리별 상품 건수 목록 조회
+     * @param jwtUser
+     * @return CategoryWithCount List
+     */
+    public List<ProductMngResponse.CategoryWithCount> selectCategoryListWithCount(User jwtUser) {
+        return productMngDao.selectCategoryListWithCount(jwtUser.getPartnerId());
+    }
+
+    /**
      * 상품관리-상품정보 및 상품상세정보 추가(혹은 product 식별자(id) 가 주어질 시 상품상세정보 추가) 관련 비즈니스 동작 처리
      * @param insertProductInfo
      * @return

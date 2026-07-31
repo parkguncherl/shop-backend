@@ -85,6 +85,22 @@ public class ProductMngController {
     }
 
     /**
+     * 카테고리별 상품 건수 목록
+     *
+     * @param jwtUser
+     * @return 카테고리별 상품 건수 목록
+     */
+    @AccessLog("카테고리별 상품 건수 목록")
+    @GetMapping(value = "/categoryListWithCount")
+    @Operation(summary = "카테고리별 상품 건수 목록")
+    public ApiResponse<List<ProductMngResponse.CategoryWithCount>> selectCategoryListWithCount(
+            @Parameter(hidden = true) @JwtUser User jwtUser
+    ) {
+        List<ProductMngResponse.CategoryWithCount> response = productMngService.selectCategoryListWithCount(jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
      * 상품정보 및 상품상세정보 추가(혹은 product 식별자(id) 가 주어질 시 상품상세정보 추가)
      *
      * @param insertProductInfo

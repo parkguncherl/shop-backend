@@ -101,6 +101,9 @@ public class ProductMngResponse {
         @Schema(description = "사이즈(종류 나열)")
         private String prodSizes;
 
+        @Schema(description = "대표이미지 시스템 파일명(key)")
+        private String repSysFileNm;
+
         /** 이하 CategoryProduct 테이블 관련 */
         @Schema(description = "카테고리 연결상품정보 아이디(PK)")
         private Integer categoryProductId;
@@ -116,5 +119,24 @@ public class ProductMngResponse {
 
 //        @Schema(description = "상품 id")
 //        private Integer productId;
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode(callSuper = false)
+    @Schema(name = "ProductMngResponseCategoryWithCount", description = "카테고리별 상품 건수", type = "object")
+    public static class CategoryWithCount {
+
+        @Schema(description = "카테고리 id(TB_PARTNER_CODE.ID)")
+        private Integer categoryId;
+
+        @Schema(description = "카테고리명")
+        private String categoryNm;
+
+        @Schema(description = "카테고리 코드")
+        private String categoryCd;
+
+        @Schema(description = "카테고리 상품 건수")
+        private Integer prodCnt;
     }
 }

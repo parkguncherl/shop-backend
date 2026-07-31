@@ -103,6 +103,26 @@
             <if test='showYn != null and !showYn.equals("")'>
                 AND TP.SHOW_YN = #{showYn}
             </if>
+            <if test="categoryId != null">
+                <choose>
+                    <!-- categoryId = -1 : 어떤 카테고리에도 등록되지 않은 상품 조회 -->
+                    <when test="categoryId == -1">
+                        AND NOT EXISTS (
+                            SELECT 1 FROM TB_CATEGORY_PRODUCT TCP2
+                            WHERE TCP2.PRODUCT_ID = TP.ID
+                              AND TCP2.DEL_YN = 'N'
+                        )
+                    </when>
+                    <otherwise>
+                        AND EXISTS (
+                            SELECT 1 FROM TB_CATEGORY_PRODUCT TCP2
+                            WHERE TCP2.PRODUCT_ID = TP.ID
+                              AND TCP2.CATEGORY_ID = #{categoryId}
+                              AND TCP2.DEL_YN = 'N'
+                        )
+                    </otherwise>
+                </choose>
+            </if>
             <!-- 계절 필터: 선택된 계절 중 하나라도 포함하는 상품 조회 (OR). 미선택 시 조건 없음 -->
             <if test='isSpring != null or isSummer != null or isAutumn != null or isWinter != null'>
                 AND (
@@ -176,6 +196,7 @@
             , TP.IS_WINTER
             , STRING_AGG(TPD.PRODUCT_DET_COLOR, ',') AS prodColors
             , STRING_AGG(DISTINCT TPD.PRODUCT_DET_SIZE, ',') AS prodSizes
+            , (SELECT D.SYS_FILE_NM FROM TB_FILE_DET D WHERE D.FILE_ID = TP.REP_FILE_ID AND D.FILE_SEQ = 1 AND D.DEL_YN = 'N') AS repSysFileNm
             , CPD.ID AS categoryProductId
             , FN_GET_PARTNER_CODE_ID('P0001', CPD.CATEGORY_ID) AS categoryNm
             , CPD.SEQ AS seq
@@ -191,6 +212,24 @@
         </where>
         GROUP BY TP.ID, CPD.ID, CPD.SEQ
         ORDER BY CPD.SEQ;
+    </select>
+
+    <select id="selectCategoryListWithCount" parameterType="java.lang.Integer" resultType="com.shop.core.product.vo.response.ProductMngResponse$CategoryWithCount">
+        /* com.shop.mapper.product.ProductMng.selectCategoryListWithCount */
+        SELECT
+              PC.ID AS categoryId
+            , PC.CODE_NM AS categoryNm
+            , PC.CODE_CD AS categoryCd
+            , (SELECT COUNT(*)
+                 FROM TB_CATEGORY_PRODUCT CPD
+                 JOIN TB_PRODUCT TP ON TP.ID = CPD.PRODUCT_ID AND TP.DEL_YN = 'N'
+                WHERE CPD.CATEGORY_ID = PC.ID
+                  AND CPD.DEL_YN = 'N') AS prodCnt
+        FROM TB_PARTNER_CODE PC
+        WHERE PC.CODE_UPPER = 'P0001'
+          AND PC.PARTNER_ID = #{partnerId}
+          AND PC.DEL_YN = 'N'
+        ORDER BY PC.CODE_ORDER, PC.ID;
     </select>
 
     <insert id="insertProduct" parameterType="com.shop.core.product.vo.request.ProductMngRequest$InsertProduct" useGeneratedKeys="true" keyProperty="id">
