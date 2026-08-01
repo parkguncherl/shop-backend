@@ -134,9 +134,6 @@ public class UserRequest {
         @Schema(description = "연결_화주_아이디")
         private Integer partnerId;
 
-        @Schema(description = "org_연결_화주_아이디")
-        private Integer orgPartnerId;
-
         @Schema(description = "로그인_실패_회수")
         private Integer loginFailCnt;
 
@@ -270,9 +267,6 @@ public class UserRequest {
 
         @Schema(description = "파트너id")
         private Integer partnerId;
-
-        @Schema(description = "Origin 파트너id")
-        private Integer orgPartnerId;
 
         @Schema(description = "로그인한_유저_국가코드")
         private String loginLanguage;

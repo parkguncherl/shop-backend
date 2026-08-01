@@ -67,4 +67,7 @@ public class Partner extends BaseEntity implements Serializable {
 
     @Schema(description = "AI 상품 상세 학습 텍스트 (상품 상담 전 스터디용)")
     private String aiStudyProdDetailText;
+
+    @Schema(description = "파트너 이미지(파일 저장소 폴더 프리픽스로 사용)")
+    private String partnerImage;
 }

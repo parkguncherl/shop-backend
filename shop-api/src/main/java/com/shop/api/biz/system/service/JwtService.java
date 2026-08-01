@@ -49,7 +49,6 @@ public class JwtService {
     public static final String JWT_KEY_MEMBER_NAME = "userName";
     public static final String JWT_KEY_AUTH_CD = "authCd";
     public static final String JWT_KEY_PARTNER_ID = "partnerId";
-    public static final String JWT_KEY_ORG_PARTNER_ID = "orgPartnerId";
 
     private final AuthTokenDao authTokenDao;
 

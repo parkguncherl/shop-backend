@@ -3,6 +3,7 @@ package com.shop.api.biz.common.service;
 import com.shop.api.biz.system.service.UserService;
 import com.shop.api.utils.ByteArrayMultipartFile;
 import com.shop.core.biz.common.dao.FileDao;
+import com.shop.core.biz.partner.dao.PartnerDao;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.response.CommonResponse;
 import com.shop.core.entity.*;
@@ -56,9 +57,9 @@ import java.util.List;
 @Service
 public class CommonService {
 
-    private final UserService userService;
     private final FileDao fileDao;
     private final FileService fileService;
+    private final PartnerDao partnerDao;
     private final S3Presigner presigner;
     private final S3Client s3Client;
     private record ConvertResult(byte[] bytes, String contentType, String extension) {}
@@ -66,18 +67,15 @@ public class CommonService {
 
     public CommonService(
             UserService userService,
-            //SmsDao smsDao,
             FileDao fileDao,
-            //UserDao userDao,
-            //GridDao gridDao,
-            //GlobalProperties globalProperties,
             FileService fileService,
+            PartnerDao partnerDao,
             @Qualifier("buildS3PresignerWithR2Specific") S3Presigner presigner,
             @Qualifier("buildS3ClientWithR2Specific") S3Client s3Client // 주입 과정에서의 불완전성을 제거하기 위해 어노테이션 기반 주입 대신 다음과 같은 명시적 생성자 선언
     ) {
-        this.userService = userService;
         this.fileDao = fileDao;
         this.fileService = fileService;
+        this.partnerDao = partnerDao;
         this.presigner = presigner;
         this.s3Client = s3Client;
     }
@@ -113,7 +111,6 @@ public class CommonService {
     public List<FileDet> selectFileList(Integer fileId) {
         return fileDao.selectFileList(fileId);
     }
-
 
     /* webpImageUpload */
     public FileDet webpImageUpload(MultipartFile file, String key, String fileType, Integer fileId, Integer fileSeq, User jwtUser) throws IOException {
@@ -431,7 +428,7 @@ public class CommonService {
             }
 
             String originalFileName = uploadFile.getOriginalFilename();
-            String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+            String sysFileNm = resolveStoragePrefix(jwtUser) + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
             finalKey = webpImageUploadToBucket(uploadFile, sysFileNm); // 버킷에 신규 업로드
 
             if (finalKey == null) {
@@ -498,7 +495,7 @@ public class CommonService {
 
     public FileDet fileImageUploadComm(User jwtUser, MultipartFile file, Integer fileId, Integer fileSeq) throws IOException {
         String originalFileName = file.getOriginalFilename();
-        String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+        String sysFileNm = resolveStoragePrefix(jwtUser) + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
 
         // 이미지는 반드시 압축
         if(Objects.requireNonNull(file.getContentType()).startsWith("image")) {
@@ -512,7 +509,7 @@ public class CommonService {
 
     public FileDet fileUploadComm(User jwtUser, MultipartFile file, Integer fileId, Integer fileSeq) throws IOException {
         String originalFileName = file.getOriginalFilename();
-        String sysFileNm = GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode() + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
+        String sysFileNm = resolveStoragePrefix(jwtUser) + "/" + UUID.randomUUID() + '.' + CommUtil.getFileExtension(originalFileName);
         return this.uploadDocFile(file, sysFileNm, originalFileName, FilePathType.PRODUCT_CONTENTS.getCode(), fileId, fileSeq, jwtUser);
     }
 
@@ -825,6 +822,26 @@ public class CommonService {
     private String getExtension(String filename) {
         if (filename == null || !filename.contains(".")) return "bin";
         return filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+    }
+
+
+
+    /**
+     * 파일 저장소 폴더 프리픽스 결정.
+     * 업로드하는 파트너의 partnerImage 값을 사용하며, 없으면 기존 상수로 fallback.
+     */
+    private String resolveStoragePrefix(User jwtUser) {
+        try {
+            if (jwtUser != null && jwtUser.getPartnerId() != null) {
+                Partner partner = partnerDao.selectPartnerById(jwtUser.getPartnerId());
+                if (partner != null && partner.getPartnerImage() != null && !partner.getPartnerImage().isBlank()) {
+                    return partner.getPartnerImage();
+                }
+            }
+        } catch (Exception e) {
+            log.warn("파트너 이미지 프리픽스 조회 실패, 기본값 사용: {}", e.getMessage());
+        }
+        return GlobalConst.PRODUCT_CONTENTS_SHORT_NM.getCode();
     }
 
 }

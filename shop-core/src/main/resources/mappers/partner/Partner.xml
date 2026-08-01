@@ -63,6 +63,7 @@
         TP.SIZE_INFO AS sizeInfo,
         TP.AI_STUDY_TEXT AS aiStudyText,
         TP.AI_STUDY_PROD_DETAIL_TEXT AS aiStudyProdDetailText,
+        TP.PARTNER_IMAGE AS partnerImage,
         TP.CRE_TM AS creTm,
         TP.CRE_USER AS creUser,
         FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
@@ -184,6 +185,9 @@
             <if test="sizeInfo != null">
                 SIZE_INFO ,
             </if>
+            <if test="partnerImage != null">
+                PARTNER_IMAGE ,
+            </if>
             CRE_USER,
             UPD_USER
         )
@@ -212,6 +216,9 @@
             </if>
             <if test="sizeInfo != null">
                 #{sizeInfo},
+            </if>
+            <if test="partnerImage != null">
+                #{partnerImage},
             </if>
             #{creUser},
             #{creUser}
@@ -266,6 +273,9 @@
             </if>
             <if test="aiStudyProdDetailText != null">
                 , AI_STUDY_PROD_DETAIL_TEXT = #{aiStudyProdDetailText}
+            </if>
+            <if test="partnerImage != null">
+                , PARTNER_IMAGE = #{partnerImage}
             </if>
         WHERE ID = #{id}
     </update>
