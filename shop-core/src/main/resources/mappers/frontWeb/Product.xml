@@ -48,20 +48,33 @@
             <if test='filter.lastId != null'>
                 AND P.ID > #{filter.lastId}
             </if>
-            <if test='filter.categoryId == null or filter.categoryId != "all"'>
-            AND EXISTS (
-                SELECT CP.ID
-                  FROM TB_CATEGORY_PRODUCT CP
-                  JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N' AND PC.ID = CP.CATEGORY_ID
-                 WHERE CP.PRODUCT_ID = P.ID
-                <if test='filter.categoryId != null and filter.categoryId != "all"'>
-                   AND PC.CODE_CD = #{filter.categoryId}
-                </if>
-                )
-            </if>
-            <if test='filter.categoryId == "all"'>
-            AND P.PARTNER_ID = #{filter.partnerId}
-            </if>
+            <choose>
+                <!-- 신규: 공통코드 기반 카테고리(90010 대분류 / 90011 소분류) - prod_type_code 접두 일치 -->
+                <when test='filter.prodTypeCode != null and filter.prodTypeCode != "" and filter.prodTypeCode != "all"'>
+                    AND P.PARTNER_ID = #{filter.partnerId}
+                    AND P.PROD_TYPE_CODE LIKE CONCAT(#{filter.prodTypeCode}, '%')
+                </when>
+                <when test='filter.prodTypeCode == "all"'>
+                    AND P.PARTNER_ID = #{filter.partnerId}
+                </when>
+                <!-- 기존: 파트너코드(P0001) 기반 카테고리 (하위호환) -->
+                <otherwise>
+                    <if test='filter.categoryId == null or filter.categoryId != "all"'>
+                    AND EXISTS (
+                        SELECT CP.ID
+                          FROM TB_CATEGORY_PRODUCT CP
+                          JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N' AND PC.ID = CP.CATEGORY_ID
+                         WHERE CP.PRODUCT_ID = P.ID
+                        <if test='filter.categoryId != null and filter.categoryId != "all"'>
+                           AND PC.CODE_CD = #{filter.categoryId}
+                        </if>
+                        )
+                    </if>
+                    <if test='filter.categoryId == "all"'>
+                    AND P.PARTNER_ID = #{filter.partnerId}
+                    </if>
+                </otherwise>
+            </choose>
         </where>
         <choose>
             <when test='filter.sort == "PRICE_ASC"'>ORDER BY P.SELL_AMT ASC, P.ID ASC</when>

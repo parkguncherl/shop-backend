@@ -28,6 +28,9 @@ public class ProductResponse {
 
         @Schema(description = "카테고리명")
         private String categoryNm;
+
+        @Schema(description = "상품유형(소분류) 코드명")
+        private String prodTypeNm;
     }
 
     @Getter

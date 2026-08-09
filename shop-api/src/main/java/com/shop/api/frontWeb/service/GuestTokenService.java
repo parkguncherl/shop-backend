@@ -1,15 +1,11 @@
 package com.shop.api.frontWeb.service;
 
 import com.shop.api.config.JwtTokenProvider;
-import com.shop.api.utils.CommUtil;
-import com.shop.core.biz.partner.dao.PartnerDao;
-import com.shop.core.biz.partner.vo.response.PartnerResponse;
 import com.shop.core.entity.GuestRateLimit;
 import com.shop.core.frontWeb.dao.GuestRateLimitDao;
 import com.shop.core.frontWeb.dao.GuestTokenDao;
 import com.shop.core.frontWeb.vo.request.GuestTokenRequest;
 import com.shop.core.frontWeb.vo.response.GuestTokenResponse;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +23,6 @@ public class GuestTokenService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private static final int RATE_LIMIT_COUNT = 100;
-    private final PartnerDao partnerDao;
 
     /**
      * Guest Token 발급
@@ -36,19 +31,6 @@ public class GuestTokenService {
 
         String guestId    = "GUEST_" + UUID.randomUUID().toString().replace("-", "");
         Integer partnerId = 1; // 기본값이 1
-
-        String mainDomain = CommUtil.extractDomainParts(request.getCurrentUrl())[0];
-        String subDomain = CommUtil.extractDomainParts(request.getCurrentUrl())[1];
-        if(mainDomain != null && !mainDomain.contains("localhost") || StringUtils.isNotBlank(mainDomain)) {
-            if(StringUtils.isBlank(subDomain)){
-                subDomain = "www";
-            }
-            PartnerResponse.Select partner = partnerDao.selectMyPartnerBySubDomain(mainDomain, subDomain);
-            if(partner != null){
-                partnerId = partner.getId();
-                log.debug("<======= ContactRequest.PagingFilter: {}", partner);
-            }
-        }
 
         String guestToken = jwtTokenProvider.createGuestToken(guestId, partnerId, request.getClientIp());
         LocalDateTime expireDate = LocalDateTime.now().plusDays(30);

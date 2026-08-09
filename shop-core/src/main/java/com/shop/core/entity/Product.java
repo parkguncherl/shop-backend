@@ -112,4 +112,7 @@ public class Product extends BaseEntity implements Serializable {
 
     @Schema(description = "상품 상세 설명")
     private String detInfo;
+
+    @Schema(description = "상품유형(소분류 90011) 코드 - 앞자리에 대분류(90010) 코드 포함")
+    private String prodTypeCode;
 }

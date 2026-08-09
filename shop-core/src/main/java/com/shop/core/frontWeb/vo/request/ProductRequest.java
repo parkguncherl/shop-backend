@@ -22,6 +22,9 @@ public class ProductRequest {
         @Schema(description = "카테고리 id")
         private String categoryId;
 
+        @Schema(description = "상품유형(소분류 90011) 코드. 대분류(90010) 코드 전달 시 접두 일치로 하위 소분류 전체 조회")
+        private String prodTypeCode;
+
         @Schema(description = "정렬 기준: PRICE_ASC | PRICE_DESC | POPULAR")
         private String sort;
     }

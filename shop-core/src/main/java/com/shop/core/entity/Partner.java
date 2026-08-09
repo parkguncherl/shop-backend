@@ -38,8 +38,11 @@ public class Partner extends BaseEntity implements Serializable {
     @Schema(description = "셀러 하위명")
     private String partnerSubNm;
 
-    @Schema(description = "주소(도메인)")
-    private String domain;
+    @Schema(description = "위치")
+    private String location;
+
+    @Schema(description = "기타정보")
+    private String etcInfo;
 
     @Schema(description = "서브도메인 www")
     private String subDomain;
@@ -70,4 +73,13 @@ public class Partner extends BaseEntity implements Serializable {
 
     @Schema(description = "파트너 이미지(파일 저장소 폴더 프리픽스로 사용)")
     private String partnerImage;
+
+    @Schema(description = "카카오 스토리 ID")
+    private String kakaoStoryId;
+
+    @Schema(description = "카카오 ID")
+    private String kakaoId;
+
+    @Schema(description = "인스타그램 ID")
+    private String instaId;
 }

@@ -54,6 +54,7 @@
             , VENDOR.VENDOR_NM AS vendorNm
             , TP.SHOW_YN AS showYn
             , TP.DET_INFO AS detInfo
+            , TP.PROD_TYPE_CODE AS prodTypeCode
             , FN_GET_STOCK(TP.ID, NULL)  AS stock
             , (SELECT JSON_AGG(TCP.CATEGORY_ID ORDER BY TCP.CATEGORY_ID) FROM TB_CATEGORY_PRODUCT TCP WHERE TCP.PRODUCT_ID = TP.ID AND TCP.DEL_YN = 'N') AS categoryIds
         FROM TB_PRODUCT TP
@@ -119,6 +120,147 @@
                             WHERE TCP2.PRODUCT_ID = TP.ID
                               AND TCP2.CATEGORY_ID = #{categoryId}
                               AND TCP2.DEL_YN = 'N'
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+            <!-- 계절 필터: 선택된 계절 중 하나라도 포함하는 상품 조회 (OR). 미선택 시 조건 없음 -->
+            <if test='isSpring != null or isSummer != null or isAutumn != null or isWinter != null'>
+                AND (
+                <trim prefixOverrides="OR ">
+                    <if test='isSpring != null and isSpring.equals("Y")'>
+                        OR TP.IS_SPRING = 'Y'
+                    </if>
+                    <if test='isSummer != null and isSummer.equals("Y")'>
+                        OR TP.IS_SUMMER = 'Y'
+                    </if>
+                    <if test='isAutumn != null and isAutumn.equals("Y")'>
+                        OR TP.IS_AUTUMN = 'Y'
+                    </if>
+                    <if test='isWinter != null and isWinter.equals("Y")'>
+                        OR TP.IS_WINTER = 'Y'
+                    </if>
+                </trim>
+                )
+            </if>
+        </where>
+        ORDER BY TP.ID DESC
+    </select>
+
+
+
+    <select id="selectedProdInfoList" parameterType="com.shop.core.product.vo.request.ProductMngRequest$ProductInfoFilter" resultMap="productInfoResultMap">
+        /* com.shop.mapper.product.ProductMng.selectedProdInfoList */
+        SELECT
+            TP.ID AS id
+            , TP.PARTNER_ID AS partnerId
+            , PT.PARTNER_NM AS partnerNm
+            , PT.SIZE_INFO AS sizeInfo
+            , TP.PROD_CD AS prodCd
+            , TP.PROD_NM AS prodNm
+            , TP.ORG_PROD_NM AS orgProdNm
+            , TP.COMPOSITION AS composition
+            , TP.SINSANG_NO AS sinsangNo
+            , TP.REP_FILE_ID AS repFileId
+            , TP.DETAIL_FILE_ID AS detailFileId
+            , TP.SIZE_FILE_ID AS sizeFileId
+            , TP.ETC_FILE_ID AS etcFileId
+            , TP.MAKE_YMD AS makeYmd
+            , TP.ORG_AMT AS orgAmt
+            , TP.SELL_AMT AS sellAmt
+            , TP.DISCOUNT_RATE AS discountRate
+            , TPD.prodColors
+            , TPD.prodSizes
+            , COALESCE(TPD.prodDetCnt, 0) AS prodDetCnt
+            , COALESCE(FD_REP.FILE_CNT, 0) AS repFileIdCnt
+            , (
+            SELECT D.SYS_FILE_NM FROM TB_FILE_DET D
+            WHERE D.FILE_ID = TP.REP_FILE_ID AND D.FILE_SEQ = 1 AND D.DEL_YN = 'N'
+            ) AS repSysFileNm
+            , COALESCE(FD_DETAIL.FILE_CNT, 0) AS detailFileIdCnt
+            , COALESCE(FD_SIZE.FILE_CNT, 0)   AS sizeFileIdCnt
+            , COALESCE(FD_ETC.FILE_CNT, 0)    AS etcFileIdCnt
+            , TP.IS_SPRING
+            , TP.IS_SUMMER
+            , TP.IS_AUTUMN
+            , TP.IS_WINTER
+            , CONCAT(
+            CASE WHEN TP.IS_SPRING = 'Y' THEN 'S' ELSE '_' END,
+            CASE WHEN TP.IS_SUMMER = 'Y' THEN 'S' ELSE '_' END,
+            CASE WHEN TP.IS_AUTUMN = 'Y' THEN 'F' ELSE '_' END,
+            CASE WHEN TP.IS_WINTER = 'Y' THEN 'W' ELSE '_' END
+            ) AS SEASON
+            , COALESCE(CP.REL_CNT, 0) AS relCount
+            , TP.VENDOR_ID AS vendorId
+            , VENDOR.VENDOR_NM AS vendorNm
+            , TP.SHOW_YN AS showYn
+            , TP.DET_INFO AS detInfo
+            , TP.PROD_TYPE_CODE AS prodTypeCode
+            , FN_GET_STOCK(TP.ID, NULL)  AS stock
+            , (SELECT JSON_AGG(TCP.CATEGORY_ID ORDER BY TCP.CATEGORY_ID) FROM TB_CATEGORY_PRODUCT TCP WHERE TCP.PRODUCT_ID = TP.ID AND TCP.DEL_YN = 'N') AS categoryIds
+            FROM TB_PRODUCT TP
+            INNER JOIN (
+                SELECT
+                     PRODUCT_ID
+                    , STRING_AGG(PRODUCT_DET_COLOR, ',') AS prodColors
+                    , STRING_AGG(DISTINCT PRODUCT_DET_SIZE, ',') AS prodSizes
+                    , COUNT(1) AS prodDetCnt
+                FROM TB_PRODUCT_DET
+                WHERE DEL_YN = 'N'
+                GROUP BY PRODUCT_ID
+            ) TPD ON TPD.PRODUCT_ID = TP.ID
+        JOIN TB_PARTNER_VENDOR VENDOR ON VENDOR.ID = TP.VENDOR_ID AND VENDOR.PARTNER_ID = TP.PARTNER_ID AND VENDOR.DEL_YN = 'N'
+        JOIN TB_PARTNER PT ON PT.ID = TP.PARTNER_ID
+        LEFT JOIN (
+        SELECT FILE_ID, COUNT(1) AS FILE_CNT
+        FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
+        ) FD_REP ON FD_REP.FILE_ID = TP.REP_FILE_ID
+        LEFT JOIN (
+        SELECT FILE_ID, COUNT(1) AS FILE_CNT
+        FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
+        ) FD_DETAIL ON FD_DETAIL.FILE_ID = TP.DETAIL_FILE_ID
+        LEFT JOIN (
+        SELECT FILE_ID, COUNT(1) AS FILE_CNT
+        FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
+        ) FD_SIZE ON FD_SIZE.FILE_ID = TP.SIZE_FILE_ID
+        LEFT JOIN (
+        SELECT FILE_ID, COUNT(1) AS FILE_CNT
+        FROM TB_FILE_DET WHERE DEL_YN = 'N' GROUP BY FILE_ID
+        ) FD_ETC ON FD_ETC.FILE_ID = TP.ETC_FILE_ID
+        LEFT JOIN (
+        SELECT PRODUCT_ID, COUNT(1) AS REL_CNT
+        FROM TB_CONTENTS_PRODUCT WHERE DEL_YN = 'N' GROUP BY PRODUCT_ID
+        ) CP ON CP.PRODUCT_ID = TP.ID
+        <where>
+            AND TP.DEL_YN = 'N'
+            <if test='prodNm != null and !prodNm.equals("")'>
+                AND TP.PROD_NM LIKE CONCAT('%', #{prodNm}, '%')
+            </if>
+            <if test="partnerId != null">
+                AND TP.PARTNER_ID = #{partnerId}
+            </if>
+            <if test="vendorId != null">
+                AND TP.VENDOR_ID = #{vendorId}
+            </if>
+            <if test='showYn != null and !showYn.equals("")'>
+                AND TP.SHOW_YN = #{showYn}
+            </if>
+            <if test="categoryId != null">
+                <choose>
+                    <!-- categoryId = -1 : 어떤 카테고리에도 등록되지 않은 상품 조회 -->
+                    <when test="categoryId == -1">
+                        AND NOT EXISTS (
+                        SELECT 1 FROM TB_CATEGORY_PRODUCT TCP2
+                        WHERE TCP2.PRODUCT_ID = TP.ID
+                        AND TCP2.DEL_YN = 'N'
+                        )
+                    </when>
+                    <otherwise>
+                        AND EXISTS (
+                        SELECT 1 FROM TB_CATEGORY_PRODUCT TCP2
+                        WHERE TCP2.PRODUCT_ID = TP.ID
+                        AND TCP2.CATEGORY_ID = #{categoryId}
+                        AND TCP2.DEL_YN = 'N'
                         )
                     </otherwise>
                 </choose>
@@ -301,6 +443,9 @@
         <if test="showYn != null">
             , SHOW_YN
         </if>
+        <if test="prodTypeCode != null">
+            , PROD_TYPE_CODE
+        </if>
         ) VALUES (
               #{partnerId}
             , FN_GET_NEXT_PRODUCT_CODE(#{partnerId})
@@ -367,6 +512,9 @@
         </if>
         <if test="showYn != null">
             , #{showYn}
+        </if>
+        <if test="prodTypeCode != null">
+            , #{prodTypeCode}
         </if>
         )
     </insert>
@@ -454,6 +602,9 @@
             , LAUNDRY_TP  = #{laundryTp}
             , TRANS_TP     = #{transTp}
             , DET_INFO  = #{detInfo}
+        <if test="prodTypeCode != null">
+            , PROD_TYPE_CODE = #{prodTypeCode}
+        </if>
         WHERE ID = #{id}
     </update>
 

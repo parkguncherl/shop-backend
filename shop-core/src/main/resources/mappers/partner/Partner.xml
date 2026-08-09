@@ -13,8 +13,9 @@
             FN_GET_CODE('10060', TP.PARTNER_TYPE) PARTNER_TYPE_NM,
             TP.PARTNER_NM,
             TP.PARTNER_SUB_NM,
-            TP.DOMAIN ,
-            TP.SUB_DOMAIN,
+            TP.LOCATION AS location ,
+            TP.ETC_INFO AS etcInfo,
+            TP.SUB_DOMAIN AS subDomain,
             TP.PHONE_NO,
             TP.REP_NM,
             TP.EMAIL,
@@ -53,8 +54,9 @@
         FN_GET_CODE('10060', TP.PARTNER_TYPE) PARTNER_TYPE_NM,
         TP.PARTNER_NM,
         TP.PARTNER_SUB_NM,
-        TP.DOMAIN ,
-        TP.SUB_DOMAIN,
+        TP.LOCATION AS location ,
+        TP.ETC_INFO AS etcInfo,
+            TP.SUB_DOMAIN AS subDomain,
         TP.PHONE_NO,
         TP.REP_NM,
         TP.EMAIL,
@@ -64,6 +66,9 @@
         TP.AI_STUDY_TEXT AS aiStudyText,
         TP.AI_STUDY_PROD_DETAIL_TEXT AS aiStudyProdDetailText,
         TP.PARTNER_IMAGE AS partnerImage,
+        TP.KAKAO_STORY_ID AS kakaoStoryId,
+        TP.KAKAO_ID AS kakaoId,
+        TP.INSTA_ID AS instaId,
         TP.CRE_TM AS creTm,
         TP.CRE_USER AS creUser,
         FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
@@ -84,8 +89,9 @@
             FN_GET_CODE('10060', TP.PARTNER_TYPE) PARTNER_TYPE_NM,
             TP.PARTNER_NM,
             TP.PARTNER_SUB_NM,
-            TP.DOMAIN ,
-            TP.SUB_DOMAIN,
+            TP.LOCATION AS location ,
+            TP.ETC_INFO AS etcInfo,
+            TP.SUB_DOMAIN AS subDomain,
             TP.PHONE_NO,
             TP.FIRST_GREETING_MESSAGE ,
             TP.CRE_TM AS creTm,
@@ -104,32 +110,6 @@
         ORDER BY TP.PARTNER_NM ASC;
     </select>
 
-    <select id="selectMyPartnerBySubDomain" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$Select">
-        /* com.shop.mapper.partner.selectMyPartnerBySubDomain */
-        SELECT
-            TP.ID AS id,
-            TP.PARTNER_TICKER ,
-            TP.PARTNER_TYPE ,
-            FN_GET_CODE('10060', TP.PARTNER_TYPE) PARTNER_TYPE_NM,
-            TP.PARTNER_NM,
-            TP.PARTNER_SUB_NM,
-            TP.DOMAIN ,
-            TP.SUB_DOMAIN,
-            TP.PHONE_NO,
-            TP.FIRST_GREETING_MESSAGE ,
-            TP.CRE_TM AS creTm,
-            TP.CRE_USER AS creUser,
-            FN_GET_USERNAME(TP.CRE_USER) as creUserNm,
-            TP.UPD_TM AS updTm,
-            TP.UPD_USER AS updUser,
-            FN_GET_USERNAME(TP.UPD_USER) as upduserNm
-        FROM TB_PARTNER TP
-       WHERE TP.DOMAIN = #{domain}
-         AND TP.SUB_DOMAIN = #{subDomain}
-         AND TP.DEL_YN = 'N'
-       LIMIT 1
-    </select>
-
     <select id="selectPartnerListForSearching" parameterType="com.shop.core.biz.partner.vo.request.PartnerRequest$FilterForList" resultType="com.shop.core.biz.partner.vo.response.PartnerResponse$ForSearching">
         /* com.shop.mapper.partner.selectPartnerListForSearching */
         SELECT
@@ -139,8 +119,9 @@
                 FN_GET_CODE('10060', TP.PARTNER_TYPE) PARTNER_TYPE_NM,
                 TP.PARTNER_NM,
                 TP.PARTNER_SUB_NM,
-                TP.DOMAIN ,
-                TP.SUB_DOMAIN,
+                TP.LOCATION AS location ,
+                TP.ETC_INFO AS etcInfo,
+            TP.SUB_DOMAIN AS subDomain,
                 TP.PHONE_NO,
                 TP.FIRST_GREETING_MESSAGE ,
                 TP.CRE_TM AS creTm,
@@ -165,7 +146,7 @@
             PARTNER_NM,
             PARTNER_TICKER,
             PARTNER_SUB_NM,
-            DOMAIN,
+            LOCATION,
             FIRST_GREETING_MESSAGE ,
             <if test="phoneNo != null">
                 PHONE_NO ,
@@ -175,6 +156,9 @@
             </if>
             <if test="email != null">
                 EMAIL ,
+            </if>
+            <if test="etcInfo != null">
+                ETC_INFO ,
             </if>
             <if test="subDomain != null">
                 SUB_DOMAIN ,
@@ -188,6 +172,15 @@
             <if test="partnerImage != null">
                 PARTNER_IMAGE ,
             </if>
+            <if test="kakaoStoryId != null">
+                KAKAO_STORY_ID ,
+            </if>
+            <if test="kakaoId != null">
+                KAKAO_ID ,
+            </if>
+            <if test="instaId != null">
+                INSTA_ID ,
+            </if>
             CRE_USER,
             UPD_USER
         )
@@ -197,7 +190,7 @@
             #{partnerNm},
             #{partnerTicker},
             #{partnerSubNm},
-            #{domain},
+            #{location},
             #{firstGreetingMessage},
             <if test="phoneNo != null">
                 #{phoneNo},
@@ -208,8 +201,11 @@
             <if test="email != null">
                 #{email},
             </if>
+            <if test="etcInfo != null">
+                #{etcInfo},
+            </if>
             <if test="subDomain != null">
-                #{SUB_DOMAIN},
+                #{subDomain},
             </if>
             <if test="reviewPointRate != null">
                 #{reviewPointRate},
@@ -219,6 +215,15 @@
             </if>
             <if test="partnerImage != null">
                 #{partnerImage},
+            </if>
+            <if test="kakaoStoryId != null">
+                #{kakaoStoryId},
+            </if>
+            <if test="kakaoId != null">
+                #{kakaoId},
+            </if>
+            <if test="instaId != null">
+                #{instaId},
             </if>
             #{creUser},
             #{creUser}
@@ -247,8 +252,8 @@
             <if test="partnerSubNm != null">
                 , PARTNER_SUB_NM = #{partnerSubNm}
             </if>
-            <if test="domain != null">
-                , DOMAIN = #{domain}
+            <if test="location != null">
+                , LOCATION = #{location}
             </if>
             <if test="phoneNo != null">
                 , PHONE_NO = #{phoneNo}
@@ -258,6 +263,9 @@
             </if>
             <if test="email != null">
                 , EMAIL = #{email}
+            </if>
+            <if test="etcInfo != null">
+                , ETC_INFO = #{etcInfo}
             </if>
             <if test="subDomain != null">
                 , SUB_DOMAIN = #{subDomain}
@@ -276,6 +284,15 @@
             </if>
             <if test="partnerImage != null">
                 , PARTNER_IMAGE = #{partnerImage}
+            </if>
+            <if test="kakaoStoryId != null">
+                , KAKAO_STORY_ID = #{kakaoStoryId}
+            </if>
+            <if test="kakaoId != null">
+                , KAKAO_ID = #{kakaoId}
+            </if>
+            <if test="instaId != null">
+                , INSTA_ID = #{instaId}
             </if>
         WHERE ID = #{id}
     </update>
