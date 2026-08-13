@@ -156,4 +156,17 @@ public class ProductMngDao {
     public int deleteCategoryProductByProductId(ProductMngRequest.DeleteProduct deleteProduct) {
         return sqlSession.update(NAMESPACE + "deleteCategoryProductByProductId", deleteProduct);
     }
+
+    /**
+     * 상품에 연결된 카테고리 중 전달된 categoryIds 에 포함되지 않은 연결을 소프트 삭제한다.
+     * categoryIds 가 비어있으면 해당 상품의 모든 연결을 해제한다.
+     * @return 삭제된 행의 수
+     */
+    public int deleteCategoryProductNotIn(Integer productId, List<Integer> categoryIds, String updUser) {
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+        params.put("productId", productId);
+        params.put("categoryIds", categoryIds);
+        params.put("updUser", updUser);
+        return sqlSession.update(NAMESPACE + "deleteCategoryProductNotIn", params);
+    }
 }

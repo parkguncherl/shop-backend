@@ -749,4 +749,22 @@
         WHERE PRODUCT_ID = #{id}
           AND DEL_YN = 'N'
     </update>
+
+    <!-- 상품에 연결된 카테고리 중, 전달된 categoryIds 에 포함되지 않은 것을 소프트 삭제.
+         categoryIds 가 비어있으면 해당 상품의 모든 연결을 해제한다. -->
+    <update id="deleteCategoryProductNotIn" parameterType="map">
+        /* com.shop.mapper.product.ProductMng.deleteCategoryProductNotIn */
+        UPDATE TB_CATEGORY_PRODUCT SET
+              UPD_TM = NOW()
+            , UPD_USER = #{updUser}
+            , DEL_YN = 'Y'
+        WHERE PRODUCT_ID = #{productId}
+          AND DEL_YN = 'N'
+        <if test="categoryIds != null and categoryIds.size() > 0">
+            AND CATEGORY_ID NOT IN
+            <foreach collection="categoryIds" item="cid" open="(" separator="," close=")">
+                #{cid}
+            </foreach>
+        </if>
+    </update>
 </mapper>

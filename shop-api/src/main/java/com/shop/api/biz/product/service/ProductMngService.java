@@ -194,6 +194,7 @@ public class ProductMngService {
      * @param updateProduct
      * @return
      */
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Integer updateProduct(ProductMngRequest.UpdateProduct updateProduct, User jwtUser) {
 
         /** 계절 식별 영역 기본값 할당 영역 */
@@ -213,9 +214,21 @@ public class ProductMngService {
         updateProduct.setUpdUser(jwtUser.getLoginId());
         Integer updatedCnt = productMngDao.updateProduct(updateProduct);
 
-        // 선택된 카테고리 등록 (멱등적 추가 - insert 시 존재체크/유니크 인덱스로 중복 방지)
-        if (updateProduct.getCategoryIds() != null && !updateProduct.getCategoryIds().isEmpty()) {
-            for (Integer categoryId : updateProduct.getCategoryIds()) {
+        // 카테고리 재조정: 전달된 categoryIds 를 최종 상태로 반영한다.
+        //  - categoryIds == null : 카테고리 미관리 요청으로 보고 기존 연결을 건드리지 않는다.
+        //  - categoryIds == []   : 모든 연결을 해제한다.
+        //  - categoryIds == [..] : 목록에 없는 연결은 소프트 삭제하고, 새 연결은 추가한다(멱등).
+        if (updateProduct.getCategoryIds() != null) {
+            java.util.List<Integer> desired = updateProduct.getCategoryIds().stream()
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .toList();
+
+            // 1) 더 이상 선택되지 않은 연결 소프트 삭제 (기존에 유지되는 연결의 seq 순서는 보존)
+            productMngDao.deleteCategoryProductNotIn(updateProduct.getId(), desired, jwtUser.getLoginId());
+
+            // 2) 새로 선택된 연결 추가 (ON CONFLICT DO NOTHING 으로 중복 방지)
+            for (Integer categoryId : desired) {
                 ProductMngRequest.InsertCategoryProduct insertCategoryProduct = new ProductMngRequest.InsertCategoryProduct();
                 insertCategoryProduct.setCategoryId(categoryId);
                 insertCategoryProduct.setProductId(updateProduct.getId());

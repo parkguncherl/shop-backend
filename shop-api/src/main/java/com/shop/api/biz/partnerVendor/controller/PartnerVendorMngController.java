@@ -30,10 +30,12 @@ public class PartnerVendorMngController {
     @Operation(summary = "협력업체 목록 조회 (페이징)")
     public ApiResponse<PageResponse<PartnerVendorResponse.Paging>> getList(
             @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "PartnerVendorRequestPagingFilter", description = "협력업체 목록 조회 필터") PartnerVendorRequest.PagingFilter filter,
             PageRequest<PartnerVendorRequest.PagingFilter> pageRequest
     ) {
-        if (pageRequest.getFilter() == null) pageRequest.setFilter(new PartnerVendorRequest.PagingFilter());
-        pageRequest.getFilter().setPartnerId(jwtUser.getPartnerId());
+        if (filter == null) filter = new PartnerVendorRequest.PagingFilter();
+        filter.setPartnerId(jwtUser.getPartnerId());
+        pageRequest.setFilter(filter);
         return new ApiResponse<>(ApiResultCode.SUCCESS, partnerVendorDao.selectPartnerVendorListPaging(pageRequest));
     }
 

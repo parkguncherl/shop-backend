@@ -65,6 +65,7 @@
                           FROM TB_CATEGORY_PRODUCT CP
                           JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N' AND PC.ID = CP.CATEGORY_ID
                          WHERE CP.PRODUCT_ID = P.ID
+                           AND CP.DEL_YN = 'N'
                         <if test='filter.categoryId != null and filter.categoryId != "all"'>
                            AND PC.CODE_CD = #{filter.categoryId}
                         </if>
@@ -128,7 +129,7 @@
                   AND PD2.STNDR_COLOR != '') AS stndrColors
         FROM TB_PRODUCT P
         JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
-        JOIN TB_CATEGORY_PRODUCT CP ON CP.PRODUCT_ID = P.ID
+        JOIN TB_CATEGORY_PRODUCT CP ON CP.PRODUCT_ID = P.ID AND CP.DEL_YN = 'N'
         JOIN TB_PARTNER_CODE PC ON PC.ID = CP.CATEGORY_ID
                                      AND PC.PARTNER_ID = #{filter.partnerId}
                                      AND PC.CODE_UPPER = 'P0001'
