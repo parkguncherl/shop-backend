@@ -45,6 +45,7 @@
         ) S
         <where>
             AND P.DEL_YN = 'N'
+            AND P.SHOW_YN = 'Y'
             <if test='filter.lastId != null'>
                 AND P.ID > #{filter.lastId}
             </if>
