@@ -54,6 +54,12 @@
             , VENDOR.VENDOR_NM AS vendorNm
             , TP.SHOW_YN AS showYn
             , TP.DET_INFO AS detInfo
+            , TP.THICK_TP AS thickTp
+            , TP.SPAN_TP AS spanTp
+            , TP.SHOW_TP AS showTp
+            , TP.TRANS_TP AS transTp
+            , TP.LAUNDRY_TP AS laundryTp
+            , TP.LAUNDRY_DESC AS laundryDesc
             , TP.PROD_TYPE_CODE AS prodTypeCode
             , FN_GET_STOCK(TP.ID, NULL)  AS stock
             , (SELECT JSON_AGG(TCP.CATEGORY_ID ORDER BY TCP.CATEGORY_ID) FROM TB_CATEGORY_PRODUCT TCP WHERE TCP.PRODUCT_ID = TP.ID AND TCP.DEL_YN = 'N') AS categoryIds
@@ -195,6 +201,12 @@
             , VENDOR.VENDOR_NM AS vendorNm
             , TP.SHOW_YN AS showYn
             , TP.DET_INFO AS detInfo
+            , TP.THICK_TP AS thickTp
+            , TP.SPAN_TP AS spanTp
+            , TP.SHOW_TP AS showTp
+            , TP.TRANS_TP AS transTp
+            , TP.LAUNDRY_TP AS laundryTp
+            , TP.LAUNDRY_DESC AS laundryDesc
             , TP.PROD_TYPE_CODE AS prodTypeCode
             , FN_GET_STOCK(TP.ID, NULL)  AS stock
             , (SELECT JSON_AGG(TCP.CATEGORY_ID ORDER BY TCP.CATEGORY_ID) FROM TB_CATEGORY_PRODUCT TCP WHERE TCP.PRODUCT_ID = TP.ID AND TCP.DEL_YN = 'N') AS categoryIds
@@ -437,6 +449,9 @@
         <if test="transTp != null">
             , TRANS_TP
         </if>
+        <if test="laundryDesc != null">
+            , LAUNDRY_DESC
+        </if>
         <if test="detInfo != null">
             , DET_INFO
         </if>
@@ -506,6 +521,9 @@
         </if>
         <if test="transTp != null">
             , #{transTp}
+        </if>
+        <if test="laundryDesc != null">
+            , #{laundryDesc}
         </if>
         <if test="detInfo != null">
             , #{detInfo}
@@ -598,9 +616,11 @@
         </if>
             , THICK_TP    = #{thickTp}
             , SPAN_TP     = #{spanTp}
+            , SHOW_TP     = #{showTp}
             , SHOW_YN     = #{showYn}
             , LAUNDRY_TP  = #{laundryTp}
             , TRANS_TP     = #{transTp}
+            , LAUNDRY_DESC = #{laundryDesc}
             , DET_INFO  = #{detInfo}
         <if test="prodTypeCode != null">
             , PROD_TYPE_CODE = #{prodTypeCode}

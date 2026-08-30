@@ -110,6 +110,9 @@ public class Product extends BaseEntity implements Serializable {
     @Schema(description = "비치는정도 타입 코드")
     private String transTp;
 
+    @Schema(description = "세탁 기타 설명 (세탁 타입이 기타(90070/9) 인 경우 필수)")
+    private String laundryDesc;
+
     @Schema(description = "상품 상세 설명")
     private String detInfo;
 
