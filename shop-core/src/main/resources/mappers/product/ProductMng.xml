@@ -67,7 +67,7 @@
         INNER JOIN (
             SELECT
             PRODUCT_ID
-            , STRING_AGG(PRODUCT_DET_COLOR, ',') AS prodColors
+            , STRING_AGG(DISTINCT PRODUCT_DET_COLOR, ',') AS prodColors
             , STRING_AGG(DISTINCT PRODUCT_DET_SIZE, ',') AS prodSizes
             , COUNT(1) AS prodDetCnt
             FROM TB_PRODUCT_DET

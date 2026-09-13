@@ -84,10 +84,6 @@ public class ProductMngService {
         if (insertProductInfo.getProductDet() == null) {
             // 상품상세정보는 필수값
             throw new CustomRuntimeException("상품상세정보를 찾을 수 없음");
-        } else {
-            if(insertProductInfo.getProductDet().getProductDetColor().contains(",")){
-                throw new CustomRuntimeException(ApiResultCode.FAIL, "대표이미지만 ");
-            }
         }
 
         /** id 존재 여부에 따라 상품정보 및 상세정보 추가 혹은 상세정보 추가로 분기 */
@@ -146,13 +142,25 @@ public class ProductMngService {
             }
         }
 
-        insertProductInfo.getProductDet().setProductId(insertProductInfo.getId()); // prod Id 할당(요청 시점에 전달된 값 혹은 insert 시점에 할당되어진 값)
+        ProductMngRequest.InsertProductDet baseDet = insertProductInfo.getProductDet();
+        baseDet.setProductId(insertProductInfo.getId()); // prod Id 할당(요청 시점에 전달된 값 혹은 insert 시점에 할당되어진 값)
+        baseDet.setCreUser(jwtUser.getLoginId());
+        baseDet.setUpdUser(jwtUser.getLoginId());
 
-        insertProductInfo.getProductDet().setCreUser(jwtUser.getLoginId());
-        insertProductInfo.getProductDet().setUpdUser(jwtUser.getLoginId());
-        Integer insertedProductDetCnt = productMngDao.insertProductDet(insertProductInfo.getProductDet());
+        // 사이즈/컬러가 콤마(,)로 여러 개 전달되면 (사이즈 x 컬러) 조합만큼 상세를 생성한다.
+        String[] sizes = splitByComma(baseDet.getProductDetSize());
+        String[] colors = splitByComma(baseDet.getProductDetColor());
+        int expectedCnt = sizes.length * colors.length;
+        int insertedProductDetCnt = 0;
+        for (String size : sizes) {
+            for (String color : colors) {
+                baseDet.setProductDetSize(size); // 콤바 기준 trim 된 단건 값
+                baseDet.setProductDetColor(color);
+                insertedProductDetCnt += productMngDao.insertProductDet(baseDet); // PRODUCT_DET_SEQ 는 GET_NEXT_PRODUCT_DET_SEQ 로 자동 증가
+            }
+        }
 
-        if (insertedProductDetCnt != 1) {
+        if (insertedProductDetCnt != expectedCnt) {
             throw new CustomRuntimeException("상품상세정보를 정상적으로 추가하지 못함");
         }
 
@@ -173,6 +181,20 @@ public class ProductMngService {
             insertCategoryProduct.setUpdUser(jwtUser.getLoginId());
             productMngDao.insertCategoryProduct(insertCategoryProduct);
         }
+    }
+
+    /**
+     * 콤마(,) 구분 문자열 → trim 된 값 배열. null/빈 값은 단일 원소(원본)로 반환하여 최소 1건은 생성되도록 한다.
+     */
+    private String[] splitByComma(String value) {
+        if (value == null) {
+            return new String[]{ null };
+        }
+        String[] parts = java.util.Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toArray(String[]::new);
+        return parts.length == 0 ? new String[]{ value.trim() } : parts;
     }
 
     /**
