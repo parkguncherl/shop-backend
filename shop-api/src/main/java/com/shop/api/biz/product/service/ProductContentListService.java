@@ -47,7 +47,7 @@ public class ProductContentListService {
      * @return 페이징된 ProductContent List
      */
     public PageResponse<ProductContentListResponse.ProductContent> selectProdContentList(PageRequest<ProductContentListRequest.ProductContentListFilter> pageRequest, User jwtUser) {
-        pageRequest.getFilter().setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
+        pageRequest.getFilter().setUserId(jwtUser.getId());
         pageRequest.getFilter().setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
         return productContentListDao.selectProdContentList(pageRequest);
     }
@@ -76,7 +76,7 @@ public class ProductContentListService {
         }
 
         // 이하 contents 테이블 데이터 추가를 위한 영역
-        insertProductContents.setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
+        insertProductContents.setUserId(jwtUser.getId());
         insertProductContents.setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
 
         insertProductContents.setCreUser(jwtUser.getLoginId());
@@ -175,7 +175,7 @@ public class ProductContentListService {
      * @return 페이징된 ProductContent List
      */
     public PageResponse<ProductContentListResponse.ProductInfo> selectProductInfoList(PageRequest<ProductContentListRequest.ProductInfoListFilter> pageRequest, User jwtUser) {
-//        pageRequest.getFilter().setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
+//        pageRequest.getFilter().setUserId(jwtUser.getId());
 //        pageRequest.getFilter().setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
         return productContentListDao.selectProductInfoList(pageRequest);
     }

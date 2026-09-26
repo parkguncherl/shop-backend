@@ -16,7 +16,7 @@
         <where>
             AND A.DEL_YN = 'N'
             AND A.NEWS_TYPE = #{filter.newsType}
-            AND A.PARTNER_ID = #{filter.partnerId}
+            AND A.USER_ID = #{filter.userId}
             <if test='filter.newsTitle != null and !filter.newsTitle.equals("")'>
                 AND A.NEWS_TITLE LIKE CONCAT('%', #{filter.newsTitle},'%')
             </if>
@@ -44,7 +44,7 @@
         <if test='fileId != null'>
             FILE_ID,
         </if>
-        PARTNER_ID,
+        USER_ID,
         CRE_USER,
         UPD_USER
         ) VALUES (
@@ -59,7 +59,7 @@
         <if test='fileId != null'>
             #{fileId} ,
         </if>
-        #{partnerId} ,
+        #{userId} ,
         #{creUser} ,
         #{updUser}
         )
@@ -85,8 +85,8 @@
         <if test='fileId != null'>
             , FILE_ID = #{fileId}
         </if>
-        <if test='partnerId != null'>
-            , PARTNER_ID = #{partnerId}
+        <if test='userId != null'>
+            , USER_ID = #{userId}
         </if>
         WHERE ID = #{id}
     </update>

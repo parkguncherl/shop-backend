@@ -63,7 +63,7 @@ public class ProductContentsService {
             }
         }
 
-        insertProductContents.setPartnerId(userService.selectPartnerIdByLoginId(jwtUser.getLoginId()));
+        insertProductContents.setUserId(jwtUser.getId());
         insertProductContents.setNewsType(GlobalConst.PRODUCT_CONTENTS_NEWS_TYPE.getCode());
 
         insertProductContents.setCreUser(jwtUser.getLoginId());

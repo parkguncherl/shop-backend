@@ -21,8 +21,8 @@ import java.time.LocalTime;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "파트너코드 Entity")
-public class PartnerCode extends BaseEntity implements Serializable {
+@Schema(description = "유저코드 Entity")
+public class UserCode extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -6655812303177206569L;
@@ -30,8 +30,8 @@ public class PartnerCode extends BaseEntity implements Serializable {
     @Schema(description = "아이디(PK)")
     private Integer id;
 
-    @Schema(description = "파트너ID(FK)")
-    private Integer partnerId;
+    @Schema(description = "유저ID(FK)")
+    private Integer userId;
 
     @Schema(description = "상위_코드")
     private String codeUpper;

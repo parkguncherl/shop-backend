@@ -11,7 +11,7 @@
             , CN.NEWS_SUB_TITLE     AS newsSubTitle
             , CN.NEWS_CONTENTS      AS newsContents
             , CN.FILE_ID            AS fileId
-            , CN.PARTNER_ID         AS partnerId
+            , CN.USER_ID            AS userId
             , FD.SYS_FILE_NM        AS sysFileNm
         FROM TB_CONTENTS CN
         LEFT JOIN TB_FILE_DET FD ON FD.FILE_ID = CN.FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1

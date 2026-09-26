@@ -2,9 +2,9 @@ package com.shop.core.biz.system.dao;
 
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
-import com.shop.core.entity.PartnerCode;
-import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
-import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
+import com.shop.core.entity.UserCode;
+import com.shop.core.biz.system.vo.request.UserCodeRequest;
+import com.shop.core.biz.system.vo.response.UserCodeResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,9 +24,9 @@ import java.util.Map;
  */
 @Repository
 @RequiredArgsConstructor
-public class PartnerCodeDao {
+public class UserCodeDao {
 
-    private final String PRE_NS = "com.shop.mapper.PartnerCode.";
+    private final String PRE_NS = "com.shop.mapper.UserCode.";
 
     @Qualifier("sqlSessionTemplate")
     private final SqlSession sqlSession;
@@ -37,8 +37,8 @@ public class PartnerCodeDao {
      * @param pageRequest
      * @return
      */
-    public PageResponse<PartnerCodeResponse.Paging> selectPartnerCodeListPaging(PageRequest<PartnerCodeRequest.PagingFilter> pageRequest) {
-        List<PartnerCodeResponse.Paging> codes = sqlSession.selectList(PRE_NS.concat("selectPartnerCodeListPaging"), pageRequest);
+    public PageResponse<UserCodeResponse.Paging> selectUserCodeListPaging(PageRequest<UserCodeRequest.PagingFilter> pageRequest) {
+        List<UserCodeResponse.Paging> codes = sqlSession.selectList(PRE_NS.concat("selectUserCodeListPaging"), pageRequest);
         if (codes != null && !codes.isEmpty()) {
             return new PageResponse<>(pageRequest.getCurPage(), pageRequest.getPageRowCount(), codes, codes.get(0).getTotalRowCount());
         } else {
@@ -49,42 +49,42 @@ public class PartnerCodeDao {
     /**
      * 코드_콤보_조회 (by code)
      *
-     * @param PartnerCodeRequest
+     * @param UserCodeRequest
      * @return
      */
-    public List<PartnerCodeResponse.PartnerCodeDropDown> selectLowerCodeByPartnerCodeUpper(PartnerCodeRequest.PartnerCodeDropDown PartnerCodeRequest) {
-        return sqlSession.selectList(PRE_NS.concat("selectLowerCodeByPartnerCodeUpper"), PartnerCodeRequest);
+    public List<UserCodeResponse.UserCodeDropDown> selectLowerCodeByUserCodeUpper(UserCodeRequest.UserCodeDropDown UserCodeRequest) {
+        return sqlSession.selectList(PRE_NS.concat("selectLowerCodeByUserCodeUpper"), UserCodeRequest);
     }
 
 
     /**
      * 코드_조회 (by uk)
      *
-     * @param partnerId
+     * @param userId
      * @param codeUpper
      * @param codeCd
      * @return
      */
-    public PartnerCode selectPartnerCodeByUk(Integer partnerId, String codeUpper, String codeCd) {
+    public UserCode selectUserCodeByUk(Integer userId, String codeUpper, String codeCd) {
         Map<String, Object> params = new HashMap<>();
-        params.put("partnerId", partnerId);
+        params.put("userId", userId);
         params.put("codeUpper", codeUpper);
         params.put("codeCd", codeCd);
-        return sqlSession.selectOne(PRE_NS.concat("selectPartnerCodeByUk"), params);
+        return sqlSession.selectOne(PRE_NS.concat("selectUserCodeByUk"), params);
     }
 
 
     /**
      * 코드_조회 (by uk)
      *
-     * @param partnerId
+     * @param userId
      * @param codeUpper
      * @param column
      * @return
      */
-    public String getDupCodeInfo(Integer partnerId, String codeUpper, String column) {
+    public String getDupCodeInfo(Integer userId, String codeUpper, String column) {
         Map<String, Object> params = new HashMap<>();
-        params.put("partnerId", partnerId);
+        params.put("userId", userId);
         params.put("codeUpper", codeUpper);
         params.put("column", column);
         return sqlSession.selectOne(PRE_NS.concat("getDupCodeInfo"), params);
@@ -94,21 +94,21 @@ public class PartnerCodeDao {
     /**
      * 하위_코드_조회 (by codeUpper) 코드 관리 화면에서
      *
-     * @param partnerCodeRequest
+     * @param userCodeRequest
      * @return
      */
-    public List<PartnerCodeResponse.LowerSelect> selectLowerCodeByCodeUpperForPartnerCodeMng(PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest) {
-        return sqlSession.selectList(PRE_NS.concat("selectLowerCodeByCodeUpperForPartnerCodeMng"), partnerCodeRequest);
+    public List<UserCodeResponse.LowerSelect> selectLowerCodeByCodeUpperForUserCodeMng(UserCodeRequest.UserCodeDropDown userCodeRequest) {
+        return sqlSession.selectList(PRE_NS.concat("selectLowerCodeByCodeUpperForUserCodeMng"), userCodeRequest);
     }
 
     /**
      * 하위_코드_조회 (by codeUpper) 주로 fo 에서
      *
-     * @param partnerCodeRequest
+     * @param userCodeRequest
      * @return
      */
-    public List<PartnerCodeResponse.LowerSelect> selectPartnerCodeList(PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest) {
-        return sqlSession.selectList(PRE_NS.concat("selectPartnerCodeList"), partnerCodeRequest);
+    public List<UserCodeResponse.LowerSelect> selectUserCodeList(UserCodeRequest.UserCodeDropDown userCodeRequest) {
+        return sqlSession.selectList(PRE_NS.concat("selectUserCodeList"), userCodeRequest);
     }
 
 
@@ -118,29 +118,29 @@ public class PartnerCodeDao {
      * @param code
      * @return
      */
-    public void insertPartnerCode(PartnerCode code) {
-        sqlSession.insert(PRE_NS.concat("insertPartnerCode"), code);
+    public void insertUserCode(UserCode code) {
+        sqlSession.insert(PRE_NS.concat("insertUserCode"), code);
     }
 
     /**
      * 코드_수정
      *
-     * @param partnerCode
+     * @param userCode
      * @return
      */
-    public void updatePartnerCode(PartnerCode partnerCode) {
-        sqlSession.update(PRE_NS.concat("updatePartnerCode"), partnerCode);
+    public void updateUserCode(UserCode userCode) {
+        sqlSession.update(PRE_NS.concat("updateUserCode"), userCode);
     }
 
 
     /**
      * 코드_수정_존재한것만
      *
-     * @param partnerCode
+     * @param userCode
      * @return
      */
-    public void updatePartnerCodeExistOnly(PartnerCode partnerCode) {
-        sqlSession.update(PRE_NS.concat("updatePartnerCodeExistOnly"), partnerCode);
+    public void updateUserCodeExistOnly(UserCode userCode) {
+        sqlSession.update(PRE_NS.concat("updateUserCodeExistOnly"), userCode);
     }
 
 
@@ -152,21 +152,21 @@ public class PartnerCodeDao {
      * @param code
      * @return
      */
-    public Integer deletePartnerCode(PartnerCode code) {
-        return sqlSession.delete(PRE_NS.concat("deletePartnerCode"), code);
+    public Integer deleteUserCode(UserCode code) {
+        return sqlSession.delete(PRE_NS.concat("deleteUserCode"), code);
     }
 
 
     /**
      * 코드_값 조회 ( 자동생성되게하기 위해 )
      *
-     * @param partnerId
+     * @param userId
      * @param codeUpper
      * @return
      */
-    public Integer getAutoGenCodeCd(Integer partnerId, String codeUpper) {
+    public Integer getAutoGenCodeCd(Integer userId, String codeUpper) {
         Map<String, Object> params = new HashMap<>();
-        params.put("partnerId", partnerId);
+        params.put("userId", userId);
         params.put("codeUpper", codeUpper);
         return sqlSession.selectOne(PRE_NS.concat("getAutoGenCodeCd"), params);
     }

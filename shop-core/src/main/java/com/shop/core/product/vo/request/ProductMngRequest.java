@@ -143,7 +143,7 @@ public class ProductMngRequest {
         @Schema(description = "상품명")
         private String prodNm;
 
-        @Schema(description = "카테고리 id(lower partnerCode id)")
+        @Schema(description = "카테고리 id(lower userCode id)")
         private Integer categoryId;
     }
 

@@ -19,6 +19,9 @@ public class ProductRequest {
         @Schema(description = "partner id")
         private Integer partnerId;
 
+        @Schema(description = "seller user id (도메인으로 해석된 셀러 user_id, 카테고리 코드 스코핑용)")
+        private Integer userId;
+
         @Schema(description = "카테고리 id")
         private String categoryId;
 
@@ -39,6 +42,9 @@ public class ProductRequest {
 
         @Schema(description = "partner id")
         private Integer partnerId;
+
+        @Schema(description = "seller user id (도메인으로 해석된 셀러 user_id)")
+        private Integer userId;
 
         @Schema(description = "last id")
         private Integer lastId;

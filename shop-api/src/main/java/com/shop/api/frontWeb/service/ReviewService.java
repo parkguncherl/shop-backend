@@ -112,7 +112,7 @@ public class ReviewService {
         reviewDao.deleteReview(id);
     }
 
-    public ReviewResponse.ProductList getProductReviews(Long productId, GuestToken guestUser) {
+    public ReviewResponse.ProductList getProductReviews(Long productId, GuestToken guestUser, Integer userId) {
         ReviewResponse.ProductList summary = reviewDao.selectProductReviewSummary(productId);
         if (summary == null) {
             summary = new ReviewResponse.ProductList();
@@ -120,7 +120,7 @@ public class ReviewService {
             summary.setAvgRating(0.0);
             summary.setReviewCount(0L);
         }
-        summary.setReviews(reviewDao.selectReviewsByProductId(productId, guestUser.getPartnerId()));
+        summary.setReviews(reviewDao.selectReviewsByProductId(productId, userId));
         return summary;
     }
 

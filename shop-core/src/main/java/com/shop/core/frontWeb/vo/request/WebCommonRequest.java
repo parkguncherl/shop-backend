@@ -10,11 +10,11 @@ public class WebCommonRequest {
 
     @Getter
     @Setter
-    @Schema(name = "WebCommonRequestPartnerCodeByUkFilter", description = "고유 키 조합을 통한 partnerCode 요청")
-    public static class partnerCodeByUkFilter implements RequestFilter {
+    @Schema(name = "WebCommonRequestUserCodeByUkFilter", description = "고유 키 조합을 통한 userCode 요청")
+    public static class userCodeByUkFilter implements RequestFilter {
 
         @Schema(description = "partner id")
-        private Integer partnerId;
+        private Integer userId;
 
         @Schema(description = "상위코드")
         private String codeUpper;

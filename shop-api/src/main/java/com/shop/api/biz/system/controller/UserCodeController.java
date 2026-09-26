@@ -3,16 +3,16 @@ package com.shop.api.biz.system.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.JwtUser;
 import com.shop.api.biz.system.service.UserService;
-import com.shop.api.biz.system.service.PartnerCodeService;
+import com.shop.api.biz.system.service.UserCodeService;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.response.ApiResponse;
-import com.shop.core.entity.PartnerCode;
+import com.shop.core.entity.UserCode;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
-import com.shop.core.biz.system.dao.PartnerCodeDao;
-import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
-import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
+import com.shop.core.biz.system.dao.UserCodeDao;
+import com.shop.core.biz.system.vo.request.UserCodeRequest;
+import com.shop.core.biz.system.vo.response.UserCodeResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -35,13 +35,13 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/partnerCode")
-@Tag(name = "PartnerCodeController", description = "코드 관련 API")
-public class PartnerCodeController {
+@RequestMapping("/userCode")
+@Tag(name = "UserCodeController", description = "코드 관련 API")
+public class UserCodeController {
 
-    private final PartnerCodeService partnerCodeService;
+    private final UserCodeService userCodeService;
     private final UserService userService;
-    private final PartnerCodeDao partnerCodeDao;
+    private final UserCodeDao userCodeDao;
 
     /**
      * 코드관리_목록_조회 (페이징)
@@ -54,10 +54,10 @@ public class PartnerCodeController {
     @AccessLog("코드관리 목록 조회")
     @GetMapping(value = "/paging")
     @Operation(summary = "코드관리 목록 조회 (페이징)")
-    public ApiResponse<PageResponse<PartnerCodeResponse.Paging>> selectPartnerCodePaging(
+    public ApiResponse<PageResponse<UserCodeResponse.Paging>> selectUserCodePaging(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(name = "PartnerCodeRequestPagingFilter", description = "코드관리 목록 조회 (페이징) 필터", in = ParameterIn.PATH) PartnerCodeRequest.PagingFilter filter,
-            @Parameter(name = "PageRequest", description = "코드관리 목록 조회 페이징") PageRequest<PartnerCodeRequest.PagingFilter> pageRequest
+            @Parameter(name = "UserCodeRequestPagingFilter", description = "코드관리 목록 조회 (페이징) 필터", in = ParameterIn.PATH) UserCodeRequest.PagingFilter filter,
+            @Parameter(name = "PageRequest", description = "코드관리 목록 조회 페이징") PageRequest<UserCodeRequest.PagingFilter> pageRequest
     ) {
         // 상위코드가 없을 시, default 값 셋팅
         if (StringUtils.isEmpty(filter.getCodeUpper())) {
@@ -67,7 +67,7 @@ public class PartnerCodeController {
         pageRequest.setFilter(filter);
 
         // 코드관리_목록_조회 (페이징)
-        PageResponse<PartnerCodeResponse.Paging> response = partnerCodeService.selectCodePaging(pageRequest);
+        PageResponse<UserCodeResponse.Paging> response = userCodeService.selectCodePaging(pageRequest);
 
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
@@ -80,9 +80,9 @@ public class PartnerCodeController {
      */
     @GetMapping(value = "/dropdown")
     @Operation(summary = "코드 콤보 조회")
-    public ApiResponse<List<PartnerCodeResponse.PartnerCodeDropDown>> selectDropdownByPartnerCodeUpper(
+    public ApiResponse<List<UserCodeResponse.UserCodeDropDown>> selectDropdownByUserCodeUpper(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "코드 DropDown Request") PartnerCodeRequest.PartnerCodeDropDown codeRequest
+            @Parameter(description = "코드 DropDown Request") UserCodeRequest.UserCodeDropDown codeRequest
     ) {
         // 필수값 체크
         if (StringUtils.isEmpty(codeRequest.getCodeUpper())) {
@@ -90,13 +90,13 @@ public class PartnerCodeController {
         }
 
         User user = userService.selectUserById(jwtUser.getId());
-        if (user.getPartnerId() == null || user.getPartnerId() == 0) {
+        if (user.getId() == null || user.getId() == 0) {
             return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE);
         }
 
-        codeRequest.setPartnerId(user.getPartnerId());
+        codeRequest.setUserId(user.getId());
         // 코드_콤보_조회 (by CodeUpper)
-        List<PartnerCodeResponse.PartnerCodeDropDown> codeList = partnerCodeService.selectLowerCodeByPartnerCodeUpper(codeRequest);
+        List<UserCodeResponse.UserCodeDropDown> codeList = userCodeService.selectLowerCodeByUserCodeUpper(codeRequest);
 
         return new ApiResponse<>(codeList);
     }
@@ -108,9 +108,9 @@ public class PartnerCodeController {
      */
     @GetMapping(value = "/lowerCodeList")
     @Operation(summary = "코드 콤보 조회")
-    public ApiResponse<List<PartnerCodeResponse.LowerSelect>> selectLowerCodeByCodeUpperForPartnerCodeMng(
+    public ApiResponse<List<UserCodeResponse.LowerSelect>> selectLowerCodeByCodeUpperForUserCodeMng(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @ModelAttribute @Parameter(description = "코드 DropDown Request") PartnerCodeRequest.PartnerCodeDropDown codeRequest
+            @ModelAttribute @Parameter(description = "코드 DropDown Request") UserCodeRequest.UserCodeDropDown codeRequest
     ) {
         // 필수값 체크
         if (StringUtils.isEmpty(codeRequest.getCodeUpper())) {
@@ -120,13 +120,13 @@ public class PartnerCodeController {
         User user = userService.selectUserById(jwtUser.getId());
 
         // 필수값 체크
-        if (user.getPartnerId() == null || user.getPartnerId() == 0) {
+        if (user.getId() == null || user.getId() == 0) {
             return new ApiResponse<>(ApiResultCode.FAIL,"도매id 가 존재하지 않습니다.");
         }
 
         // 코드_콤보_조회 (by CodeUpper)
-        codeRequest.setPartnerId(user.getPartnerId());
-        List<PartnerCodeResponse.LowerSelect> codeList = partnerCodeService.selectLowerCodeByCodeUpperForPartnerCodeMng(codeRequest);
+        codeRequest.setUserId(user.getId());
+        List<UserCodeResponse.LowerSelect> codeList = userCodeService.selectLowerCodeByCodeUpperForUserCodeMng(codeRequest);
 
         if (codeList.isEmpty()) {
             return new ApiResponse<>(ApiResultCode.NOT_FOUND_CODE);
@@ -143,7 +143,7 @@ public class PartnerCodeController {
      */
     @GetMapping(value = "/{upperCode}")
     @Operation(summary = "코드 조회")
-    public ApiResponse<List<PartnerCodeResponse.LowerSelect>> selectPartnerCodeById(
+    public ApiResponse<List<UserCodeResponse.LowerSelect>> selectUserCodeById(
             @Parameter(hidden = true) @JwtUser User jwtUser,
             @Parameter(description = "코드_아이디") @PathVariable String upperCode
     ) {
@@ -153,12 +153,12 @@ public class PartnerCodeController {
         }
         User user = userService.selectUserById(jwtUser.getId());
 
-        PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest = new PartnerCodeRequest.PartnerCodeDropDown();
-        partnerCodeRequest.setCodeUpper(upperCode);
-        partnerCodeRequest.setPartnerId(user.getPartnerId());
+        UserCodeRequest.UserCodeDropDown userCodeRequest = new UserCodeRequest.UserCodeDropDown();
+        userCodeRequest.setCodeUpper(upperCode);
+        userCodeRequest.setUserId(user.getId());
 
         // 코드_조회 (by Id)
-        List<PartnerCodeResponse.LowerSelect> list = partnerCodeService.selectLowerCodeByCodeUpperForPartnerCodeMng(partnerCodeRequest);
+        List<UserCodeResponse.LowerSelect> list = userCodeService.selectLowerCodeByCodeUpperForUserCodeMng(userCodeRequest);
 
         if (list == null) {
             return new ApiResponse<>(ApiResultCode.NOT_FOUND_CODE);
@@ -177,11 +177,11 @@ public class PartnerCodeController {
     @AccessLog("코드 등록")
     @PostMapping()
     @Operation(summary = "코드 등록 복수")
-    public ApiResponse<ApiResultCode> savePartnerCodes(
+    public ApiResponse<ApiResultCode> saveUserCodes(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "코드 등록 Request") @RequestBody PartnerCodeRequest.Create codeRequest
+            @Parameter(description = "코드 등록 Request") @RequestBody UserCodeRequest.Create codeRequest
     ) {
-        partnerCodeService.savePartnerCodes(codeRequest, jwtUser);
+        userCodeService.saveUserCodes(codeRequest, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 
@@ -193,13 +193,13 @@ public class PartnerCodeController {
      * @param codeRequest
      * @return
      */
-    @PostMapping(value = "/updatePartnerCode")
+    @PostMapping(value = "/updateUserCode")
     @Operation(summary = "코드정보 변경 단건")
-    public ApiResponse updatePartnerCode(
+    public ApiResponse updateUserCode(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @RequestBody @Parameter(description = "코드 변경 Request") PartnerCodeRequest.UpdatePartnerCodeVal codeRequest
+            @RequestBody @Parameter(description = "코드 변경 Request") UserCodeRequest.UpdateUserCodeVal codeRequest
     ) {
-        partnerCodeService.savePartnerCodeVal(codeRequest, jwtUser);
+        userCodeService.saveUserCodeVal(codeRequest, jwtUser);
         return new ApiResponse<>(ApiResultCode.SUCCESS);
     }
 
@@ -214,12 +214,12 @@ public class PartnerCodeController {
             @RequestParam Integer id,
             @RequestParam Integer codeOrder
     ) {
-        com.shop.core.entity.PartnerCode code = com.shop.core.entity.PartnerCode.builder()
+        com.shop.core.entity.UserCode code = com.shop.core.entity.UserCode.builder()
                 .id(id)
                 .codeOrder(codeOrder)
                 .updUser(jwtUser.getLoginId())
                 .build();
-        partnerCodeDao.updatePartnerCodeExistOnly(code);
+        userCodeDao.updateUserCodeExistOnly(code);
         return new ApiResponse<>(ApiResultCode.SUCCESS, null);
     }
 
@@ -233,12 +233,12 @@ public class PartnerCodeController {
     @AccessLog("파트너코드 삭제")
     @DeleteMapping("")
     @Operation(summary = "파트너코드 삭제")
-    public ApiResponse deletePartnerCode(
+    public ApiResponse deleteUserCode(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "코드 수정 Request") @RequestBody PartnerCodeRequest.Delete codeRequest
+            @Parameter(description = "코드 수정 Request") @RequestBody UserCodeRequest.Delete codeRequest
     ) {
         // 코드_조회 (by Uk)
-        Integer updateCount = partnerCodeService.deleteCode(codeRequest);
+        Integer updateCount = userCodeService.deleteCode(codeRequest);
 
         if (updateCount == 0) {
             return new ApiResponse<>(ApiResultCode.FAIL_DELETE);
@@ -250,10 +250,10 @@ public class PartnerCodeController {
     @AccessLog("파트너코드 소프트삭제")
     @PutMapping("/update-status")
     @Operation(summary = "파트너코드 소프트삭제")
-    public ApiResponse updatePartnerCodeToDeletedStatus(
+    public ApiResponse updateUserCodeToDeletedStatus(
             @Parameter(hidden = true) @JwtUser User jwtUser,
-            @Parameter(description = "코드 삭제상태 수정 Request")  @RequestBody PartnerCodeRequest.SoftDelete codeRequest
+            @Parameter(description = "코드 삭제상태 수정 Request")  @RequestBody UserCodeRequest.SoftDelete codeRequest
     ) {
-        return new ApiResponse<>(ApiResultCode.SUCCESS, partnerCodeService.updatePartnerCodeToDeletedStatus(codeRequest, jwtUser));
+        return new ApiResponse<>(ApiResultCode.SUCCESS, userCodeService.updateUserCodeToDeletedStatus(codeRequest, jwtUser));
     }
 }

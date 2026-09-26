@@ -104,7 +104,7 @@
             <otherwise>
                 AND TM.UP_MENU_CD =#{upMenuCd}
                 <if test="authCd != null">
-                    AND EXISTS (SELECT 1 FROM TB_MENU_AUTH X WHERE TM.MENU_CD = X.MENU_CD AND X.AUTH_CD = #{authCd} AND X.DEL_YN='N' )
+                    AND EXISTS (SELECT 1 FROM TB_MENU_AUTH X WHERE TM.MENU_CD = X.MENU_CD AND X.AUTH_CD = #{authCd} AND X.MENU_READ_YN ='Y' AND X.DEL_YN='N' )
                 </if>
             </otherwise>
         </choose>

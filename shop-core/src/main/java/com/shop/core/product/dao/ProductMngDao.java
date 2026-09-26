@@ -59,8 +59,8 @@ public class ProductMngDao {
      * @param partnerId
      * @return CategoryWithCount List
      */
-    public List<ProductMngResponse.CategoryWithCount> selectCategoryListWithCount(Integer partnerId) {
-        return sqlSession.selectList(NAMESPACE + "selectCategoryListWithCount", partnerId);
+    public List<ProductMngResponse.CategoryWithCount> selectCategoryListWithCount(Integer userId) {
+        return sqlSession.selectList(NAMESPACE + "selectCategoryListWithCount", userId);
     }
 
     /**

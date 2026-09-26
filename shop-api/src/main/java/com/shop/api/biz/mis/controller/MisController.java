@@ -74,6 +74,7 @@ public class MisController {
             @ModelAttribute MisRequest.CategoryViewFilter filter
     ) {
         filter.setPartnerId(jwtUser.getPartnerId());
+        filter.setUserId(jwtUser.getId());
         return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getCategoryViewList(filter));
     }
 
@@ -85,6 +86,7 @@ public class MisController {
             @ModelAttribute MisRequest.ReviewFitFilter filter
     ) {
         filter.setPartnerId(jwtUser.getPartnerId());
+        filter.setUserId(jwtUser.getId());
         return new ApiResponse<>(ApiResultCode.SUCCESS, misService.getReviewFitAnalysis(filter));
     }
 

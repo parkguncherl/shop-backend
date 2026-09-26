@@ -2,7 +2,9 @@ package com.shop.api.frontWeb.controller;
 
 import com.shop.api.annotation.GuestUser;
 import com.shop.api.frontWeb.service.ReviewService;
+import com.shop.api.frontWeb.service.SellerResolver;
 import com.shop.core.annotations.NotAuthRequired;
+import jakarta.servlet.http.HttpServletRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.entity.GuestToken;
 import com.shop.core.entity.Review;
@@ -23,6 +25,7 @@ import java.util.List;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final SellerResolver sellerResolver;
 
     @NotAuthRequired
     @PostMapping
@@ -55,9 +58,10 @@ public class ReviewController {
     @GetMapping("/product/{productId}")
     @Operation(summary = "상품 리뷰 목록 조회")
     public ApiResponse<ReviewResponse.ProductList> getProductReviews(
+            HttpServletRequest request,
             @Parameter(hidden = true) @GuestUser GuestToken guestUser,
             @PathVariable Long productId) {
-        return new ApiResponse<>(reviewService.getProductReviews(productId, guestUser));
+        return new ApiResponse<>(reviewService.getProductReviews(productId, guestUser, sellerResolver.resolveUserId(request)));
     }
 
     @NotAuthRequired

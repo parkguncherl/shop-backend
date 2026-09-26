@@ -22,8 +22,8 @@ public class CategoryProduct extends BaseEntity implements Serializable {
     @Schema(description = "순서")
     private Integer seq;
 
-    @Schema(description = "partnerId")
-    private Integer partnerId;
+    @Schema(description = "userId")
+    private Integer userId;
 
     @Schema(description = "카테고리 id")
     private Integer categoryId;

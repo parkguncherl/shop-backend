@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.mapper.PartnerCode">
+<mapper namespace="com.shop.mapper.UserCode">
 
     <sql id="codeColumns">
         ID                    AS id
-        , PARTNER_ID            AS partnerId
+        , USER_ID            AS userId
         , CODE_UPPER            AS codeUpper
         , CODE_CD               AS codeCd
         , CODE_NM               AS codeNm
@@ -22,18 +22,18 @@
         , DEL_YN                AS deleteYn
     </sql>
 
-    <select id="selectPartnerCodeListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
-        /* com.shop.mapper.PartnerCode.selectPartnerCodeListPaging */
+    <select id="selectUserCodeListPaging" parameterType="com.shop.core.biz.common.vo.request.PageRequest" resultType="com.shop.core.biz.system.vo.response.UserCodeResponse$LowerSelect">
+        /* com.shop.mapper.UserCode.selectUserCodeListPaging */
         SELECT
         ( COUNT(1) OVER() )                                                                              AS totalRowCount
         , ROW_NUMBER() OVER(ORDER BY TC.ID ASC)                                                             AS no
         , TC.ID                                                                                             AS id
         , TC.CODE_UPPER                                                                                     AS codeUpper
-        , COALESCE((SELECT X.CODE_NM FROM TB_PARTNER_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER)   AS codeUpperNm
+        , COALESCE((SELECT X.CODE_NM FROM TB_USER_CODE X WHERE X.CODE_CD = TC.CODE_UPPER LIMIT 1), TC.CODE_UPPER)   AS codeUpperNm
         , TC.CODE_CD                                                                                        AS codeCd
         , TC.CODE_NM                                                                                        AS codeNm
         , TC.DEF_CODE_VAL                                                                                   AS defCodeVal
-        , (SELECT COUNT(*) FROM TB_PARTNER_CODE X WHERE X.CODE_UPPER = TC.CODE_CD)                          AS lowerCodeCnt
+        , (SELECT COUNT(*) FROM TB_USER_CODE X WHERE X.CODE_UPPER = TC.CODE_CD)                          AS lowerCodeCnt
         , CASE WHEN COALESCE(TC.CODE_DESC, '') = '' THEN '-' ELSE TC.CODE_DESC END                          AS codeDesc
         , CASE WHEN COALESCE(TC.CODE_ETC, '') = '' THEN '-' ELSE TC.CODE_ETC END                            AS codeEtc
         , TC.CODE_ORDER                                                                                     AS codeOrder
@@ -45,8 +45,8 @@
         , TC.CODE_ETC1
         , TC.CODE_ETC2
         , TC.CODE_ETC3
-        FROM TB_PARTNER_CODE TC
-        WHERE TC.PARTNER_ID = #{partnerId}
+        FROM TB_USER_CODE TC
+        WHERE TC.USER_ID = #{userId}
         <if test='filter.codeUpper != null and !filter.codeUpper.equals("")'>
             AND TC.CODE_UPPER = #{filter.codeUpper}
         </if>
@@ -61,54 +61,54 @@
         FETCH NEXT #{pageRowCount} ROWS ONLY
     </select>
 
-    <select id="selectLowerCodeByPartnerCodeUpper" parameterType="com.shop.core.biz.system.vo.request.PartnerCodeRequest$PartnerCodeDropDown" resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
-        /* com.shop.mapper.PartnerCode.selectLowerCodeByPartnerCodeUpper */
+    <select id="selectLowerCodeByUserCodeUpper" parameterType="com.shop.core.biz.system.vo.request.UserCodeRequest$UserCodeDropDown" resultType="com.shop.core.biz.system.vo.response.UserCodeResponse$LowerSelect">
+        /* com.shop.mapper.UserCode.selectLowerCodeByUserCodeUpper */
         SELECT ROW_NUMBER() OVER(ORDER BY ID ASC)  AS no
              , ID
              , CODE_UPPER
              , CODE_CD
              , CODE_NM
              , COALESCE(DEF_CODE_VAL, '0') AS DEF_CODE_VAL
-        FROM TB_PARTNER_CODE A
+        FROM TB_USER_CODE A
         WHERE CODE_UPPER = #{codeUpper}
-          AND PARTNER_ID = #{partnerId}
+          AND USER_ID = #{userId}
           AND DEL_YN = 'N'
         ORDER BY CODE_ORDER ASC
     </select>
 
-    <select id="selectPartnerCodeByUk" resultType="com.shop.core.entity.PartnerCode">
-        /* com.shop.mapper.PartnerCode.selectPartnerCodeByUk */
+    <select id="selectUserCodeByUk" resultType="com.shop.core.entity.UserCode">
+        /* com.shop.mapper.UserCode.selectUserCodeByUk */
         SELECT <include refid="codeColumns" />
-        FROM TB_PARTNER_CODE
+        FROM TB_USER_CODE
         WHERE CODE_UPPER = #{codeUpper}
         AND CODE_CD = #{codeCd}
-        AND PARTNER_ID = #{partnerId}
+        AND USER_ID = #{userId}
         AND DEL_YN = 'N'
     </select>
 
     <select id="getDupCodeInfo" resultType="java.lang.String">
-        /* com.shop.mapper.PartnerCode.getDupCodeInfo */
+        /* com.shop.mapper.UserCode.getDupCodeInfo */
         SELECT CONCAT(${column},' ',COUNT(*),' 건')
-        FROM TB_PARTNER_CODE
+        FROM TB_USER_CODE
         WHERE CODE_UPPER = #{codeUpper}
-          AND PARTNER_ID = #{partnerId}
+          AND USER_ID = #{userId}
           AND DEL_YN = 'N'
         GROUP BY ${column}
         HAVING COUNT(*) > 1
     </select>
 
-    <select id="selectLowerCodeByCodeUpperForPartnerCodeMng" parameterType="com.shop.core.biz.system.vo.request.PartnerCodeRequest$PartnerCodeDropDown"  resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
-        /* com.shop.mapper.PartnerCode.selectLowerCodeByCodeUpperForPartnerCodeMng */
+    <select id="selectLowerCodeByCodeUpperForUserCodeMng" parameterType="com.shop.core.biz.system.vo.request.UserCodeRequest$UserCodeDropDown"  resultType="com.shop.core.biz.system.vo.response.UserCodeResponse$LowerSelect">
+        /* com.shop.mapper.UserCode.selectLowerCodeByCodeUpperForUserCodeMng */
         SELECT
         <include refid="codeColumns" />
         , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC) AS no
         , COALESCE((SELECT USER_NM FROM TB_USER X WHERE TC.UPD_USER = X.LOGIN_ID), TC.UPD_USER) AS updNm
         , COALESCE((SELECT USER_NM FROM TB_USER X WHERE TC.CRE_USER = X.LOGIN_ID), TC.CRE_USER) AS creNm
-        FROM TB_PARTNER_CODE TC
+        FROM TB_USER_CODE TC
         WHERE 1 = 1
         AND TC.DEL_YN = 'N'
         AND TC.CODE_UPPER = #{codeUpper}
-        AND TC.PARTNER_ID = #{partnerId}
+        AND TC.USER_ID = #{userId}
         <if test="codeNm != null">
             AND TC.CODE_NM LIKE CONCAT('%', #{codeNm}, '%')
         </if>
@@ -136,18 +136,18 @@
         </choose>
     </select>
 
-    <select id="selectPartnerCodeList" parameterType="com.shop.core.biz.system.vo.request.PartnerCodeRequest$PartnerCodeDropDown"  resultType="com.shop.core.biz.system.vo.response.PartnerCodeResponse$LowerSelect">
-        /* com.shop.mapper.PartnerCode.selectPartnerCodeList */
+    <select id="selectUserCodeList" parameterType="com.shop.core.biz.system.vo.request.UserCodeRequest$UserCodeDropDown"  resultType="com.shop.core.biz.system.vo.response.UserCodeResponse$LowerSelect">
+        /* com.shop.mapper.UserCode.selectUserCodeList */
         SELECT
         <include refid="codeColumns" />
         , ROW_NUMBER() OVER(ORDER BY TC.CODE_ORDER ASC) AS no
         , COALESCE((SELECT USER_NM FROM TB_USER X WHERE TC.UPD_USER = X.LOGIN_ID), TC.UPD_USER) AS updNm
         , COALESCE((SELECT USER_NM FROM TB_USER X WHERE TC.CRE_USER = X.LOGIN_ID), TC.CRE_USER) AS creNm
-        FROM TB_PARTNER_CODE TC
+        FROM TB_USER_CODE TC
         WHERE 1 = 1
         AND TC.DEL_YN = 'N'
         AND TC.CODE_UPPER = #{codeUpper}
-        AND TC.PARTNER_ID = #{partnerId}
+        AND TC.USER_ID = #{userId}
         <if test="codeNm != null">
             AND TC.CODE_NM LIKE CONCAT('%', #{codeNm}, '%')
         </if>
@@ -160,14 +160,14 @@
          ORDER BY TC.CODE_ORDER ASC
     </select>
 
-    <insert id="insertPartnerCode" parameterType="com.shop.core.entity.PartnerCode" useGeneratedKeys="true" keyProperty="id">
-        /* com.shop.mapper.PartnerCode.insertPartnerCode */
-        INSERT INTO TB_PARTNER_CODE
+    <insert id="insertUserCode" parameterType="com.shop.core.entity.UserCode" useGeneratedKeys="true" keyProperty="id">
+        /* com.shop.mapper.UserCode.insertUserCode */
+        INSERT INTO TB_USER_CODE
         (
         CODE_UPPER
         , CODE_CD
         , CODE_NM
-        , PARTNER_ID
+        , USER_ID
         <if test="codeDesc != null">
             , CODE_DESC
         </if>
@@ -198,7 +198,7 @@
         #{codeUpper}
         , #{codeCd}
         , #{codeNm}
-        , #{partnerId}
+        , #{userId}
         <if test="codeDesc != null">
             , #{codeDesc}
         </if>
@@ -223,8 +223,8 @@
             </when>
             <otherwise>
                 , (SELECT COALESCE(MAX(CODE_ORDER), 0) + 1
-                FROM TB_PARTNER_CODE
-                WHERE PARTNER_ID = #{partnerId}
+                FROM TB_USER_CODE
+                WHERE USER_ID = #{userId}
                 AND CODE_UPPER = #{codeUpper})
             </otherwise>
         </choose>
@@ -236,9 +236,9 @@
         )
     </insert>
 
-    <update id="updatePartnerCodeExistOnly" parameterType="com.shop.core.entity.PartnerCode">
-        /* com.shop.mapper.PartnerCode.updatePartnerCodeExistOnly */
-        UPDATE TB_PARTNER_CODE
+    <update id="updateUserCodeExistOnly" parameterType="com.shop.core.entity.UserCode">
+        /* com.shop.mapper.UserCode.updateUserCodeExistOnly */
+        UPDATE TB_USER_CODE
         SET UPD_TM   = NOW()
         , UPD_USER = #{updUser}
         <if test="codeUpper != null">
@@ -278,9 +278,9 @@
     </update>
 
 
-    <update id="updatePartnerCode" parameterType="com.shop.core.entity.PartnerCode">
-        /* com.shop.mapper.PartnerCode.updatePartnerCode */
-        UPDATE TB_PARTNER_CODE
+    <update id="updateUserCode" parameterType="com.shop.core.entity.UserCode">
+        /* com.shop.mapper.UserCode.updateUserCode */
+        UPDATE TB_USER_CODE
            SET UPD_TM   = NOW()
              , UPD_USER = #{updUser}
              , CODE_UPPER = #{codeUpper}
@@ -296,9 +296,9 @@
         WHERE ID = #{id}
     </update>
 
-    <update id="deletePartnerCode" parameterType="com.shop.core.entity.PartnerCode">
-        /* com.shop.mapper.PartnerCode.deletePartnerCode */
-        UPDATE TB_PARTNER_CODE
+    <update id="deleteUserCode" parameterType="com.shop.core.entity.UserCode">
+        /* com.shop.mapper.UserCode.deleteUserCode */
+        UPDATE TB_USER_CODE
         SET DEL_YN = 'Y'
         , UPD_USER = #{updUser}
         , UPD_TM = NOW()
@@ -307,11 +307,11 @@
 
 
     <select id="getAutoGenCodeCd" resultType="java.lang.Integer">
-        /* com.shop.mapper.PartnerCode.getAutoGenCodeCd */
+        /* com.shop.mapper.UserCode.getAutoGenCodeCd */
         SELECT COALESCE(MAX(CODE_CD::INT4) + 1, 1000)
-        FROM TB_PARTNER_CODE
+        FROM TB_USER_CODE
         WHERE CODE_UPPER = #{codeUpper}
-          AND PARTNER_ID = #{partnerId}
+          AND USER_ID = #{userId}
     </select>
 
 </mapper>

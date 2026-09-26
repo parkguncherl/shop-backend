@@ -30,10 +30,10 @@ public class ReviewDao {
         return sqlSession.selectOne(NS + "selectReviewByOrderItemId", orderItemId);
     }
 
-    public List<ReviewResponse.ProductItem> selectReviewsByProductId(Long productId, Integer partnerId) {
+    public List<ReviewResponse.ProductItem> selectReviewsByProductId(Long productId, Integer userId) {
         Map<String,Object> params = new HashMap<>();
         params.put("productId", productId);
-        params.put("partnerId", partnerId);
+        params.put("userId", userId);
         return sqlSession.selectList(NS + "selectReviewsByProductId", params);
     }
 

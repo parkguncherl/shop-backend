@@ -133,8 +133,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
                     // 정적 공통코드 조회(카테고리/코드 등)는 자주 호출되나 부하가 낮으므로 rate limit 대상에서 제외
                     boolean isStaticCommonCode =
-                            uri.startsWith("/shop-ap/frontWeb/webCommon/partnerCode")
-                            || uri.startsWith("/shop-ap/frontWeb/webCommon/partnerCodeByUk")
+                            uri.startsWith("/shop-ap/frontWeb/webCommon/userCode")
+                            || uri.startsWith("/shop-ap/frontWeb/webCommon/userCodeByUk")
                             || uri.startsWith("/shop-ap/frontWeb/webCommon/lower")
                             || uri.startsWith("/shop-ap/frontWeb/webCommon/getCodeName");
 

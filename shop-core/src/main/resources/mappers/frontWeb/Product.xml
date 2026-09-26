@@ -40,8 +40,8 @@
                 , MAX(CASE WHEN CODE_CD = 'SUMMER' THEN CODE_ORDER END) AS summer_ord
                 , MAX(CASE WHEN CODE_CD = 'AUTUMN' THEN CODE_ORDER END) AS autumn_ord
                 , MAX(CASE WHEN CODE_CD = 'WINTER' THEN CODE_ORDER END) AS winter_ord
-            FROM TB_PARTNER_CODE
-            WHERE CODE_UPPER = 'P0006' AND PARTNER_ID = #{filter.partnerId} AND DEL_YN = 'N'
+            FROM TB_USER_CODE
+            WHERE CODE_UPPER = 'P0006' AND USER_ID = #{filter.userId} AND DEL_YN = 'N'
         ) S
         <where>
             AND P.DEL_YN = 'N'
@@ -64,7 +64,7 @@
                     AND EXISTS (
                         SELECT CP.ID
                           FROM TB_CATEGORY_PRODUCT CP
-                          JOIN TB_PARTNER_CODE PC ON PC.PARTNER_ID = #{filter.partnerId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N' AND PC.ID = CP.CATEGORY_ID
+                          JOIN TB_USER_CODE PC ON PC.USER_ID = #{filter.userId} AND PC.CODE_UPPER = 'P0001' AND PC.DEL_YN = 'N' AND PC.ID = CP.CATEGORY_ID
                          WHERE CP.PRODUCT_ID = P.ID
                            AND CP.DEL_YN = 'N'
                         <if test='filter.categoryId != null and filter.categoryId != "all"'>
@@ -131,8 +131,8 @@
         FROM TB_PRODUCT P
         JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
         JOIN TB_CATEGORY_PRODUCT CP ON CP.PRODUCT_ID = P.ID AND CP.DEL_YN = 'N'
-        JOIN TB_PARTNER_CODE PC ON PC.ID = CP.CATEGORY_ID
-                                     AND PC.PARTNER_ID = #{filter.partnerId}
+        JOIN TB_USER_CODE PC ON PC.ID = CP.CATEGORY_ID
+                                     AND PC.USER_ID = #{filter.userId}
                                      AND PC.CODE_UPPER = 'P0001'
                                      AND PC.DEL_YN = 'N'
                                      AND PC.CODE_CD = #{filter.categoryId}
@@ -181,8 +181,8 @@
                   AND PD2.STNDR_COLOR != '') AS stndrColors
          FROM TB_PRODUCT P
          JOIN TB_FILE_DET FD ON FD.FILE_ID = P.REP_FILE_ID  AND FD.DEL_YN = 'N' AND FD.FILE_SEQ = 1
-         JOIN TB_CATEGORY_PRODUCT CP ON P.ID = CP.PRODUCT_ID AND CP.PARTNER_ID = #{partnerId} AND CP.DEL_YN = 'N'
-         JOIN TB_PARTNER_CODE PC ON PC.CODE_UPPER = 'P0001' AND PC.ID = CP.CATEGORY_ID AND CP.PARTNER_ID = PC.PARTNER_ID AND PC.CODE_ETC = 'PROD' /* 시즌과 리사이클링 제외  */
+         JOIN TB_CATEGORY_PRODUCT CP ON P.ID = CP.PRODUCT_ID AND CP.USER_ID = #{userId} AND CP.DEL_YN = 'N'
+         JOIN TB_USER_CODE PC ON PC.CODE_UPPER = 'P0001' AND PC.ID = CP.CATEGORY_ID AND CP.USER_ID = PC.USER_ID AND PC.CODE_ETC = 'PROD' /* 시즌과 리사이클링 제외  */
          /* 시즌 순서(P0006 CODE_ORDER) 한 행 피벗 - 정렬용 */
          CROSS JOIN (
              SELECT
@@ -190,8 +190,8 @@
                  , MAX(CASE WHEN CODE_CD = 'SUMMER' THEN CODE_ORDER END) AS summer_ord
                  , MAX(CASE WHEN CODE_CD = 'AUTUMN' THEN CODE_ORDER END) AS autumn_ord
                  , MAX(CASE WHEN CODE_CD = 'WINTER' THEN CODE_ORDER END) AS winter_ord
-             FROM TB_PARTNER_CODE
-             WHERE CODE_UPPER = 'P0006' AND PARTNER_ID = #{partnerId} AND DEL_YN = 'N'
+             FROM TB_USER_CODE
+             WHERE CODE_UPPER = 'P0006' AND USER_ID = #{userId} AND DEL_YN = 'N'
          ) S
         WHERE P.DEL_YN  = 'N'
           AND P.SHOW_YN = 'Y'

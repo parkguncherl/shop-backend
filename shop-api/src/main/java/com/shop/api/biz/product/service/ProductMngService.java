@@ -71,7 +71,7 @@ public class ProductMngService {
      * @return CategoryWithCount List
      */
     public List<ProductMngResponse.CategoryWithCount> selectCategoryListWithCount(User jwtUser) {
-        return productMngDao.selectCategoryListWithCount(jwtUser.getPartnerId());
+        return productMngDao.selectCategoryListWithCount(jwtUser.getId());
     }
 
     /**
@@ -176,7 +176,7 @@ public class ProductMngService {
             ProductMngRequest.InsertCategoryProduct insertCategoryProduct = new ProductMngRequest.InsertCategoryProduct();
             insertCategoryProduct.setCategoryId(categoryId);
             insertCategoryProduct.setProductId(insertProductInfo.getId());
-            insertCategoryProduct.setPartnerId(jwtUser.getPartnerId());
+            insertCategoryProduct.setUserId(jwtUser.getId());
             insertCategoryProduct.setCreUser(jwtUser.getLoginId());
             insertCategoryProduct.setUpdUser(jwtUser.getLoginId());
             productMngDao.insertCategoryProduct(insertCategoryProduct);
@@ -254,7 +254,7 @@ public class ProductMngService {
                 ProductMngRequest.InsertCategoryProduct insertCategoryProduct = new ProductMngRequest.InsertCategoryProduct();
                 insertCategoryProduct.setCategoryId(categoryId);
                 insertCategoryProduct.setProductId(updateProduct.getId());
-                insertCategoryProduct.setPartnerId(jwtUser.getPartnerId());
+                insertCategoryProduct.setUserId(jwtUser.getId());
                 insertCategoryProduct.setCreUser(jwtUser.getLoginId());
                 insertCategoryProduct.setUpdUser(jwtUser.getLoginId());
                 productMngDao.insertCategoryProduct(insertCategoryProduct);
@@ -310,7 +310,7 @@ public class ProductMngService {
      * @return 추가된 행의 수
      */
     public Integer insertCategoryProduct(ProductMngRequest.InsertCategoryProduct insertCategoryProduct, User jwtUser) {
-        insertCategoryProduct.setPartnerId(jwtUser.getPartnerId());
+        insertCategoryProduct.setUserId(jwtUser.getId());
         insertCategoryProduct.setCreUser(jwtUser.getLoginId());
         insertCategoryProduct.setUpdUser(jwtUser.getLoginId());
         return productMngDao.insertCategoryProduct(insertCategoryProduct);

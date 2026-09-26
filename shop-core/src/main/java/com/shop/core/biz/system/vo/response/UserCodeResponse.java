@@ -1,6 +1,6 @@
 package com.shop.core.biz.system.vo.response;
 
-import com.shop.core.entity.PartnerCode;
+import com.shop.core.entity.UserCode;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
@@ -18,13 +18,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public class PartnerCodeResponse {
+public class UserCodeResponse {
 
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "PartnerCodeResponsePaging", description = "코드 페이징 응답", type = "object")
-    public static class Paging extends PartnerCode {
+    @Schema(name = "UserCodeResponsePaging", description = "코드 페이징 응답", type = "object")
+    public static class Paging extends UserCode {
 
         @Schema(description = "NO")
         @Parameter(description = "NO")
@@ -43,16 +43,16 @@ public class PartnerCodeResponse {
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "PartnerCodeResponseSelect", description = "코드 응답", type = "object")
-    public static class Select extends PartnerCode {
+    @Schema(name = "UserCodeResponseSelect", description = "코드 응답", type = "object")
+    public static class Select extends UserCode {
 
     }
 
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "PartnerCodeDropDown", description = "코드 드롭다운 응답", type = "object")
-    public static class PartnerCodeDropDown {
+    @Schema(name = "UserCodeDropDown", description = "코드 드롭다운 응답", type = "object")
+    public static class UserCodeDropDown {
 
         @Schema(description = "코드_id")
         @Parameter(description = "코드_id")
@@ -74,8 +74,8 @@ public class PartnerCodeResponse {
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "PartnerCodeResponseLowerSelect", description = "하위 코드 응답", type = "object")
-    public static class LowerSelect extends PartnerCode {
+    @Schema(name = "UserCodeResponseLowerSelect", description = "하위 코드 응답", type = "object")
+    public static class LowerSelect extends UserCode {
 
         @Schema(description = "상위_코드_명")
         private String codeUpperNm;
@@ -86,9 +86,9 @@ public class PartnerCodeResponse {
         @Schema(description = "등록자")
         private String creNm;
 
-        public PartnerCode toEntity() {
-            return PartnerCode.builder()
-                    .partnerId(this.getPartnerId())
+        public UserCode toEntity() {
+            return UserCode.builder()
+                    .userId(this.getUserId())
                     .id(this.getId())
                     .codeUpper(this.getCodeUpper())
                     .codeCd(this.getCodeCd())
@@ -111,8 +111,8 @@ public class PartnerCodeResponse {
     @Getter
     @Setter
     @EqualsAndHashCode(callSuper = false)
-    @Schema(name = "PartnerCodeResponseExcel", description = "코드 엑셀 응답", type = "object")
-    public static class Excel extends PartnerCode {
+    @Schema(name = "UserCodeResponseExcel", description = "코드 엑셀 응답", type = "object")
+    public static class Excel extends UserCode {
 
         @Schema(description = "NO")
         @Parameter(description = "NO")

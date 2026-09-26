@@ -3,7 +3,9 @@ package com.shop.api.frontWeb.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.GuestUser;
 import com.shop.api.frontWeb.service.ProductService;
+import com.shop.api.frontWeb.service.SellerResolver;
 import com.shop.core.annotations.NotAuthRequired;
+import jakarta.servlet.http.HttpServletRequest;
 import com.shop.core.biz.common.vo.request.PageRequest;
 import com.shop.core.biz.common.vo.response.PageResponse;
 import com.shop.core.biz.system.vo.response.ApiResponse;
@@ -39,6 +41,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final SellerResolver sellerResolver;
 
     /**
      * frontWeb 이하 상품 목록 조회
@@ -51,11 +54,13 @@ public class ProductController {
     @Operation(summary = "frontWeb 이하 상품 목록 조회(페이징)")
     @NotAuthRequired
     public ApiResponse<PageResponse<ProductResponse.ProductInfo>> selectProductInfoListPaging(
+            HttpServletRequest request,
             @Parameter(hidden = true) @GuestUser GuestToken guestUser,
             @Parameter(name = "ProductRequestProductInfoListFilter", description = "상품 목록 필터", in = ParameterIn.QUERY) ProductRequest.ProductInfoListFilter productInfoListFilter,
             @Parameter(name = "PageRequest", description = "상품 목록 조회 페이징") PageRequest<ProductRequest.ProductInfoListFilter> pageRequest
     ) {
         productInfoListFilter.setPartnerId(guestUser.getPartnerId());
+        productInfoListFilter.setUserId(sellerResolver.resolveUserId(request));
         pageRequest.setFilter(productInfoListFilter);
         PageResponse<ProductResponse.ProductInfo> response = productService.selectProductInfoListPaging(pageRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
@@ -72,11 +77,13 @@ public class ProductController {
     @Operation(summary = "frontWeb 이하 상품 목록 조회(카테고리 필수)")
     @NotAuthRequired
     public ApiResponse<PageResponse<ProductResponse.ProductInfo>> selectProductInfoListByCategory(
+            HttpServletRequest request,
             @Parameter(hidden = true) @GuestUser GuestToken guestUser,
             @Parameter(name = "ProductRequestProductInfoListFilter", description = "상품 목록 필터(categoryId 필수)", in = ParameterIn.QUERY) ProductRequest.ProductInfoListFilter productInfoListFilter,
             @Parameter(name = "PageRequest", description = "상품 목록 조회 페이징") PageRequest<ProductRequest.ProductInfoListFilter> pageRequest
     ) {
         productInfoListFilter.setPartnerId(guestUser.getPartnerId());
+        productInfoListFilter.setUserId(sellerResolver.resolveUserId(request));
         pageRequest.setFilter(productInfoListFilter);
         PageResponse<ProductResponse.ProductInfo> response = productService.selectProductInfoListByCategory(pageRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
@@ -93,11 +100,13 @@ public class ProductController {
     @Operation(summary = "frontWeb 이하 상품 검색 (상품명 + 색상)")
     @NotAuthRequired
     public ApiResponse<PageResponse<ProductResponse.ProductInfo>> selectProductSearchList(
+            HttpServletRequest request,
             @Parameter(hidden = true) @GuestUser GuestToken guestUser,
             @Parameter(name = "ProductRequestProductSearchFilter", description = "상품 검색 필터", in = ParameterIn.QUERY) ProductRequest.ProductSearchFilter productSearchFilter,
             @Parameter(name = "PageRequest", description = "상품 검색 페이징") PageRequest<ProductRequest.ProductSearchFilter> pageRequest
     ) {
         productSearchFilter.setPartnerId(guestUser.getPartnerId());
+        productSearchFilter.setUserId(sellerResolver.resolveUserId(request));
         pageRequest.setFilter(productSearchFilter);
         PageResponse<ProductResponse.ProductInfo> response = productService.selectProductSearchList(pageRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
@@ -139,9 +148,10 @@ public class ProductController {
     @Operation(summary = "frontWeb 상품 목록 시즌 상품 제외하고 나머지")
     @NotAuthRequired
     public ApiResponse<List<ProductResponse.ProductInfo>> selectProductListForMain(
+            HttpServletRequest request,
             @Parameter(hidden = true) @GuestUser GuestToken guestUser
     ) {
-        List<ProductResponse.ProductInfo> response = productService.selectProductListForMain(guestUser);
+        List<ProductResponse.ProductInfo> response = productService.selectProductListForMain(sellerResolver.resolveUserId(request));
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 }

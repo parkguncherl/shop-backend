@@ -19,8 +19,8 @@ public class ProductContentListRequest {
     @Schema(name = "ProductContentListRequestProductContentListFilter", description = "상품컨텐츠 목록 필터")
     public static class ProductContentListFilter implements RequestFilter {
 
-        @Schema(description = "파트너 id")
-        private Integer partnerId;
+        @Schema(description = "유저 id")
+        private Integer userId;
 
         @Schema(description = "컨텐츠 유형(전역 상수로 지정)")
         private String newsType;

@@ -71,6 +71,9 @@ public class MisRequest {
 
         @Schema(description = "partnerId")
         private Integer partnerId;
+
+        @Schema(description = "userId (카테고리 user_code 스코핑용)")
+        private Integer userId;
     }
 
     @Getter
@@ -88,6 +91,9 @@ public class MisRequest {
 
         @Schema(description = "partnerId")
         private Integer partnerId;
+
+        @Schema(description = "userId (fit/키/몸무게 user_code 스코핑용)")
+        private Integer userId;
 
         @Schema(description = "카테고리 ID")
         private Integer categoryId;

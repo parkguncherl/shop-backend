@@ -80,6 +80,15 @@ public class UserDao {
     }
 
     /**
+     * FO 스토어프론트: 요청 host 로 셀러(User) 조회 (TB_USER.domain 콤마 목록 매칭)
+     * @param host 예: mapsiggun.com
+     * @return 매칭된 User (id, partnerId 포함) 또는 null
+     */
+    public User selectSellerByDomain(String host) {
+        return sqlSession.selectOne(PRE_NS.concat("selectSellerByDomain"), host);
+    }
+
+    /**
      * 계정관리_조회 (by LoginId)
      *
      * @param loginId

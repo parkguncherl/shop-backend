@@ -62,6 +62,9 @@ public class User extends BaseEntity implements Serializable {
     @Schema(description = "파트너아이디")
     private Integer partnerId;
 
+    @Schema(description = "도메인(콤마 구분, 예: mapsiggun.com,www.mapsiggun.com) - FO 스토어프론트 셀러 식별용")
+    private String domain;
+
     @Schema(description = "권한코드")
     private String authCd;
 

@@ -76,8 +76,8 @@ public class ProductDao {
     /**
      * 메인페이지
      */
-    public List<ProductResponse.ProductInfo> selectProductListForMain(Integer partnerId) {
-        return sqlSession.selectList(NAMESPACE + "selectProductListForMain", partnerId);
+    public List<ProductResponse.ProductInfo> selectProductListForMain(Integer userId) {
+        return sqlSession.selectList(NAMESPACE + "selectProductListForMain", userId);
     }
 
     /**

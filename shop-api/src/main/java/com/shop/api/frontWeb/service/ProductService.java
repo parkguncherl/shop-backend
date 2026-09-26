@@ -54,8 +54,8 @@ public class ProductService {
     /**
      * 메인페이지 상품 목록
      */
-    public List<ProductResponse.ProductInfo> selectProductListForMain(GuestToken guestUser) {
-        return productDao.selectProductListForMain(guestUser.getPartnerId()); // 시즌을 제외한
+    public List<ProductResponse.ProductInfo> selectProductListForMain(Integer userId) {
+        return productDao.selectProductListForMain(userId); // 시즌을 제외한
     }
 
 

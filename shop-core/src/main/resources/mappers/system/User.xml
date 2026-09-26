@@ -115,6 +115,19 @@
          AND DEL_YN = 'N'
     </select>
 
+    <select id="selectSellerByDomain" parameterType="java.lang.String" resultType="com.shop.core.entity.User">
+        /* com.shop.mapper.User.selectSellerByDomain */
+        SELECT ID          AS id
+             , PARTNER_ID   AS partnerId
+             , DOMAIN       AS domain
+             , LOGIN_ID     AS loginId
+          FROM TB_USER
+         WHERE DEL_YN = 'N'
+           AND #{host} = ANY (string_to_array(REPLACE(DOMAIN, ' ', ''), ','))
+         ORDER BY ID
+         LIMIT 1
+    </select>
+
     <select id="selectUserByLoginId" parameterType="String" resultType="com.shop.core.biz.system.vo.response.UserResponse$SelectByLoginId">
         /* com.shop.mapper.User.selectUserByLoginId */
         SELECT

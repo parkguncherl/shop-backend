@@ -3,22 +3,24 @@ package com.shop.api.frontWeb.controller;
 import com.shop.api.annotation.AccessLog;
 import com.shop.api.annotation.GuestUser;
 import com.shop.api.biz.system.service.CodeService;
-import com.shop.api.biz.system.service.PartnerCodeService;
+import com.shop.api.biz.system.service.UserCodeService;
 import com.shop.api.biz.common.service.CommonService;
 import com.shop.core.annotations.NotAuthRequired;
 import com.shop.core.biz.common.vo.request.CommonRequest;
 import com.shop.core.biz.common.vo.response.CommonResponse;
 import com.shop.core.biz.system.vo.request.CodeRequest;
-import com.shop.core.biz.system.vo.request.PartnerCodeRequest;
+import com.shop.core.biz.system.vo.request.UserCodeRequest;
 import com.shop.core.biz.system.vo.response.ApiResponse;
 import com.shop.core.biz.system.vo.response.CodeResponse;
-import com.shop.core.biz.system.vo.response.PartnerCodeResponse;
+import com.shop.core.biz.system.vo.response.UserCodeResponse;
 import com.shop.core.entity.FileDet;
 import com.shop.core.entity.GuestToken;
-import com.shop.core.entity.PartnerCode;
+import com.shop.core.entity.UserCode;
 import com.shop.core.entity.User;
 import com.shop.core.enums.ApiResultCode;
+import com.shop.api.frontWeb.service.SellerResolver;
 import com.shop.core.frontWeb.vo.request.WebCommonRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,8 +47,9 @@ import java.util.List;
 @Tag(name = "WebCommonController", description = "web 공통 관련 API")
 public class WebCommonController {
     private final CodeService codeService;
-    private final PartnerCodeService partnerCodeService;
+    private final UserCodeService userCodeService;
     private final CommonService commonService;
+    private final SellerResolver sellerResolver;
 
     /**
      * 하위_코드_조회 (by codeUpper)
@@ -93,45 +96,46 @@ public class WebCommonController {
 
 
     /**
-     * partnerCode 목록 조회
+     * userCode 목록 조회
      *
      * @param partnerUpperCode
      * @return 조회된 ProductInfoList
      */
-    @AccessLog("web-partnerCode 목록 조회")
-    @GetMapping(value = "/partnerCode/{partnerUpperCode}")
-    @Operation(summary = "web-partnerCode 목록 조회")
+    @AccessLog("web-userCode 목록 조회")
+    @GetMapping(value = "/userCode/{partnerUpperCode}")
+    @Operation(summary = "web-userCode 목록 조회")
     @NotAuthRequired
-    public ApiResponse<List<PartnerCodeResponse.LowerSelect>> partnerCodeList(@Parameter(hidden = true) @GuestUser GuestToken guestUser, @PathVariable String partnerUpperCode) {
-        PartnerCodeRequest.PartnerCodeDropDown partnerCodeRequest = new PartnerCodeRequest.PartnerCodeDropDown();
-        partnerCodeRequest.setCodeUpper(partnerUpperCode);
-        partnerCodeRequest.setPartnerId(guestUser.getPartnerId());
-        List<PartnerCodeResponse.LowerSelect> response = partnerCodeService.selectPartnerCodeList(partnerCodeRequest);
+    public ApiResponse<List<UserCodeResponse.LowerSelect>> userCodeList(HttpServletRequest request, @Parameter(hidden = true) @GuestUser GuestToken guestUser, @PathVariable String partnerUpperCode) {
+        UserCodeRequest.UserCodeDropDown userCodeRequest = new UserCodeRequest.UserCodeDropDown();
+        userCodeRequest.setCodeUpper(partnerUpperCode);
+        userCodeRequest.setUserId(sellerResolver.resolveUserId(request));
+        List<UserCodeResponse.LowerSelect> response = userCodeService.selectUserCodeList(userCodeRequest);
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 
     /**
-     * web-partnerCode 조회
+     * web-userCode 조회
      *
-     * @param partnerCodeByUkFilter
-     * @return 조회된 PartnerCode
+     * @param userCodeByUkFilter
+     * @return 조회된 UserCode
      */
-    @AccessLog("web-partnerCode 조회")
-    @GetMapping(value = "/partnerCodeByUk")
-    @Operation(summary = "web-partnerCode 조회")
+    @AccessLog("web-userCode 조회")
+    @GetMapping(value = "/userCodeByUk")
+    @Operation(summary = "web-userCode 조회")
     @NotAuthRequired
-    public ApiResponse<PartnerCode> partnerCodeByUk(
+    public ApiResponse<UserCode> userCodeByUk(
+            HttpServletRequest request,
             @Parameter(hidden = true) @GuestUser GuestToken guestUser,
-            @Parameter(description = "partnerCode 고유 키 조합 조회 필터") WebCommonRequest.partnerCodeByUkFilter partnerCodeByUkFilter
+            @Parameter(description = "userCode 고유 키 조합 조회 필터") WebCommonRequest.userCodeByUkFilter userCodeByUkFilter
     ) {
         // 필수값 체크
-        if (StringUtils.isEmpty(partnerCodeByUkFilter.getCodeUpper()) || StringUtils.isEmpty(partnerCodeByUkFilter.getCodeCd())) {
+        if (StringUtils.isEmpty(userCodeByUkFilter.getCodeUpper()) || StringUtils.isEmpty(userCodeByUkFilter.getCodeCd())) {
             return new ApiResponse<>(ApiResultCode.NO_REQUIRED_VALUE);
         }
 
-        partnerCodeByUkFilter.setPartnerId(guestUser.getPartnerId());
+        userCodeByUkFilter.setUserId(sellerResolver.resolveUserId(request));
 
-        PartnerCode response = partnerCodeService.selectPartnerCodeByUk(partnerCodeByUkFilter.getPartnerId(), partnerCodeByUkFilter.getCodeUpper(), partnerCodeByUkFilter.getCodeCd());
+        UserCode response = userCodeService.selectUserCodeByUk(userCodeByUkFilter.getUserId(), userCodeByUkFilter.getCodeUpper(), userCodeByUkFilter.getCodeCd());
         return new ApiResponse<>(ApiResultCode.SUCCESS, response);
     }
 
