@@ -37,6 +37,15 @@ public class ProductMngDao {
     }
 
     /**
+     * 판매상품관리-상품정보 조회 (협력업체 조건 제외)
+     * @param productInfoFilter
+     * @return ProductInfo List
+     */
+    public List<ProductMngResponse.ProductInfo> sellProdInfoList(ProductMngRequest.ProductInfoFilter productInfoFilter) {
+        return sqlSession.selectList(NAMESPACE + "sellProdInfoList", productInfoFilter);
+    }
+
+    /**
      * 상품관리-상품정보 상세 조회
      * @param productDetInfoFilter
      * @return ProductDetInfo List

@@ -52,6 +52,23 @@ public class ProductMngController {
     }
 
     /**
+     * 판매상품목록 조회 (협력업체 조건 제외)
+     *
+     * @param productInfoFilter
+     * @return 조회된 상품목록
+     */
+    @AccessLog("판매상품목록 조회")
+    @GetMapping(value = "/sellProductInfoList")
+    @Operation(summary = "판매상품목록 조회 (협력업체 조건 제외)")
+    public ApiResponse<List<ProductMngResponse.ProductInfo>> sellProdInfoList(
+            @Parameter(hidden = true) @JwtUser User jwtUser,
+            @Parameter(name = "ProductMngRequestProductInfoFilter", description = "판매상품목록 조회 필터", in = ParameterIn.QUERY) ProductMngRequest.ProductInfoFilter productInfoFilter
+    ) {
+        List<ProductMngResponse.ProductInfo> response = productMngService.sellProdInfoList(productInfoFilter, jwtUser);
+        return new ApiResponse<>(ApiResultCode.SUCCESS, response);
+    }
+
+    /**
      * 상품상세목록 조회
      *
      * @param productDetInfoFilter
